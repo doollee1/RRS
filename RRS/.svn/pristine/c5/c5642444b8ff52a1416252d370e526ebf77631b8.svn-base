@@ -1,0 +1,1729 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CustomerMapper">
+	
+	<select id="selectPopupCustomerList" parameterType="HashMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.CUST_CD) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,A.COMP_CD COMP_CD
+			  ,A.CUST_CD CUST_CD
+			  ,A.CUST_NM CUST_NM
+			  ,B.SALES_ORG_CD SALES_ORG_CD
+			  ,B.SALES_ORG_CD + ' ' + DBO.GETCODENM('SALES_ORG_CD', B.SALES_ORG_CD, #{LANG}) AS SALES_ORG_CD_VO
+			  ,B.DISTRB_CH DISTRB_CH
+			  ,B.DISTRB_CH + ' ' + DBO.GETCODENM('DISTRB_CH', B.DISTRB_CH, #{LANG}) AS DISTRB_CH_VO
+			  ,B.DIV_CD DIV_CD
+			  ,B.DIV_CD + ' ' + DBO.GETCODENM('DIV_CD', B.DIV_CD, #{LANG}) AS DIV_CD_VO
+			  ,A.GRADE
+			  ,A.GRADE + ' ' + DBO.GETCODENM('GRADE', A.GRADE, #{LANG}) GRADE_NM
+			  , case when b.deli_plant_cd = '' then '1000'
+			         else isnull (b.deli_plant_cd, '1000' ) end as deli_plant_cd
+		  FROM MS_CUST_H A WITH (NOLOCK) LEFT OUTER JOIN MS_CUST_SALES B WITH (NOLOCK)
+			   ON A.COMP_CD = B.COMP_CD AND B.CUST_CD = A.CUST_CD AND A.STATUS = 'Y' AND B.STATUS = 'Y'
+		 WHERE
+			  A.COMP_CD = '1000'
+			  <if test="CUST_CD != null and CUST_CD != ''">
+			  AND A.CUST_CD LIKE '%' + #{CUST_CD} + '%'
+			  </if>
+			  <if test="ONE_TIMECUST_FLAG != null and ONE_TIMECUST_FLAG != ''">
+			  AND (A.ACCOUNT_GR = 'CPD' OR A.ACCOUNT_GR = 'CPDA' OR A.ACCOUNT_GR = 'Z007')
+			  </if>
+			  <if test="CUST_NM != null and CUST_NM != ''">
+			  AND A.CUST_NM LIKE '%' + #{CUST_NM} + '%'
+			  </if>
+			  <if test="SEARCH_NM1 != null and SEARCH_NM1 != ''">
+			  AND A.SEARCH_NM1 LIKE '%' + #{SEARCH_NM1} + '%'
+			  </if>
+			  <if test="SEARCH_NM2 != null and SEARCH_NM2 != ''">
+			  AND A.SEARCH_NM2 LIKE '%' + #{SEARCH_NM2} + '%'
+			  </if>
+			  <if test="GRADE != null and GRADE != ''">
+			  AND A.GRADE = #{GRADE}
+			  </if>
+			  <if test='QPARTNER == "N"'>
+			  AND A.GRADE NOT IN ('A', 'B', 'C', 'D', 'E') OR A.GRADE IS NULL
+			  </if>
+			  <if test='QPARTNER == "Y"'>
+			  AND A.GRADE IN ('A', 'B', 'C', 'D', 'E')
+			  </if>
+			  <if test="SALES_GR != null and SALES_GR != ''">
+			  AND B.SALES_GR = #{SALES_GR}
+			  </if>
+			  <if test="CUST_GR != null and CUST_GR != ''">
+			  AND B.CUST_GR = #{CUST_GR}
+			  </if>
+			  <if test="SALES_ORG_CD != null and SALES_ORG_CD != ''">
+			  AND B.SALES_ORG_CD = #{SALES_ORG_CD}
+			  </if>
+			  <if test="DISTRB_CH != null and DISTRB_CH != ''">
+			  AND B.DISTRB_CH = #{DISTRB_CH}
+			  </if>
+			  <if test="DIV_CD != null and DIV_CD != ''">
+			  AND B.DIV_CD = #{DIV_CD}
+			  </if>
+			  <if test="ACCOUNT_GR != null and ACCOUNT_GR != ''">
+			  AND A.ACCOUNT_GR = #{ACCOUNT_GR}
+			  </if>
+			  <if test="CITY_NM != null and CITY_NM != ''">
+			  AND A.CITY_NM LIKE '%' + #{CITY_NM} + '%'
+			  </if>
+			  <if test="POST_CD != null and POST_CD != ''">
+			  AND A.POST_CD LIKE '%' + #{POST_CD} + '%'
+			  </if>
+			  <if test="COUNTRY_CD != null and COUNTRY_CD != ''">
+			  AND A.COUNTRY_CD = #{COUNTRY_CD}
+			  </if>
+			  <if test="DIV_FLAG != null and DIV_FLAG != ''">
+			  AND B.DIV_CD IN ('20', '40', '90')
+			  </if>
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectCustomerCount" parameterType="HashMap" resultType="int">
+		SELECT COUNT(1)
+		  FROM (
+			SELECT COUNT(1) CNT
+			  FROM MS_CUST_H A WITH (NOLOCK) LEFT OUTER JOIN MS_CUST_SALES B WITH (NOLOCK)
+				   ON A.COMP_CD = B.COMP_CD AND B.CUST_CD = A.CUST_CD AND A.STATUS = 'Y' AND B.STATUS = 'Y'
+			 WHERE
+				  A.COMP_CD = '1000'
+				  <if test="CUST_CD != null and CUST_CD != ''">
+				  AND A.CUST_CD LIKE '%' + #{CUST_CD} + '%'
+				  </if>
+				  <if test="ONE_TIMECUST_FLAG != null and ONE_TIMECUST_FLAG != ''">
+				  AND (A.ACCOUNT_GR = 'CPD' OR A.ACCOUNT_GR = 'CPDA' OR A.ACCOUNT_GR = 'Z007')
+				  </if>
+				  <if test="CUST_NM != null and CUST_NM != ''">
+				  AND A.CUST_NM LIKE '%' + #{CUST_NM} + '%'
+				  </if>
+				  <if test="SEARCH_NM1 != null and SEARCH_NM1 != ''">
+				  AND A.SEARCH_NM1 LIKE '%' + #{SEARCH_NM1} + '%'
+				  </if>
+				  <if test="SEARCH_NM2 != null and SEARCH_NM2 != ''">
+				  AND A.SEARCH_NM2 LIKE '%' + #{SEARCH_NM2} + '%'
+				  </if>
+				  <if test="GRADE != null and GRADE != ''">
+				  AND A.GRADE = #{GRADE}
+				  </if>
+				  <if test='QPARTNER == "N"'>
+				  AND A.GRADE NOT IN ('A', 'B', 'C', 'D', 'E') OR A.GRADE IS NULL
+				  </if>
+				  <if test='QPARTNER == "Y"'>
+				  AND A.GRADE IN ('A', 'B', 'C', 'D', 'E')
+				  </if>
+				  <if test="SALES_GR != null and SALES_GR != ''">
+				  AND B.SALES_GR = #{SALES_GR}
+				  </if>
+				  <if test="CUST_GR != null and CUST_GR != ''">
+				  AND B.CUST_GR = #{CUST_GR}
+				  </if>
+				  <if test="SALES_ORG_CD != null and SALES_ORG_CD != ''">
+				  AND B.SALES_ORG_CD = #{SALES_ORG_CD}
+				  </if>
+				  <if test="DISTRB_CH != null and DISTRB_CH != ''">
+				  AND B.DISTRB_CH = #{DISTRB_CH}
+				  </if>
+				  <if test="DIV_CD != null and DIV_CD != ''">
+				  AND B.DIV_CD = #{DIV_CD}
+				  </if>
+				  <if test="ACCOUNT_GR != null and ACCOUNT_GR != ''">
+				  AND A.ACCOUNT_GR = #{ACCOUNT_GR}
+				  </if>
+				  <if test="CITY_NM != null and CITY_NM != ''">
+				  AND A.CITY_NM LIKE '%' + #{CITY_NM} + '%'
+				  </if>
+				  <if test="POST_CD != null and POST_CD != ''">
+				  AND A.POST_CD LIKE '%' + #{POST_CD} + '%'
+				  </if>
+				  <if test="COUNTRY_CD != null and COUNTRY_CD != ''">
+				  AND A.COUNTRY_CD = #{COUNTRY_CD}
+				  </if>
+			GROUP BY A.CUST_CD
+		  ) GA
+	</select>
+	
+	<select id="selectCustomerHeaderList" parameterType="HashMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.CUST_CD) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,A.COMP_CD COMP_CD
+			  ,A.CUST_CD CUST_CD
+			  ,A.ACCOUNT_GR ACCOUNT_GR
+			  ,DBO.GETCODENM('ACCOUNT_GR', A.ACCOUNT_GR, #{LANG}) AS ACCOUNT_GR_NM
+			  ,A.CUST_NM CUST_NM
+			  ,A.CUST_ABNM CUST_ABNM
+			  ,A.SEARCH_NM1 SEARCH_NM1
+			  ,A.SEARCH_NM2 SEARCH_NM2
+			  ,A.HAUS_NO HAUS_NO
+			  ,A.STREET_NM STREET_NM
+			  ,A.POST_CD POST_CD
+			  ,A.REGION_CD REGION_CD
+			  ,A.CITY_CD CITY_CD
+			  ,A.CITY_NM CITY_NM
+			  ,A.COUNTRY_CD COUNTRY_CD
+			  ,A.TIME_ZONE TIME_ZONE
+			  ,A.TRANSP_ZONE TRANSP_ZONE
+			  ,A.LANG_CD LANG_CD
+			  ,A.HOMEPAGE HOMEPAGE
+			  ,A.MOBILE_NO MOBILE_NO
+			  ,A.TEL_NO TEL_NO
+			  ,A.TEL_NO_EXT TEL_NO_EXT
+			  ,A.FAX_NO FAX_NO
+			  ,A.FAX_NO_EXT FAX_NO_EXT
+			  ,A.E_MAIL E_MAIL
+			  ,A.INDUSTRY_CD INDUSTRY_CD
+			  ,A.CUST_COMP_CD CUST_COMP_CD
+			  ,A.REQ_CREDIT REQ_CREDIT
+			  ,A.REQ_CREDIT OLD_REQ_CREDIT
+			  ,A.VAT_REG_NO VAT_REG_NO
+			  ,A.VAT_NO_CHK_YN VAT_NO_CHK_YN
+			  ,A.LOCAT_NO1 LOCAT_NO1
+			  ,A.LOCAT_NO2 LOCAT_NO2
+			  ,A.SORT_KEY SORT_KEY
+			  ,A.CASH_MGMT_GR CASH_MGMT_GR
+			  ,A.INTEREST_IND_CD INTEREST_IND_CD
+			  ,A.PAY_HIST_YN PAY_HIST_YN
+			  ,A.DUN_PROC_CD DUN_PROC_CD
+			  ,A.DUN_BLOCK_CD DUN_BLOCK_CD
+			  ,A.DUN_LEVEL_CD DUN_LEVEL_CD
+			  ,A.POLICY_NO POLICY_NO
+			  ,CONVERT(NVARCHAR, A.INSURED_AMT) INSURED_AMT
+			  ,CONVERT(NVARCHAR(10), A.VAL_TO_DATE, 104) VAL_TO_DATE
+			  ,A.DEDUCT_RATE DEDUCT_RATE
+			  ,CONVERT(NVARCHAR, A.APPLIED_INSURA) APPLIED_INSURA
+			  ,A.EASY_NO EASY_NO
+			  ,CONVERT(NVARCHAR(10), A.APPLY_DATE, 104) APPLY_DATE
+			  ,CONVERT(NVARCHAR(10), A.EXPIRE_DATE, 104) EXPIRE_DATE
+			  ,A.ADD_TXT1 ADD_TXT1
+			  ,A.ADD_TXT2 ADD_TXT2
+			  ,A.GRADE GRADE
+			  ,A.EPC_CD EPC_CD
+			  ,A.CI_CD CI_CD
+			  ,A.RESI_CD RESI_CD
+			  ,A.Util_CD Util_CD
+			  ,A.MARK_PF MARK_PF
+			  ,A.INVS_CD INVS_CD
+			  ,A.PRMT_CD PRMT_CD
+			  ,A.SVC_PR_CD SVC_PR_CD
+			  ,A.ENG_CNSL_CD ENG_CNSL_CD
+			  ,A.RECON_ACC_CD RECON_ACC_CD
+			  ,DBO.GETCODENM('INDUSTRY_CD', A.INDUSTRY_CD, #{LANG}) AS INDUSTRY_NM
+			  ,DBO.GETCODENM('GRADE', A.GRADE, #{LANG}) AS GRADE_NM
+		  FROM MS_CUST_H A WITH (NOLOCK)
+		 WHERE
+			  1=1
+			  <if test="COMP_CD != null and COMP_CD != ''">
+			  AND A.COMP_CD = #{COMP_CD}
+			  AND A.CUST_COMP_CD = #{COMP_CD}
+			  </if>
+			  <if test="CUST_CD != null and CUST_CD != ''">
+			  AND A.CUST_CD LIKE '%' + #{CUST_CD} + '%'
+			  </if>
+			  <if test="ONE_TIMECUST_FLAG != null and ONE_TIMECUST_FLAG != ''">
+			  AND (A.ACCOUNT_GR = 'CPD' OR A.ACCOUNT_GR = 'CPDA' OR A.ACCOUNT_GR = 'Z007')
+			  </if>
+			  <if test="CUST_NM != null and CUST_NM != ''">
+			  AND A.CUST_NM LIKE '%' + #{CUST_NM} + '%'
+			  </if>
+			  <if test="SEARCH_NM1 != null and SEARCH_NM1 != ''">
+			  AND A.SEARCH_NM1 LIKE '%' + #{SEARCH_NM1} + '%'
+			  </if>
+			  <if test="SEARCH_NM2 != null and SEARCH_NM2 != ''">
+			  AND A.SEARCH_NM2 LIKE '%' + #{SEARCH_NM2} + '%'
+			  </if>
+			  <if test="GRADE != null and GRADE != ''">
+			  AND A.GRADE = #{GRADE}
+			  </if>
+			  <if test='QPARTNER == "N"'>
+			  AND A.GRADE NOT IN ('A', 'B', 'C', 'D', 'E') OR A.GRADE IS NULL
+			  </if>
+			  <if test='QPARTNER == "Y"'>
+			  AND A.GRADE IN ('A', 'B', 'C', 'D', 'E')
+			  </if>
+			  <if test="ACCOUNT_GR != null and ACCOUNT_GR != ''">
+			  AND A.ACCOUNT_GR = #{ACCOUNT_GR}
+			  </if>
+			  <if test="CITY_NM != null and CITY_NM != ''">
+			  AND A.CITY_NM LIKE '%' + #{CITY_NM} + '%'
+			  </if>
+			  <if test="POST_CD != null and POST_CD != ''">
+			  AND A.POST_CD LIKE '%' + #{POST_CD} + '%'
+			  </if>
+			  <if test="COUNTRY_CD != null and COUNTRY_CD != ''">
+			  AND A.COUNTRY_CD = #{COUNTRY_CD}
+			  </if>
+			  <if test="POLICY_NO != null and POLICY_NO != ''">
+			  AND A.POLICY_NO LIKE '%' + #{POLICY_NO} + '%'
+			  </if>
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectCustomerByAttradiusIdList" parameterType="HashMap" resultType="BMap">
+		SELECT COMP_CD
+			  ,EASY_NO
+			  ,CUST_CD
+			  ,CUST_NM
+			  ,STREET_NM
+			  ,CITY_NM
+			  ,VAT_REG_NO
+		  FROM MS_CUST_H A WITH (NOLOCK)
+		 WHERE
+			  EASY_NO IN
+			  <foreach item="item" index="index" collection="policyList"
+				  open="(" separator="," close=")">
+				  #{item}
+			  </foreach>
+	</select>
+	
+	<select id="selectCustomerList" parameterType="HashMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.CUST_CD) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,A.COMP_CD COMP_CD
+			  ,A.CUST_CD CUST_CD
+			  ,A.CUST_CD DISPLAY_CUST_CD
+			  ,A.ACCOUNT_GR ACCOUNT_GR
+			  ,DBO.GETCODENM('ACCOUNT_GR', A.ACCOUNT_GR, #{LANG}) AS ACCOUNT_GR_NM
+			  ,A.CUST_NM CUST_NM
+			  ,A.CUST_NM DISPLAY_CUST_NM
+			  ,A.CUST_ABNM CUST_ABNM
+			  ,A.SEARCH_NM1 SEARCH_NM1
+			  ,A.SEARCH_NM2 SEARCH_NM2
+			  ,A.HAUS_NO HAUS_NO
+			  ,A.STREET_NM STREET_NM
+			  ,A.STREET_NM2 STREET_NM2			  
+			  ,A.POST_CD POST_CD
+			  ,A.REGION_CD REGION_CD
+			  ,A.CITY_CD CITY_CD
+			  ,A.CITY_NM CITY_NM
+			  ,A.COUNTRY_CD COUNTRY_CD
+			  ,A.TIME_ZONE TIME_ZONE
+			  ,A.TRANSP_ZONE TRANSP_ZONE
+			  ,A.LANG_CD LANG_CD
+			  ,A.HOMEPAGE HOMEPAGE
+			  ,A.MOBILE_NO MOBILE_NO
+			  ,A.TEL_NO TEL_NO
+			  ,A.TEL_NO_EXT TEL_NO_EXT
+			  ,A.FAX_NO FAX_NO
+			  ,A.FAX_NO_EXT FAX_NO_EXT
+			  ,A.E_MAIL E_MAIL
+			  ,A.INDUSTRY_CD INDUSTRY_CD
+			  ,A.CUST_COMP_CD CUST_COMP_CD
+			  ,A.REQ_CREDIT REQ_CREDIT
+			  ,A.REQ_CREDIT OLD_REQ_CREDIT
+			  ,A.VAT_REG_NO VAT_REG_NO
+			  ,A.VAT_NO_CHK_YN VAT_NO_CHK_YN
+			  ,A.LOCAT_NO1 LOCAT_NO1
+			  ,A.LOCAT_NO2 LOCAT_NO2
+			  ,A.SORT_KEY SORT_KEY
+			  ,A.CASH_MGMT_GR CASH_MGMT_GR
+			  ,A.INTEREST_IND_CD INTEREST_IND_CD
+			  ,A.PAY_HIST_YN PAY_HIST_YN
+			  ,A.TERM_PAY_CD TERM_PAY_CD
+			  ,A.DUN_PROC_CD DUN_PROC_CD
+			  ,A.DUN_BLOCK_CD DUN_BLOCK_CD
+			  ,A.DUN_LEVEL_CD DUN_LEVEL_CD
+			  ,A.POLICY_NO POLICY_NO
+			  ,A.INSURED_AMT INSURED_AMT
+			  ,CONVERT(NVARCHAR(10), A.VAL_TO_DATE, 104) VAL_TO_DATE
+			  ,A.DEDUCT_RATE DEDUCT_RATE
+			  ,A.APPLIED_INSURA APPLIED_INSURA
+			  ,A.EASY_NO EASY_NO
+			  ,CONVERT(NVARCHAR(10), A.APPLY_DATE, 104) APPLY_DATE
+			  ,CONVERT(NVARCHAR(10), A.EXPIRE_DATE, 104) EXPIRE_DATE
+			  ,A.ADD_TXT1 ADD_TXT1
+			  ,A.ADD_TXT2 ADD_TXT2
+			  ,A.GRADE GRADE
+			  ,A.EPC_CD EPC_CD
+			  ,A.CI_CD CI_CD
+			  ,A.RESI_CD RESI_CD
+			  ,A.Util_CD Util_CD
+			  ,A.MARK_PF MARK_PF
+			  ,A.INVS_CD INVS_CD
+			  ,A.PRMT_CD PRMT_CD
+			  ,A.SVC_PR_CD SVC_PR_CD
+			  ,A.ENG_CNSL_CD ENG_CNSL_CD
+			  ,A.RECON_ACC_CD RECON_ACC_CD
+			  ,DBO.GETCODENM('INDUSTRY_CD', A.INDUSTRY_CD, #{LANG}) AS INDUSTRY_NM
+			  ,DBO.GETCODENM('GRADE', A.GRADE, #{LANG}) AS GRADE_NM
+			  ,DBO.GETCODENM('PAY_TERM', A.TERM_PAY_CD, #{LANG}) AS TERM_PAY_NM
+			  ,B.SALES_ORG_CD SALES_ORG_CD
+			  ,DBO.GETCODENM('SALES_ORG_CD', B.SALES_ORG_CD, #{LANG}) AS SALES_ORG_CD_NM
+			  ,B.SALES_ORG_CD + ' ' + DBO.GETCODENM('SALES_ORG_CD', B.SALES_ORG_CD, #{LANG}) AS SALES_ORG_CD_VO
+			  ,B.DISTRB_CH DISTRB_CH
+			  ,DBO.GETCODENM('DISTRB_CH', B.DISTRB_CH, #{LANG}) AS DISTRB_CH_NM
+			  ,B.DISTRB_CH + ' ' + DBO.GETCODENM('DISTRB_CH', B.DISTRB_CH, #{LANG}) AS DISTRB_CH_VO
+			  ,B.DIV_CD DIV_CD
+			  ,DBO.GETCODENM('DIV_CD', B.DIV_CD, #{LANG}) AS DIV_CD_NM
+			  ,B.DIV_CD + ' ' + DBO.GETCODENM('DIV_CD', B.DIV_CD, #{LANG}) AS DIV_CD_VO
+			  ,A.CUST_TEXT			  
+			  ,B.DELI_PLANT_CD DELI_PLANT_CD
+			  
+		  FROM MS_CUST_H A WITH (NOLOCK) LEFT OUTER JOIN MS_CUST_SALES B WITH (NOLOCK)
+			   ON B.COMP_CD = A.COMP_CD AND B.CUST_CD = A.CUST_CD AND A.STATUS = 'Y' AND B.STATUS = 'Y'
+		 WHERE
+			  A.COMP_CD = '1000'
+			  <if test="CUST_CD != null and CUST_CD != ''">
+			  AND A.CUST_CD LIKE '%' + #{CUST_CD} + '%'
+			  </if>
+			  <if test="ONE_TIMECUST_FLAG != null and ONE_TIMECUST_FLAG != ''">
+			  AND (A.ACCOUNT_GR = 'CPD' OR A.ACCOUNT_GR = 'CPDA' OR A.ACCOUNT_GR = 'Z007')
+			  </if>
+			  <if test="CUST_NM != null and CUST_NM != ''">
+			  AND A.CUST_NM LIKE '%' + #{CUST_NM} + '%'
+			  </if>
+			  <if test="SEARCH_NM1 != null and SEARCH_NM1 != ''">
+			  AND A.SEARCH_NM1 LIKE '%' + #{SEARCH_NM1} + '%'
+			  </if>
+			  <if test="SEARCH_NM2 != null and SEARCH_NM2 != ''">
+			  AND A.SEARCH_NM2 LIKE '%' + #{SEARCH_NM2} + '%'
+			  </if>
+			  <if test="GRADE != null and GRADE != ''">
+			  AND A.GRADE = #{GRADE}
+			  </if>
+			  <if test='QPARTNER == "N"'>
+			  AND A.GRADE NOT IN ('A', 'B', 'C', 'D', 'E') OR A.GRADE IS NULL
+			  </if>
+			  <if test='QPARTNER == "Y"'>
+			  AND A.GRADE IN ('A', 'B', 'C', 'D', 'E')
+			  </if>
+			  <if test="SALES_GR != null and SALES_GR != ''">
+			  AND B.SALES_GR = #{SALES_GR}
+			  </if>
+			  <if test="CUST_GR != null and CUST_GR != ''">
+			  AND B.CUST_GR = #{CUST_GR}
+			  </if>
+			  <if test="SALES_ORG_CD != null and SALES_ORG_CD != ''">
+			  AND B.SALES_ORG_CD = #{SALES_ORG_CD}
+			  </if>
+			  <if test="DISTRB_CH != null and DISTRB_CH != ''">
+			  AND B.DISTRB_CH = #{DISTRB_CH}
+			  </if>
+			  <if test="DIV_CD != null and DIV_CD != ''">
+			  AND B.DIV_CD = #{DIV_CD}
+			  </if>
+			  <if test="ACCOUNT_GR != null and ACCOUNT_GR != ''">
+			  AND A.ACCOUNT_GR = #{ACCOUNT_GR}
+			  </if>
+			  <if test="CITY_NM != null and CITY_NM != ''">
+			  AND A.CITY_NM LIKE '%' + #{CITY_NM} + '%'
+			  </if>
+			  <if test="POST_CD != null and POST_CD != ''">
+			  AND A.POST_CD LIKE '%' + #{POST_CD} + '%'
+			  </if>
+			  <if test="COUNTRY_CD != null and COUNTRY_CD != ''">
+			  AND A.COUNTRY_CD = #{COUNTRY_CD}
+			  </if>
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectCustomerSalesList" parameterType="HashMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY SEQ) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,SEQ SEQ
+			  ,CUST_CD CUST_CD
+			  ,COMP_CD COMP_CD
+			  ,SALES_ORG_CD SALES_ORG_CD
+			  ,DBO.GETCODENM('SALES_ORG_CD', SALES_ORG_CD, #{LANG}) AS SALES_ORG_CD_NM
+			  ,DISTRB_CH DISTRB_CH
+			  ,DBO.GETCODENM('DISTRB_CH', DISTRB_CH, #{LANG}) AS DISTRB_CH_NM
+			  ,DIV_CD DIV_CD
+			  ,DBO.GETCODENM('DIV_CD', DIV_CD, #{LANG}) AS DIV_CD_NM
+			  ,SALES_OFFICE_CD SALES_OFFICE_CD
+			  ,SALES_GR SALES_GR
+			  ,DBO.GETCODENM('SALES_GR', SALES_GR, #{LANG}) AS SALES_GR_NM
+			  ,CUST_GR CUST_GR
+			  ,CURR_CD CURR_CD
+			  ,PRICE_GR PRICE_GR
+			  ,TERM_PAY_CD TERM_PAY_CD
+			  ,DBO.GETCODENM('TERM_PAY_CD', TERM_PAY_CD, #{LANG}) AS TERM_PAY_NM
+			  ,CUST_PRICE_PROC_CD CUST_PRICE_PROC_CD
+			  ,CUST_STATS_GR CUST_STATS_GR
+			  ,LIST_PRICE LIST_PRICE
+			  ,DBO.GETCODENM('LIST_PRICE', LIST_PRICE, #{LANG}) AS LIST_PRICE_NM
+			  ,DELI_PRIOR_CD DELI_PRIOR_CD
+			  ,DELI_PLANT_CD DELI_PLANT_CD
+			  ,SHIP_CONDI_CD SHIP_CONDI_CD
+			  ,REL_POD_YN REL_POD_YN
+			  ,COMPLT_DELI_REQ_YN COMPLT_DELI_REQ_YN
+			  ,PART_DELI_ITEM_CD PART_DELI_ITEM_CD
+			  ,MAX_PART_DELIS MAX_PART_DELIS
+			  ,INCOTERMS_CD INCOTERMS_CD
+			  ,INCOTERMS_NM INCOTERMS_NM
+			  ,ACCT_ASSMT_GR ACCT_ASSMT_GR
+			  ,DBO.GETCODENM('CUST_GR', CUST_GR, #{LANG}) AS CUST_GR_NM
+		  FROM MS_CUST_SALES WITH (NOLOCK)
+		 WHERE
+			  STATUS = 'Y'
+			  AND CUST_CD = #{CUST_CD}
+			  AND COMP_CD = '1000'
+			  <!--
+			  <if test="CUST_GR != null and CUST_GR != ''">
+			  AND CUST_GR = #{CUST_GR}
+			  </if>
+			  -->
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectCustomerPartList" parameterType="HashMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.PF_TP) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,A.SEQ SEQ
+			  ,A.CUST_CD CUST_CD
+			  ,A.COMP_CD COMP_CD
+			  ,A.SALES_ORG_CD SALES_ORG_CD
+			  ,A.DISTRB_CH DISTRB_CH
+			  ,A.DIV_CD DIV_CD
+			  ,A.PF_TP PF_TP
+			  ,A.PF_NM PF_NM
+			  ,A.PF_PS_NO PF_PS_NO
+			  ,A.PF_PS_NM PF_PS_NM
+			  ,A.PF_DESC PF_DESC
+			  ,A.DEFAULT_YN DEFAULT_YN
+			  ,B.STREET_NM STREET_NM
+		  FROM MS_CUST_PART A WITH (NOLOCK) LEFT OUTER JOIN MS_CUST_H B WITH (NOLOCK) ON B.CUST_CD = A.PF_PS_NO AND B.COMP_CD = A.COMP_CD 
+		  WHERE
+			   A.STATUS = 'Y'
+			   AND A.CUST_CD = #{CUST_CD}
+			   AND A.COMP_CD = #{COMP_CD}
+			   AND A.SALES_ORG_CD = #{SALES_ORG_CD}
+			   AND A.DISTRB_CH = #{DISTRB_CH}
+			   AND A.DIV_CD = #{DIV_CD}
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectCustomerPersonList" parameterType="HashMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY CODE) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,CUST_CD CUST_CD
+			  ,COMP_CD COMP_CD
+			  ,CODE CODE
+			  ,NAME_1ST NAME_1ST
+			  ,NAME_2ND NAME_2ND
+			  ,TEL_NO1 TEL_NO1
+			  ,DEPT_CD DEPT_CD
+			  ,FAX_NO FAX_NO
+			  ,E_MAIL E_MAIL
+		  FROM MS_PARTNER WITH (NOLOCK)
+		  WHERE
+			   STATUS = 'A'
+			   AND CUST_CD = #{CUST_CD}
+			   AND COMP_CD = #{COMP_CD}
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectCustomerTaxList" parameterType="HashMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		
+<!-- 		SELECT ROW_NUMBER() OVER(ORDER BY SEQ) ROWNUM 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+<!-- 			  ,SEQ SEQ -->
+<!-- 			  ,COUNTRY_CD COUNTRY_CD -->
+<!-- 			  ,TAX_CTG TAX_CTG -->
+<!-- 			  ,TAX_CL_CD TAX_CL_CD -->
+<!-- 			  ,TAX_DESC TAX_DESC -->
+<!-- 		  FROM MS_CUST_TAX WITH (NOLOCK) -->
+<!-- 		  WHERE -->
+<!-- 			   STATUS = 'Y' -->
+<!-- 			   AND CUST_CD = #{CUST_CD} -->
+<!-- 			   AND COMP_CD = #{COMP_CD} -->
+					   
+		SELECT ROW_NUMBER() OVER(ORDER BY A.COUNTRY_CD, A.TAX_CTG) ROWNUM
+		     , A.SEQ
+		     , A.COUNTRY_CD
+		     , A.TAX_CTG
+		     , A.TAX_CL_CD
+		     , A.TAX_DESC
+		  FROM ( SELECT (SELECT SEQ 
+		                   FROM MS_CUST_TAX 
+		                  WHERE COUNTRY_CD = CD.COUTRY  
+		                    AND TAX_CTG = CD.TAX_CTG
+		                    AND CUST_CD = #{CUST_CD}
+		                    AND COMP_CD = #{COMP_CD} ) AS SEQ
+		              , CD.COUTRY AS COUNTRY_CD
+		              , CD.TAX_CTG AS TAX_CTG
+		              , '1' AS TAX_CL_CD
+		              , (SELECT TAX_DESC 
+		                   FROM MS_CUST_TAX 
+		                  WHERE COUNTRY_CD = CD.COUTRY  
+		                    AND TAX_CTG = CD.TAX_CTG
+		                    AND CUST_CD = #{CUST_CD}
+		                    AND COMP_CD = #{COMP_CD} ) AS TAX_DESC
+		          FROM ( SELECT DISTINCT SUBSTRING(CODE,1,2) AS COUTRY
+		                      , SUBSTRING(CODE,3,4) AS TAX_CTG
+		                   FROM BC_COMM_L
+		                  WHERE HEAD_CD = '106000'
+		                    AND STATUS = 'Y' ) AS CD
+		  UNION 
+		        SELECT TAX.SEQ AS SEQ
+		             , TAX.COUNTRY_CD AS COUNTRY_CD
+		             , TAX.TAX_CTG AS TAX_CTG
+		             , TAX.TAX_CL_CD AS TAX_CL_CD
+		             , TAX.TAX_DESC AS TAX_DESC
+		          FROM MS_CUST_TAX TAX WITH (NOLOCK)
+		         WHERE TAX.STATUS = 'Y'
+		           AND TAX.CUST_CD = #{CUST_CD}
+		           AND TAX.COMP_CD = #{COMP_CD} 
+		       ) A
+			   
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectCustomerVatList" parameterType="HashMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY SEQ) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,SEQ SEQ
+			  ,CUST_CD CUST_CD
+			  ,COUNTRY_CD COUNTRY_CD
+			  ,VAT_REG_NO VAT_REG_NO
+			  ,VAT_NO_CHK_YN VAT_NO_CHK_YN
+		  FROM MS_CUST_VAT_NO WITH (NOLOCK)
+		  WHERE
+			   STATUS = 'Y'
+			   AND CUST_CD = #{CUST_CD}
+			   AND COMP_CD = #{COMP_CD}
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<insert id="insertCustomerInfo" parameterType="HashMap">
+		<selectKey keyProperty="CUST_CD" resultType="String" order="BEFORE">
+			DECLARE	@CUST_CD varchar(15) EXEC dbo.SP_CUST_NUMBER #{COMP_CD}, 'CU', #{ACCOUNT_GR}, '*', @CUST_CD OUTPUT SELECT @CUST_CD
+		</selectKey>
+		INSERT INTO MS_CUST_H
+					(COMP_CD
+					,CUST_CD
+					,ACCOUNT_GR
+					,CUST_NM
+					,CUST_ABNM
+					,SEARCH_NM1
+					,SEARCH_NM2
+					,HAUS_NO
+					,STREET_NM
+					,STREET_NM2
+					,POST_CD
+					,REGION_CD
+					,CITY_CD
+					,CITY_NM
+					,COUNTRY_CD
+					,TIME_ZONE
+					,TRANSP_ZONE
+					,LANG_CD
+					,HOMEPAGE
+					,MOBILE_NO
+					,TEL_NO
+					,TEL_NO_EXT
+					,FAX_NO
+					,FAX_NO_EXT
+					,E_MAIL
+					,INDUSTRY_CD
+					,CUST_COMP_CD
+					,REQ_CREDIT
+					,VAT_REG_NO
+					,VAT_NO_CHK_YN
+					<if test="LOCAT_NO1 != null and LOCAT_NO1 != ''">
+					,LOCAT_NO1
+					</if>
+					<if test="LOCAT_NO2 != null and LOCAT_NO2 != ''">
+					,LOCAT_NO2
+					</if>
+					,SORT_KEY
+					,CASH_MGMT_GR
+					,INTEREST_IND_CD
+					,PAY_HIST_YN
+					,TERM_PAY_CD
+					,DUN_PROC_CD
+					,DUN_BLOCK_CD
+					<if test="DUN_LEVEL_CD != null and DUN_LEVEL_CD != ''">
+					,DUN_LEVEL_CD
+					</if>
+					,POLICY_NO
+					<if test="INSURED_AMT != null and INSURED_AMT != ''">
+					,INSURED_AMT
+					</if>
+					<if test="VAL_TO_DATE != null and VAL_TO_DATE != ''">
+					,VAL_TO_DATE
+					</if>
+					<if test="DEDUCT_RATE != null and DEDUCT_RATE != ''">
+					,DEDUCT_RATE
+					</if>
+					<if test="APPLIED_INSURA != null and APPLIED_INSURA != ''">
+					,APPLIED_INSURA
+					</if>
+					,EASY_NO
+					<if test="APPLY_DATE != null and APPLY_DATE != ''">
+					,APPLY_DATE
+					</if>
+					<if test="EXPIRE_DATE != null and EXPIRE_DATE != ''">
+					,EXPIRE_DATE
+					</if>
+					,ADD_TXT1
+					,ADD_TXT2
+					,GRADE
+					,EPC_CD
+					,CI_CD
+					,RESI_CD
+					,Util_CD
+					,MARK_PF
+					,INVS_CD
+					,PRMT_CD
+					,SVC_PR_CD
+					,ENG_CNSL_CD
+					,RECON_ACC_CD
+					,CUST_TEXT
+					,STATUS
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
+			 VALUES (#{COMP_CD}
+			 		,#{CUST_CD}
+					,#{ACCOUNT_GR}
+					,#{CUST_NM}
+					,#{CUST_ABNM}
+					,#{SEARCH_NM1}
+					,#{SEARCH_NM2}
+					,#{HAUS_NO}
+					,#{STREET_NM}
+					,#{STREET_NM2}
+					,#{POST_CD}
+					,#{REGION_CD}
+					,#{CITY_CD}
+					,#{CITY_NM}
+					,#{COUNTRY_CD}
+					,#{TIME_ZONE}
+					,#{TRANSP_ZONE}
+					,#{LANG_CD}
+					,#{HOMEPAGE}
+					,#{MOBILE_NO}
+					,#{TEL_NO}
+					,#{TEL_NO_EXT}
+					,#{FAX_NO}
+					,#{FAX_NO_EXT}
+					,#{E_MAIL}
+					,#{INDUSTRY_CD}
+					,#{CUST_COMP_CD}
+					,#{REQ_CREDIT}
+					,#{VAT_REG_NO}
+					,#{VAT_NO_CHK_YN}
+					<if test="LOCAT_NO1 != null and LOCAT_NO1 != ''">
+					,CONVERT(NUMERIC, #{LOCAT_NO1})
+					</if>
+					<if test="LOCAT_NO2 != null and LOCAT_NO2 != ''">
+					,CONVERT(NUMERIC, #{LOCAT_NO2})
+					</if>
+					,#{SORT_KEY}
+					,#{CASH_MGMT_GR}
+					,#{INTEREST_IND_CD}
+					,#{PAY_HIST_YN}
+					,#{TERM_PAY_CD}
+					,#{DUN_PROC_CD}
+					,#{DUN_BLOCK_CD}
+					<if test="DUN_LEVEL_CD != null and DUN_LEVEL_CD != ''">
+					,CONVERT(NUMERIC, #{DUN_LEVEL_CD})
+					</if>
+					,#{POLICY_NO}
+					<if test="INSURED_AMT != null and INSURED_AMT != ''">
+					,CONVERT(NUMERIC(13, 3), #{INSURED_AMT})
+					</if>
+					<if test="VAL_TO_DATE != null and VAL_TO_DATE != ''">
+					,PARSE(#{VAL_TO_DATE} AS DATE USING 'de-DE')
+					</if>
+					<if test="DEDUCT_RATE != null and DEDUCT_RATE != ''">
+					,CONVERT(NUMERIC, #{DEDUCT_RATE})
+					</if>
+					<if test="APPLIED_INSURA != null and APPLIED_INSURA != ''">
+					,CONVERT(NUMERIC(13, 3), #{APPLIED_INSURA})
+					</if>
+					,#{EASY_NO}
+					<if test="APPLY_DATE != null and APPLY_DATE != ''">
+					,PARSE(#{APPLY_DATE} AS DATE USING 'de-DE')
+					</if>
+					<if test="EXPIRE_DATE != null and EXPIRE_DATE != ''">
+					,PARSE(#{EXPIRE_DATE} AS DATE USING 'de-DE')
+					</if>
+					,#{ADD_TXT1}
+					,#{ADD_TXT2}
+					,#{GRADE}
+					,#{EPC_CD}
+					,#{CI_CD}
+					,#{RESI_CD}
+					,#{Util_CD}
+					,#{MARK_PF}
+					,#{INVS_CD}
+					,#{PRMT_CD}
+					,#{SVC_PR_CD}
+					,#{ENG_CNSL_CD}
+					,#{RECON_ACC_CD}
+					,#{CUST_TEXT}
+					,'Y'
+					,GETDATE()
+					,#{USER_ID}
+					,GETDATE()
+					,#{USER_ID}
+					)
+	</insert>
+	
+	<insert id="insertCustomerSales" parameterType="HashMap">
+		INSERT INTO MS_CUST_SALES
+					(COMP_CD
+					,CUST_CD
+					,SALES_ORG_CD
+					,DISTRB_CH
+					,DIV_CD
+					,SALES_OFFICE_CD
+					,SALES_GR
+					,CUST_GR
+					,CURR_CD
+					,PRICE_GR
+					,TERM_PAY_CD
+					,CUST_PRICE_PROC_CD
+					,CUST_STATS_GR
+					<if test="LIST_PRICE != null and LIST_PRICE != ''">
+					,LIST_PRICE
+					</if>
+					,DELI_PRIOR_CD
+					,DELI_PLANT_CD
+					,SHIP_CONDI_CD
+					,REL_POD_YN
+					,COMPLT_DELI_REQ_YN
+					,PART_DELI_ITEM_CD
+					<if test="MAX_PART_DELIS != null and MAX_PART_DELIS != ''">
+					,MAX_PART_DELIS
+					</if>
+					,INCOTERMS_CD
+					,INCOTERMS_NM
+					,ACCT_ASSMT_GR
+					,STATUS
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
+			 VALUES (#{COMP_CD}
+					,#{CUST_CD}
+					,#{SALES_ORG_CD}
+					,#{DISTRB_CH}
+					,#{DIV_CD}
+					,#{SALES_OFFICE_CD}
+					,#{SALES_GR}
+					,#{CUST_GR}
+					,#{CURR_CD}
+					,#{PRICE_GR}
+					,#{TERM_PAY_CD}
+					,#{CUST_PRICE_PROC_CD}
+					,#{CUST_STATS_GR}
+					<if test="LIST_PRICE != null and LIST_PRICE != ''">
+					,#{LIST_PRICE}
+					</if>
+					,#{DELI_PRIOR_CD}
+					,#{DELI_PLANT_CD}
+					,#{SHIP_CONDI_CD}
+					,#{REL_POD_YN}
+					,#{COMPLT_DELI_REQ_YN}
+					,#{PART_DELI_ITEM_CD}
+					<if test="MAX_PART_DELIS != null and MAX_PART_DELIS != ''">
+					,CONVERT(BIGINT, #{MAX_PART_DELIS})
+					</if>
+					,#{INCOTERMS_CD}
+					,#{INCOTERMS_NM}
+					,#{ACCT_ASSMT_GR}
+					,'Y'
+					,GETDATE()
+					,#{USER_ID}
+					,GETDATE()
+					,#{USER_ID}
+					)
+	</insert>
+	
+	<insert id="insertCustomerPerson" parameterType="HashMap">
+		<selectKey keyProperty="CODE" resultType="String" order="BEFORE">
+			DECLARE @CODE varchar(15) EXEC dbo.SP_BC_NUMBER #{COMP_CD}, 'CP', '*', @CODE OUTPUT SELECT @CODE
+		</selectKey>
+		INSERT INTO MS_PARTNER
+					(COMP_CD
+					,CUST_CD
+					,CODE
+					,NAME_1ST
+					,NAME_2ND
+					,FULL_NM
+					,TEL_NO1
+					,STREET_NM
+					,DEPT_CD
+					,FAX_NO
+					,E_MAIL
+					,STATUS
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
+			 VALUES (#{COMP_CD}
+					,#{CUST_CD}
+					,#{CODE}
+					,#{NAME_1ST}
+					,#{NAME_2ND}
+					,#{FULL_NM}
+					,#{TEL_NO1}
+					,#{STREET_NM}
+					,#{DEPT_CD}
+					,#{FAX_NO}
+					,#{E_MAIL}
+					,'A'
+					,GETDATE()
+					,#{USER_ID}
+					,GETDATE()
+					,#{USER_ID}
+					)
+	</insert>
+	
+	<insert id="insertCustomerTax" parameterType="HashMap">
+		INSERT INTO MS_CUST_TAX
+					(COMP_CD
+					,CUST_CD
+					,COUNTRY_CD
+					,TAX_CTG
+					,TAX_CL_CD
+					,TAX_DESC
+					,STATUS
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
+			 VALUES (#{COMP_CD}
+					,#{CUST_CD}
+					,#{COUNTRY_CD}
+					,#{TAX_CTG}
+					,#{TAX_CL_CD}
+					,#{TAX_DESC}
+					,'Y'
+					,GETDATE()
+					,#{USER_ID}
+					,GETDATE()
+					,#{USER_ID}
+					)
+	</insert>
+	
+	<insert id="insertCustomerVat" parameterType="HashMap">
+		INSERT INTO MS_CUST_VAT_NO
+				(COMP_CD
+				,CUST_CD
+				,COUNTRY_CD
+				,VAT_REG_NO
+				,VAT_NO_CHK_YN
+				,STATUS
+				,REG_DT
+				,REG_ID
+				,UPT_DT
+				,UPT_ID
+				)
+		 VALUES (#{COMP_CD}
+				,#{CUST_CD}
+				,#{COUNTRY_CD}
+				,#{VAT_REG_NO}
+				,#{VAT_NO_CHK_YN}
+				,'A'
+				,GETDATE()
+				,#{USER_ID}
+				,GETDATE()
+				,#{USER_ID}
+				)
+	</insert>
+	
+	<insert id="insertCustomerPart" parameterType="HashMap">
+		INSERT INTO MS_CUST_PART
+					(COMP_CD
+					,CUST_CD
+					,SALES_ORG_CD
+					,DISTRB_CH
+					,DIV_CD
+					,PF_TP
+					,PF_NM
+					,PF_PS_NO
+					,PF_PS_NM
+					,PF_DESC
+					,DEFAULT_YN
+					,STATUS
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
+			 VALUES (#{COMP_CD}
+					,#{CUST_CD}
+					,#{SALES_ORG_CD}
+					,#{DISTRB_CH}
+					,#{DIV_CD}
+					,#{PF_TP}
+					,DBO.GETCODENM('PF_TP', #{PF_TP}, #{LANG})
+					,#{PF_PS_NO}
+					,#{PF_PS_NM}
+					,#{PF_DESC}
+					<if test="DEFAULT_YN == null or DEFAULT_YN == ''">
+					,'N'
+					</if>
+					<if test="DEFAULT_YN != null and DEFAULT_YN != ''">
+					,#{DEFAULT_YN}
+					</if>
+					,'Y'
+					,GETDATE()
+					,#{USER_ID}
+					,GETDATE()
+					,#{USER_ID}
+					)
+	</insert>
+	
+	<update id="updateCustomerInfo" parameterType="HashMap">
+		UPDATE MS_CUST_H
+		   SET UPT_DT = GETDATE()
+			  ,UPT_ID = #{USER_ID}
+			  <if test="STATUS != null">
+			  ,STATUS = #{STATUS}
+			  </if>
+			  <if test="ACCOUNT_GR != null">
+			  ,ACCOUNT_GR = #{ACCOUNT_GR}
+			  </if>
+			  <if test="CUST_NM != null">
+			  ,CUST_NM = #{CUST_NM}
+			  </if>
+			  <if test="CUST_ABNM != null">
+			  ,CUST_ABNM = #{CUST_ABNM}
+			  </if>
+			  <if test="SEARCH_NM1 != null">
+			  ,SEARCH_NM1 = #{SEARCH_NM1}
+			  </if>
+			  <if test="SEARCH_NM2 != null">
+			  ,SEARCH_NM2 = #{SEARCH_NM2}
+			  </if>
+			  <if test="HAUS_NO != null">
+			  ,HAUS_NO = #{HAUS_NO}
+			  </if>
+			  <if test="STREET_NM != null">
+			  ,STREET_NM = #{STREET_NM}
+			  </if>
+			  <if test="STREET_NM2 != null">
+			  ,STREET_NM2 = #{STREET_NM2}
+			  </if>
+			  <if test="POST_CD != null">
+			  ,POST_CD = #{POST_CD}
+			  </if>
+			  <if test="REGION_CD != null">
+			  ,REGION_CD = #{REGION_CD}
+			  </if>
+			  <if test="CITY_CD != null">
+			  ,CITY_CD = #{CITY_CD}
+			  </if>
+			  <if test="CITY_NM != null">
+			  ,CITY_NM = #{CITY_NM}
+			  </if>
+			  <if test="COUNTRY_CD != null">
+			  ,COUNTRY_CD = #{COUNTRY_CD}
+			  </if>
+			  <if test="TIME_ZONE != null">
+			  ,TIME_ZONE = #{TIME_ZONE}
+			  </if>
+			  <if test="TRANSP_ZONE != null">
+			  ,TRANSP_ZONE = #{TRANSP_ZONE}
+			  </if>
+			  <if test="LANG_CD != null">
+			  ,LANG_CD = #{LANG_CD}
+			  </if>
+			  <if test="HOMEPAGE != null">
+			  ,HOMEPAGE = #{HOMEPAGE}
+			  </if>
+			  <if test="MOBILE_NO != null">
+			  ,MOBILE_NO = #{MOBILE_NO}
+			  </if>
+			  <if test="TEL_NO != null">
+			  ,TEL_NO = #{TEL_NO}
+			  </if>
+			  <if test="TEL_NO_EXT != null">
+			  ,TEL_NO_EXT = #{TEL_NO_EXT}
+			  </if>
+			  <if test="FAX_NO != null">
+			  ,FAX_NO = #{FAX_NO}
+			  </if>
+			  <if test="FAX_NO_EXT != null">
+			  ,FAX_NO_EXT = #{FAX_NO_EXT}
+			  </if>
+			  <if test="E_MAIL != null">
+			  ,E_MAIL = #{E_MAIL}
+			  </if>
+			  <if test="INDUSTRY_CD != null">
+			  ,INDUSTRY_CD = #{INDUSTRY_CD}
+			  </if>
+			  <if test="CUST_COMP_CD != null">
+			  ,CUST_COMP_CD = #{CUST_COMP_CD}
+			  </if>
+			  <if test="REQ_CREDIT != null">
+			  ,REQ_CREDIT = #{REQ_CREDIT}
+			  </if>
+			  <if test="VAT_REG_NO != null">
+			  ,VAT_REG_NO = #{VAT_REG_NO}
+			  </if>
+			  <if test="VAT_NO_CHK_YN != null">
+			  ,VAT_NO_CHK_YN = #{VAT_NO_CHK_YN}
+			  </if>
+			  <if test="LOCAT_NO1 != null and LOCAT_NO1 != ''">
+			  ,LOCAT_NO1 = CONVERT(NUMERIC, #{LOCAT_NO1})
+			  </if>
+			  <if test="LOCAT_NO2 != null and LOCAT_NO2 != ''">
+			  ,LOCAT_NO2 = CONVERT(NUMERIC, #{LOCAT_NO2})
+			  </if>
+			  <if test="SORT_KEY != null">
+			  ,SORT_KEY = #{SORT_KEY}
+			  </if>
+			  <if test="CASH_MGMT_GR != null">
+			  ,CASH_MGMT_GR = #{CASH_MGMT_GR}
+			  </if>
+			  <if test="INTEREST_IND_CD != null">
+			  ,INTEREST_IND_CD = #{INTEREST_IND_CD}
+			  </if>
+			  <if test="PAY_HIST_YN != null">
+			  ,PAY_HIST_YN = #{PAY_HIST_YN}
+			  </if>
+			  <if test="TERM_PAY_CD != null">
+			  ,TERM_PAY_CD = #{TERM_PAY_CD}
+			  </if>
+			  <if test="DUN_PROC_CD != null">
+			  ,DUN_PROC_CD = #{DUN_PROC_CD}
+			  </if>
+			  <if test="DUN_BLOCK_CD != null">
+			  ,DUN_BLOCK_CD = #{DUN_BLOCK_CD}
+			  </if>
+			  <if test="DUN_LEVEL_CD != null and DUN_LEVEL_CD != ''">
+			  ,DUN_LEVEL_CD = CONVERT(NUMERIC, #{DUN_LEVEL_CD})
+			  </if>
+			  <if test="POLICY_NO != null">
+			  ,POLICY_NO = #{POLICY_NO}
+			  </if>
+			  <if test="INSURED_AMT != null and INSURED_AMT != ''">
+			  ,INSURED_AMT = CONVERT(NUMERIC(13, 3), #{INSURED_AMT})
+			  </if>
+			  <if test="VAL_TO_DATE != null and VAL_TO_DATE != ''">
+			  ,VAL_TO_DATE = PARSE(#{VAL_TO_DATE} AS DATE USING 'de-DE')
+			  </if>
+			  <if test="DEDUCT_RATE != null and DEDUCT_RATE != ''">
+			  ,DEDUCT_RATE = CONVERT(NUMERIC, #{DEDUCT_RATE})
+			  </if>
+			  <if test="APPLIED_INSURA != null and APPLIED_INSURA != ''">
+			  ,APPLIED_INSURA = CONVERT(NUMERIC(13, 3), #{APPLIED_INSURA})
+			  </if>
+			  <if test="EASY_NO != null">
+			  ,EASY_NO = #{EASY_NO}
+			  </if>
+			  <if test="APPLY_DATE != null and APPLY_DATE != ''">
+			  ,APPLY_DATE = PARSE(#{APPLY_DATE} AS DATE USING 'de-DE')
+			  </if>
+			  <if test="EXPIRE_DATE != null and EXPIRE_DATE != ''">
+			  ,EXPIRE_DATE = PARSE(#{EXPIRE_DATE} AS DATE USING 'de-DE')
+			  </if>
+			  <if test="ADD_TXT1 != null">
+			  ,ADD_TXT1 = #{ADD_TXT1}
+			  </if>
+			  <if test="ADD_TXT2 != null">
+			  ,ADD_TXT2 = #{ADD_TXT2}
+			  </if>
+			  <if test="GRADE != null">
+			  ,GRADE = #{GRADE}
+			  </if>
+			  <if test="EPC_CD != null">
+			  ,EPC_CD = #{EPC_CD}
+			  </if>
+			  <if test="CI_CD != null">
+			  ,CI_CD = #{CI_CD}
+			  </if>
+			  <if test="RESI_CD != null">
+			  ,RESI_CD = #{RESI_CD}
+			  </if>
+			  <if test="Util_CD != null">
+			  ,Util_CD = #{Util_CD}
+			  </if>
+			  <if test="MARK_PF != null">
+			  ,MARK_PF = #{MARK_PF}
+			  </if>
+			  <if test="INVS_CD != null">
+			  ,INVS_CD = #{INVS_CD}
+			  </if>
+			  <if test="PRMT_CD != null">
+			  ,PRMT_CD = #{PRMT_CD}
+			  </if>
+			  <if test="SVC_PR_CD != null">
+			  ,SVC_PR_CD = #{SVC_PR_CD}
+			  </if>
+			  <if test="ENG_CNSL_CD != null">
+			  ,ENG_CNSL_CD = #{ENG_CNSL_CD}
+			  </if>
+			  <if test="RECON_ACC_CD != null">
+			  ,RECON_ACC_CD = #{RECON_ACC_CD}
+			  </if>
+			  <if test="CUST_TEXT != null">
+			  ,CUST_TEXT = #{CUST_TEXT}
+			  </if>					  
+		 WHERE CUST_CD = #{CUST_CD}
+		   AND COMP_CD = #{COMP_CD}
+	</update>
+	
+	<update id="updateCustomerSales" parameterType="HashMap">
+		UPDATE MS_CUST_SALES
+		   SET UPT_DT = GETDATE()
+			  ,UPT_ID = #{USER_ID}
+			  <if test="STATUS != null">
+			  ,STATUS = #{STATUS}
+			  </if>
+			  <if test="SALES_ORG_CD != null">
+			  ,SALES_ORG_CD = #{SALES_ORG_CD}
+			  </if>
+			  <if test="DISTRB_CH != null">
+			  ,DISTRB_CH = #{DISTRB_CH}
+			  </if>
+			  <if test="DIV_CD != null">
+			  ,DIV_CD = #{DIV_CD}
+			  </if>
+			  <if test="SALES_OFFICE_CD != null">
+			  ,SALES_OFFICE_CD = #{SALES_OFFICE_CD}
+			  </if>
+			  <if test="SALES_GR != null">
+			  ,SALES_GR = #{SALES_GR}
+			  </if>
+			  <if test="CUST_GR != null">
+			  ,CUST_GR = #{CUST_GR}
+			  </if>
+			  <if test="CURR_CD != null">
+			  ,CURR_CD = #{CURR_CD}
+			  </if>
+			  <if test="PRICE_GR != null">
+			  ,PRICE_GR = #{PRICE_GR}
+			  </if>
+			  <if test="TERM_PAY_CD != null">
+			  ,TERM_PAY_CD = #{TERM_PAY_CD}
+			  </if>
+			  <if test="CUST_PRICE_PROC_CD != null">
+			  ,CUST_PRICE_PROC_CD = #{CUST_PRICE_PROC_CD}
+			  </if>
+			  <if test="CUST_STATS_GR != null">
+			  ,CUST_STATS_GR = #{CUST_STATS_GR}
+			  </if>
+			  <if test="LIST_PRICE != null">
+			  ,LIST_PRICE = #{LIST_PRICE}
+			  </if>
+			  <if test="DELI_PRIOR_CD != null">
+			  ,DELI_PRIOR_CD = #{DELI_PRIOR_CD}
+			  </if>
+			  <if test="DELI_PLANT_CD != null">
+			  ,DELI_PLANT_CD = #{DELI_PLANT_CD}
+			  </if>
+			  <if test="SHIP_CONDI_CD != null">
+			  ,SHIP_CONDI_CD = #{SHIP_CONDI_CD}
+			  </if>
+			  <if test="REL_POD_YN != null">
+			  ,REL_POD_YN = #{REL_POD_YN}
+			  </if>
+			  <if test="COMPLT_DELI_REQ_YN != null">
+			  ,COMPLT_DELI_REQ_YN = #{COMPLT_DELI_REQ_YN}
+			  </if>
+			  <if test="PART_DELI_ITEM_CD != null">
+			  ,PART_DELI_ITEM_CD = #{PART_DELI_ITEM_CD}
+			  </if>
+			  <if test="MAX_PART_DELIS != null">
+			  ,MAX_PART_DELIS = CONVERT(BIGINT, #{MAX_PART_DELIS})
+			  </if>
+			  <if test="INCOTERMS_CD != null">
+			  ,INCOTERMS_CD = #{INCOTERMS_CD}
+			  </if>
+			  <if test="INCOTERMS_NM != null">
+			  ,INCOTERMS_NM = #{INCOTERMS_NM}
+			  </if>
+			  <if test="ACCT_ASSMT_GR != null">
+			  ,ACCT_ASSMT_GR = #{ACCT_ASSMT_GR}
+			  </if>
+		 WHERE CUST_CD = #{CUST_CD}
+			   AND COMP_CD = #{COMP_CD}
+			   AND SEQ = #{SEQ}
+	</update>
+	
+	<update id="updateCustomerPerson" parameterType="HashMap">
+		UPDATE MS_PARTNER
+			   SET UPT_DT = GETDATE()
+			  ,UPT_ID = #{USER_ID}
+			  <if test="STATUS != null">
+			  ,STATUS = #{STATUS}
+			  </if>
+			  <if test="NAME_1ST != null">
+			  ,NAME_1ST = #{NAME_1ST}
+			  </if>
+			  <if test="NAME_2ND != null">
+			  ,NAME_2ND = #{NAME_2ND}
+			  </if>
+			  <if test="FULL_NM != null">
+			  ,FULL_NM = #{FULL_NM}
+			  </if>
+			  <if test="TEL_NO1 != null">
+			  ,TEL_NO1 = #{TEL_NO1}
+			  </if>
+			  <if test="STREET_NM != null">
+			  ,STREET_NM = #{STREET_NM}
+			  </if>
+			  <if test="DEPT_CD != null">
+			  ,DEPT_CD = #{DEPT_CD}
+			  </if>
+			  <if test="FAX_NO != null">
+			  ,FAX_NO = #{FAX_NO}
+			  </if>
+			  <if test="E_MAIL != null">
+			  ,E_MAIL = #{E_MAIL}
+			  </if>
+		 WHERE CUST_CD = #{CUST_CD}
+		 	   AND CODE = #{CODE}
+	</update>
+	
+	<update id="updateCustomerTax" parameterType="HashMap">
+		UPDATE MS_CUST_TAX
+			   SET UPT_DT = GETDATE()
+			  ,UPT_ID = #{USER_ID}
+			  <if test="STATUS != null">
+			  ,STATUS = #{STATUS}
+			  </if>
+			  <if test="COUNTRY_CD != null">
+			  ,COUNTRY_CD = #{COUNTRY_CD}
+			  </if>
+			  <if test="TAX_CTG != null">
+			  ,TAX_CTG = #{TAX_CTG}
+			  </if>
+			  <if test="TAX_CL_CD != null">
+			  ,TAX_CL_CD = #{TAX_CL_CD}
+			  </if>
+			  <if test="TAX_DESC != null">
+			  ,TAX_DESC = #{TAX_DESC}
+			  </if>
+		 WHERE CUST_CD = #{CUST_CD}
+		 	   AND SEQ = #{SEQ}
+	</update>
+	
+	<update id="updateCustomerVat" parameterType="HashMap">
+		UPDATE MS_CUST_VAT_NO
+			   SET UPT_DT = GETDATE()
+			  ,UPT_ID = #{USER_ID}
+			  <if test="STATUS != null">
+			  ,STATUS = #{STATUS}
+			  </if>
+			  <if test="COUNTRY_CD != null">
+			  ,COUNTRY_CD = #{COUNTRY_CD}
+			  </if>
+			  <if test="VAT_REG_NO != null">
+			  ,VAT_REG_NO = #{VAT_REG_NO}
+			  </if>
+			  <if test="VAT_NO_CHK_YN != null">
+			  ,VAT_NO_CHK_YN = #{VAT_NO_CHK_YN}
+			  </if>
+		 WHERE CUST_CD = #{CUST_CD}
+		 	   AND SEQ = #{SEQ}
+	</update>
+	
+	<update id="updateCustomerPart" parameterType="HashMap">
+		UPDATE MS_CUST_PART
+			   SET UPT_DT = GETDATE()
+			  ,UPT_ID = #{USER_ID}
+			  <if test="STATUS != null">
+			  ,STATUS = #{STATUS}
+			  </if>
+			  <if test="SALES_ORG_CD != null">
+			  ,SALES_ORG_CD = #{SALES_ORG_CD}
+			  </if>
+			  <if test="DISTRB_CH != null">
+			  ,DISTRB_CH = #{DISTRB_CH}
+			  </if>
+			  <if test="DIV_CD != null">
+			  ,DIV_CD = #{DIV_CD}
+			  </if>
+			  <if test="PF_TP != null">
+			  ,PF_TP = #{PF_TP}
+			  ,PF_NM = DBO.GETCODENM('PF_TP', #{PF_TP}, #{LANG})
+			  </if>
+			  <if test="PF_PS_NO != null">
+			  ,PF_PS_NO = #{PF_PS_NO}
+			  </if>
+			  <if test="PF_PS_NM != null">
+			  ,PF_PS_NM = #{PF_PS_NM}
+			  </if>
+			  <if test="PF_DESC != null">
+			  ,PF_DESC = #{PF_DESC}
+			  </if>
+			  <if test="DEFAULT_YN != null">
+			  ,DEFAULT_YN = #{DEFAULT_YN}
+			  </if>
+		 WHERE CUST_CD = #{CUST_CD}
+		 	   AND SEQ = #{SEQ}
+	</update>
+	
+	<update id="updateAtradiusId" parameterType="HashMap">
+		UPDATE MS_CUST_H
+		   SET  UPT_DT 	= GETDATE()
+			  , UPT_ID 	= #{USER_ID}
+			  , EASY_NO	= #{EASY_NO}
+	     WHERE COMP_CD = #{COMP_CD}
+		   AND CUST_CD = #{CUST_CD}
+	</update>
+	
+	<update id="updateCustomerCredit" parameterType="HashMap">
+		UPDATE MS_CUST_H
+			   SET UPT_DT 	= GETDATE()
+			  ,UPT_ID 		= #{USER_ID}
+			  ,REQ_CREDIT 	= #{REQ_CREDIT}
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND CUST_CD = #{CUST_CD}
+	</update>
+	
+	<insert id="saveRequestCreditHistory" parameterType="HashMap">
+		INSERT INTO MS_CREDIT_HISTORY
+					(CUST_CD
+					,REQ_CREDIT
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
+			 VALUES (#{CUST_CD}
+					,#{REQ_CREDIT}
+					,GETDATE()
+					,#{USER_ID}
+					,GETDATE()
+					,#{USER_ID}
+					)
+	</insert>
+	
+	<update id="deleteCustomerPart" parameterType="HashMap">
+		UPDATE MS_CUST_PART
+			   SET UPT_DT = GETDATE()
+			  ,UPT_ID = #{USER_ID}
+			  ,STATUS = 'D'
+		 WHERE CUST_CD = #{CUST_CD}
+		   AND SEQ = #{SEQ}
+	</update>
+	
+	<delete id="deleteCustomerSales" parameterType="HashMap">
+		DELETE MS_CUST_SALES
+		 WHERE CUST_CD = #{CUST_CD}
+		   AND SEQ = #{SEQ}
+	</delete>
+	
+	<delete id="deleteCustomerPerson" parameterType="HashMap">
+		DELETE MS_PARTNER
+		 WHERE CUST_CD = #{CUST_CD}
+		   AND CODE = #{CODE}
+	</delete>
+	
+	<delete id="deleteCustomerTax" parameterType="HashMap">
+		DELETE MS_CUST_TAX
+		 WHERE CUST_CD = #{CUST_CD}
+		   AND SEQ = #{SEQ}
+	</delete>
+	
+	<delete id="deleteCustomerVat" parameterType="HashMap">
+		DELETE MS_CUST_VAT_NO
+		 WHERE CUST_CD = #{CUST_CD}
+		   AND SEQ = #{SEQ}
+	</delete>
+	
+	<select id="callSpIfErpSendCustInsert" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_ERP_SEND_CUST_INSERT(#{COMP_CD}, #{CUST_CD}, #{USER_ID}) } 
+	</select>
+	
+	<select id="selectIfCustKna1" parameterType="HashMap" resultType="HashMap">
+		SELECT *
+		  FROM IF_CUST_KNA1 WITH (NOLOCK)
+		 WHERE KUNNR LIKE '%' + #{CUST_CD}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfCustKnas" parameterType="HashMap" resultType="HashMap">
+		SELECT *
+		  FROM IF_CUST_KNAS WITH (NOLOCK)
+		 WHERE KUNNR LIKE '%' + #{CUST_CD}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfCustArdc" parameterType="HashMap" resultType="HashMap">
+		SELECT *
+		  FROM IF_CUST_ARDC WITH (NOLOCK)
+		 WHERE ADDRNUMBER LIKE '%' + #{CUST_CD}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfCustKnb1" parameterType="HashMap" resultType="HashMap">
+		SELECT *
+		  FROM IF_CUST_KNB1 WITH (NOLOCK)
+		 WHERE KUNNR LIKE '%' + #{CUST_CD}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfCustKnb5" parameterType="HashMap" resultType="HashMap">
+		SELECT *
+		  FROM IF_CUST_KNB5 WITH (NOLOCK)
+		 WHERE KUNNR LIKE '%' + #{CUST_CD}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfCustKnvv" parameterType="HashMap" resultType="HashMap">
+		SELECT *
+		  FROM IF_CUST_KNVV WITH (NOLOCK)
+		 WHERE KUNNR LIKE '%' + #{CUST_CD}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfCustKnvk" parameterType="HashMap" resultType="HashMap">
+		SELECT *
+		  FROM IF_CUST_KNVK WITH (NOLOCK)
+		 WHERE KUNNR LIKE '%' + #{CUST_CD}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfCustAdr6" parameterType="HashMap" resultType="HashMap">
+		SELECT *
+		  FROM IF_CUST_ADR6 WITH (NOLOCK)
+		 WHERE ADDRNUMBER LIKE '%' + #{CUST_CD}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfCustAdr12" parameterType="HashMap" resultType="HashMap">
+		SELECT *
+		  FROM IF_CUST_ADR12 WITH (NOLOCK)
+		 WHERE ADDRNUMBER LIKE '%' + #{CUST_CD}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfCustAdr2" parameterType="HashMap" resultType="HashMap">
+		SELECT *
+		  FROM IF_CUST_ADR2 WITH (NOLOCK)
+		 WHERE ADDRNUMBER LIKE '%' + #{CUST_CD}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfCustAdr3" parameterType="HashMap" resultType="HashMap">
+		SELECT *
+		  FROM IF_CUST_ADR3 WITH (NOLOCK)
+		 WHERE ADDRNUMBER LIKE '%' + #{CUST_CD}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfCustKnvp" parameterType="HashMap" resultType="HashMap">
+		SELECT *
+		  FROM IF_CUST_KNVP WITH (NOLOCK)
+		 WHERE KUNNR LIKE '%' + #{CUST_CD}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfCustKnvi" parameterType="HashMap" resultType="HashMap">
+		SELECT *
+		  FROM IF_CUST_KNVI WITH (NOLOCK)
+		 WHERE KUNNR LIKE '%' + #{CUST_CD}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="callSpIfErpSendCustStsUpdate" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_ERP_SEND_CUST_STS_UPDATE(#{COMP_CD}, #{CUST_CD}, #{IF_STS}, #{IF_MSG}) } 
+	</select>
+	
+	
+	<select id="selectCreditRequestHistory" parameterType="HashMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->		
+		SELECT ROW_NUMBER() OVER(ORDER BY A.REG_DT DESC) ROWNUM
+			 , A.SEQ
+			 , A.CUST_CD
+			, ( SELECT B.CUST_NM FROM MS_CUST_H B WHERE B.CUST_CD = A.CUST_CD ) AS CUST_NM
+			 , dbo.SetAmt3(convert(numeric, A.REQ_CREDIT)) as REQ_CREDIT
+			 , CONVERT(CHAR(10), A.REG_DT, 102) AS REG_DT
+			 , A.REG_ID
+			 , ( SELECT B.NAME_FULL FROM BC_USER B WHERE B.USER_ID = A.REG_ID ) AS REQUESTOR
+			 , dbo.FmtdDate(A.UPT_DT, 'DD.MM.YYYY') AS UPT_DT			
+			 , A.UPT_ID
+		 FROM  MS_CREDIT_HISTORY A
+		WHERE 1=1
+			  <if test="CUST_CD != null and CUST_CD != ''">
+			  AND A.CUST_CD LIKE '%' + #{CUST_CD} + '%'
+			  </if>			
+			 <if test='REG_DT != null and REG_DT != ""'>
+			 	AND dbo.FmtdDate(A.REG_DT, 'DD.MM.YYYY') = #{REG_DT}
+			 </if>
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+<!-- 	, dbo.FmtdDate(A.REG_DT, 'DD.MM.YYYY') AS REG_DT -->
+	<select id="getCustText" parameterType="HashMap" resultType="HashMap">
+		SELECT CUST_TEXT
+		  FROM MS_CUST_H A WITH (NOLOCK)
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND CUST_CD = #{CUST_CD}
+	</select>
+	
+	
+	<select id="resultInteractionLog" parameterType="BMap" resultType="BMap">
+		/* CustomerMapper.resultInteractionLog */
+		SELECT A.COMP_CD
+             , A.CUST_CD
+             , A.ACT_DESC
+             , A.ACCOUNT_CD
+             , A.LOCATION
+             , A.M_PS_NO
+             , DBO.FMTVDATE(A.ACT_DT, 'DD.MM.YYYY') AS ACT_DT 
+             , A.EMP_RESP_NO
+             , A.ACT_CTG
+             , A.SALES_ORG_CD
+             , A.IMPT_CL AS IMPORTANCE
+             , A.ACT_STS AS ACTIVE_STS
+             , A.IMPT_CL
+             , A.ACT_STS
+             , A.REPORT_NOTE
+             , A.SEQ
+			 
+			 , (SELECT B.CUST_NM FROM MS_CUST_H B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.CUST_CD = A.ACCOUNT_CD) AS ACCOUNT_NM
+					
+			 , ( SELECT B.NAME_1ST + ' ' + B.NAME_2ND FROM MS_PARTNER B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.CUST_CD = A.ACCOUNT_CD AND B.CODE = A.M_PS_NO ) AS M_PS_NO_NM
+					
+			 , ( SELECT B.NAME_1ST + ' ' + B.NAME_2ND FROM BC_USER B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.USER_ID = A.EMP_RESP_NO ) AS EMP_RESP_NO_NM
+								 
+		  FROM MS_CUST_CONTRPT A with (nolock)
+		 WHERE 1 = 1
+		   AND A.CUST_CD = #{CUST_CD}
+		  
+		   AND A.SEQ = ( SELECT MAX(C.SEQ)
+		   		   	       FROM MS_CUST_CONTRPT C with (nolock)
+		   		   	      WHERE 1 = 1
+		   		   	        AND C.CUST_CD = #{CUST_CD}
+		   		   	        AND C.COMP_CD = #{G_COMP_CD} 
+		                )
+	</select>	
+
+	<select id="resultContactReportGrid" parameterType="BMap" resultType="BMap">
+	/* CustomerMapper.resultContactReportGrid */
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.REG_DT DESC) ROWNUM
+		     , A.COMP_CD
+             , A.CUST_CD
+             , A.ACT_STS AS ACTIVE_STS
+             , 'Next document' AS REL_TYPE
+             , DBO.FMTDDATE(A.REG_DT, 'DD.MM.YYYY HH:MM:SS') AS CREATE_ON
+             , A.ACT_DESC
+             , 'CRM Business Activity' AS DOC_TYPE
+             , A.ACCOUNT_CD AS CREATE_AT
+             , A.EMP_RESP_NO + '  ' + ( SELECT B.NAME_1ST + ' ' + B.NAME_2ND FROM MS_PARTNER B WHERE B.COMP_CD = A.COMP_CD AND B.CUST_CD = A.ACCOUNT_CD AND B.CODE = A.M_PS_NO ) AS CREATE_BY
+             , A.REG_ID AS CREATE_BY_ID
+             , A.ACCOUNT_CD
+             , A.LOCATION
+             , DBO.GETCODENM('ACTIVE_STS', A.ACT_STS, #{LANG}) AS ACT_STS
+             , A.M_PS_NO
+             , DBO.FMTVDATE(A.ACT_DT, 'DD.MM.YYYY') AS ACT_DT 
+             , A.EMP_RESP_NO 
+             , DBO.GETCODENM('SALES_ORG_CD', A.SALES_ORG_CD, #{LANG}) AS SALES_ORG_CD_NM
+             , A.SALES_ORG_CD
+             , DBO.GETCODENM('IMPORTANCE', A.IMPT_CL, #{LANG}) AS IMPT_CL
+             , A.IMPT_CL AS IMPORTANCE
+             , A.REPORT_NOTE
+             , DBO.GETCODENM('ACT_CTG', A.ACT_CTG, #{LANG}) AS ACT_CTG_NM
+             , A.ACT_CTG
+             , A.SEQ             
+             
+			 , (SELECT B.CUST_NM FROM MS_CUST_H B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.CUST_CD = A.ACCOUNT_CD) AS ACCOUNT_NM
+					
+			 , ( SELECT B.NAME_1ST + ' ' + B.NAME_2ND FROM MS_PARTNER B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.CUST_CD = A.ACCOUNT_CD AND B.CODE = A.M_PS_NO ) AS M_PS_NO_NM
+					
+			 , ( SELECT B.NAME_1ST + ' ' + B.NAME_2ND FROM BC_USER B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.USER_ID = A.EMP_RESP_NO ) AS EMP_RESP_NO_NM		
+					
+		  FROM MS_CUST_CONTRPT A with (nolock)
+		 WHERE 1 = 1
+		   AND A.CUST_CD = #{CUST_CD}
+		  
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+
+	<insert id="insertLeadIntact" parameterType="HashMap">
+		/* CustomerMapper.insertLeadIntact */
+		INSERT INTO MS_CUST_CONTRPT
+		           ( COMP_CD
+		           , CUST_CD
+		           , ACT_DESC
+		           , ACCOUNT_CD
+		           , LOCATION
+		           , M_PS_NO
+		           , ACT_DT
+		           , EMP_RESP_NO
+		           , ACT_CTG
+		           , SALES_ORG_CD
+		           , IMPT_CL
+		           , ACT_STS
+		           , STATUS
+		           , REPORT_NOTE
+		           , REG_DT
+		           , REG_ID
+		           , UPT_DT
+		           , UPT_ID)
+		     VALUES
+		           ( #{G_COMP_CD}
+			       , #{CUST_CD}
+			       , #{ACT_DESC}
+		           , #{ACCOUNT_CD}
+		           , #{LOCATION}
+		           , #{M_PS_NO}
+		           , PARSE(#{ACT_DT} AS DATE USING 'de-DE')
+		           , #{EMP_RESP_NO}
+		           , #{ACT_CTG}
+		           , #{SALES_ORG_CD}
+		           , #{IMPORTANCE}
+		           , #{ACTIVE_STS}
+		           , #{DOC_STATUS}
+		           , #{REPORT_NOTE}
+				   , GETDATE()
+				   , #{USERID}
+				   , GETDATE()
+				   , #{USERID}
+		           )
+
+	</insert>		
+
+	<update id="updateLeadIntact" parameterType="HashMap">
+		/* CustomerMapper.updateLeadIntact */	
+		UPDATE MS_CUST_CONTRPT
+		   SET ACT_DESC = #{ACT_DESC}
+             , ACCOUNT_CD = #{ACCOUNT_CD}
+             , LOCATION = #{LOCATION}
+             , M_PS_NO = #{M_PS_NO}
+             , ACT_DT = PARSE(#{ACT_DT} AS DATE USING 'de-DE')
+             , EMP_RESP_NO = #{EMP_RESP_NO}
+             , ACT_CTG = #{ACT_CTG}
+             , SALES_ORG_CD = #{SALES_ORG_CD}
+             , IMPT_CL = #{IMPORTANCE}
+             , ACT_STS = #{ACTIVE_STS}
+             , STATUS = #{DOC_STATUS}
+             , REPORT_NOTE = #{REPORT_NOTE}
+             , UPT_DT =  GETDATE()
+             , UPT_ID = #{USERID}
+		 WHERE COMP_CD =#{G_COMP_CD}
+		   AND LEAD_NO = #{CUST_CD}
+		   AND SEQ = #{SEQ}
+	</update>	
+	
+	<select id="isQPartner" parameterType="BMap" resultType="BMap">
+		/* CustomerMapper.isQPartner */
+		SELECT 
+			CASE 
+				WHEN GRADE is null THEN 'N'
+				WHEN GRADE = '' THEN 'N'
+				ELSE 'Y'
+			END AS IsQPartner
+		  FROM	MS_CUST_H 
+		 WHERE	ACCOUNT_GR = 'Z001'
+		   AND	CUST_CD = #{SOLD_CUST_CD}
+	</select>	
+		
+</mapper>

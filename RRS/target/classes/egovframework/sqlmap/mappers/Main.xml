@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MainMapper">
+	<select id="selectMainNotice" parameterType="BMap" resultType="BMap">
+	/* Main.xml -> selectMainNotice */
+	  SELECT * 
+	      FROM (
+				SELECT ROW_NUMBER() OVER(ORDER BY NOTICE_NO DESC) ROWNUM,
+					   NOTICE_NO,
+					   NOTICE_TP, 
+					   TITLE, 
+					   FROMDATE, 
+					   TODATE, 
+					   REG_ID, 
+					   CNT,
+			  		   'N' AS NEW_YN
+				  FROM BC_NOTICE
+				 )A
+		  WHERE ROWNUM <![CDATA[ < ]]> 7
+	</select>
+	<select id="selectOrderStatus" parameterType="BMap" resultType="BMap">
+	/* Main.xml -> selectSalesOrderStatus */
+	  SELECT CASE WHEN #{LANG} = 'DE' THEN COMM.CODE_NM 
+	            ELSE COMM.CODE_EN 
+				END AS STATUS_NM
+		    , ISNULL(ORD.PRE_COUNT, '') AS PRE_COUNT
+		    , ISNULL(ORD.PRE_VOL_QTY, '') AS PRE_VOL_QTY
+		    , ISNULL(ORD.PRE_T_WT, '') AS PRE_T_WT
+		    , ISNULL(ORD.NEXT_COUNT, '') AS NEXT_COUNT
+		    , ISNULL(ORD.NEXT_VOL_QTY, '') AS NEXT_VOL_QTY
+		    , ISNULL(ORD.NEXT_T_WT, '') AS NEXT_T_WT
+	     FROM (SELECT HEAD_CD, READ_CD, CODE_NM, CODE_EN, PRIORITY 
+		         FROM BC_COMM_L) COMM LEFT OUTER JOIN
+			  (SELECT A.PRE_STATUS, A.PRE_COUNT, A.PRE_VOL_QTY, A.PRE_T_WT, B.NEXT_COUNT, B.NEXT_VOL_QTY,  B.NEXT_T_WT 
+			     FROM ( SELECT DELI_BLOCK_CD AS PRE_STATUS ,
+							  dbo.SetQty(COUNT(1)) AS PRE_COUNT,
+							  CONCAT(dbo.SetAmt(SUM(VOL_QTY)), ' ', VOL_UNIT) AS PRE_VOL_QTY, 
+							  CONCAT(dbo.SetAmt(SUM(T_WT)), ' ', T_WT_UNIT) AS PRE_T_WT
+						 FROM SD_ORDER_H 
+					    WHERE CONVERT(VARCHAR(7),DATEADD(M,-1,GETDATE()),120) = CONVERT(VARCHAR(7),DATEADD(M,0,PO_DT),120)
+						  AND DELI_BLOCK_CD IS NOT NULL
+						  AND DELI_BLOCK_CD != ''
+						  AND VOL_UNIT IS NOT NULL 
+						  AND T_WT_UNIT IS NOT NULL
+						  AND VOL_UNIT != ''
+						  AND T_WT_UNIT != ''
+						  AND STATUS = 'A'
+						  AND DOC_GR = 'SO'
+						  AND VOL_UNIT !='MMQ'
+						  AND T_WT_UNIT !='MMQ'
+						GROUP BY DELI_BLOCK_CD, VOL_UNIT, T_WT_UNIT
+						) A LEFT OUTER JOIN (
+					   SELECT DELI_BLOCK_CD AS NEXT_STATUS ,
+							  dbo.SetQty(COUNT(1)) AS NEXT_COUNT,
+							  CONCAT(dbo.SetAmt(SUM(VOL_QTY)), ' ', VOL_UNIT) AS NEXT_VOL_QTY, 
+							  CONCAT(dbo.SetAmt(SUM(T_WT)), ' ', T_WT_UNIT) AS NEXT_T_WT
+						 FROM SD_ORDER_H 
+					    WHERE CONVERT(VARCHAR(7),GETDATE(),120) = CONVERT(VARCHAR(7),DATEADD(M,0,PO_DT),120)
+						  AND DELI_BLOCK_CD IS NOT NULL
+						  AND DELI_BLOCK_CD != ''
+						  AND VOL_UNIT IS NOT NULL 
+						  AND T_WT_UNIT IS NOT NULL
+						  AND VOL_UNIT != ''
+						  AND T_WT_UNIT != ''
+						  AND STATUS = 'A'
+						  AND DOC_GR = 'SO'
+						  AND VOL_UNIT !='MMQ'
+						  AND T_WT_UNIT !='MMQ'
+						GROUP BY DELI_BLOCK_CD, VOL_UNIT, T_WT_UNIT
+							) B 
+						   ON A.PRE_STATUS = B.NEXT_STATUS) ORD
+				   ON COMM.READ_CD = ORD.PRE_STATUS
+		        WHERE 1 = 1 
+		          AND COMM.HEAD_CD ='106200'
+				ORDER BY COMM.PRIORITY
+	</select>
+		<select id="selectQuotationStatus" parameterType="BMap" resultType="BMap">
+	/* Main.xml -> selectSalesOrderStatus */
+	  SELECT CASE WHEN #{LANG} = 'DE' THEN COMM.CODE_NM 
+	            ELSE COMM.CODE_EN 
+				END AS STATUS_NM
+		    , ISNULL(ORD.PRE_COUNT, '') AS PRE_COUNT
+		    , ISNULL(ORD.PRE_VOL_QTY, '') AS PRE_VOL_QTY
+		    , ISNULL(ORD.PRE_T_WT, '') AS PRE_T_WT
+		    , ISNULL(ORD.NEXT_COUNT, '') AS NEXT_COUNT
+		    , ISNULL(ORD.NEXT_VOL_QTY, '') AS NEXT_VOL_QTY
+		    , ISNULL(ORD.NEXT_T_WT, '') AS NEXT_T_WT
+	     FROM (SELECT HEAD_CD, READ_CD, CODE_NM, CODE_EN, PRIORITY 
+		         FROM BC_COMM_L) COMM LEFT OUTER JOIN
+			  (SELECT A.PRE_STATUS, A.PRE_COUNT, A.PRE_VOL_QTY, A.PRE_T_WT, B.NEXT_COUNT, B.NEXT_VOL_QTY,  B.NEXT_T_WT 
+			     FROM ( SELECT QT_STS_CD AS PRE_STATUS ,
+							  dbo.SetQty(COUNT(1)) AS PRE_COUNT,
+							  CONCAT(dbo.SetAmt(SUM(VOL_QTY)), ' ', VOL_UNIT) AS PRE_VOL_QTY, 
+							  CONCAT(dbo.SetAmt(SUM(T_WT)), ' ', T_WT_UNIT) AS PRE_T_WT
+						 FROM SD_ORDER_H 
+					    WHERE CONVERT(VARCHAR(7),DATEADD(M,-1,GETDATE()),120) = CONVERT(VARCHAR(7),DATEADD(M,0,REQ_DELI_DT),120)
+						  AND QT_STS_CD IS NOT NULL
+						  AND QT_STS_CD != ''		
+						  AND VOL_UNIT IS NOT NULL 
+						  AND T_WT_UNIT IS NOT NULL
+						  AND VOL_UNIT != ''
+						  AND T_WT_UNIT != ''
+						  AND STATUS = 'A'
+						  AND DOC_GR = 'QT'
+						  AND VOL_UNIT !='MMQ'
+						  AND T_WT_UNIT !='MMQ'
+						GROUP BY QT_STS_CD, VOL_UNIT, T_WT_UNIT
+						) A LEFT OUTER JOIN (
+					   SELECT QT_STS_CD AS NEXT_STATUS ,
+							  dbo.SetQty(COUNT(1)) AS NEXT_COUNT,
+							  CONCAT(dbo.SetAmt(SUM(VOL_QTY)), ' ', VOL_UNIT) AS NEXT_VOL_QTY, 
+							  CONCAT(dbo.SetAmt(SUM(T_WT)), ' ', T_WT_UNIT) AS NEXT_T_WT
+						 FROM SD_ORDER_H 
+					    WHERE CONVERT(VARCHAR(7),GETDATE(),120) = CONVERT(VARCHAR(7),DATEADD(M,0,REQ_DELI_DT),120)
+						  AND QT_STS_CD IS NOT NULL
+						  AND QT_STS_CD != ''
+						  AND VOL_UNIT IS NOT NULL 
+						  AND T_WT_UNIT IS NOT NULL
+						  AND VOL_UNIT != ''
+						  AND T_WT_UNIT != ''
+						  AND STATUS = 'A'
+						  AND DOC_GR = 'QT'
+						  AND VOL_UNIT !='MMQ'
+						  AND T_WT_UNIT !='MMQ'
+						GROUP BY QT_STS_CD, VOL_UNIT, T_WT_UNIT
+							) B 
+						   ON A.PRE_STATUS = B.NEXT_STATUS) ORD
+				   ON COMM.READ_CD = ORD.PRE_STATUS
+		        WHERE 1 = 1 
+		          AND COMM.HEAD_CD ='110900'
+				ORDER BY COMM.PRIORITY
+	</select>
+</mapper>

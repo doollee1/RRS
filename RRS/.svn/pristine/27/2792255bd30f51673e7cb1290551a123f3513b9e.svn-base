@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="DeptMapper">
+	<select id="selectDeptPopup" parameterType="BMap" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+		/* Dept.xml -> selectDeptPopup */
+		SELECT ROW_NUMBER() OVER(ORDER BY A.DEPT_CD) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+		     , A.COMP_CD
+		     , CASE WHEN A.UPPER_CD = '0' THEN '' ELSE A.UPPER_CD END AS UPPER_CD
+		     , CASE WHEN #{LANG} = 'FR' THEN B.DEPT_FR
+			        WHEN #{LANG} = 'EN' THEN B.DEPT_EN
+			        ELSE B.DEPT_NM END AS UPPER_NM
+		     , A.DEPT_CD
+		     , CASE WHEN #{LANG} = 'FR' THEN A.DEPT_FR
+			        WHEN #{LANG} = 'EN' THEN A.DEPT_EN
+			        ELSE A.DEPT_NM END AS DEPT_NM
+		     , A.LVL 
+		 FROM BC_DEPT A WITH (NOLOCK)  
+   LEFT JOIN BC_DEPT B WITH (NOLOCK) 
+		   ON A.COMP_CD = B.COMP_CD 
+		  AND A.UPPER_CD = B.DEPT_CD 
+		 WHERE 1 = 1
+	  <if test='S_DEPT_CD != null and S_DEPT_CD != ""'>
+	      AND A.DEPT_CD LIKE DBO.SETPARAM(#{S_DEPT_CD})
+	  </if>
+	  <if test='S_DEPT_NM != null and S_DEPT_NM != ""'>
+		  AND A.DEPT_NM LIKE DBO.SETPARAM(#{S_DEPT_NM})
+	  </if>
+	  <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+
+	<select id="getDeptList" parameterType="BMap" resultType="BMap">
+	/* Dept.xml -> getDeptList */
+		SELECT I.COMP_CD,
+			   I.DEPT_CD, 
+			   I.UPPER_CD, 
+			   CASE WHEN #{LANG} = 'FR' THEN I.DEPT_FR
+			        WHEN #{LANG} = 'EN' THEN I.DEPT_EN
+			        ELSE I.DEPT_NM END AS DEPT_NM,
+			   I.LVL,
+			   (SELECT COUNT(1) FROM BC_DEPT P WHERE P.UPPER_CD = I.DEPT_CD) AS ISPRT
+		  FROM BC_DEPT I WITH (NOLOCK) 
+	</select>	
+	<select id="getDeptDetail" parameterType="BMap" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+		/* Dept.xml -> getDeptDetail */
+			SELECT ROW_NUMBER() OVER(ORDER BY A.DEPT_CD) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+     		     , A.DEPT_CD
+     		     , A.DEPT_NM
+     		     , CASE WHEN A.UPPER_CD = '0' THEN '' ELSE A.UPPER_CD END UPPER_CD
+     		     , CASE WHEN #{LANG} = 'FR' THEN B.DEPT_FR
+			        WHEN #{LANG} = 'EN' THEN B.DEPT_EN
+			        ELSE B.DEPT_NM END AS UPPER_NM
+     		     , A.DEPT_EN
+     		     , A.DEPT_FR
+			     , DBO.FMTDDATE(A.START_DT, 'DD.MM.YYYY') START_DT
+			     , DBO.FMTDDATE(A.STOP_DT, 'DD.MM.YYYY') STOP_DT
+     		     , A.DEPT_TP DEPT_TP
+      	   	     , A.REF_CD AS SAP_CD
+      	   	     , A.USE_YN AS USED_OR_NOT
+      	   	     , A.DEPT_MGR
+      	   	     , dbo.GetUserNm(A.COMP_CD, A.DEPT_MGR) AS DEPT_MGR_NM
+    		  FROM BC_DEPT A WITH (NOLOCK) 
+		 LEFT JOIN BC_DEPT B WITH (NOLOCK) 
+    		    ON A.COMP_CD = B.COMP_CD 
+     		   AND A.UPPER_CD = B.DEPT_CD
+		     WHERE A.DEPT_CD = #{DEPT_CD} 
+		     <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="getDeptUser" parameterType="BMap" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+		/* Dept.xml -> getDeptUser */
+			SELECT ROW_NUMBER() OVER(ORDER BY DEPT_MGR, A.USER_ID) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+		         , A.USER_ID
+		         , A.NAME_1ST
+		      	 , A.NAME_2ND
+		      	 , A.NAME_FULL 
+		      	 , CASE WHEN #{LANG} = 'FR' THEN B.DEPT_FR
+			        WHEN #{LANG} = 'EN' THEN B.DEPT_EN
+			        ELSE B.DEPT_NM END AS DEPT_NM
+		      	 , A.E_MAIL
+		      	 , dbo.GetCodeNm('STATUS', A.STATUS, #{LANG}) AS STATUS
+		      	 , CASE WHEN B.DEPT_MGR = A.USER_ID THEN 'MGR' ELSE '' END DEPT_MGR
+		      FROM BC_USER A WITH (NOLOCK) 
+		INNER JOIN BC_DEPT B WITH (NOLOCK) 
+		        ON A.COMP_CD = B.COMP_CD 
+			   AND A.DEPT_CD = B.DEPT_CD
+			 WHERE A.DEPT_CD = #{DEPT_CD}
+			 <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	<!-- 부서 : 추가 -->
+	<insert id="insertDeptInfo" parameterType="BMap">
+	/* Dept.xml -> insertDeptInfo */
+		INSERT INTO BC_DEPT (COMP_CD, 		DEPT_CD, 		DEPT_NM, 		DEPT_EN,       DEPT_FR,      DEPT_TP, 		
+							 LVL,			UPPER_CD, 		START_DT, 		STOP_DT, 		USE_YN, 	 DEPT_MGR,
+							 REF_CD,		REG_DT,         REG_ID, 		UPT_DT, 		UPT_ID)
+					VALUES (#{COMP_CD}, 	#{DEPT_CD}, 	#{DEPT_NM}, 	#{DEPT_EN},   #{DEPT_FR},  #{DEPT_TP}, 	
+							ISNULL((SELECT A.LVL+1 FROM BC_DEPT A WHERE A.COMP_CD = #{COMP_CD} AND A.DEPT_CD = #{UPPER_CD}),1),
+						   #{UPPER_CD}, 	PARSE(#{START_DT} AS DATE USING 'de-DE'), 	  PARSE(#{STOP_DT} AS DATE USING 'de-DE'), #{USED_OR_NOT},  #{DEPT_MGR}
+						   #{SAP_CD}		,GETDATE(),      #{LOGIN_USER},  GETDATE(),     #{LOGIN_USER})
+	</insert>
+	
+	<!-- 부서 : 수정 -->
+	<update id="updateDeptInfo" parameterType="BMap">
+	/* Dept.xml -> updateDeptInfo */
+	   UPDATE BC_DEPT 
+		  SET DEPT_NM = #{DEPT_NM}
+		  	, DEPT_EN = #{DEPT_EN}
+		  	, DEPT_FR = #{DEPT_FR}
+			, DEPT_TP = #{DEPT_TP}
+			, UPPER_CD = #{UPPER_CD}
+			, LVL =  ISNULL((SELECT A.LVL+1 FROM BC_DEPT A WHERE A.COMP_CD = #{COMP_CD} AND A.DEPT_CD = #{UPPER_CD}),1)
+	        , USE_YN = #{USED_OR_NOT} 
+	        , DEPT_MGR = #{DEPT_MGR}
+	        , START_DT = PARSE(#{START_DT} AS DATE USING 'de-DE')
+	        , STOP_DT = PARSE(#{STOP_DT} AS DATE USING 'de-DE')
+			, REF_CD = #{SAP_CD}
+			, UPT_DT = GETDATE()
+			, UPT_ID = #{LOGIN_USER}
+		WHERE COMP_CD = #{COMP_CD}
+		  AND DEPT_CD = #{DEPT_CD}
+	</update>
+</mapper>

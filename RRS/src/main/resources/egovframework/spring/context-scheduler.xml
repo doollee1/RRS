@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+            xmlns:context="http://www.springframework.org/schema/context" 
+            xmlns:p="http://www.springframework.org/schema/p" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:mvc="http://www.springframework.org/schema/mvc"    
+            xmlns:task="http://www.springframework.org/schema/task"             
+            xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd         
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+            http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+             http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+<!-- Activates @Scheduled and @Async annotations for scheduling -->
+        <task:annotation-driven />    
+<!-- 스케쥴러 클래스 정의  -->
+        <bean id="OmsScheduler" class="bt.schedule.OmsScheduler" />
+</beans>

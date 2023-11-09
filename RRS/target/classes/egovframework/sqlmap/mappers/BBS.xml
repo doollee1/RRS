@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BBSMapper">
+	<select id="selectBBSInfo" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+	/* Notice.xml -> selectBBSInfo */
+		SELECT ROW_NUMBER() OVER(ORDER BY A.BBS_NO DESC) ROWNUM
+			  , A.BO_ID
+			  , A.BBS_NO
+			  , A.BBS_TITLE
+			  , A.BBS_CATEGORY
+			  , DBO.GetCodeNm('BBS_CATEGORY', A.BBS_CATEGORY, #{LANG}) BBS_CATEGORY_NM
+			  , A.BBS_VIEW_CNT
+			  , A.BBS_CONTENTS
+			  , A.REG_ID
+			  , B.NAME_FULL REG_NM
+			  , DBO.FMTDDATE(A.REG_DT, 'DD.MM.YYYY') REG_DT
+			  , A.FILE_UID
+		  FROM BC_BBS A WITH (NOLOCK) 
+	INNER JOIN BC_USER B WITH (NOLOCK) 
+			ON A.REG_ID = B.USER_ID
+		 WHERE A.BO_ID = #{BO_ID}		 
+		<if test='S_TITLE != null and S_TITLE != ""'>
+		   AND A.BBS_TITLE LIKE '%' + dbo.SetParam(#{S_TITLE}) + '%'
+		</if>
+		<if test='S_CONTENT != null and S_CONTENT != ""'>
+		   AND A.BBS_CONTENTS LIKE '%' + dbo.SetParam(#{S_CONTENT}) + '%'
+		</if>
+		<if test='S_BBS_NO != null and S_BBS_NO != ""'>
+		   AND A.BBS_NO = #{S_BBS_NO}
+		</if>
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<insert id="insertBBSInfo" parameterType="BMap">
+		<selectKey keyProperty="BBSNO" resultType="INT" order="BEFORE">		
+			SELECT ISNULL(MAX(BBS_NO), 0)+1 FROM BC_BBS WHERE BO_ID = #{BO_ID}		
+		</selectKey>		
+	/* BBS.xml -> insertBBSInfo */	
+		INSERT INTO BC_BBS
+		           ( [BO_ID]
+		           , [BBS_NO]
+		           , [BBS_TITLE]
+		           , [BBS_CATEGORY]
+		           , [BBS_CONTENTS]
+		           , [BBS_VIEW_CNT]
+		<if test='FILE_UID != null and FILE_UID != ""'>
+				   , [FILE_UID]
+		</if>
+		           , [REG_DT]
+		           , [REG_ID]
+		           , [UPT_DT]
+		           , [UPT_ID]
+		           )
+			 VALUES 
+			 	  (  #{BO_ID}
+				   , #{BBSNO}
+				   , #{BBS_TITLE}
+				   , #{BBS_CATEGORY}
+				   , #{BBS_CONTENTS}
+				   , 0				   
+		<if test='FILE_UID != null and FILE_UID != ""'>
+				   , #{FILE_UID}
+		</if>				   
+				   , GETDATE()
+				   , #{LOGIN_USER}
+				   , GETDATE()
+				   , #{LOGIN_USER}
+				   )
+	</insert>
+	
+	<update id="updateBBSInfo" parameterType="BMap">
+	/* BBS.xml -> updateBBSInfo */	
+	UPDATE  [BC_BBS]
+	   SET  [BBS_TITLE] = #{BBS_TITLE}
+	      , [BBS_CATEGORY] = #{BBS_CATEGORY}
+	      , [BBS_CONTENTS] = #{BBS_CONTENTS}
+	<if test='FILE_UID != null and FILE_UID != ""'>
+		  , FILE_UID = #{FILE_UID}
+	</if>
+	      , [UPT_DT] = GETDATE()
+	      , [UPT_ID] = #{LOGIN_USER}
+  	 WHERE BO_ID = #{BO_ID} 
+  	   AND BBS_NO = #{BBS_NO} 
+	</update>
+	
+	<update id="BBSDelete" parameterType="BMap">
+	/* BBS.xml -> "BBSDelete" */
+		DELETE 
+		  FROM BC_BBS
+		 WHERE BO_ID  = #{BO_ID}
+		   AND BBS_NO = #{BBS_NO}
+	</update>
+	
+	<update id="updateBBSCnt" parameterType="BMap">
+	/* BBS.xml -> updateBBSCnt */
+		UPDATE BC_BBS
+		   SET BBS_VIEW_CNT = BBS_VIEW_CNT + 1
+		 WHERE BO_ID  = #{BO_ID}
+		   AND BBS_NO = #{BBS_NO}
+	</update>
+	
+	<select id="selectMainBBS" parameterType="BMap" resultType="BMap">
+	/* BBS.xml -> selectMainBBS */
+	    SELECT * 
+	      FROM (	
+			     SELECT ROW_NUMBER() OVER(ORDER BY A.BBS_NO DESC) ROWNUM
+					  , A.BBS_NO
+					  , A.BBS_TITLE
+					  , A.BBS_CATEGORY
+					  , DBO.GetCodeNm('BBS_CATEGORY', A.BBS_CATEGORY, #{LANG}) BBS_CATEGORY_NM
+					  , A.BBS_VIEW_CNT
+					  , A.BBS_CONTENTS
+					  , A.REG_ID
+					  , B.NAME_FULL REG_NM
+					  , DBO.FMTDDATE(A.REG_DT, 'DD.MM.YYYY') REG_DT
+					  , A.FILE_UID
+				  FROM BC_BBS A WITH (NOLOCK) 
+			INNER JOIN BC_USER B WITH (NOLOCK) 
+					ON A.REG_ID = B.USER_ID
+				 WHERE 1 = 1
+		  )A
+		  WHERE ROWNUM <![CDATA[ < ]]> 11
+	</select>
+	
+	<delete id="deleteFileInfo" parameterType="BMap">
+	/* BBS.xml -> deleteFileInfo */
+		DELETE BC_FILE
+		 WHERE FILE_UID = #{FILE_UID}
+		<if test='FILE_UID != null and FILE_UID != ""'>
+			AND NEW_FILE_NM = #{NEW_FILE_NM}
+		</if>
+	</delete>
+	
+</mapper>

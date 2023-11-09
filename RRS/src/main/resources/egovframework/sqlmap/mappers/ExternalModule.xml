@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ExternalModuleMapper">
+	<select id="selectModuleList" parameterType="Map" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- ??? ?? ?? -->	
+			/* ExternalModuleMapper.xml -> selectModuleList */
+				SELECT ROW_NUMBER() OVER(ORDER BY A.MATL_CD) ROWNUM,
+					   A.* 
+				  FROM (
+				
+					   SELECT 
+							  m.COMP_CD							AS COMP_CD
+							, m.MATL_CD							AS MATL_CD
+							, CASE  WHEN #{LANG} = 'EN' THEN i.MATL_EN 
+									WHEN #{LANG} = 'FR' THEN i.MATL_FR 
+									ELSE i.MATL_NM 
+							  END								AS MATL_NM
+							, d.MATL_DESC						AS MATL_DESC
+							, p.PLANT_CD						AS PLANT_CD
+							, i.DIV_CD							AS DIV_CD
+							, i.X_P_STS							AS X_P_STATUS						
+							, i.WP_OUT							AS WP_OUT
+							, i.MATL_GR							AS MATL_GR
+							, i.BASIC_UNIT						AS BASIC_UNIT
+							, i.GROSS_WT						AS GROSS_WT
+							, i.NET_WT							AS NET_WT
+							, i.WT_UNIT							AS WT_UNIT
+							, i.VOL_QTY							AS VOL_QTY
+							, i.VOL_UNIT						AS VOL_UNIT
+							, i.MATL_TP							AS MATL_TP
+							, 'Y'								AS FLAG	
+							
+						 FROM MS_EXTER_MODULE_INFO m WITH (NOLOCK)
+					LEFT JOIN MS_ITEM i 			 WITH (NOLOCK)  		 
+					  	   ON m.COMP_CD = i.COMP_CD
+						  AND m.MATL_CD = i.MATL_CD						  
+					LEFT JOIN MS_ITEM_PLANT p 		WITH(NOLOCK)
+						   ON m.COMP_CD =  p.COMP_CD
+						  AND m.MATL_CD =  p.MATL_CD
+					LEFT JOIN MS_ITEM_DESC d		 WITH (NOLOCK)    
+						   ON m.COMP_CD = d.COMP_CD 
+						  AND m.MATL_CD = d.MATL_CD
+						  AND d.LANG_CD = #{LANG}
+						WHERE
+							1=1	
+							
+				 	<if test='MATL_CD_ST != null and MATL_CD_ST'>
+				 		AND m.MATL_CD like dbo.SetParam(#{MATL_CD_ST}) <!-- MATL_CD_ST? ???? LIKE -->
+					</if>	
+					<choose>
+					    <when test="LANG == 'EN' and MATL_NM_ST != null ">
+					      AND i.MATL_EN LIKE dbo.setParam(#{MATL_NM_ST})
+					    </when>
+					    <when test="LANG == 'FR' and MATL_NM_ST != null ">
+					      AND i.MATL_FR LIKE dbo.setParam(#{MATL_NM_ST})
+					    </when>
+					    <otherwise>
+					    	<if test="MATL_NM_ST != null ">
+					      		AND i.MATL_NM LIKE dbo.setParam(#{MATL_NM_ST})
+					      	</if>
+					    </otherwise>
+					</choose>
+					<if test='COMP_CD != null and COMP_CD'>
+				 		AND m.COMP_CD like dbo.setParam(#{COMP_CD}) 
+					</if>
+					<if test='MATL_CD != null and MATL_CD'>
+				 		AND m.MATL_CD like dbo.setParam(#{MATL_CD}) 
+					</if>					
+				) A					
+		 <include refid="page.pagingPost"/> <!-- ??? ?? ? -->
+	</select>
+	
+	
+	<select id="selectBOSList" parameterType="Map" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- ??? ?? ?? -->	
+			/* ExternalModuleMapper.xml -> selectBOSList */
+				SELECT ROW_NUMBER() OVER(ORDER BY A.MATL_CD) ROWNUM,
+					   A.* 
+				  FROM (				
+					   SELECT 
+							  m.COMP_CD							AS COMP_CD
+							, m.COUNTRY_CD						AS COUNTRY_CD
+							, m.MATL_CD							AS MATL_CD
+							, m.KIND_CD							AS KIND_CD
+							, CASE  WHEN #{LANG} = 'EN' THEN i.MATL_EN 
+									WHEN #{LANG} = 'FR' THEN i.MATL_FR 
+									ELSE i.MATL_NM 
+								END								AS MATL_NM
+							, d.MATL_DESC						AS MATL_DESC					
+							, i.WP_OUT							AS TYPE
+							, 'Y'								AS FLAG					
+						 FROM MS_EXTER_BOS_INFO m	 WITH (NOLOCK)
+					LEFT JOIN MS_ITEM i 			 WITH (NOLOCK)  		 
+						   ON m.COMP_CD = i.COMP_CD
+						  AND m.MATL_CD = i.MATL_CD
+					LEFT JOIN MS_ITEM_DESC d		 WITH (NOLOCK)    
+						   ON m.COMP_CD = d.COMP_CD 
+						  AND m.MATL_CD = d.MATL_CD
+						  AND d.LANG_CD = #{LANG}
+						WHERE
+							1=1	
+				 	<if test='MATL_CD_ST != null and MATL_CD_ST'>
+				 		AND m.MATL_CD like dbo.SetParam(#{MATL_CD_ST}) <!-- MATL_CD_ST? ???? LIKE -->
+					</if>	
+					<choose>
+					    <when test="LANG == 'EN' and MATL_NM_ST != null ">
+					      AND i.MATL_EN LIKE dbo.setParam(#{MATL_NM_ST})
+					    </when>
+					    <when test="LANG == 'FR' and MATL_NM_ST != null ">
+					      AND i.MATL_FR LIKE dbo.setParam(#{MATL_NM_ST})
+					    </when>
+					    <otherwise>
+					    	<if test="MATL_NM_ST != null ">
+					      		AND i.MATL_NM LIKE dbo.setParam(#{MATL_NM_ST})
+					      	</if>
+					    </otherwise>
+					</choose>
+					<if test='COMP_CD != null and COMP_CD'>
+				 		AND m.COMP_CD like dbo.setParam(#{COMP_CD})
+					</if>
+					<if test='MATL_CD != null and MATL_CD'>
+				 		AND m.MATL_CD like dbo.setParam(#{MATL_CD})
+					</if>	
+					<if test='COUNTRY_CD != null and COUNTRY_CD'>
+				 		AND m.COUNTRY_CD like dbo.setParam(#{COUNTRY_CD})
+					</if>		
+				) A					
+		 <include refid="page.pagingPost"/> <!-- ??? ?? ? -->
+	</select>
+	
+	<insert id="insertModule" parameterType="HashMap">
+	/* ExternalModuleMapper.xml -> insertModule */
+		INSERT INTO MS_EXTER_MODULE_INFO
+					( COMP_CD	
+					, MATL_CD	
+					, REG_DT	
+					, REG_ID	
+					, UPT_DT	
+					, UPT_ID
+					)
+			 VALUES ( #{COMP_CD}
+					, #{MATL_CD}					
+					, GETDATE()
+					, #{USER_ID}
+					, GETDATE()
+					, #{USER_ID}
+					)
+	</insert>	
+	
+	<update id="updateBOS" parameterType="HashMap">
+	/* ExternalModuleMapper.xml -> updateBOS */
+		UPDATE	MS_EXTER_BOS_INFO
+		  SET
+			KIND_CD = #{KIND_CD}
+		WHERE COMP_CD 		= #{COMP_CD}
+		  AND COUNTRY_CD 	= #{COUNTRY_CD}
+		  AND MATL_CD 		= #{MATL_CD}
+	</update>
+	
+	
+	<!-- ??? ?? ?? ?? -->
+	<delete id="deleteModule" parameterType="HashMap">
+	/* ExternalModuleMapper.xml -> deleteModule */
+		DELETE MS_EXTER_MODULE_INFO 
+		 WHERE COMP_CD = #{COMP_CD} 
+		   AND MATL_CD = #{MATL_CD} 
+	</delete>
+	
+	
+	<insert id="insertBOS" parameterType="HashMap">
+	/* ExternalModuleMapper.xml -> insertBOS */
+		INSERT INTO MS_EXTER_BOS_INFO
+					( COMP_CD
+					, COUNTRY_CD
+					, MATL_CD
+					, KIND_CD
+					, REG_DT
+					, REG_ID
+					, UPT_DT
+					, UPT_ID
+					)
+			 VALUES ( #{COMP_CD}
+					, #{COUNTRY_CD}		
+					, #{MATL_CD}
+					, #{KIND_CD}
+					, GETDATE()
+					, #{USER_ID}
+					, GETDATE()
+					, #{USER_ID}
+					)
+	</insert>	
+	
+	
+	<!-- ??? ?? ?? ?? -->
+	<delete id="deleteBOS" parameterType="HashMap">
+	/* ExternalModuleMapper.xml -> deleteBOS */
+		DELETE MS_EXTER_BOS_INFO 
+		 WHERE COMP_CD 		= #{COMP_CD} 
+		   AND COUNTRY_CD 	= #{COUNTRY_CD} 
+		   AND MATL_CD 		= #{MATL_CD} 
+	</delete>
+	
+	<select id="selectMatlPopList" parameterType="BMap" resultType="BMap">
+		/* ExternalModuleMapper.xml -> selectMatlPopList */
+		<include refid="page.pagingPre"/> <!-- ??? ?? ?? -->	
+			SELECT ROW_NUMBER() OVER(ORDER BY MST.MATL_CD ASC) ROWNUM <!-- ???? ?? ?? ?? ?? ROWNUM ??? ?. -->
+				, MST.MATL_CD							AS MATL_CD
+				, MTL_DESC.MATL_DESC					AS MATL_DESC
+				--, CONVERT(VARCHAR, MTL_LONG.LONG_TEXT)	AS LONG_TEXT
+				, MST_PLANT.PLANT_CD					AS PLANT_CD
+				, MTL_ORG.SALES_ORG_CD					AS SALES_ORG_CD
+				, MTL_ORG.DISTRB_CH						AS DISTRB_CH
+				, MST.DIV_CD							AS DIV_CD
+				, MST.X_P_STS							AS X_P_STATUS
+				, MTL_UNIT.ALT_UNIT_CD					AS BUM
+				, MST.WP_OUT							AS WP_OUT
+				, MST.MATL_GR							AS MATL_GR
+				, MST.COMP_CD							AS COMP_CD
+				, MST.BASIC_UNIT						AS BASIC_UNIT
+				, MST.GROSS_WT							AS GROSS_WT
+				, MST.NET_WT							AS NET_WT
+				, MST.WT_UNIT							AS WT_UNIT
+				, MST.VOL_QTY							AS VOL_QTY
+				, MST.VOL_UNIT							AS VOL_UNIT
+				, MST.MATL_TP							AS MATL_TP
+			FROM MS_ITEM MST WITH(NOLOCK)
+			INNER JOIN MS_ITEM_ORG MTL_ORG WITH(NOLOCK)
+				ON MST.COMP_CD = MTL_ORG.COMP_CD AND MST.MATL_CD = MTL_ORG.MATL_CD
+			LEFT OUTER JOIN MS_ITEM_DESC MTL_DESC WITH(NOLOCK)
+				ON MST.COMP_CD = MTL_DESC.COMP_CD AND MST.MATL_CD = MTL_DESC.MATL_CD AND MTL_DESC.LANG_CD = #{LANG}
+			LEFT OUTER JOIN MS_ITEM_LONGTEXT MTL_LONG WITH(NOLOCK)
+				ON MST.COMP_CD = MTL_LONG.COMP_CD AND MST.MATL_CD = MTL_LONG.MATL_CD AND MTL_LONG.LANG_CD = #{LANG}
+					AND MTL_LONG.DISTRB_CH = MTL_ORG.DISTRB_CH
+			LEFT OUTER JOIN MS_ITEM_UNIT MTL_UNIT WITH(NOLOCK)
+				ON MST.COMP_CD = MTL_UNIT.COMP_CD AND MST.MATL_CD = MTL_UNIT.MATL_CD AND MST.BASIC_UNIT = MTL_UNIT.ALT_UNIT_CD
+			LEFT OUTER JOIN MS_ITEM_PLANT MST_PLANT WITH(NOLOCK)
+				ON MST.COMP_CD = MST_PLANT.COMP_CD AND MST.MATL_CD = MST_PLANT.MATL_CD
+			WHERE 1 = 1
+				
+			
+			<if test='(MATL_CD_ST != null and MATL_CD_ST != "") and (MATL_CD_END == null or MATL_CD_END == "")'>
+				AND CONVERT(NUMERIC, MST.MATL_CD) LIKE DBO.SETPARAM(CONVERT(NUMERIC, #{MATL_CD_ST}))
+			</if>
+			<if test='(MATL_CD_END != null and MATL_CD_END != "") and (MATL_CD_ST == null or MATL_CD_ST == "")'>
+				AND CONVERT(NUMERIC, MST.MATL_CD) LIKE DBO.SETPARAM(CONVERT(NUMERIC, #{MATL_CD_END}))
+			</if>
+			<if test='(MATL_CD_ST != null and MATL_CD_ST != "") and (MATL_CD_END != null and MATL_CD_END != "")'>
+				AND CONVERT(NUMERIC, MST.MATL_CD) <![CDATA[ >= ]]> CONVERT(NUMERIC, #{MATL_CD_ST})
+				AND CONVERT(NUMERIC, MST.MATL_CD) <![CDATA[ <= ]]> CONVERT(NUMERIC, #{MATL_CD_END})
+			</if>
+			<if test='MATL_TP != null and MATL_TP != ""'>
+				AND MST.MATL_TP = #{MATL_TP}
+			</if>
+			<if test='PLANT_CD != null and PLANT_CD != ""'>
+				AND MST_PLANT.PLANT_CD = #{PLANT_CD}
+			</if>
+			<if test='SALES_ORG_CD != null and SALES_ORG_CD != ""'>
+				AND MTL_ORG.SALES_ORG_CD = #{SALES_ORG_CD}
+			</if>
+			<if test='DISTRB_CH != null and DISTRB_CH != ""'>
+				AND MTL_ORG.DISTRB_CH = #{DISTRB_CH}
+			</if>
+			<if test='DIV_CD != null and DIV_CD != ""'>
+				AND MST.DIV_CD = #{DIV_CD}
+			</if>
+			<if test='MATL_GR_ST != null and MATL_GR_ST != ""'>
+				AND MST.MATL_GR <![CDATA[ >= ]]> #{MATL_GR_ST}
+			</if>
+			<if test='MATL_GR_END != null and MATL_GR_END != ""'>
+				AND MST.MATL_GR <![CDATA[ <= ]]> #{MATL_GR_END}
+			</if>
+			<if test='MATL_DESC != null and MATL_DESC != ""'>
+				AND (CONVERT(VARCHAR, MTL_LONG.LONG_TEXT) LIKE DBO.SETPARAM(#{MATL_DESC})
+					OR MTL_DESC.MATL_DESC LIKE DBO.SETPARAM(#{MATL_DESC})
+					)
+			</if>
+			<if test='WP_OUT != null and WP_OUT != ""'>
+				AND MST.WP_OUT like dbo.setparam(#{WP_OUT})
+			</if>
+			<if test='EXC_PL != null and EXC_PL != ""'>
+				/* AND MST.WP_OUT = ${EXC_PL} */
+			</if>
+			AND MST.STATUS <![CDATA[ <> ]]> 'D'
+			
+			
+			
+			GROUP BY MST.MATL_CD, MTL_DESC.MATL_DESC, CONVERT(VARCHAR, MTL_LONG.LONG_TEXT), MST_PLANT.PLANT_CD, MTL_ORG.SALES_ORG_CD, MTL_ORG.DISTRB_CH
+				, MST.DIV_CD, MST.X_P_STS, MTL_UNIT.ALT_UNIT_CD, MST.WP_OUT, MST.MATL_GR, MST.COMP_CD, MST.BASIC_UNIT, MST.GROSS_WT
+				, MST.NET_WT, MST.WT_UNIT, MST.VOL_QTY, MST.VOL_UNIT, MST.MATL_TP
+			
+		<include refid="page.pagingPost"/> <!-- ??? ?? ? -->		
+	</select>
+	
+	<select id="selectModuleListAll" parameterType="BMap" resultType="BMap">
+		/* ExternalModuleMapper.xml -> selectModuleListAll */
+		   SELECT 
+				  m.COMP_CD							AS COMP_CD
+				, m.MATL_CD							AS MATL_CD
+				, CASE  WHEN #{LANG} = 'EN' THEN i.MATL_EN 
+						WHEN #{LANG} = 'FR' THEN i.MATL_FR 
+						ELSE i.MATL_NM 
+				  END								AS MATL_NM
+				, d.MATL_DESC						AS MATL_DESC
+				, p.PLANT_CD						AS PLANT_CD
+				, i.DIV_CD							AS DIV_CD
+				, i.X_P_STS							AS X_P_STATUS						
+				, i.WP_OUT							AS WP_OUT
+				, i.MATL_GR							AS MATL_GR
+				, i.BASIC_UNIT						AS BASIC_UNIT
+				, i.GROSS_WT						AS GROSS_WT
+				, i.NET_WT							AS NET_WT
+				, i.WT_UNIT							AS WT_UNIT
+				, i.VOL_QTY							AS VOL_QTY
+				, i.VOL_UNIT						AS VOL_UNIT
+				, i.MATL_TP							AS MATL_TP
+				, 'Y'								AS FLAG	
+				
+			 FROM MS_EXTER_MODULE_INFO m WITH (NOLOCK)
+		LEFT JOIN MS_ITEM i 			 WITH (NOLOCK)  		 
+		  	   ON m.COMP_CD = i.COMP_CD
+			  AND m.MATL_CD = i.MATL_CD						  
+		LEFT JOIN MS_ITEM_PLANT p 		WITH(NOLOCK)
+			   ON m.COMP_CD =  p.COMP_CD
+			  AND m.MATL_CD =  p.MATL_CD
+		LEFT JOIN MS_ITEM_DESC d		 WITH (NOLOCK)    
+			   ON m.COMP_CD = d.COMP_CD 
+			  AND m.MATL_CD = d.MATL_CD
+			  AND d.LANG_CD = #{LANG}
+			WHERE
+				1=1
+	 	<if test='MATL_CD_ST != null and MATL_CD_ST'>
+	 		AND m.MATL_CD like dbo.SetParam(#{MATL_CD_ST}) <!-- MATL_CD_ST? ???? LIKE -->
+		</if>	
+		<choose>
+		    <when test="LANG == 'EN' and MATL_NM_ST != null ">
+		      AND i.MATL_EN LIKE dbo.setParam(#{MATL_NM_ST})
+		    </when>
+		    <when test="LANG == 'FR' and MATL_NM_ST != null ">
+		      AND i.MATL_FR LIKE dbo.setParam(#{MATL_NM_ST})
+		    </when>
+		    <otherwise>
+		    	<if test="MATL_NM_ST != null ">
+		      		AND i.MATL_NM LIKE dbo.setParam(#{MATL_NM_ST})
+		      	</if>
+		    </otherwise>
+		</choose>
+		<if test='COMP_CD != null and COMP_CD'>
+	 		AND m.COMP_CD like dbo.setParam(#{COMP_CD}) 
+		</if>
+		<if test='MATL_CD != null and MATL_CD'>
+	 		AND m.MATL_CD like dbo.setParam(#{MATL_CD}) 
+		</if>	 
+	</select>
+	
+	<select id="selectCommonCodeList" parameterType="BMap" resultType="CodeVO">
+	/* ExternalModuleMapper.xml -> selectCommonCodeList */
+		SELECT TAIL.READ_CD CODE			  
+		     , TAIL.READ_CD + ' - ' + DBO.GetCodeNm(HEAD.HEAD_ID, TAIL.CODE, #{LANG}) VALUE
+		FROM BC_COMM_H HEAD  WITH (NOLOCK) 
+		JOIN BC_COMM_L TAIL ON HEAD.HEAD_CD = TAIL.HEAD_CD AND TAIL.STATUS = 'Y'
+		WHERE HEAD.HEAD_ID = #{HEAD_CD}
+		AND HEAD.STATUS = 'Y'
+		AND TAIL.REF_CHR5 = 'EX'
+		ORDER BY TAIL.PRIORITY
+	</select>
+	
+	
+</mapper>

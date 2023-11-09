@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SapIfRecvProductMapper">	
+	<insert id="insertSapIfRecvTMara" parameterType="HashMap">
+		INSERT INTO IF_GET_MARA(
+					 MATNR              
+					,MTART              
+					,SPART              
+					,MATKL              
+					,MEINS              
+					,MSTAE              
+					,MSTDE              
+					,MTPOS_MARA            
+					,ZZ_PROD_KLASSE    
+					,ZZ_ZELLTYP            
+					,ZZ_ZUSATZ              
+					,ZZ_LEISTUNG          
+					,BRGEW              
+					,NTGEW              
+					,GEWEI              
+					,VOLUM              
+					,VOLEH              
+					,LVORM              
+					,IF_DT              
+					,IF_STS            
+					) 
+			VALUES (
+					 #{MATNR}
+					,#{MTART}
+					,#{SPART}
+					,#{MATKL}
+					,#{MEINS}
+					,#{MSTAE}
+					,(CASE WHEN #{MSTDE} = '0000-00-00' THEN NULL ELSE CONVERT(DATE, #{MSTDE}) END)
+					,#{MTPOS_MARA}
+					,#{ZZ_PROD_KLASSE}
+					,#{ZZ_ZELLTYP}
+					,#{ZZ_ZUSATZ}
+					,#{ZZ_LEISTUNG}
+					,CONVERT(NUMERIC(13,3),#{BRGEW})
+					,CONVERT(NUMERIC(13,3),#{NTGEW})
+					,#{GEWEI}
+					,CONVERT(NUMERIC(13,3),#{VOLUM})
+					,#{VOLEH}
+					,#{LVORM}
+					,GETDATE()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvTMakt" parameterType="BMap">
+		INSERT INTO IF_GET_MAKT(
+					 MATNR   
+					,SPRAS   
+					,MAKTX   
+					,IF_DT   
+					,IF_STS 
+					) 
+			 VALUES (
+					 #{MATNR}
+					,#{SPRAS}
+					,#{MAKTX}
+					,GetDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvTMvke" parameterType="BMap">
+			INSERT INTO IF_GET_MVKE(
+					 MATNR   
+					,VKORG   
+					,VTWEG   
+					,DWERK   
+					,SKTOF   
+					,MTPOS		/* 03.05 I/F Item Category Group 컬럼추가 */
+					,LVORM   
+					,IF_DT   
+					,IF_STS  
+					) 
+			 VALUES (
+					 #{MATNR}
+					,#{VKORG}
+					,#{VTWEG}
+					,#{DWERK}
+					,#{SKTOF}
+					,#{MTPOS}		/* 03.05 I/F Item Category Group 컬럼추가 */
+					,#{LVORM}
+					,GETDATE()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvTMarc" parameterType="BMap">
+			INSERT INTO IF_GET_MARC(
+					 MATNR    
+					,WERKS    
+					,HERKL    
+					,MMSTA    
+					,XCHAR    
+					,SERNP    
+					,PRCTR    
+					,LVORM    
+					,MTVFP
+					,IF_DT    
+					,IF_STS  
+					)
+			 VALUES (
+					 #{MATNR}
+					,#{WERKS}
+					,#{HERKL}
+					,#{MMSTA}
+					,#{XCHAR}
+					,#{SERNP}
+					,#{PRCTR}
+					,#{LVORM}
+					,#{MTVFP}
+					,GetDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvTMbew" parameterType="BMap">
+			INSERT INTO IF_GET_MBEW(
+					 MATNR    
+					,BWKEY    
+					,BKLAS    
+					,IF_DT    
+					,IF_STS   
+					)
+			 VALUES (
+					 #{MATNR}
+					,#{BWKEY}
+					,#{BKLAS}
+					,GETDATE()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvTMarm" parameterType="BMap">
+			INSERT INTO IF_GET_MARM(
+					 MATNR   
+					,MEINH   
+					,UMREZ
+					,UMREN   
+					,IF_DT   
+					,IF_STS  
+					)
+			 VALUES (
+					 #{MATNR}
+					,#{MEINH}
+					,CONVERT(NUMERIC(5),#{UMREZ})
+					,CONVERT(NUMERIC(5),#{UMREN})
+					,GETDATE()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvTT001" parameterType="BMap">
+			INSERT INTO IF_GET_T001(
+					 BUKRS   
+					,WAERS   
+					,IF_DT   
+					,IF_STS  
+					)
+			 VALUES (
+					 #{BUKRS}
+					,#{WAERS}
+					,GETDATE()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvTLongText" parameterType="BMap">
+			INSERT INTO IF_GET_LONGTEXT(
+					 NAME        
+					,ID            
+					,LANGUAGE
+					,OBJECT    
+					,TDFORMAT
+					,TDLINE    
+					,IF_DT     
+					,IF_STS    
+					)
+			 VALUES (
+					 #{NAME}
+					,#{ID}
+					,#{LANGUAGE}
+					,#{OBJECT}
+					,#{TDFORMAT}
+					,#{TDLINE}
+					,GetDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvTMcha" parameterType="BMap">
+			INSERT INTO IF_GET_MCHA(
+					 MATNR
+					,WERKS
+					,CHARG
+					,LVORM
+					,IF_DT 
+					,IF_STS
+					)
+			 VALUES (
+					 #{MATNR}
+					,#{WERKS}
+					,#{CHARG}
+					,#{LVORM}
+					,GetDate()
+					,'R'
+					)
+	</insert>
+
+	<insert id="insertSapIfRecvTMchb" parameterType="BMap">
+			INSERT INTO IF_GET_MCHB(
+					 MATNR
+					,MAKTX
+					,WERKS
+					,NAME1
+					,LGORT
+					,LGOBE
+					,LVORM
+					,IF_DT 
+					,IF_STS
+					)
+			 VALUES (
+					 #{MATNR}
+					,#{MAKTX}
+					,#{WERKS}
+					,#{NAME1}
+					,#{LGORT}
+					,#{LGOBE}
+					,#{LVORM}
+					,GetDate()
+					,'R'
+					)
+	</insert>
+		
+	<select id="executeSpIfRecvProduct" parameterType="String">
+		<![CDATA[
+		{
+			call SP_IF_ERP_RECV_PRODUCT(#{REG_ID})
+		}
+		]]>
+	</select>
+	
+	<select id="callSpSapIfRecvProduct" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_ERP_RECV_PRODUCT(#{COMP_CD}, #{USER_ID}) } 
+	</select>
+	
+	<insert id="mergeSapIfRecvProduct" parameterType="BMap">
+			MERGE MS_ITEM AS A
+			USING
+			(
+			   SELECT DISTINCT Substring(MATNR,11,8) MATNR, MTART, SPART, MATKL, case when MEINS = 'ST' then 'PCS' else MEINS end MEINS
+			 		, MSTAE, MSTDE, MTPOS_MARA, ZZ_PROD_KLASSE, ZZ_ZELLTYP
+				    , ZZ_ZUSATZ, ZZ_LEISTUNG, BRGEW, NTGEW, GEWEI, VOLUM, VOLEH, LVORM
+				FROM IF_GET_MARA	with (nolock)
+			   WHERE IF_STS = 'R' AND LEN(MATNR) >= 8
+			) AS B
+			ON (A.COMP_CD = #{compCd} AND A.MATL_CD = B.MATNR
+			)
+			WHEN MATCHED THEN
+			  UPDATE SET A.MATL_TP           = B.MTART         
+						,A.DIV_CD            = B.SPART         
+						,A.MATL_GR           = B.MATKL         
+						,A.BASIC_UNIT        = B.MEINS         
+						,A.X_P_STS           = B.MSTAE         
+						,A.VAL_FR_DATE       = B.MSTDE         
+						,A.GEN_ITEM_CTG_GR   = B.MTPOS_MARA    
+						,A.PROD_CL           = B.ZZ_PROD_KLASSE
+						,A.CELL_TP           = B.ZZ_ZELLTYP    
+						,A.APPEND_TXT        = B.ZZ_ZUSATZ     
+						,A.WP_OUT            = B.ZZ_LEISTUNG   
+						,A.GROSS_WT          = B.BRGEW         
+						,A.NET_WT            = B.NTGEW         
+						,A.WT_UNIT           = B.GEWEI         
+						,A.VOL_QTY           = B.VOLUM         
+						,A.VOL_UNIT          = B.VOLEH         
+						,A.DEL_YN			 = B.LVORM
+						,A.STATUS			 = 'A'		/* A(live), S(topped), D(eleted) */
+						,A.UPT_DT			 = GETDATE()
+						,A.UPT_ID			 = 'oms_if'
+			WHEN NOT MATCHED THEN
+				 INSERT (
+						 COMP_CD
+						,MATL_CD            /* MATNR          */
+						,MATL_TP            /* MTART          */
+						,DIV_CD             /* SPART          */
+						,MATL_GR            /* MATKL          */
+						,BASIC_UNIT         /* MEINS          */
+						,X_P_STS            /* MSTAE          */
+						,VAL_FR_DATE        /* MSTDE          */
+						,GEN_ITEM_CTG_GR    /* MTPOS_MARA     */
+						,PROD_CL            /* ZZ_PROD_KLASSE */
+						,CELL_TP            /* ZZ_ZELLTYP     */
+						,APPEND_TXT         /* ZZ_ZUSATZ      */
+						,WP_OUT             /* ZZ_LEISTUNG    */
+						,GROSS_WT           /* BRGEW          */
+						,NET_WT             /* NTGEW          */
+						,WT_UNIT            /* GEWEI          */
+						,VOL_QTY            /* VOLUM          */
+						,VOL_UNIT           /* VOLEH          */
+						,STATUS		        /* A(live), S(topped), D(eleted) */
+						,REG_DT	            /* GETDATE() */
+						,REG_ID             /* 'oms_if'  */
+						,UPT_DT             /* GETDATE() */
+						,UPT_ID				/* 'oms_if'  */
+						) 
+				 VALUES (#{compCd}
+						,B.MATNR         
+						,B.MTART         
+						,B.SPART         
+						,B.MATKL         
+						,B.MEINS         
+						,B.MSTAE         
+						,B.MSTDE         
+						,B.MTPOS_MARA    
+						,B.ZZ_PROD_KLASSE
+						,B.ZZ_ZELLTYP    
+						,B.ZZ_ZUSATZ     
+						,B.ZZ_LEISTUNG   
+						,B.BRGEW         
+						,B.NTGEW         
+						,B.GEWEI         
+						,B.VOLUM         
+						,B.VOLEH         
+						,'A'
+						,GETDATE()
+						,'oms_if'
+						,GETDATE()
+						,'oms_if'
+						);
+						
+			MERGE MS_ITEM_DESC AS A
+			USING
+			(
+			  SELECT DISTINCT Substring(MATNR,11,8) MATNR, SPRAS, MAKTX
+				FROM IF_GET_MAKT	with (nolock)
+			   WHERE IF_STS = 'R' and LEN(MATNR) = 18
+			) AS B
+			ON (A.COMP_CD = #{compCd} AND A.MATL_CD = B.MATNR AND 
+				A.LANG_CD = (
+							  CASE WHEN B.SPRAS = 'D' THEN 'DE'
+						           WHEN B.SPRAS = 'E' THEN 'EN'
+						           WHEN B.SPRAS = 'F' THEN 'FR'
+						           WHEN B.SPRAS = 'J' THEN 'JA'
+						           ELSE B.SPRAS END				
+							)
+			)
+			WHEN MATCHED THEN
+			  UPDATE SET A.MATL_DESC         = B.MAKTX
+						,A.STATUS			 = 'A'		/* A(live), S(topped), D(eleted) */
+						,A.UPT_DT			 = GETDATE()
+						,A.UPT_ID			 = 'oms_if'
+			WHEN NOT MATCHED THEN
+				 INSERT (
+						 COMP_CD  
+						,MATL_CD      		/* MATNR	 */
+						,LANG_CD      		/* SPRAS	 */
+						,MATL_DESC    		/* MAKTX	 */
+						,STATUS		        /* A(live), S(topped), D(eleted) */
+						,REG_DT	            /* GETDATE() */
+						,REG_ID             /* 'oms_if'  */
+						,UPT_DT             /* GETDATE() */
+						,UPT_ID				/* 'oms_if'  */
+						) 
+				 VALUES (#{compCd}
+						,B.MATNR  
+						,CASE WHEN B.SPRAS = 'D' THEN 'DE'
+						      WHEN B.SPRAS = 'E' THEN 'EN'
+						      WHEN B.SPRAS = 'F' THEN 'FR'
+						      WHEN B.SPRAS = 'J' THEN 'JA'
+						      ELSE B.SPRAS END
+						,B.MAKTX  
+						,'A'
+						,GETDATE()
+						,'oms_if'
+						,GETDATE()
+						,'oms_if'
+						)
+						;
+						
+			MERGE MS_ITEM AS A
+			 USING( SELECT *
+			          FROM MS_ITEM_DESC WHERE LANG_CD = 'DE') AS B
+			    ON (A.MATL_CD = B.MATL_CD)
+			WHEN MATCHED THEN
+			UPDATE SET A.MATL_NM = B.MATL_DESC
+			;
+			MERGE MS_ITEM AS A
+			 USING( SELECT *
+			          FROM MS_ITEM_DESC WHERE LANG_CD = 'EN') AS B
+			    ON (A.MATL_CD = B.MATL_CD)
+			WHEN MATCHED THEN
+			UPDATE SET A.MATL_EN = B.MATL_DESC
+			; 
+			
+			MERGE MS_ITEM_ORG AS A
+			USING
+			(
+			  SELECT DISTINCT Substring(MATNR,11,8) MATNR, VKORG, VTWEG, DWERK, SKTOF, LVORM
+				FROM IF_GET_MVKE	with (nolock)
+			   WHERE IF_STS = 'R' AND LEN(MATNR) = 18
+			) AS B
+			ON (A.COMP_CD = #{compCd} AND A.MATL_CD = B.MATNR AND 
+				A.SALES_ORG_CD  = B.VKORG AND
+				A.DISTRB_CH	 	= B.VTWEG
+			)
+			WHEN MATCHED THEN
+			  UPDATE SET A.DELI_PLANT_CD	 = B.DWERK  
+						,A.CASH_DC_YN		 = B.SKTOF
+						,A.DEL_YN			 = B.LVORM
+						,A.STATUS			 = 'A'		/* A(live), S(topped), D(eleted) */
+						,A.UPT_DT			 = GETDATE()
+						,A.UPT_ID			 = 'oms_if'
+			WHEN NOT MATCHED THEN
+				 INSERT (
+						 COMP_CD                     
+						,MATL_CD            /* MATNR	 */
+						,SALES_ORG_CD       /* VKORG	 */
+						,DISTRB_CH          /* VTWEG	 */
+						,DELI_PLANT_CD      /* DWERK	 */
+						,CASH_DC_YN         /* SKTOF	 */
+						,STATUS		        /* A(live), S(topped), D(eleted) */
+						,REG_DT	            /* GETDATE() */
+						,REG_ID             /* 'oms_if'  */
+						,UPT_DT             /* GETDATE() */
+						,UPT_ID				/* 'oms_if'	 */
+						) 
+				 VALUES (#{compCd}
+						,B.MATNR  
+						,B.VKORG  
+						,B.VTWEG    
+						,B.DWERK  
+						, CASE WHEN B.SKTOF = 'X' THEN 'Y'
+						       ELSE 'N' END
+						,'A'
+						,GETDATE()
+						,'oms_if'
+						,GETDATE()
+						,'oms_if'
+						)
+						;
+						
+			MERGE MS_ITEM_PLANT AS A
+			USING
+			(
+			  SELECT DISTINCT Substring(MATNR,11,8) MATNR, WERKS, HERKL, MMSTA, XCHAR, SERNP, PRCTR, LVORM
+				FROM IF_GET_MARC	with (nolock)
+			   WHERE IF_STS = 'R' AND LEN(MATNR) = 18
+			) AS B
+			ON (A.COMP_CD = #{compCd} AND A.MATL_CD = B.MATNR AND 
+				A.PLANT_CD	  = B.WERKS
+			)
+			WHEN MATCHED THEN
+			  UPDATE SET A.MADE_IN           = B.MMSTA  
+						,A.PLANT_SP_STS      = B.MMSTA
+						,A.BATCH_MNG         = B.XCHAR
+						,A.SNO_PROFILE	     = B.SERNP  
+						,A.PROFIT_C_CD	     = B.PRCTR  
+						,A.STATUS			 = 'A'		/* A(live), S(topped), D(eleted) */
+						,A.UPT_DT			 = GETDATE()
+						,A.UPT_ID			 = 'oms_if'
+			WHEN NOT MATCHED THEN
+				 INSERT (
+						 COMP_CD                     
+						,MATL_CD            /* MATNR	 */
+						,PLANT_CD           /* WERKS	 */
+						,MADE_IN			/* HERKL	 */
+						,PLANT_SP_STS       /* MMSTA	 */
+						,BATCH_MNG          /* XCHAR	 */
+						,SNO_PROFILE        /* SERNP	 */
+						,PROFIT_C_CD        /* PRCTR	 */
+						,STATUS		        /* A(live), S(topped), D(eleted) */
+						,REG_DT	            /* GETDATE() */
+						,REG_ID             /* 'oms_if'  */
+						,UPT_DT             /* GETDATE() */
+						,UPT_ID				/* 'oms_if'  */
+						) 
+				 VALUES (#{compCd}
+						,B.MATNR  
+						,B.WERKS  
+						,B.HERKL    
+						,B.MMSTA  
+						, CASE WHEN B.XCHAR = 'X' THEN 'Y'
+						       ELSE 'N' END 
+						,B.SERNP
+						,B.PRCTR
+						,'A'
+						,GETDATE()
+						,'oms_if'
+						,GETDATE()
+						,'oms_if'
+						)
+						;
+						
+			MERGE MS_ITEM_UNIT AS A
+			USING
+			(
+			  SELECT DISTINCT Substring(MATNR,11,8) MATNR, (case when MEINH = 'ST' then 'PCS' else MEINH end) MEINH, UMREN
+				FROM IF_GET_MARM	with (nolock)
+			   WHERE IF_STS = 'R' AND LEN(MATNR) = 18
+			) AS B
+			ON (A.COMP_CD = #{compCd} AND A.MATL_CD = B.MATNR AND 
+				A.ALT_UNIT_CD	= B.MEINH
+			)
+			WHEN MATCHED THEN
+			  UPDATE SET A.UNIT_DIV          = B.UMREN
+						,A.STATUS			 = 'A'		-- A(live), S(topped), D(eleted)
+						,A.UPT_DT			 = GETDATE()
+						,A.UPT_ID			 = 'oms_if'
+			WHEN NOT MATCHED THEN
+				 INSERT (
+						 COMP_CD                     
+						,MATL_CD            /* MATNR	 */
+						,ALT_UNIT_CD        /* MEINH	 */
+						,UNIT_DIV			/* UMREN	 */
+						,STATUS		        /* A(live), S(topped), D(eleted) */
+						,REG_DT	            /* GETDATE() */
+						,REG_ID             /* 'oms_if'  */
+						,UPT_DT             /* GETDATE() */
+						,UPT_ID				/* 'oms_if'  */
+						) 
+				 VALUES (#{compCd}
+						,B.MATNR
+						,B.MEINH
+						,B.UMREN  
+						,'A'
+						,GETDATE()
+						,'oms_if'
+						,GETDATE()
+						,'oms_if'
+						)
+						;
+						
+			MERGE MS_ITEM_LONGTEXT AS A
+			USING
+			(
+			  SELECT NAME, Substring(NAME,11,8) MATNR, Substring(NAME,19,4) SALES_ORG_CD, Substring(NAME,23,2) DISTRB_CH, ID
+			  	   , (case LANGUAGE when 'D' then 'DE' when 'E' then 'EN' when 'F' then 'FR' when 'J' then 'JA' end) LANGUAGE, OBJECT, TDFORMAT, TDLINE
+				FROM IF_GET_LONGTEXT	with (nolock)
+			   WHERE IF_STS = 'R' AND LEN(NAME) >= 18
+			     AND IF_SEQ IN (SELECT MAX(IF_SEQ)
+								  FROM IF_GET_LONGTEXT	with (nolock)
+								 WHERE IF_STS = 'R'
+													     /* WHERE LANGUAGE ='D'	*/
+													     /* WHERE ID ='0001' 	*/
+							     GROUP BY NAME, ID, LANGUAGE	/*, OBJECT, TDFORMAT */
+							    )
+			) AS B
+			ON (A.COMP_CD = #{compCd} AND A.MATL_CD = B.MATNR AND 
+				A.SALES_ORG_CD	= B.SALES_ORG_CD AND
+				A.DISTRB_CH		= B.DISTRB_CH AND
+				A.LANG_CD		= ( CASE WHEN B.LANGUAGE = 'D' THEN 'DE'
+									     WHEN B.LANGUAGE = 'E' THEN 'EN'
+									     WHEN B.LANGUAGE = 'F' THEN 'FR'
+									     WHEN B.LANGUAGE = 'J' THEN 'JA'
+									     ELSE B.LANGUAGE END
+						          )
+			)
+			WHEN MATCHED THEN
+			  UPDATE SET A.TEXT_ID           = B.ID      
+						,A.LANG_CD           = B.LANGUAGE
+						,A.OBJECT            = B.OBJECT  
+						,A.TD_FORMAT         = B.TDFORMAT
+						,A.LONG_TEXT         = B.TDLINE  
+						,A.STATUS			 = 'A'		/* A(live), S(topped), D(eleted) */
+						,A.UPT_DT			 = GETDATE()
+						,A.UPT_ID			 = 'oms_if'
+			WHEN NOT MATCHED THEN
+				 INSERT (
+						 COMP_CD                     
+						,MATL_CD            /* MATNR   	 */
+						,SALES_ORG_CD       /* VKORG   	 */
+						,DISTRB_CH   		/* VTWEG   	 */
+						,TEXT_ID     		/* ID      	 */
+						,LANG_CD     		/* LANGUAGE	 */
+						,OBJECT      		/* OBJECT  	 */
+						,TD_FORMAT   		/* TDFORMAT	 */
+						,LONG_TEXT   		/* TDLINE  	 */
+						,STATUS		        /* A(live), S(topped), D(eleted) */
+						,REG_DT	            /* GETDATE() */
+						,REG_ID             /* 'oms_if'  */
+						,UPT_DT             /* GETDATE() */
+						,UPT_ID				/* 'oms_if'  */
+						) 
+				 VALUES (#{compCd}
+						,B.MATNR   
+						,B.SALES_ORG_CD   
+						,B.DISTRB_CH   
+						,B.ID      
+						,CASE WHEN B.LANGUAGE = 'D' THEN 'DE'
+						      WHEN B.LANGUAGE = 'E' THEN 'EN'
+						      WHEN B.LANGUAGE = 'F' THEN 'FR'
+						      WHEN B.LANGUAGE = 'J' THEN 'JA'
+						      ELSE B.LANGUAGE END
+						,B.OBJECT  
+						,B.TDFORMAT
+						,B.TDLINE  
+						,'A'
+						,GETDATE()
+						,'oms_if'
+						,GETDATE()
+						,'oms_if'
+						)
+						;
+			UPDATE IF_GET_MARA SET IF_STS = 'D' WHERE IF_STS = 'R';
+			UPDATE IF_GET_MAKT SET IF_STS = 'D' WHERE IF_STS = 'R';
+			UPDATE IF_GET_MVKE SET IF_STS = 'D' WHERE IF_STS = 'R';
+			UPDATE IF_GET_MARC SET IF_STS = 'D' WHERE IF_STS = 'R';
+			UPDATE IF_GET_MBEW SET IF_STS = 'D' WHERE IF_STS = 'R';
+			UPDATE IF_GET_MARM SET IF_STS = 'D' WHERE IF_STS = 'R';
+			UPDATE IF_GET_LONGTEXT SET IF_STS = 'D' WHERE IF_STS = 'R';
+			
+	</insert>
+</mapper>

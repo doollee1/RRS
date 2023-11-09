@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SapIfRecvEmpMapper">	
+	<insert id="insertSapIfRecvEmpPA0001" parameterType="HashMap">
+		INSERT INTO IF_GET_EMP(
+					  PERNR 
+					, ENDDA
+					, BEGDA 
+					, BUKRS 
+					, PERSG  
+					, KOSTL
+					, ORGEH
+					, NACHN
+					, VORNA
+					, PWCUR
+					, IF_DT
+					, IF_STS
+					) 
+			VALUES (
+					 #{PERNR}
+					,#{ENDDA}
+					,#{BEGDA}
+					,#{BUKRS}
+					,#{PERSG}
+					,#{KOSTL}
+					,#{ORGEH}
+					,#{NACHN}
+					,#{VORNA}
+					,#{PWCUR}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	<insert id="insertSapIfRecvEmpT501T" parameterType="HashMap">
+	
+	
+	
+		INSERT INTO IF_GET_EMPGR(
+					 SPRSL
+					,PERSG
+					,PTEXT
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+				    #{SPRSL}
+				   ,#{PERSG}
+				   ,#{PTEXT}
+				   ,getDate()
+				   ,'R'
+					)
+	</insert>
+	<insert id="insertSapIfRecvEmpHRORG" parameterType="HashMap">
+		INSERT INTO IF_GET_DEPT(
+					 SPRSL
+					,ORGEH
+					,ENDDA
+					,BEGDA
+					,ORGTX
+					,ORGEH_P
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{SPRSL}
+					,#{ORGEH}
+					,#{ENDDA}
+					,#{BEGDA}
+					,#{ORGTX}
+					,CASE WHEN #{ORGEH_P} = '' THEN 0 
+					      ELSE #{ORGEH_P} END
+					,getDate()
+					,'R'
+					)
+	</insert>
+	<insert id="insertSapIfRecvEmpCSKS" parameterType="HashMap">
+		INSERT INTO IF_GET_COSTCTR(
+					 KOSTL
+					,DATBI
+					<!-- ,DATAB -->
+					,BUKRS
+					,KTEXT
+					,SPRAS
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{KOSTL}
+					,#{DATBI}
+					<!-- ,#{DATAB} 유효종료일만 있음..-->
+					,#{BUKRS}
+					,#{KTEXT}
+					,#{SPRAS}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	<select id="callSpSapIfRecvEmp" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_ERP_RECV_EMP(#{COMP_CD}, #{USER_ID}) } 
+	</select>
+	
+</mapper>

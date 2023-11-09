@@ -1,0 +1,908 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="LeadMapper">
+	<select id="searchLeadList" parameterType="BMap" resultType="BMap">
+	/* LeadMapper.searchLeadList */
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.LEAD_NO DESC) ROWNUM
+			 , A.COMP_CD
+			 , A.LEAD_NO
+			 , A.STS_CD
+			 , DBO.GETCODENM('LEAD_STS', A.STS_CD, #{LANG}) AS STATUS
+			 , A.LEAD_DESC AS DESCRIPTION
+			 , A.CUST_CD AS PROSPECT
+		     , CASE WHEN ( SELECT COUNT(*) 
+			       FROM SD_LEAD_PART B with (nolock) 
+			      WHERE B.COMP_CD = A.COMP_CD
+			        AND B.LEAD_NO = A.LEAD_NO 
+			        AND B.PF_PS_NO = A.CUST_CD 
+					AND B.PF_TP = 'AG' 
+					AND B.M_PART_YN = 'Y') > 0 
+		           THEN ( SELECT B.PF_PS_NO + ' ' + B.PF_NM 
+			       FROM SD_LEAD_PART B with (nolock) 
+			      WHERE B.COMP_CD = A.COMP_CD
+			        AND B.LEAD_NO = A.LEAD_NO 
+			        AND B.PF_PS_NO = A.CUST_CD 
+					AND B.PF_TP = 'AG' 
+					AND B.M_PART_YN = 'Y') 
+                   ELSE ( A.CUST_CD + ' ' +  ( SELECT B.CUST_NM + '/' + substring(B.STREET_NM + ' ' + B.HAUS_NO + ' / ' + B.COUNTRY_CD + '-' + B.POST_CD + ' ' + B.CITY_NM,1,250)
+		           FROM MS_CUST_H B with (nolock)
+		          WHERE B.COMP_CD = A.COMP_CD 
+		            AND B.CUST_CD = A.CUST_CD ) ) END AS ACCOUNT
+			 , A.EMP_NO 
+			 , CASE WHEN ( SELECT COUNT(*)  
+			       FROM SD_LEAD_PART B with (nolock) 
+			      WHERE B.COMP_CD = A.COMP_CD
+			        AND B.LEAD_NO = A.LEAD_NO 
+			        AND B.PF_PS_NO = A.EMP_NO 
+					AND B.PF_TP = 'ZI' 
+					AND B.M_PART_YN = 'Y' ) > 0 
+					THEN ( SELECT B.PF_PS_NO + ' ' + B.PF_NM 
+			       FROM SD_LEAD_PART B with (nolock) 
+			      WHERE B.COMP_CD = A.COMP_CD
+			        AND B.LEAD_NO = A.LEAD_NO 
+			        AND B.PF_PS_NO = A.EMP_NO 
+					AND B.PF_TP = 'ZI' 
+					AND B.M_PART_YN = 'Y' )
+				ELSE ( A.EMP_NO + ' ' + ( SELECT CASE WHEN B.HAUS_NO != '' THEN B.NAME_1ST + ' ' + B.NAME_2ND + '/' + B.HAUS_NO + ' ' + B.STR_NM
+			                 ELSE B.NAME_1ST + ' ' + B.NAME_2ND END 
+			       FROM BC_USER B with (nolock) 
+			      WHERE B.COMP_CD = A.COMP_CD 
+			        AND B.USER_ID = A.EMP_NO ) ) END AS EMP_RESP
+			 , A.QUAL_LVL
+			 , DBO.GETCODENM('QUAL_LVL', A.QUAL_LVL, #{LANG}) AS QUALIFICATION
+			 , A.START_DT AS START_DATE
+			 , A.END_DT AS END_DATE
+			 , DBO.GETCODENM('ORIGIN_TP', A.ORGN_TP, #{LANG}) AS ORGIN
+			 , CASE WHEN ( SELECT COUNT(*) 
+			       FROM SD_LEAD_PART B with (nolock) 
+			      WHERE B.COMP_CD = A.COMP_CD
+			        AND B.LEAD_NO = A.LEAD_NO 
+			        AND B.PF_PS_NO = A.M_PS_NO  
+					AND B.PF_TP = 'AP'
+					AND B.M_PART_YN = 'Y' ) > 0
+					THEN  ( SELECT B.PF_PS_NO + ' ' + B.PF_NM 
+			       FROM SD_LEAD_PART B with (nolock) 
+			      WHERE B.COMP_CD = A.COMP_CD
+			        AND B.LEAD_NO = A.LEAD_NO 
+			        AND B.PF_PS_NO = A.M_PS_NO  
+					AND B.PF_TP = 'AP'
+					AND B.M_PART_YN = 'Y' ) 
+			      ELSE ( A.M_PS_NO + '  ' + ( SELECT CASE WHEN B.HAUS_NO != '' THEN B.NAME_1ST + ' ' + B.NAME_2ND + '/' + B.HAUS_NO + ' ' + B.STREET_NM
+			                                    ELSE B.NAME_1ST + ' ' + B.NAME_2ND END 
+			                          FROM MS_PARTNER B with (nolock) 
+			                         WHERE B.COMP_CD = A.COMP_CD 
+			                           AND B.CUST_CD = A.CUST_CD 
+			                           AND B.CODE = A.M_PS_NO )) END  AS MAIN_CONTACT
+			 , A.M_PS_NO AS CONTACT
+		     , '' AS PRIORITY
+		     , 'Request' AS LEAD_GROUP
+		     , A.SALES_ORG_CD
+		     , A.DISTRB_CH
+		     , A.DIV_CD
+		     , A.SALES_DOC_TP
+		     , A.ORGN_TP
+		     , A.ADDR
+		     , A.RSN_CD	
+			 , A.COUNTRY_CD
+			 , ( SELECT MAX(SO.DOC_NO)
+			       FROM SD_ORDER_H SO 
+				  WHERE SO.COMP_CD = A.COMP_CD
+				    AND SO.DOC_GR = 'QT'
+					AND SO.LEAD_NO = A.LEAD_NO ) AS REF_QT_NO	     
+		  FROM SD_LEAD_H A with (nolock)
+		 WHERE 1 = 1
+		   AND A.LEAD_NO NOT LIKE '999%'
+		<if test='PROSPECT != null and PROSPECT != ""'>
+		   AND A.CUST_CD LIKE '%' + dbo.SetParam(#{PROSPECT}) + '%'
+		</if>
+		<if test='ADDRESS_NM != null and ADDRESS_NM != ""'>
+		   AND A.ADDR LIKE '%' + dbo.SetParam(#{ADDRESS_NM}) + '%'
+		</if>
+		<if test='LEAD_ID != null and LEAD_ID != ""'>
+		   AND A.LEAD_NO LIKE '%' + dbo.SetParam(#{LEAD_ID}) + '%'
+		</if>
+		<if test='DESCRIPTION != null and DESCRIPTION != ""'>
+		   AND A.LEAD_DESC LIKE '%' + dbo.SetParam(#{DESCRIPTION}) + '%'
+		</if>
+		<if test='ORIGIN_TP != null and ORIGIN_TP != ""'>
+		   AND A.ORGN_TP = #{ORIGIN_TP}
+		</if>
+		<if test='START_DT != null and START_DT != ""'>
+		   AND DBO.FMTVDATE(A.START_DT, 'YYYY-MM-DD') <![CDATA[ >= ]]> PARSE(#{START_DT} AS DATE USING 'de-DE')
+		</if>
+		<if test='MAIN_CONTACT != null and MAIN_CONTACT != ""'>
+		   AND A.M_PS_NO = #{MAIN_CONTACT}
+		</if>
+		<if test='EMP_RESP != null and EMP_RESP != ""'>
+		   AND A.EMP_NO = #{EMP_RESP}
+		</if>
+		<if test='END_DT != null and END_DT != ""'>
+		   AND DBO.FMTVDATE(A.END_DT, 'YYYY-MM-DD') <![CDATA[ <= ]]> PARSE(#{END_DT} AS DATE USING 'de-DE')
+		</if>
+		<if test='LEAD_STS != null and LEAD_STS != ""'>
+		   AND A.STS_CD = #{LEAD_STS}
+		</if>
+		<if test='LEAD_REASON != null and LEAD_REASON != ""'>
+		   AND A.RSN_CD = #{LEAD_REASON}
+		</if>
+		<if test='QUAL_LVL != null and QUAL_LVL != ""'>
+		   AND A.QUAL_LVL = #{QUAL_LVL}
+		</if>
+		<if test='SALES_ORG_CD != null and SALES_ORG_CD != ""'>
+		   AND A.SALES_ORG_CD = #{SALES_ORG_CD}
+		</if>
+		<if test='DISTRB_CH != null and DISTRB_CH != ""'>
+		   AND A.DISTRB_CH = #{DISTRB_CH}
+		</if>
+		<if test='DIV_CD != null and DIV_CD != ""'>
+		   AND A.DIV_CD = #{DIV_CD}
+		</if>
+		<if test='COUNTRY_CD != null and COUNTRY_CD != ""'>
+		   AND A.COUNTRY_CD = #{COUNTRY_CD}
+		</if>
+		  
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+
+	<select id="selectLeadInfo" parameterType="BMap" resultType="BMap">
+		/* LeadMapper.selectLeadInfo */
+		SELECT A.COMP_CD
+             , A.LEAD_NO
+             , A.SALES_ORG_CD
+             , A.DISTRB_CH
+             , A.DIV_CD
+             , A.CUST_CD
+             , A.SALES_DOC_TP
+             , A.ORGN_TP AS ORIGIN_TP
+             , A.ADDR AS ADDRESS
+             , A.M_PS_NO AS MAIN_CONTACT
+             , A.EMP_NO AS EMP_RESP
+             , DBO.FMTVDATE(A.START_DT, 'DD.MM.YYYY') AS START_DT
+             , DBO.FMTVDATE(A.END_DT, 'DD.MM.YYYY') AS END_DT
+             , A.STS_CD AS LEAD_STS
+             , A.RSN_CD AS LEAD_REASON
+             , A.QUAL_LVL AS QUAL_LVL
+             , A.LEAD_DESC AS DESCRIPTION
+             , A.CUST_NOTE
+             , A.STATUS
+             , A.LEAD_NO AS LEAD_ID
+             , A.CUST_CD AS ACCOUNT
+		     , A.SALES_OFFICE_CD
+		     , A.SALES_GR
+		     , A.COUNTRY_CD
+		     , dbo.FmtdDate(A.UPT_DT, 'YYYYMMDDHHMISS') AS MODI_TMS
+             , CASE WHEN ( SELECT COUNT(*)FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.CUST_CD AND B.PF_TP = 'AG' AND B.M_PART_YN = 'Y' ) > 0
+                         THEN (SELECT B.PF_NM FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.CUST_CD AND B.PF_TP = 'AG' AND B.M_PART_YN = 'Y' ) 
+					ELSE (SELECT B.CUST_NM FROM MS_CUST_H B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.CUST_CD = A.CUST_CD) END  AS CUST_NM
+			 , CASE WHEN ( SELECT COUNT(*) FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.M_PS_NO AND B.PF_TP = 'AP' AND B.M_PART_YN = 'Y' ) > 0
+			             THEN (SELECT B.PF_NM FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.M_PS_NO AND B.PF_TP = 'AP' AND B.M_PART_YN = 'Y') 
+					ELSE ( SELECT B.NAME_1ST + ' ' + B.NAME_2ND FROM MS_PARTNER B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.CUST_CD = A.CUST_CD AND B.CODE = A.M_PS_NO ) END AS MAIN_CONTACT_NM
+			 , CASE WHEN ( SELECT COUNT(*) FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.EMP_NO AND B.PF_TP = 'ZI' AND B.M_PART_YN = 'Y' ) > 0
+			             THEN (SELECT B.PF_NM FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.EMP_NO AND B.PF_TP = 'ZI' AND B.M_PART_YN = 'Y' )
+					ELSE ( SELECT B.NAME_1ST + ' ' + B.NAME_2ND FROM BC_USER B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.USER_ID = A.EMP_NO ) END AS EMP_RESP_NM
+			 , ( SELECT MAX(SO.DOC_NO)
+			       FROM SD_ORDER_H SO 
+				  WHERE SO.COMP_CD = A.COMP_CD
+				    AND SO.DOC_GR = 'QT'
+					AND SO.LEAD_NO = A.LEAD_NO ) AS REF_QT_NO			     
+		  FROM SD_LEAD_H A with (nolock)
+		 WHERE 1 = 1
+		   AND A.COMP_CD = #{G_COMP_CD}
+		   AND A.SALES_DOC_TP = #{DOC_GR}
+		<if test='LEAD_NO != null and LEAD_NO != ""'>
+		   AND CAST(A.LEAD_NO AS NUMERIC(15,0)) = CAST(#{LEAD_NO} AS NUMERIC(15,0))
+		</if>
+		<if test='LEAD_ID != null and LEAD_ID != ""'>
+		   AND CAST(A.LEAD_NO AS NUMERIC(15,0)) = CAST(#{LEAD_ID} AS NUMERIC(15,0))
+		</if>
+	</select>
+	
+	<select id="selectCustomNote" parameterType="BMap" resultType="BMap">
+		/* LeadMapper.selectCustomNote */
+		SELECT COMP_CD
+		     , LEAD_NO
+		     , CUST_NOTE
+		  FROM SD_LEAD_H with (nolock)
+		 WHERE 1 = 1
+		   AND LEAD_NO = #{LEAD_NO}
+		   AND COMP_CD = #{G_COMP_CD}
+		   AND SALES_DOC_TP = #{DOC_GR}
+	</select>	
+	
+	<select id="selectNoteGrid" parameterType="BMap" resultType="BMap">
+	/* LeadMapper.selectNoteGrid */
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.LEAD_NO DESC) ROWNUM
+			 , A.COMP_CD
+			 , A.LEAD_NO
+			 , A.SEQ
+			 , A.TEXT_TP
+			 , A.CODE_NM
+			 , A.NOTE_TEXT
+			 , A.LANG_CD
+			 , A.STATUS
+			 , A.ROW_STATUS
+		 FROM ( SELECT A.COMP_CD
+					 , A.LEAD_NO
+					 , A.SEQ
+					 , A.TEXT_TP
+					 , DBO.GETCODENM('TEXT_TP', A.TEXT_TP, #{LANG}) AS CODE_NM
+					 , A.LANG_CD
+					 , A.NOTE_TEXT
+					 , A.STATUS
+					 , 'R' AS ROW_STATUS
+			      FROM SD_LEAD_NOTE A with (nolock)
+				 WHERE A.COMP_CD = #{G_COMP_CD}
+				   AND A.LEAD_NO = #{LEAD_NO}
+				 UNION  
+				SELECT #{G_COMP_CD} AS COMP_CD
+					 , '' AS LEAD_NO
+					 , NULL AS SEQ
+					 , B.READ_CD
+					 , CASE WHEN 'DE' = UPPER(#{LANG})  THEN B.CODE_NM
+					        WHEN 'EN' = UPPER(#{LANG})  THEN B.CODE_EN
+					        WHEN 'FR' = UPPER(#{LANG})  THEN B.CODE_FR
+					        WHEN 'JP' = UPPER(#{LANG})  THEN B.CODE_4TH
+					        ELSE B.CODE_NM END AS CODE_NM
+					 , UPPER(#{LANG})  AS LANG_CD
+					 , NULL AS NOTE_TEXT
+					 , NULL AS STATUS
+					 , '' AS ROW_STATUS
+				  FROM BC_COMM_H A  with (nolock)
+					   LEFT OUTER JOIN BC_COMM_L B with (nolock) 
+					                ON A.HEAD_CD = B.HEAD_CD AND B.STATUS = 'Y'
+				 WHERE A.HEAD_ID = 'TEXT_TP'
+				   AND B.READ_CD NOT IN ( SELECT C.TEXT_TP 
+				                            FROM SD_LEAD_NOTE C with (nolock)
+				                           WHERE C.COMP_CD = #{G_COMP_CD} 
+				                             AND C.LEAD_NO = #{LEAD_NO}
+				                         )
+		        ) A	
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+
+	<select id="resultProductsGrid" parameterType="BMap" resultType="BMap">
+	/* LeadMapper.resultProductsGrid */
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.LEAD_NO DESC) ROWNUM
+		     , A.COMP_CD
+		     , A.LEAD_NO
+             , A.SEQ
+             , A.ITEM_SEQ
+             , A.MATL_CD AS MAT_CD
+      		 , A.QTY
+      		 , A.ITEM_CTG
+      		 , A.UNIT_CD AS UNIT
+        	 , SUBSTRING(DBO.FMTVDATE(A.DELI_MON, 'DD.MM.YYYY'),4,8) AS DELI_MON
+      		 , A.STATUS
+      		 , ( SELECT B.MATL_DESC
+      		       FROM MS_ITEM_DESC B
+      		      WHERE B.COMP_CD = A.COMP_CD
+      		        AND B.MATL_CD = A.MATL_CD
+      		        AND B.LANG_CD = #{LANG}
+      		   ) AS MAT_DESC
+		  FROM SD_LEAD_ITEM A with (nolock)
+		 WHERE 1 = 1
+		   AND A.LEAD_NO = #{LEAD_NO}
+		   AND A.COMP_CD = #{G_COMP_CD}
+		<if test='LEAD_ID != null and LEAD_ID != ""'>
+		   AND CAST(A.LEAD_NO AS NUMERIC(15,0)) = CAST(#{LEAD_ID} AS NUMERIC(15,0))
+		</if>
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>	
+
+	<select id="resultPartInvGrid" parameterType="BMap" resultType="BMap">
+	/* LeadMapper.resultPartInvGrid */
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.SEQ DESC) ROWNUM
+			 , A.COMP_CD
+			 , A.SEQ
+			 , A.LEAD_PF_TP
+			 , A.PF_PS_NO
+			 , A.PF_NM
+			 , A.ADDR
+			 , A.M_PART_YN
+			 , A.TEL_NO
+			 , A.E_MAIL
+			 , A.STATUS
+			 , A.ROW_STATUS
+		 FROM ( SELECT A.COMP_CD
+					 , A.SEQ
+					 , A.PF_TP AS LEAD_PF_TP
+					 , A.PF_PS_NO
+					 , A.PF_NM
+					 , A.ADDR
+					 , A.M_PART_YN
+					 , A.TEL_NO
+					 , A.E_MAIL
+					 , A.STATUS
+					 , NULL AS ROW_STATUS
+				  FROM SD_LEAD_PART A with (nolock)
+				 WHERE 1 = 1
+				   AND A.LEAD_NO = #{LEAD_NO}
+				   AND A.COMP_CD = #{G_COMP_CD}
+				) A	
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>			
+	
+	<select id="resultInteractionLog" parameterType="BMap" resultType="BMap">
+		/* LeadMapper.resultInteractionLog */
+		SELECT A.COMP_CD
+             , A.LEAD_NO
+             , A.ACT_DESC
+             , A.ACCOUNT_CD
+             , A.LOCATION
+             , A.M_PS_NO
+             , DBO.FMTVDATE(A.ACT_DT, 'DD.MM.YYYY') AS ACT_DT 
+             , A.EMP_RESP_NO
+             , A.ACT_CTG
+             , A.SALES_ORG_CD
+             , A.IMPT_CL AS IMPORTANCE
+             , A.ACT_STS AS ACTIVE_STS
+             , A.IMPT_CL
+             , A.ACT_STS
+             , A.REPORT_NOTE
+             , A.SEQ
+             , ( SELECT B.CUST_NOTE 
+                   FROM SD_LEAD_H B with (nolock)
+                  WHERE B.COMP_CD = A.COMP_CD 
+                    AND B.LEAD_NO = A.LEAD_NO ) AS CUST_NOTES
+			 
+			 , CASE WHEN (SELECT COUNT(*) FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.ACCOUNT_CD AND B.PF_TP = 'AG' AND B.M_PART_YN = 'Y' ) > 0 
+                         THEN (SELECT B.PF_NM FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.ACCOUNT_CD AND B.PF_TP = 'AG' AND B.M_PART_YN = 'Y' )
+					ELSE (SELECT B.CUST_NM FROM MS_CUST_H B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.CUST_CD = A.ACCOUNT_CD)  END  AS ACCOUNT_NM
+					
+			 , CASE WHEN (SELECT COUNT(*) FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.M_PS_NO AND B.PF_TP = 'AP' AND B.M_PART_YN = 'Y') > 0  
+			             THEN (SELECT B.PF_NM FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.M_PS_NO AND B.PF_TP = 'AP' AND B.M_PART_YN = 'Y') 
+					ELSE ( SELECT B.NAME_1ST + ' ' + B.NAME_2ND FROM MS_PARTNER B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.CUST_CD = A.ACCOUNT_CD AND B.CODE = A.M_PS_NO ) END AS M_PS_NO_NM
+					
+			 , CASE WHEN (SELECT COUNT(*) FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.EMP_RESP_NO AND B.PF_TP = 'ZI' AND B.M_PART_YN = 'Y' ) > 0 
+			             THEN (SELECT B.PF_NM FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.EMP_RESP_NO AND B.PF_TP = 'ZI' AND B.M_PART_YN = 'Y' )
+					ELSE ( SELECT B.NAME_1ST + ' ' + B.NAME_2ND FROM BC_USER B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.USER_ID = A.EMP_RESP_NO ) END AS EMP_RESP_NO_NM			 
+		  FROM SD_LEAD_INTACT A with (nolock)
+		 WHERE 1 = 1
+		   AND A.LEAD_NO = #{LEAD_NO}
+		   AND A.COMP_CD = #{G_COMP_CD}
+		   AND A.SEQ = ( SELECT MAX(C.SEQ)
+		   		   	       FROM SD_LEAD_INTACT C with (nolock)
+		   		   	      WHERE 1 = 1
+		   		   	        AND C.LEAD_NO = #{LEAD_NO}
+		   		   	        AND C.COMP_CD = #{G_COMP_CD} 
+		                )
+	</select>	
+
+	<select id="resultContactReportGrid" parameterType="BMap" resultType="BMap">
+	/* LeadMapper.resultContactReportGrid */
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.REG_DT DESC) ROWNUM
+		     , A.COMP_CD
+             , A.LEAD_NO
+             , 'QC Contact Report' AS TRAN_TP
+             , CONVERT(CHAR(10), A.REG_DT, 104) AS TRAN_DT
+             , A.ACT_STS AS ACTIVE_STS
+             , 'Next document' AS REL_TYPE
+             , DBO.FMTDDATE(A.REG_DT, 'DD.MM.YYYY HH:MM:SS') AS CREATE_ON
+             , A.ACT_DESC
+             , 'CRM Business Activity' AS DOC_TYPE
+             , A.ACCOUNT_CD AS CREATE_AT
+             , A.EMP_RESP_NO + '  ' + ( SELECT B.NAME_1ST + ' ' + B.NAME_2ND FROM MS_PARTNER B WHERE B.COMP_CD = A.COMP_CD AND B.CUST_CD = A.ACCOUNT_CD AND B.CODE = A.M_PS_NO ) AS CREATE_BY
+             , A.SEQ AS TRAN_ID
+             , 'Z001' AS TRAN_TP_ID
+             , A.REG_ID AS CREATE_BY_ID
+             , A.ACCOUNT_CD
+             , A.LOCATION
+             , DBO.GETCODENM('ACTIVE_STS', A.ACT_STS, #{LANG}) AS ACT_STS
+             , A.M_PS_NO
+             , DBO.FMTVDATE(A.ACT_DT, 'DD.MM.YYYY') AS ACT_DT 
+             , A.EMP_RESP_NO 
+             , DBO.GETCODENM('SALES_ORG_CD', A.SALES_ORG_CD, #{LANG}) AS SALES_ORG_CD_NM
+             , A.SALES_ORG_CD
+             , DBO.GETCODENM('IMPORTANCE', A.IMPT_CL, #{LANG}) AS IMPT_CL
+             , A.IMPT_CL AS IMPORTANCE
+             , A.REPORT_NOTE
+             , DBO.GETCODENM('ACT_CTG', A.ACT_CTG, #{LANG}) AS ACT_CTG_NM
+             , A.ACT_CTG
+             , A.SEQ             
+             , ( SELECT B.CUST_NOTE 
+                   FROM SD_LEAD_H B with (nolock)
+                  WHERE B.COMP_CD = A.COMP_CD 
+                    AND B.LEAD_NO = A.LEAD_NO ) AS CUST_NOTES
+             
+			 , CASE WHEN (SELECT COUNT(*) FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.ACCOUNT_CD AND B.PF_TP = 'AG' AND B.M_PART_YN = 'Y' ) > 0 
+                         THEN (SELECT B.PF_NM FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.ACCOUNT_CD AND B.PF_TP = 'AG' AND B.M_PART_YN = 'Y' )
+					ELSE (SELECT B.CUST_NM FROM MS_CUST_H B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.CUST_CD = A.ACCOUNT_CD) END  AS ACCOUNT_NM
+					
+			 , CASE WHEN (SELECT COUNT(*) FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.M_PS_NO AND B.PF_TP = 'AP' AND B.M_PART_YN = 'Y') > 0
+			             THEN (SELECT B.PF_PS_NO + ' ' + B.PF_NM FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.M_PS_NO AND B.PF_TP = 'AP' AND B.M_PART_YN = 'Y') 
+					ELSE ( SELECT B.NAME_1ST + ' ' + B.NAME_2ND FROM MS_PARTNER B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.CUST_CD = A.ACCOUNT_CD AND B.CODE = A.M_PS_NO ) END AS M_PS_NO_NM
+					
+			 , CASE WHEN (SELECT COUNT(*) FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.EMP_RESP_NO AND B.PF_TP = 'ZI' AND B.M_PART_YN = 'Y' ) > 0 
+			             THEN (SELECT B.PF_PS_NO + ' ' + B.PF_NM FROM SD_LEAD_PART B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.LEAD_NO = A.LEAD_NO AND B.PF_PS_NO = A.EMP_RESP_NO AND B.PF_TP = 'ZI' AND B.M_PART_YN = 'Y' )
+					ELSE ( SELECT B.NAME_1ST + ' ' + B.NAME_2ND FROM BC_USER B with (nolock) WHERE B.COMP_CD = A.COMP_CD AND B.USER_ID = A.EMP_RESP_NO )  END AS EMP_RESP_NO_NM		
+					
+              
+		  FROM SD_LEAD_INTACT A with (nolock)
+		 WHERE 1 = 1
+		   AND A.LEAD_NO = #{LEAD_NO}
+		   AND A.COMP_CD = #{G_COMP_CD}
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>		
+			
+
+	<select id="resultChangeHistoryGrid" parameterType="BMap" resultType="BMap">
+	/* LeadMapper.resultChangeHistoryGrid */
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY HIS.ISEQ DESC) ROWNUM
+			 , CASE WHEN HIS.CRUD = 'U' THEN 'UPDATE' 
+			   ELSE 'DELETE' END													AS ACT
+			 , CASE WHEN HIS.TABLE_ID = 'SD_LEAD_H' THEN 'Header' 
+			 	    WHEN HIS.TABLE_ID = 'SD_LEAD_ITEM' THEN 'Item' 
+			 	    WHEN HIS.TABLE_ID = 'SD_LEAD_NOTE' THEN 'Text' 
+			 	    WHEN HIS.TABLE_ID = 'SD_LEAD_PART' THEN 'Partner Function'
+			 	    WHEN HIS.TABLE_ID = 'SD_LEAD_INTACT' THEN 'Contact Report'
+			 	    END + ' - ' + HIS.FIELD_ID		AS FIELD
+			 , HIS.OLD_VALUE															AS OLD_VAL
+			 , HIS.NEW_VALUE															AS NEW_VAL
+			 , DBO.FMTDDATE(HIS.UPT_DT, 'DD.MM.YYYY HH:MM:SS')					AS CHG_DT
+			 , USR.NAME_FULL														AS CHG_NM
+		  FROM SD_LEAD_H_CHG_HIS HIS  with (nolock)
+			   LEFT OUTER JOIN BC_USER USR  with (nolock) ON HIS.UPT_ID  = USR.USER_ID
+		 WHERE 1 = 1
+		    AND ( ( his.OLD_VALUE is null and his.NEW_VALUE != '' ) 
+			    or ( his.OLD_VALUE = '' and his.NEW_VALUE != '' )  
+			    or ( his.OLD_VALUE != '' and his.NEW_VALUE = '' )  
+			    or ( his.OLD_VALUE != '' and his.NEW_VALUE is null )   )
+			AND HIS.ISEQ NOT IN (
+			(SELECT ISEQ FROM SD_LEAD_H_CHG_HIS  with (nolock) WHERE 1 = 1 AND FIELD_ID = 'STATUS' AND OLD_VALUE IN ('I', 'T'))
+			)
+			AND HIS.LEAD_NO = #{LEAD_NO}
+		    AND HIS.COMP_CD = #{G_COMP_CD}
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>	
+	
+	<select id="getLeadSeq" parameterType="HashMap" resultType="String">
+		/* LeadMapper.getLeadSeq */
+		DECLARE	@seq varchar(15) EXEC dbo.SP_BC_NUMBER #{G_COMP_CD}, #{DOC_GR}, '*', @seq OUTPUT SELECT @seq;
+	</select>
+
+	<insert id="insertLeadInfo" parameterType="HashMap">
+		/* LeadMapper.insertLeadInfo */		
+		INSERT INTO SD_LEAD_H
+		          ( COMP_CD
+		           ,LEAD_NO
+		           ,SALES_ORG_CD
+		           ,DISTRB_CH
+		           ,DIV_CD
+		           ,CUST_CD
+		           ,SALES_DOC_TP
+		           ,SALES_OFFICE_CD
+		           ,SALES_GR
+		           ,ORGN_TP
+		           ,ADDR
+		           ,M_PS_NO
+		           ,EMP_NO
+		           ,START_DT
+		           ,END_DT
+		           ,STS_CD
+		           ,RSN_CD
+		           ,QUAL_LVL
+		           ,LEAD_DESC
+		           ,CUST_NOTE
+		           ,COUNTRY_CD
+		           ,STATUS
+		           ,REG_DT
+		           ,REG_ID
+		           ,UPT_DT
+		           ,UPT_ID )
+		     VALUES		     
+		          ( #{G_COMP_CD}
+			      , #{LEAD_NO}
+				  , #{SALES_ORG_CD}
+				  , #{DISTRB_CH}
+				  , #{DIV_CD}
+		          , #{CUST_CD}
+		          , #{DOC_GR}  /* SALES_DOC_TP */
+		          , #{SALES_OFFICE_CD}
+		          , #{SALES_GR}
+		          , #{ORIGIN_TP}
+		          , #{ADDRESS}
+		          , #{MAIN_CONTACT}
+		          , #{EMP_RESP}
+			      , PARSE(#{START_DT} AS DATE USING 'de-DE')   /*START_DT*/
+			      , PARSE(#{END_DT} AS DATE USING 'de-DE')   /* END_DT */
+		          , #{LEAD_STS}
+		          , #{LEAD_REASON} /* REASON */
+		          , #{QUAL_LVL}
+		          , #{DESCRIPTION}
+		          , #{CUST_NOTE}  /* text type */
+		          , #{COUNTRY_CD}
+		          , #{DOC_STATUS}
+				  , GETDATE()
+				  , #{USERID}
+				  , GETDATE()
+				  , #{USERID}
+				  )
+	</insert>
+	
+	<insert id="insertLeadIntact" parameterType="HashMap">
+		/* LeadMapper.insertLeadIntact */
+		INSERT INTO SD_LEAD_INTACT
+		           ( COMP_CD
+		           , LEAD_NO
+		           , ACT_DESC
+		           , ACCOUNT_CD
+		           , LOCATION
+		           , M_PS_NO
+		           , ACT_DT
+		           , EMP_RESP_NO
+		           , ACT_CTG
+		           , SALES_ORG_CD
+		           , IMPT_CL
+		           , ACT_STS
+		           , STATUS
+		           , REPORT_NOTE
+		           , REG_DT
+		           , REG_ID
+		           , UPT_DT
+		           , UPT_ID)
+		     VALUES
+		           ( #{G_COMP_CD}
+			       , #{LEAD_NO}
+			       , #{ACT_DESC}
+		           , #{ACCOUNT_CD}
+		           , #{LOCATION}
+		           , #{M_PS_NO}
+		           , PARSE(#{ACT_DT} AS DATE USING 'de-DE')
+		           , #{EMP_RESP_NO}
+		           , #{ACT_CTG}
+		           , #{SALES_ORG_CD}
+		           , #{IMPORTANCE}
+		           , #{ACTIVE_STS}
+		           , #{DOC_STATUS}
+		           , #{REPORT_NOTE}
+				   , GETDATE()
+				   , #{USERID}
+				   , GETDATE()
+				   , #{USERID}
+		           )
+
+	</insert>	
+	
+	<update id="updateLeadInfo" parameterType="HashMap">
+		/* LeadMapper.updateLeadInfo */	
+		UPDATE SD_LEAD_H
+		   SET SALES_ORG_CD = #{SALES_ORG_CD}
+             , DISTRB_CH = #{DISTRB_CH}
+             , DIV_CD = #{DIV_CD}
+             , CUST_CD = #{CUST_CD}
+             , SALES_DOC_TP = #{DOC_GR}  /* SALES_DOC_TP */
+             , SALES_OFFICE_CD = #{SALES_OFFICE_CD}
+             , SALES_GR = #{SALES_GR}
+             , ORGN_TP = #{ORIGIN_TP}
+             , ADDR = #{ADDRESS}
+             , M_PS_NO =#{MAIN_CONTACT}
+             , EMP_NO = #{EMP_RESP}
+             , START_DT = PARSE(#{START_DT} AS DATE USING 'de-DE')
+             , END_DT = PARSE(#{END_DT} AS DATE USING 'de-DE')
+             , STS_CD =#{LEAD_STS}
+             , RSN_CD = #{LEAD_REASON}
+             , QUAL_LVL = #{QUAL_LVL}
+             , LEAD_DESC = #{DESCRIPTION} 
+             , CUST_NOTE = #{CUST_NOTE}  /* text type */
+             , COUNTRY_CD = #{COUNTRY_CD}
+             , STATUS = #{DOC_STATUS}
+             , UPT_DT =  GETDATE()
+             , UPT_ID = #{USERID}
+		 WHERE COMP_CD =#{G_COMP_CD}
+		   AND LEAD_NO = #{LEAD_NO}
+	</update>
+	
+	<update id="updateLeadIntact" parameterType="HashMap">
+		/* LeadMapper.updateLeadIntact */	
+		UPDATE SD_LEAD_INTACT
+		   SET ACT_DESC = #{ACT_DESC}
+             , ACCOUNT_CD = #{ACCOUNT_CD}
+             , LOCATION = #{LOCATION}
+             , M_PS_NO = #{M_PS_NO}
+             , ACT_DT = PARSE(#{ACT_DT} AS DATE USING 'de-DE')
+             , EMP_RESP_NO = #{EMP_RESP_NO}
+             , ACT_CTG = #{ACT_CTG}
+             , SALES_ORG_CD = #{SALES_ORG_CD}
+             , IMPT_CL = #{IMPORTANCE}
+             , ACT_STS = #{ACTIVE_STS}
+             , STATUS = #{DOC_STATUS}
+             , REPORT_NOTE = #{REPORT_NOTE}  /* text type */
+             , UPT_DT =  GETDATE()
+             , UPT_ID = #{USERID}
+		 WHERE COMP_CD =#{G_COMP_CD}
+		   AND LEAD_NO = #{LEAD_NO}
+		   AND SEQ = #{SEQ}
+	</update>
+	
+	<insert id="insertLeadNotes" parameterType="HashMap">
+		/* LeadMapper.insertLeadNotes */
+		INSERT INTO SD_LEAD_NOTE
+		          ( COMP_CD
+		          , LEAD_NO
+		          , TEXT_TP
+		          , LANG_CD
+		          , NOTE_TEXT
+		          , PRV_NOTE
+		          , STATUS
+		          , REG_DT
+		          , REG_ID
+		          , UPT_DT
+		          , UPT_ID )
+		     VALUES
+		          ( #{COMP_CD}
+		          , #{LEAD_NO}
+		          , #{TEXT_TP}
+		          , #{LANG_CD}
+		          , #{NOTE_TEXT}  
+		          , #{PRV_NOTE} 
+		          , #{DOC_STATUS}
+				  , GETDATE()
+				  , #{USERID}
+				  , GETDATE()
+				  , #{USERID}
+				   )	
+	</insert>	
+	
+	<update id="updateLeadNotes" parameterType="HashMap">
+		/* LeadMapper.updateLeadNotes */	
+		UPDATE SD_LEAD_NOTE
+		   SET TEXT_TP =  #{TEXT_TP}
+             , LANG_CD = #{LANG_CD}
+             , NOTE_TEXT = #{NOTE_TEXT}  /* text type */
+             , PRV_NOTE = #{PRV_NOTE} /* text type */
+             , STATUS = #{STATUS}
+             , UPT_DT = GETDATE()
+             , UPT_ID = #{USERID}
+		 WHERE COMP_CD =#{COMP_CD}
+		   AND LEAD_NO = #{LEAD_NO}
+		   AND SEQ = #{SEQ}
+	</update>	
+	
+	<insert id="insertLeadProducts" parameterType="HashMap">
+		/* LeadMapper.insertLeadProducts */	
+		INSERT INTO SD_LEAD_ITEM
+		          ( COMP_CD
+		          , LEAD_NO
+		          , ITEM_SEQ
+		          , MATL_CD
+		          , QTY
+		          , UNIT_CD
+		          , ITEM_CTG
+		          , DELI_MON
+		          , STATUS
+		          , REG_DT
+		          , REG_ID
+		          , UPT_DT
+		          , UPT_ID )
+		    VALUES
+		          ( #{COMP_CD}
+		          , #{LEAD_NO}
+		          , #{ITEM_SEQ}
+		          , #{MAT_CD}
+		          , #{QTY}
+		          , #{UNIT}
+		          , #{ITEM_CTG}
+		          , PARSE(#{DELI_MON} AS DATE USING 'de-DE')
+		          , #{DOC_STATUS}
+				  , GETDATE()
+				  , #{USERID}
+				  , GETDATE()
+				  , #{USERID}
+		          )
+	</insert>	
+	
+	<update id="updateLeadProducts" parameterType="HashMap">
+		/* LeadMapper.updateLeadProducts */	
+		UPDATE SD_LEAD_ITEM
+		   SET ITEM_SEQ = #{ITEM_SEQ}
+             , MATL_CD = #{MAT_CD}
+             , QTY = #{QTY}
+             , UNIT_CD = #{UNIT}
+             , ITEM_CTG = #{ITEM_CTG}
+             , DELI_MON = PARSE(#{DELI_MON} AS DATE USING 'de-DE')
+             , STATUS = #{DOC_STATUS}
+             , UPT_DT =  GETDATE()
+             , UPT_ID = #{USERID}
+		 WHERE COMP_CD =#{COMP_CD}
+		   AND LEAD_NO = #{LEAD_NO}
+		   AND SEQ = #{SEQ}
+	</update>
+	
+	<insert id="insertLeadPartInv" parameterType="HashMap">
+		/* LeadMapper.insertLeadPartInv */
+		INSERT INTO SD_LEAD_PART
+		          ( COMP_CD
+		          , LEAD_NO
+		          , PF_TP
+		          , PF_PS_NO
+		          , PF_NM
+		          , ADDR
+		          , M_PART_YN
+		          , TEL_NO
+		          , E_MAIL
+		          , STATUS
+		          , REG_DT
+		          , REG_ID
+		          , UPT_DT
+		          , UPT_ID)
+		     VALUES
+		          ( #{COMP_CD}
+		          , #{LEAD_NO}
+		          , #{LEAD_PF_TP}
+		          , #{PF_PS_NO}
+		          , #{PF_NM}
+		          , #{ADDR}
+		          , #{M_PART_YN}
+		          , #{TEL_NO}
+		          , #{E_MAIL}
+		          , #{DOC_STATUS}
+				  , GETDATE()
+				  , #{USERID}
+				  , GETDATE()
+				  , #{USERID}
+		          )
+
+	</insert>	
+	
+	<update id="updateLeadPartInv" parameterType="HashMap">
+		/* LeadMapper.updateLeadPartInv */	
+		UPDATE SD_LEAD_PART
+		   SET PF_TP = #{LAEAD_PF_TP}
+             , PF_PS_NO = #{PF_PS_NO}
+             , PF_NM = #{PF_NM}
+             , ADDR = #{ADDR}
+             , M_PART_YN = #{M_PART_YN}
+             , TEL_NO = #{TEL_NO}
+             , E_MAIL = #{E_MAIL}
+             , STATUS = #{DOC_STATUS}
+             , UPT_DT =  GETDATE()
+             , UPT_ID = #{USERID}
+		 WHERE COMP_CD =#{COMP_CD}
+		   AND LEAD_NO = #{LEAD_NO}
+		   AND SEQ = #{SEQ}
+	</update>
+	
+	<select id="partnerSearchList" parameterType="HashMap" resultType="BMap">
+	/* LeadMapper.partnerSearchList */
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.SEQ) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			 , A.COMP_CD
+		     , A.CUST_CD
+			 , A.SEQ
+			 , A.SALES_ORG_CD
+			 , A.DISTRB_CH
+			 , A.DIV_CD
+			 , A.PF_TP AS LEAD_PF_TP
+			 , A.PF_PS_NO
+			 , A.PF_PS_NM
+			 , A.TEL_NO
+			 , A.DEPT_CD
+			 , A.STREET_NM
+			 , A.DEFAULT_YN
+			 , A.E_MAIL
+		  FROM PARTNER_SEARCH_POPUP_VW A
+		 WHERE 1 = 1
+		<if test="SALES_ORG_CD != null and SALES_ORG_CD != ''">
+		   AND A.SALES_ORG_CD = #{SALES_ORG_CD}
+		</if>
+		<if test="DISTRB_CH != null and DISTRB_CH != ''">
+		   AND A.DISTRB_CH = #{DISTRB_CH}
+		</if>
+		<if test="DIV_CD != null and DIV_CD != ''">
+		   AND A.DIV_CD = #{DIV_CD}
+		</if>
+		<if test="CUST_CD != null and CUST_CD != ''">
+		   AND A.CUST_CD LIKE '%' + #{CUST_CD} + '%'
+		</if>
+		<if test="CUST_NM != null and CUST_NM != ''">
+		   AND A.CUST_NM LIKE '%' + #{CUST_NM} + '%'
+		</if>
+		<if test="SEARCH_NM1 != null and SEARCH_NM1 != ''">
+		   AND A.SEARCH_NM1 LIKE '%' + #{SEARCH_NM1} + '%'
+		</if>
+		<if test="SEARCH_NM2 != null and SEARCH_NM2 != ''">
+		   AND A.SEARCH_NM2 LIKE '%' + #{SEARCH_NM2} + '%'
+		</if>
+		<if test="LEAD_PF_TP != null and LEAD_PF_TP != ''">
+		   AND A.PF_TP = #{LEAD_PF_TP}
+		</if>
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="getLeadStatusReasonCode" parameterType="BMap" resultType="CodeVO">
+	/* LeadMapper.getLeadStatusReasonCode */
+		SELECT TAIL.READ_CD CODE			  
+		     , TAIL.READ_CD + ' - ' + DBO.GetCodeNm(HEAD.HEAD_ID, TAIL.CODE, #{LANG}) VALUE
+		  FROM BC_COMM_H HEAD  WITH (NOLOCK) 
+		       JOIN BC_COMM_L TAIL ON HEAD.HEAD_CD = TAIL.HEAD_CD AND TAIL.STATUS = 'Y'
+		 WHERE HEAD.HEAD_ID = #{HEAD_CD}
+		   AND HEAD.STATUS = 'Y'
+		   AND TAIL.REF_CHR1 = #{REF_CHR1}
+		 ORDER BY TAIL.PRIORITY
+	</select>	
+	
+	<select id="getLeadTempSeq" parameterType="HashMap" resultType="String">
+		/* LeadMapper.getLeadTempSeq */
+		SELECT ISNULL(MAX(LEAD_NO) + 1, '999000001') FROM SD_LEAD_H WHERE 1 = 1 AND STATUS IN ('T', 'I') AND LEAD_NO LIKE '999%'
+	</select>
+	
+	
+	<delete id="deleteLeadInfo" parameterType="HashMap">
+		/* LeadMapper.deleteLeadInfo */
+		DELETE SD_LEAD_H 
+		 WHERE LEAD_NO = #{LEAD_NO}
+	</delete>
+	
+	<delete id="deleteLeadNotes" parameterType="HashMap">
+		/* LeadMapper.deleteLeadNotes */
+		DELETE SD_LEAD_NOTE
+		 WHERE LEAD_NO = #{LEAD_NO}
+	</delete>
+	
+	<delete id="deleteLeadProducts" parameterType="HashMap">
+		/* LeadMapper.deleteLeadProducts */
+		DELETE SD_LEAD_ITEM 
+		 WHERE LEAD_NO = #{LEAD_NO}
+	</delete>
+	
+	<delete id="deleteLeadPartInv" parameterType="HashMap">
+		/* LeadMapper.deleteLeadPartInv */
+		DELETE SD_LEAD_PART 
+		 WHERE LEAD_NO = #{LEAD_NO}
+	</delete>
+	
+	
+	
+	
+	<select id="resultCustSalesData" parameterType="BMap" resultType="BMap">
+		/* LeadMapper.resultCustSalesData */
+		SELECT COUNT(*) AS SALES_CNT	     
+		  FROM MS_CUST_SALES A with (nolock)
+		 WHERE 1 = 1
+		   AND A.CUST_CD = #{CUST_CD}
+<!-- 		SELECT COUNT(*) AS SALES_CNT	      -->
+<!-- 		  FROM MS_CUST_H A with (nolock) -->
+<!-- 		 WHERE 1 = 1 -->
+<!-- 		   AND A.CUST_CD = #{CUST_CD} -->
+<!-- 		   AND A.ACCOUNT_GR = 'Z001' -->
+		
+	</select>
+	
+	<select id="selectSalesOffice" parameterType="BMap" resultType="CodeVO">
+	/* LeadMapper.selectSalesOffice */
+		SELECT TAIL.READ_CD CODE			  
+		     , TAIL.READ_CD + ' - ' + DBO.GetCodeNm(HEAD.HEAD_ID, TAIL.CODE, #{LANG}) VALUE
+		FROM BC_COMM_H HEAD  WITH (NOLOCK) 
+		JOIN BC_COMM_L TAIL ON HEAD.HEAD_CD = TAIL.HEAD_CD AND TAIL.STATUS = 'Y'
+		WHERE 1 = 1
+		AND HEAD.HEAD_CD = '103200'
+		AND HEAD.STATUS = 'Y'
+		AND TAIL.CODE LIKE #{SALES_ORG_CD} + #{DISTRB_CH} + #{DIV_CD} +'%'
+		ORDER BY TAIL.PRIORITY
+	</select>
+	
+	<select id="setCustSalesData" parameterType="BMap" resultType="BMap">
+	/* LeadMapper.setCustSalesData */
+		SELECT TOP 1 SALES_ORG_CD
+		     , DISTRB_CH
+		     , DIV_CD
+		     , SALES_OFFICE_CD
+		     , SALES_GR
+		  FROM MS_CUST_SALES with (nolock)
+		 WHERE CUST_CD = #{CUST_CD}
+	</select>
+	
+	<select id="getModiTms" parameterType="BMap" resultType="String">
+	/* LeadMapper.getModiTms */
+		SELECT dbo.FmtdDate(UPT_DT, 'YYYYMMDDHHMISS') 
+		  FROM SD_LEAD_H 
+		 WHERE LEAD_NO = #{LEAD_NO}
+	</select>
+</mapper>

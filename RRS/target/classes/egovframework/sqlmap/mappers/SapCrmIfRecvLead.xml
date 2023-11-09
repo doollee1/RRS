@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SapCrmIfRecvLeadMapper">	
+	<insert id="insertSapCrmIfRecvLeadHEAD" parameterType="HashMap">
+		INSERT INTO IF_GET_CRM_LEAD_HEAD(
+					 GUID              
+					,OBJECT_ID         
+					,PROCESS_TYPE      
+					,POSTING_DATE      
+					,DESCRIPTION       
+					,DESCR_LANGUAGE    
+					,OBJECT_TYPE       
+					,CREATED_AT        
+					,CREATED_BY        
+					,REF_KIND          
+					,SALES_ORG         
+					,SALES_ORG_TXT     
+					,SALES_OFFICE      
+					,SALES_OFFICE_TXT  
+					,SALES_GROUP       
+					,SALES_GROUP_TXT   
+					,DIS_CHANNEL       
+					,DIS_CHANNEL_TXT   
+					,DIVISION          
+					,DIVISION_TXT      
+					,SOURCE            
+					,SOURCE_TXT        
+					,LEAD_TYPE         
+					,LEAD_TYPE_TXT     
+					,QUAL_LEVEL        
+					,QUAL_LEVEL_TXT    
+					,STATUS            
+					,TXT30             
+					,USER_STAT_PROC    
+					,USER_STAT_PROC_TXT
+					,TIMESTAMP_FROM    
+					,TIMESTAMP_TO
+					,REASON
+					,REASON_TXT
+					,IF_DT              
+					,IF_STS            
+					) 
+			VALUES (
+					 #{GUID}
+					,#{OBJECT_ID}
+					,#{PROCESS_TYPE}
+					,replace(#{POSTING_DATE},'-','')
+					,#{DESCRIPTION}
+					,#{DESCR_LANGUAGE}
+					,#{OBJECT_TYPE}
+					,#{CREATED_AT}
+					,#{CREATED_BY}
+					,#{REF_KIND}
+					,#{SALES_ORG}
+					,#{SALES_ORG_TXT}
+					,#{SALES_OFFICE}
+					,#{SALES_OFFICE_TXT}
+					,#{SALES_GROUP}
+					,#{SALES_GROUP_TXT}
+					,#{DIS_CHANNEL}
+					,#{DIS_CHANNEL_TXT}
+					,#{DIVISION}
+					,#{DIVISION_TXT}
+					,#{SOURCE}
+					,#{SOURCE_TXT}
+					,#{LEAD_TYPE}
+					,#{LEAD_TYPE_TXT}
+					,#{QUAL_LEVEL}
+					,#{QUAL_LEVEL_TXT}
+					,#{STATUS}
+					,#{TXT30}
+					,#{USER_STAT_PROC}
+					,#{USER_STAT_PROC_TXT}
+					,#{TIMESTAMP_FROM}
+					,#{TIMESTAMP_TO}
+					,#{REASON}
+					,#{REASON_TXT}
+					,GETDATE()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvLeadPROD" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_LEAD_PROD(
+					 GUID            
+					,HEADER          
+					,NUMBER_INT      
+					,ITM_TYPE        
+					,ITM_TYPE_TXT    
+					,PROCESS_QTY_UNIT
+					,PROD_HIERARCHY  
+					,ORDERED_PROD    
+					,ORDERED_PROD_TXT
+					,ORDER_QTY       
+					,IF_DT   
+					,IF_STS 
+					) 
+			 VALUES (
+					 #{GUID            }
+					,#{HEADER          }
+					,#{NUMBER_INT      }
+					,#{ITM_TYPE        }
+					,#{ITM_TYPE_TXT    }
+					,#{PROCESS_QTY_UNIT}
+					,#{PROD_HIERARCHY  }
+					,#{ORDERED_PROD    }
+					,#{ORDERED_PROD_TXT}
+					,#{ORDER_QTY       }
+					,GetDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvLeadPART" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_LEAD_PART(
+					 GUID           
+					,REF_KIND       
+					,REF_PARTNER_FCT
+					,REF_PARTNER_NO 
+					,PART_FCT_TXT   
+					,PART_NAME      
+					,ADDR_NR        
+					,ADDR_TXT       
+					,MAINPARTNER
+					,ADDRESS    
+					,IF_DT   
+					,IF_STS 
+					) 
+			 VALUES (
+					 #{GUID           }
+					,#{REF_KIND       }
+					,#{REF_PARTNER_FCT}
+					,#{REF_PARTNER_NO }
+					,#{PART_FCT_TXT   }
+					,#{PART_NAME      }
+					,#{ADDR_NR        }
+					,#{ADDR_TXT       }
+					,#{MAINPARTNER    }
+					,#{ADDRESS    }
+					,GetDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvLeadITEM" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_LEAD_ITEM(
+					 GUID          
+					,HEADER        
+					,OBJECT_ID     
+					,POSTING_DATE  
+					,DESCRIPTION   
+					,DESCR_LANGUAGE
+					,CREATED_AT    
+					,CREATED_BY    
+					,TDID          
+					,TDSPRAS       
+					,TDLINE        
+					,STATUS        
+					,TXT30
+					,ACT_LOCATION
+					,ACT_LOCATION_TXT
+					,CATEGORY
+					,CATEGORY_TXT
+					,PRIORITY
+					,PRIORITY_TXT
+					,ZZSALESORG
+					,ZZSALESORG_TXT					     
+					,IF_DT   
+					,IF_STS 
+					) 
+			 VALUES (
+					 #{GUID          }
+					,#{HEADER        }
+					,#{OBJECT_ID     }
+					,replace(#{POSTING_DATE  },'-','')
+					,#{DESCRIPTION   }
+					,#{DESCR_LANGUAGE}
+					,#{CREATED_AT    }
+					,#{CREATED_BY    }
+					,#{TDID          }
+					,#{TDSPRAS       }
+					,#{TDLINE        }
+					,#{STATUS        }
+					,#{TXT30         }
+					,#{ACT_LOCATION}
+					,#{ACT_LOCATION_TXT}
+					,#{CATEGORY}
+					,#{CATEGORY_TXT}
+					,#{PRIORITY}
+					,#{PRIORITY_TXT}
+					,#{ZZSALESORG}
+					,#{ZZSALESORG_TXT}
+					,GetDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvLeadTEXT" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_LEAD_TEXT(
+					 GUID    
+					,TDID    
+					,TDSPRAS 
+					,TDLINE  
+					,IF_DT   
+					,IF_STS 
+					) 
+			 VALUES (
+					 #{GUID} 
+					,#{TDID} 
+					,#{TDSPRAS} 
+					,#{TDLINE} 
+					,GetDate()
+					,'R'
+					)
+	</insert>
+	
+	<select id="callSpSapCrmIfRecvLead" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_CRM_RECV_LEAD(#{COMP_CD}, #{USER_ID}) } 
+	</select>
+	
+</mapper>

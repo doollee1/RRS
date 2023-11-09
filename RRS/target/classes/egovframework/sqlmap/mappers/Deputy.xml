@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="DeputyMapper">
+	<select id="selectApprovalIdList" parameterType="BMap" resultType="BMap">
+	/* Deputy.xml -> selectApprovalIdList */
+		SELECT SEQ, CODE, DEPT_CD, DEPT_NM, APPROVAL_ID, APPROVAL_NM, AMOUNT, AMOUNT_R, RANGE, RANGE_R
+		FROM(
+		SELECT '1' AS SEQ,
+			   APPR1.CODE,
+			   REF1.DEPT_CD,
+		       dbo.GetDeptNm('1000',REF1.DEPT_CD,'DE') DEPT_NM,
+			   REF1.USER_ID AS APPROVAL_ID,
+			   REF1.NAME_FULL APPROVAL_NM,
+			   dbo.SetAmt(APPR1.REF_NUM1) AS AMOUNT,
+			   '＞=' AS AMOUNT_R,
+			   dbo.SetAmt(APPR1.REF_NUM3) AS RANGE,
+			   '=' AS RANGE_R
+		FROM BC_COMM_L APPR1
+		INNER JOIN BC_USER REF1
+		ON APPR1.REF_CHR1 = REF1.USER_ID
+		WHERE HEAD_CD ='110600'
+		UNION ALL
+		SELECT '2' AS SEQ,
+			   APPR2.CODE,
+			   REF2.DEPT_CD,
+		       dbo.GetDeptNm('1000',REF2.DEPT_CD,'DE') DEPT_NM,
+			   REF2.USER_ID,
+			   REF2.NAME_FULL,
+			   dbo.SetAmt(APPR2.REF_NUM1) AS AMOUNT,
+			   '＜',
+			   dbo.SetAmt(APPR2.REF_NUM2) AS RANGE,
+			   '＞'
+		FROM BC_COMM_L APPR2
+		INNER JOIN BC_USER REF2
+		ON APPR2.REF_CHR2 = REF2.USER_ID 
+		WHERE HEAD_CD ='110600'
+		UNION ALL
+		SELECT '3' AS SEQ,
+		       APPR3.CODE,
+			   REF3.DEPT_CD,
+		       dbo.GetDeptNm('1000',REF3.DEPT_CD,'DE') DEPT_NM,
+			   REF3.USER_ID,
+			   REF3.NAME_FULL,
+			   dbo.SetAmt(APPR3.REF_NUM1) AS AMOUNT,
+			   '＜',
+			   dbo.SetAmt(APPR3.REF_NUM2) AS RANGE,
+			   '＜'
+		FROM BC_COMM_L APPR3
+		INNER JOIN BC_USER REF3 
+		ON APPR3.REF_CHR3 = REF3.USER_ID
+		WHERE HEAD_CD ='110600')A
+		WHERE 1 = 1
+	<if test='APPROVAL_ID != null and APPROVAL_ID != ""'>
+	   AND APPROVAL_ID = #{APPROVAL_ID}
+	</if>
+	<if test='APRV_TP != null and APRV_TP != ""'>
+	   AND CODE = #{APRV_TP}
+	</if>
+	    ORDER BY SEQ
+	</select>
+	
+	<update id="updateDeputyMaster" parameterType="BMap">
+		UPDATE BC_COMM_L
+		   SET REF_NUM1 =  dbo.getCastNum(#{AMOUNT})
+		     , UPT_DT = GETDATE()
+		     , UPT_ID = #{LOGIN_USER}
+		<if test='SEQ == "1"'>
+			 , REF_CHR1 = #{APPROVAL_ID}
+		</if>
+		<if test='SEQ == "2"'>
+			 , REF_CHR2 = #{APPROVAL_ID}
+			 , REF_NUM2 =  dbo.getCastNum(#{RANGE})
+		</if>
+		<if test='SEQ == "3"'>
+			 , REF_CHR3 = #{APPROVAL_ID}
+			 , REF_NUM2 =  dbo.getCastNum(#{RANGE})
+		</if>
+		  WHERE HEAD_CD = '110600'
+		    AND CODE = #{APRV_TP}
+	</update>
+	<select id="selectDeputyDetail" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY SEQ) ROWNUM,
+			   A.SEQ,
+			   B.DEPT_CD, 
+			   dbo.GetDeptNm(A.COMP_CD, B.DEPT_CD, #{LANG}) DEPT_NM, 
+			   A.DEPUTY_ID, 
+			   B.NAME_FULL AS DEPUTY_NM, 
+			   DBO.FMTDDATE(A.FROM_DT, 'DD.MM.YYYY') AS FROM_DT,
+			   DBO.FMTDDATE(A.TO_DT, 'DD.MM.YYYY') AS TO_DT,
+			   A.REASON, 
+			   A.STATUS
+		  FROM BC_DEPUTY A
+	INNER JOIN BC_USER B
+		    ON A.COMP_CD = B.COMP_CD
+		   AND A.DEPUTY_ID = B.USER_ID
+	     WHERE A.USER_ID = #{APPROVAL_ID}
+	 <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<insert id="insertDeputyDetail" parameterType="BMap">
+		 INSERT INTO BC_DEPUTY
+				   ( COMP_CD
+				   , USER_ID
+				   , DEPUTY_ID
+				   , FROM_DT 
+				   , TO_DT 
+				   , REASON
+				   , STATUS 
+				   , REG_DT 
+				   , REG_ID 
+				   , UPT_DT 
+				   , UPT_ID
+				   )
+			VALUES ( #{COMP_CD}
+			       , #{APPROVAL_ID}
+				   , #{DEPUTY_ID}
+				   , PARSE(#{FROM_DT} AS DATE USING 'de-DE') 
+				   , PARSE(#{TO_DT} AS DATE USING 'de-DE') 
+				   , #{REASON}
+				   , #{STATUS}
+				   , GETDATE()
+				   , #{LOGIN_USER}
+				   , GETDATE()
+				   , #{LOGIN_USER}
+				   )
+	</insert>
+	
+	<update id="updateDeputyDetail" parameterType="BMap">
+		UPDATE BC_DEPUTY
+		   SET DEPUTY_ID = #{DEPUTY_ID}
+		     , FROM_DT = PARSE(#{FROM_DT} AS DATE USING 'de-DE') 
+		     , TO_DT =  PARSE(#{TO_DT} AS DATE USING 'de-DE') 
+		     , REASON = #{REASON}
+		     , STATUS = #{STATUS}
+		     , UPT_DT = GETDATE()
+		     , UPT_ID = #{LOGIN_USER}
+		 WHERE SEQ = #{SEQ}
+		   AND USER_ID = #{APPROVAL_ID}
+	</update>
+	
+</mapper>

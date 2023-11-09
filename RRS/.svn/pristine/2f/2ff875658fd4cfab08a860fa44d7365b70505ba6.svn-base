@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SapIfRecvMsPartnerMapper">	
+	<insert id="insertSapIfRecvMsPartner" parameterType="HashMap">
+
+		INSERT INTO IF_GET_MS_PARTNER(
+					 LIFNR
+					,KTOKK
+					,LAND1
+					,NAME1
+					,ORT01
+					,PSTLZ
+					,REGIO
+					,SORTL
+					,STRAS
+					,MCOD1
+					,MCOD2
+					,MCOD3
+					,TELF1
+					,TELF2
+					,TELFX
+					,STCEG
+					,LFURL
+					,STENR
+					,IF_DT         
+					,IF_STS
+					) 
+			VALUES (
+					 #{LIFNR}
+					,#{KTOKK}
+					,#{LAND1}
+					,#{NAME1}
+					,#{ORT01}
+					,#{PSTLZ}
+					,#{REGIO}
+					,#{SORTL}
+					,#{STRAS}
+					,#{MCOD1}
+					,#{MCOD2}
+					,#{MCOD3}
+					,#{TELF1}
+					,#{TELF2}
+					,#{TELFX}
+					,#{STCEG}
+					,#{LFURL}
+					,#{STENR}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<select id="callSpSapIfRecvMsPartner" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_ERP_RECV_PARTNER(#{COMP_CD}, #{USER_ID}) } 
+	</select>
+	
+</mapper>

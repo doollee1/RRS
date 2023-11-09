@@ -1,0 +1,196 @@
+   <tbody> 
+    <tr> 
+      <td width="100%"> 
+         
+        <!-- ---- -->
+        
+			<table style="margin-bottom:15px; font-family:Arial; font-size:12px;">
+				<tr>
+					<td>
+					<font color="#ff6600">Hanwha Q CELLS GmbH</font><data> Sonnenallee 17-21, 06766 Bitterfeld-Wolfen (OT Thalheim), Germany</data>
+					</td>
+				</tr>
+			</table>
+<!-- -------- -->
+<div id="top">			
+		<table width="100%" style="font-family:Arial;">		
+				<tr>
+					<th style="text-align:left;">Rechnungsempfänger</th>
+					<th style="text-align:left;">Warenempfänger</th>
+				</tr>
+				<tr>
+					<td id="bill_cust_nm"></td>
+					<td id="ship_cust_nm"></td>
+				</tr>
+				<tr>
+					<td id="bill_street"></td>
+					<td id="ship_street"></td>
+				</tr>
+				<tr>
+					<td id="bill_post"></td>
+					<td id="ship_post"></td>
+				</tr>
+		</table>
+			
+		<h2><font color="#ff6600" style="margin-top:15px; font-family:verdana; font-size:25px !important;">PROFORMA RECHNUNG&nbsp;<data id=docno_h></data></font></h2>
+			
+		<table width="100%" style="text-align:left; font-family:Arial;">
+				<tr>
+					<th width="20%" id="t_title">Belegnummer/Datum</th>
+					<td id="docno">data</td>
+					<th width="20%" id="t_contract">Bezug</th>
+<!-- 					<td id="contacno"></td><br> -->
+					<td></td><br>
+				</tr>
+				<tr>
+					<th>Kundennummer</th>
+					<td id="cust">&nbsp;</td>
+					<th>Versandart</th>
+					<td id="shipment">&nbsp;</td>
+				</tr>
+				<tr>
+					<th>Ihr Zeichen</th>
+					<td id="ref">&nbsp;</td>
+					<th>Lieferbedingung</th>
+					<td id="incoterms">&nbsp;</td>
+				</tr>
+				<tr>
+					<th>Ihr Beleg</th>
+					<td id="udoc">&nbsp;</td>
+					<th>Zahlungsbedingung</th>
+					<td id="payterm">&nbsp;</td>
+				</tr>
+				<tr>
+					<th>Bearbeiter</th>
+					<td id="contact">&nbsp;</td>
+					<th>Ihre USt-ID-Nr.</th>
+					<td id="vatNo">&nbsp;</td>
+				</tr>
+				<tr>
+					<th>TEL</th>
+					<td id="tel">&nbsp;</td>
+					<th>&nbsp;</th>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<th>FAX</th>
+					<td id="fax">&nbsp;</td>
+					<th>&nbsp;</th>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="4"><font color="#ff6600">Bitte geben Sie bei Zahlungen stets die Auftrags- bzw. Rechnungsnummer als Verwendungszweck an.</font></td>
+				</tr>
+				<tr>
+					<td colspan="4" id="head_text"></td>
+				</tr>
+	</table>
+		<br>
+	<div id="header_table">
+		<table width="100%" style="border-bottom: 1px solid #333; border-top:1px solid #ff6600; font-family:Arial;">
+			<tr>
+				<td width="5%"><font color="#ff6600">Pos.</font></td>
+				<td width="10%"><font color="#ff6600">Artikel-Nr.</font></td>
+				<td width="20%"><font color="#ff6600">Artikel-Bezeichnung</font></td>
+				<td width="13%"><font color="#ff6600">vorauss. Liefertemin</font></td>
+				<td width="10%"><font color="#ff6600">Menge </font></td>
+				<td width="9%"><font color="#ff6600">ME</font></td>
+				<td width="12%"><font color="#ff6600">Einzelpreis</font></td>
+				<td width="7%"><font color="#ff6600">Pro</font></td>
+				<td width="14%" align="right"><font color="#ff6600">Zwischensumme</font></td>
+			</tr>
+		</table>
+	</div>
+	<div id="detail_table">
+	</div>
+</div>			
+
+<div id="bottom">	
+			<table width="100%" style="border-bottom: 1px solid #ccc; background-color: #DFEAFF; font-family:Arial;">
+				<tr>
+							<td width="20%"><p><strong>Gesamtleistung</strong><br>
+								<strong>Gesamtmenge</strong></p></td>
+							<td width="10%" align="right"><data id="t_wp"><strong>10101010101010 WP</strong></data><br>
+								<data id="t_qty"><strong>5555555</strong></data></td>
+							<td width="10%">&nbsp;</td>
+							<td width="15%"><strong>Zwischensumme</strong></td>
+							<td width="5%">&nbsp;</td>
+							<td width="15%">&nbsp;</td>
+							<td width="30%" align="right" id="tprice_eur1"><strong>5000000000</strong></td>
+				</tr>
+			</table>
+			<table width="100%" style="font-family:Arial;">
+				<tr>
+				 <td width="40%"></td>
+         		 <td width="20%" align="left">Sonderzu-/Abschlag %</td> 
+          		 <td id="disPercent" width="15%" align="right"></td> 
+          		 <td id="disPercentAmt" width="25%" align="right"></td> 
+			</tr>
+			</table>
+			<table width="100%" style="font-family:Arial;">
+				<tr>
+				 <td width="40%"></td>
+         		 <td width="20%" align="left">Sonderzu/Abschlg abs</td> 
+          		 <td id="disAbs" width="40%" align="right"></td> 
+			</tr>
+			</table>
+			<table width="100%" style="font-family:Arial;">
+				<tr>
+				 <td width="40%"></td>
+         		 <td width="20%" align="left">Fracht und Versicherung </td> 
+          		 <td id="freight" width="40%" align="right"></td> 
+			</tr>
+			</table>
+			<table width="100%" style="font-family:Arial;">
+				<tr>
+				 <td width="40%"></td>
+         		 <td width="20%" align="left"  style="background-color: #DFEAFF;"><strong>Zwischensumme</strong></td> 
+         		 <td width="15%" align="right" style="background-color: #DFEAFF;"></td>
+          		 <td id="tprice_discount" width="25%" align="right" style="background-color: #DFEAFF;"></td> 
+			</tr>
+			</table>
+			<table width="100%" style="font-family:Arial;">
+				<tr>
+				 <td width="40%"></td>
+         		 <td width="20%" align="left">MwSt.</td> 
+         		 <td id="vat" width="15%" align="right"></td>
+          		 <td id="vat_amt" width="25%" align="right"></td> 
+			</tr>
+			</table>
+			<table width="100%" style="border-top:1px solid #333; border-bottom:1px solid #333; font-family:Arial;">
+				<tr>
+				 <td width="40%"></td>
+         		 <td width="20%" align="left"><font color="#ff6600"><strong>ENDSUMME in EUR</strong></font></td> 
+          		 <td id="tprice_eur2" width="40%" align="right"><strong></strong></td> 
+			</tr>
+		</table>
+		<p style="font-family:Arial;">
+		<data id="description">
+Bitte beachten Sie, dass wir spätestens 5 Tage vor dem durch uns bestätigten Liefertermin den Zahlungseingang auf unserem Konto erwarten.<br>
+Nach Ablauf dieser Frist ist es uns nicht länger möglich, die Reservierung aufrecht zu erhalten und die Verfügbarkeit der Ware zu garantieren.<br><br>
+Kalenderwoche gemäß ISO 8601.<br>
+Sofern und soweit nicht schriftlich ausdrücklich etwas anderes mit der Hanwha Q CELLS GmbH ("Q CELLS") vereinbart ist, erfolgen alle Lieferungen und<br>
+Leistungen ausschließlich zu den Allgemeinen Geschäftsbedingungen der Q CELLS, die dieser<br>
+Proformarechnung entweder beigefügt sind oder über die Internetseite www.q-cells.com abgerufen werden können.<br>
+Die allgemeinen Geschäftsbedingungen des Empfängers dieser Proformarechnung oder Dritter sind ausgeschlossen.<br>
+Sofern nicht ausdrücklich anders angegeben beinhalten die ausgewiesenen Fracht- und Versicherungskosten KEINE Bereitstellung von<br>
+Entlademöglichkeiten bei Anlieferung.<br>
+Die Ware bleibt bis zur vollständigen Bezahlung Eigentum der Q CELLS.<br>
+Verarbeitung oder Umbildung der unbezahlten Ware erfolgen stets für Q CELLS als Hersteller, jedoch ohne Verpflichtung für sie.<br>
+Im Falle einer Verbindung bzw. einer Verarbeitung der unbezahlten Ware steht Q CELLS ein nach dem Rechnungswert bemessenes wertanteiliges (Mit-)<br>
+Eigentumsrecht an den neu geschaffenen Gegenständen zu.<br>
+Diese Rechnung ist ohne Unterschrift gültig.<br>	
+</data>
+		</p>
+			
+			<hr>
+</div>
+</div>
+        <!-- ---- -->
+      </td> 
+   </tr>
+ </tbody> 
+</table>
+</html>
+<script type="text/javascript">
+</script>

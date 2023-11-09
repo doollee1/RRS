@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SapCrmIfRecvQuotMapper">	
+	<insert id="insertSapCrmIfRecvQuotHEAD" parameterType="HashMap">
+		INSERT INTO IF_GET_CRM_QUOT_HEAD(
+					 GUID            
+					,OBJECT_ID       
+					,PROCESS_TYPE    
+					,POSTING_DATE    
+					,DESCRIPTION     
+					,DESCR_LANGUAGE  
+					,OBJECT_TYPE     
+					,CREATED_AT      
+					,CREATED_BY      
+					,REF_KIND        
+					,SALES_ORG       
+					,SALES_ORG_TXT   
+					,SALES_OFFICE    
+					,SALES_OFFICE_TXT
+					,SALES_GROUP     
+					,SALES_GROUP_TXT 
+					,DIS_CHANNEL     
+					,DIS_CHANNEL_TXT 
+					,DIVISION        
+					,DIVISION_TXT    
+					,STATUS          
+					,TXT30      
+					,TIMESTAMP_FROM  
+					,TIMESTAMP_TO    
+					,PO_NUMBER_SOLD  
+					,PO_DATE_SOLD    
+					,NET_VALUE   
+					,CURRENCY    
+					,PROBABILITY 
+					,INCOTERMS1  
+					,INCOTERMS2  
+					,PMNTTRMS    
+					,PMNTTRMS_TXT
+					,KBETR2
+					,KBETR3
+					,NET_VALUE_MAN
+					,GROSS_WEIGHT
+					,WEIGHT_UNIT 
+					,VOLUME      
+					,VOLUME_UNIT 
+					,PART_DLV      
+					,QUOTATION     
+					,DELIVERY_BLOCK
+					,REASON        
+					,REASON_TXT    
+					,IF_DT           
+					,IF_STS          
+					) 
+			VALUES (
+					 #{GUID            }
+					,#{OBJECT_ID       }
+					,#{PROCESS_TYPE    }
+					,replace(#{POSTING_DATE},'-','')
+					,#{DESCRIPTION     }
+					,#{DESCR_LANGUAGE  }
+					,#{OBJECT_TYPE     }
+					,#{CREATED_AT      }
+					,#{CREATED_BY      }
+					,#{REF_KIND        }
+					,#{SALES_ORG       }
+					,#{SALES_ORG_TXT   }
+					,#{SALES_OFFICE    }
+					,#{SALES_OFFICE_TXT}
+					,#{SALES_GROUP     }
+					,#{SALES_GROUP_TXT }
+					,#{DIS_CHANNEL     }
+					,#{DIS_CHANNEL_TXT }
+					,#{DIVISION        }
+					,#{DIVISION_TXT    }
+					,#{STATUS          }
+					,#{TXT30           }
+					,#{TIMESTAMP_FROM  }
+					,#{TIMESTAMP_TO    }
+					,#{PO_NUMBER_SOLD  }
+					,replace(#{PO_DATE_SOLD},'-','')
+					,#{NET_VALUE      }
+					,#{CURRENCY       }
+					,#{PROBABILITY    }
+					,#{INCOTERMS1     }
+					,#{INCOTERMS2     }
+					,#{PMNTTRMS       }
+					,#{PMNTTRMS_TXT   }
+					,#{KBETR2}
+					,#{KBETR3}
+					,#{NET_VALUE_MAN}
+					,#{GROSS_WEIGHT}
+					,#{WEIGHT_UNIT }
+					,#{VOLUME      }
+					,#{VOLUME_UNIT }
+					,#{PART_DLV      }
+					,#{QUOTATION     }
+					,#{DELIVERY_BLOCK}
+					,#{REASON        }
+					,#{REASON_TXT    }
+					,GETDATE()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvQuotITEM" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_QUOT_ITEM(
+					 HEADER          
+					,GUID            
+					,OBJECT_ID       
+					,PROCESS_TYPE    
+					,PROCESS_TYPE_TXT
+					,POSTING_DATE    
+					,DESCRIPTION     
+					,DESCR_LANGUAGE  
+					,CREATED_AT      
+					,CREATED_BY      
+					,TDID            
+					,TDSPRAS         
+					,TDLINE          
+					,STATUS          
+					,IF_DT           
+					,IF_STS          
+					) 
+			VALUES (
+					 #{HEADER          }
+					,#{GUID            }
+					,#{OBJECT_ID       }
+					,#{PROCESS_TYPE    }
+					,#{PROCESS_TYPE_TXT}
+					,replace(#{POSTING_DATE},'-','')
+					,#{DESCRIPTION     }
+					,#{DESCR_LANGUAGE  }
+					,#{CREATED_AT      }
+					,#{CREATED_BY      }
+					,#{TDID            }
+					,#{TDSPRAS         }
+					,#{TDLINE          }
+					,#{STATUS          }
+					,GETDATE()
+					,'R'
+					)
+
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvQuotPROD" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_QUOT_PROD(
+					 HEADER      
+					,GUID        
+					,NUMBER_INT  
+					,ORDERED_PROD
+					,DESCRIPTION 
+					,ITM_TYPE    
+					,ITM_TYPE_TXT
+					,ORDER_QTY   
+					,FR_TIME
+					,PROCESS_QTY_UNIT
+					,INCOTERMS1
+					,INCOTERMS2
+					,PMNTTRMS
+					,PMNTTRMS_TXT
+					,PROBABILITY  
+					,NET_VALUE    
+					,NET_PRICE    
+					,FREIGHT      
+					,REJECTION    
+					,REJECTION_TXT
+					,IF_DT           
+					,IF_STS          
+					) 
+			VALUES (
+					 #{HEADER      }
+					,#{GUID        }
+					,#{NUMBER_INT  }
+					,#{ORDERED_PROD}
+					,#{DESCRIPTION }
+					,#{ITM_TYPE    }
+					,#{ITM_TYPE_TXT}
+					,#{ORDER_QTY   }
+					,#{FR_TIME}
+					,#{PROCESS_QTY_UNIT}
+					,#{INCOTERMS1}
+					,#{INCOTERMS2}
+					,#{PMNTTRMS}
+					,#{PMNTTRMS_TXT}
+					,#{PROBABILITY  }
+					,#{NET_VALUE    }
+					,#{NET_PRICE    }
+					,#{FREIGHT      }
+					,#{REJECTION    }
+					,#{REJECTION_TXT}
+					,GETDATE()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvQuotCOND" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_QUOT_COND(
+					 HEADER
+					,GUID  
+					,KSCHL 
+					,KWERT 
+					,KMEIN 
+					,KPEIN 
+					,KONMS 
+					,KBETR
+					,WAERS
+					,IF_DT           
+					,IF_STS          
+					) 
+			VALUES (
+					 #{HEADER}
+					,#{GUID  }
+					,#{KSCHL }
+					,#{KWERT }
+					,#{KMEIN }
+					,#{KPEIN }
+					,#{KONMS }
+					,#{KBETR }
+					,#{WAERS }
+					,GETDATE()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvQuotPART" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_QUOT_PART(
+					 HEADER      
+					,GUID        
+					,REF_KIND    
+					,PARTNER_FCT 
+					,PARTNER_NO  
+					,PART_FCT_TXT
+					,PART_NAME   
+					,MAINPARTNER 
+					,STREET
+					,HOUSE_NUM1
+					,COUNTRY
+					,POST_CODE1
+					,CITY1 
+					,IF_DT           
+					,IF_STS          
+					) 
+			VALUES (
+					 #{HEADER      }
+					,#{GUID        }
+					,#{REF_KIND    }
+					,#{PARTNER_FCT }
+					,#{PARTNER_NO  }
+					,#{PART_FCT_TXT}
+					,#{PART_NAME   }
+					,#{MAINPARTNER }
+					,#{STREET}
+					,#{HOUSE_NUM1}
+					,#{COUNTRY}
+					,#{POST_CODE1}
+					,#{CITY1}
+					,GETDATE()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvQuotTEXT" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_QUOT_TEXT(
+					 GUID   
+					,TDID   
+					,TDSPRAS
+					,TDLINE 
+					,IF_DT           
+					,IF_STS          
+					) 
+			VALUES (
+					 #{GUID   }
+					,#{TDID   }
+					,#{TDSPRAS}
+					,#{TDLINE }
+					,GETDATE()
+					,'R'
+					)
+	</insert>
+	
+	<select id="callSpSapCrmIfRecvQuot" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_CRM_RECV_QUOT(#{COMP_CD}, #{USER_ID}) } 
+	</select>
+	
+</mapper>

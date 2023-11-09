@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MailManagemnetMapper">
+
+	<select id="searchMailContents" parameterType="BMap" resultType="BMap">
+	/* MailManagemnetMapper.searchMailContents */
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.MAIL_CD DESC) ROWNUM
+		     , A.MAIL_CD
+		     , '[' + dbo.GetCodeNm('MAIL_CD', A.MAIL_CD, #{LANG}) + '] ' + A.MAIL_NM AS MAIL_CD_NM
+		     , A.LANG AS MAIL_LANG
+		     , dbo.GetCodeNm('LANGUAGE', A.LANG, #{LANG}) AS LANGUAGE
+		     , A.MAIL_NM
+		     , A.BODY_TITLE_TXT
+		     , A.BODY_TITLE_TYPE
+		     , A.BODY_CONTENTS
+		     , A.ATTACH_FILE_YN
+		     , A.STATUS
+		  FROM BC_MAIL_H A
+		 WHERE 1 = 1		  
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectMailContents" parameterType="HashMap" resultType="BMap">
+	/* MailManagemnetMapper.selectMailContents */
+		SELECT A.MAIL_CD
+		     , A.LANG AS MAIL_LANG
+		     , A.MAIL_NM
+		     , A.BODY_TITLE_TXT
+		     , A.BODY_TITLE_TYPE
+		     , A.BODY_CONTENTS
+		     , A.ATTACH_FILE_YN
+		     , A.STATUS AS USED_OR_NOT
+		     , DBO.FMTDDATE(A.UPT_DT, 'DD.MM.YYYY') UPT_DT
+		     , A.UPT_ID
+		  FROM BC_MAIL_H A
+		 WHERE A.MAIL_CD = #{MAIL_CD}
+		   AND A.LANG = #{MAIL_LANG}
+	</select>
+
+	<select id="selectMailTitle" parameterType="HashMap" resultType="BMap">
+	/* MailManagemnetMapper.selectMailTitle */
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.PRIORITY ASC) ROWNUM
+		     , A.MAIL_CD
+		     , A.LANG
+		     , A.SEQ
+		     , A.TITLE_TYPE
+		     , A.TITLE_TEXT
+		     , A.PRIORITY
+		     , A.USE_YN
+		  FROM BC_MAIL_TITLE A
+		 WHERE A.MAIL_CD = #{MAIL_CD}
+		   AND A.LANG = #{MAIL_LANG}
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectMailRecipient" parameterType="HashMap" resultType="BMap">
+	/* MailManagemnetMapper.selectMailRecipient */
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.SEQ ASC) ROWNUM
+		     , A.MAIL_CD
+		     , A.LANG
+		     , A.SEQ
+		     , A.TYPE AS RCPNT_TYPE
+		     , A.RECV_TYPE AS RECEIVER_TYPE
+		     , A.RECV_NM
+		     , A.E_MAIL
+		     , A.USE_YN
+		  FROM BC_MAIL_L A
+		 WHERE A.MAIL_CD = #{MAIL_CD}
+		   AND A.LANG = #{MAIL_LANG}  
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="mailPreview" parameterType="HashMap" resultType="BMap">
+	/* MailManagemnetMapper.mailPreview */
+		SELECT A.MAIL_CD
+		     , A.LANG
+			 , dbo.GetCodeNm('MAIL_CD', A.MAIL_CD, #{LANG}) AS MAIL_NM
+             , ( SELECT STUFF ( ( SELECT ' ' + B.TITLE_TEXT FROM BC_MAIL_TITLE B with (nolock) WHERE B.MAIL_CD = A.MAIL_CD AND B.LANG = A.LANG AND B.USE_YN = 'Y' FOR XML PATH('')), 1, 1, '' ) ) AS TITLE_TEXT                              
+		     , A.BODY_TITLE_TXT
+		     , A.BODY_TITLE_TYPE
+		     , A.BODY_CONTENTS
+		     , A.ATTACH_FILE_YN
+			 , ( SELECT STUFF ( (SELECT '; ' + B.E_MAIL FROM BC_MAIL_L B with (nolock) WHERE B.MAIL_CD = A.MAIL_CD AND B.LANG = A.LANG  AND B.USE_YN = 'Y'  AND B.TYPE = '002'  FOR XML PATH('')), 1, 1, '' ) ) AS RECEIVER
+		 	 , ( SELECT STUFF ( (SELECT '; ' + E_MAIL 
+		 	 					   FROM MS_PARTNER B 
+		 	 					  WHERE CUST_CD = #{CUST_CD} 
+		 	 					  <if test="MAIL_TP == 'QT_YN'">
+		 	 					    AND QT_YN = 'Y'
+		 	 					  </if> 
+		 	 					  <if test="MAIL_TP == 'SO_YN'">
+		 	 					    AND ( SO_YN = 'Y'
+		 	 					    	OR INV_YN = 'Y' ) 
+		 	 					  </if>
+		 	 					FOR XML PATH('')), 1, 1, '' ) ) AS RECEIVER_P
+		      <if test='MAIL_CD == "AP"'>
+		     	, ISNULL(dbo.GetDrafterInfo('ZK',#{CUST_CD},'E-MAIL')
+		     	, ( SELECT B.E_MAIL FROM BC_MAIL_L B  with (nolock)  WHERE B.MAIL_CD = A.MAIL_CD AND B.LANG = A.LANG AND B.USE_YN = 'Y' AND B.TYPE = '001' )) SENDER
+		     	, ISNULL(dbo.GetDrafterInfo('ZK',#{CUST_CD},'NAME'),'') SENDER_NAME
+		     	, ISNULL(dbo.GetDrafterInfo('ZI',#{CUST_CD},'E-MAIL'),'') AP_CARBON_COPY
+		     	, ISNULL(( SELECT STUFF ( (SELECT ';  ' + B.E_MAIL FROM BC_MAIL_L B with (nolock) WHERE B.MAIL_CD = A.MAIL_CD AND B.LANG = A.LANG  AND B.USE_YN = 'Y'  AND B.TYPE = '003' AND RECV_NM = dbo.GetDivTp(#{COMP_CD},#{DOC_GR}, #{DOC_NO}) FOR XML PATH('')), 1, 1, '' ) ),'') AS CARBON_COPY
+		     	<if test='NEXT == "Y"'>
+		     		, isnull(dbo.GetApprovalId('EMAIL_N',#{COMP_CD},#{DOC_GR}, #{DOC_NO}),'') AS RECEIVER_APPR
+		     		, isnull(dbo.GetUserNm(#{COMP_CD},dbo.GetApprovalId('ID_N',#{COMP_CD},#{DOC_GR}, #{DOC_NO})),'')  AS RECEIVER_NAME
+		     	</if>
+		     	<if test='NEXT != "Y"'>
+		     		 , isnull(dbo.GetApprovalId('EMAIL',#{COMP_CD},#{DOC_GR}, #{DOC_NO}),'') AS RECEIVER_APPR
+		     		 , isnull(dbo.GetUserNm(#{COMP_CD},dbo.GetApprovalId('ID',#{COMP_CD},#{DOC_GR}, #{DOC_NO})),'')  AS RECEIVER_NAME
+		     	</if>
+		     	, ISNULL(( SELECT STUFF ( (SELECT '^' + (SELECT B.NAME_FULL FROM BC_USER B WHERE B.USER_ID = A.UPT_ID ) + ' (' + dbo.FmtdDate(A.UPT_DT, 'DD.MM.YYYY HH:MM:SS') + ') ' + A.REJECT_RSN
+                      FROM SD_ORDER_L_APPR A with (nolock) WHERE A.DOC_NO = #{DOC_NO} AND A.APPR_DT IS NOT NULL ORDER BY A.PRIORITY DESC FOR XML PATH('')), 1, 1, '' ) ),'') AS APPR_COMNT
+			 </if>
+			 <if test='MAIL_CD != "AP"'>
+			 	, ( SELECT B.E_MAIL FROM BC_MAIL_L B  with (nolock)  WHERE B.MAIL_CD = A.MAIL_CD AND B.LANG = A.LANG AND B.USE_YN = 'Y' AND B.TYPE = '001' ) AS SENDER
+			 	, ( SELECT STUFF ( (SELECT ';  ' + B.E_MAIL FROM BC_MAIL_L B with (nolock) WHERE B.MAIL_CD = A.MAIL_CD AND B.LANG = A.LANG  AND B.USE_YN = 'Y'  AND B.TYPE = '003'  FOR XML PATH('')), 1, 1, '' ) ) AS CARBON_COPY
+			 </if>
+		 FROM BC_MAIL_H A
+		 WHERE A.MAIL_CD = #{MAIL_CD}
+		   AND A.LANG = #{MAIL_LANG}
+	</select>	
+	
+	<select id="selectMailPreview" parameterType="HashMap" resultType="BMap">
+	/* MailManagemnetMapper.selectMailPreview */
+		SELECT A.MAIL_CD
+		     , A.LANG
+			 , dbo.GetCodeNm('MAIL_CD', A.MAIL_CD, #{LANG}) AS MAIL_NM
+             , ( SELECT STUFF ( ( SELECT ' ' + B.TITLE_TEXT FROM BC_MAIL_TITLE B with (nolock) WHERE B.MAIL_CD = A.MAIL_CD AND B.LANG = A.LANG AND B.USE_YN = 'Y' FOR XML PATH('')), 1, 1, '' ) ) AS TITLE_TEXT
+		     , A.BODY_TITLE_TXT
+		     , A.BODY_TITLE_TYPE
+		     , A.BODY_CONTENTS
+		     , A.ATTACH_FILE_YN
+			 , ( SELECT STUFF ( (SELECT ';' + B.E_MAIL FROM BC_MAIL_L B with (nolock) WHERE B.MAIL_CD = A.MAIL_CD AND B.LANG = A.LANG  AND B.USE_YN = 'Y'  AND B.TYPE = '002'  FOR XML PATH('')), 1, 1, '' ) ) AS RECEIVER
+			 , ( SELECT STUFF ( (SELECT ';' + B.E_MAIL FROM BC_MAIL_L B with (nolock) WHERE B.MAIL_CD = A.MAIL_CD AND B.LANG = A.LANG  AND B.USE_YN = 'Y'  AND B.TYPE = '003'  FOR XML PATH('')), 1, 1, '' ) ) AS CARBON_COPY
+		     , B.RECV_NM
+		     , B.E_MAIL
+		     , B.TYPE
+		     , ( SELECT B.E_MAIL FROM BC_MAIL_L B  with (nolock)  WHERE B.MAIL_CD = A.MAIL_CD AND B.LANG = A.LANG AND B.USE_YN = 'Y' AND B.TYPE = '001' ) AS SENDER
+		  FROM BC_MAIL_H A INNER JOIN BC_MAIL_L B ON B.LANG = A.LANG AND B.MAIL_CD = A.MAIL_CD AND B.USE_YN = 'Y'
+		 WHERE A.MAIL_CD = #{MAIL_CD}
+		   AND A.LANG = #{MAIL_LANG}
+	</select>
+	
+	<insert id="insertMailBody" parameterType="HashMap">
+		/* MailManagemnetMapper.insertMailBody */		
+		INSERT INTO BC_MAIL_H
+		          ( MAIL_CD
+		          , LANG
+		          , MAIL_NM
+		          , BODY_TITLE_TXT
+		          , BODY_TITLE_TYPE
+		          , BODY_CONTENTS
+		          , ATTACH_FILE_YN
+		          , STATUS
+		          , REG_DT
+		          , REG_ID
+		          , UPT_DT
+		          , UPT_ID )
+		     VALUES		     
+		          ( #{MAIL_CD}
+			      , #{MAIL_LANG}
+			      , #{MAIL_NM}
+			      , #{BODY_TITLE_TXT}
+			      , #{BODY_TITLE_TYPE}
+			      , #{BODY_CONTENTS}
+			      , #{ATTACH_FILE_YN}
+		          , #{USED_OR_NOT} 
+				  , GETDATE()
+				  , #{USERID}
+				  , GETDATE()
+				  , #{USERID}
+				  )
+	</insert>	
+	
+	<update id="updateMailBody" parameterType="HashMap">
+		/* MailManagemnetMapper.updateMailBody */	
+		UPDATE BC_MAIL_H
+		   SET MAIL_NM = #{MAIL_NM}
+		     , BODY_TITLE_TXT = #{BODY_TITLE_TXT}
+		     , BODY_TITLE_TYPE = #{BODY_TITLE_TYPE}
+		     , BODY_CONTENTS = #{BODY_CONTENTS}
+		     , ATTACH_FILE_YN = #{ATTACH_FILE_YN}
+		     , STATUS = #{USED_OR_NOT}
+             , UPT_DT =  GETDATE()
+             , UPT_ID = #{USERID}
+		 WHERE MAIL_CD =#{MAIL_CD}
+		   AND LANG = #{MAIL_LANG}
+	</update>
+
+	<insert id="insertMailTitle" parameterType="HashMap">
+		/* MailManagemnetMapper.insertMailTitle */		
+		INSERT INTO BC_MAIL_TITLE
+		          ( MAIL_CD
+		          , LANG
+		          , TITLE_TYPE
+		          , TITLE_TEXT
+		          , PRIORITY
+		          , USE_YN
+		          , REG_DT
+		          , REG_ID
+		          , UPT_DT
+		          , UPT_ID )
+		     VALUES		     
+		          ( #{MAIL_CD}
+			      , #{MAIL_LANG}
+			      , #{TITLE_TYPE}
+			      , #{TITLE_TEXT}
+			      , #{PRIORITY}
+			      , #{USE_YN}
+				  , GETDATE()
+				  , #{USERID}
+				  , GETDATE()
+				  , #{USERID}
+				  )
+	</insert>	
+	
+	<update id="updateMailTitle" parameterType="HashMap">
+		/* MailManagemnetMapper.updateMailTitle */	
+		UPDATE BC_MAIL_TITLE
+		   SET TITLE_TYPE = #{TITLE_TYPE}
+		     , TITLE_TEXT = #{TITLE_TEXT}
+		     , PRIORITY = #{PRIORITY}
+		     , USE_YN = #{USE_YN} 
+             , UPT_DT =  GETDATE()
+             , UPT_ID = #{USERID}
+		 WHERE MAIL_CD =#{MAIL_CD}
+		   AND LANG = #{MAIL_LANG}
+		   AND SEQ = #{SEQ}
+	</update>
+
+	<insert id="insertMailRecipient" parameterType="HashMap">
+		/* MailManagemnetMapper.insertMailRecipient */		
+		INSERT INTO BC_MAIL_L
+		          ( MAIL_CD
+		          , LANG
+		          , TYPE
+		          , RECV_TYPE
+		          , RECV_NM
+		          , E_MAIL
+		          , USE_YN
+		          , REG_DT
+		          , REG_ID
+		          , UPT_DT
+		          , UPT_ID )
+		     VALUES		     
+		          ( #{MAIL_CD}
+			      , #{MAIL_LANG}
+			      , #{RCPNT_TYPE}
+			      , #{RECEIVER_TYPE}
+			      , #{RECV_NM}
+			      , #{E_MAIL}
+			      , #{USE_YN}
+				  , GETDATE()
+				  , #{USERID}
+				  , GETDATE()
+				  , #{USERID}
+				  )
+	</insert> 	
+	
+	<update id="updateMailRecipient" parameterType="HashMap">
+		/* MailManagemnetMapper.updateMailRecipient */	
+		UPDATE BC_MAIL_L
+		   SET TYPE = #{RCPNT_TYPE}
+		     , RECV_TYPE = #{RECEIVER_TYPE}
+		     , RECV_NM = #{RECV_NM}
+		     , E_MAIL = #{E_MAIL}
+		     , USE_YN = #{USE_YN} 
+             , UPT_DT =  GETDATE()
+             , UPT_ID = #{USERID}
+		 WHERE MAIL_CD =#{MAIL_CD}
+		   AND LANG = #{MAIL_LANG}
+		   AND SEQ = #{SEQ}
+	</update>
+	
+	
+	<delete id="deleteMailRecipient" parameterType="HashMap">
+		/* MailManagemnetMapper.deleteMailRecipient */	
+		DELETE BC_MAIL_L
+		 WHERE MAIL_CD =#{MAIL_CD}
+		   AND LANG = #{MAIL_LANG}
+		   AND SEQ = #{SEQ}
+	</delete>
+	
+
+	<select id="searchMailTitle" parameterType="BMap" resultType="BMap">
+	/* MailManagemnetMapper.searchMailTitle */
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.PRIORITY ASC) ROWNUM
+		     , A.MAIL_CD
+		     , A.LANG
+		     , A.SEQ
+		     , A.TITLE_TYPE
+		     , A.TITLE_TEXT
+		     , A.PRIORITY
+		     , A.USE_YN
+		  FROM ( SELECT #{MAIL_CD} AS MAIL_CD, #{LANG} AS LANG, NULL AS SEQ, '001' AS TITLE_TYPE, '' AS TITLE_TEXT, '1' AS PRIORITY, 'Y' AS USE_YN
+		  		 UNION ALL
+		  		 SELECT #{MAIL_CD} AS MAIL_CD, #{LANG} AS LANG, NULL AS SEQ, '002' AS TITLE_TYPE, '' AS TITLE_TEXT, '2' AS PRIORITY, 'Y' AS USE_YN
+		  		 UNION ALL
+		  		 SELECT #{MAIL_CD} AS MAIL_CD, #{LANG} AS LANG, NULL AS SEQ, '001' AS TITLE_TYPE, '' AS TITLE_TEXT, '3' AS PRIORITY, 'Y' AS USE_YN
+		  		 UNION ALL
+		  		 SELECT #{MAIL_CD} AS MAIL_CD, #{LANG} AS LANG, NULL AS SEQ, '002' AS TITLE_TYPE, '' AS TITLE_TEXT, '4' AS PRIORITY, 'Y' AS USE_YN
+		  		 UNION ALL
+		  		 SELECT #{MAIL_CD} AS MAIL_CD, #{LANG} AS LANG, NULL AS SEQ, '001' AS TITLE_TYPE, '' AS TITLE_TEXT, '5' AS PRIORITY, 'N' AS USE_YN
+		  	   ) A
+		 WHERE 1 = 1		  
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+
+
+	<select id="searchMailRecipient" parameterType="BMap" resultType="BMap">
+	/* MailManagemnetMapper.searchMailRecipient */
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.SEQ ASC) ROWNUM
+		     , A.MAIL_CD
+		     , A.LANG
+		     , A.SEQ
+		     , A.TYPE AS RCPNT_TYPE
+		     , A.RECV_TYPE AS RECEIVER_TYPE
+		     , A.RECV_NM
+		     , A.E_MAIL
+		     , A.USE_YN
+		  FROM ( SELECT #{MAIL_CD} AS MAIL_CD, #{LANG} AS LANG, NULL AS SEQ, '001' AS TYPE, '001' AS RECV_TYPE, '' AS RECV_NM, '' AS E_MAIL, 'Y' AS USE_YN
+		  		 UNION ALL
+		  		 SELECT #{MAIL_CD} AS MAIL_CD, #{LANG} AS LANG, NULL AS SEQ, '002' AS TYPE, '003' AS RECV_TYPE, '' AS RECV_NM, '' AS E_MAIL, 'Y' AS USE_YN
+		  		 UNION ALL
+		  		 SELECT #{MAIL_CD} AS MAIL_CD, #{LANG} AS LANG, NULL AS SEQ, '003' AS TYPE, '005' AS RECV_TYPE, '' AS RECV_NM, '' AS E_MAIL, 'Y' AS USE_YN
+		  	   ) A
+		 WHERE 1 = 1		  
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<insert id="insertEmailHistory" parameterType="HashMap">
+		/* MailManagemnetMapper.insertEmailHistory */		
+		INSERT INTO BC_MAIL_HISTORY
+		         ( MAIL_CD
+			      ,LANG
+			      ,MAIL_FROM
+			      ,MAIL_TO
+			      ,MAIL_CC
+			      ,MAIL_NM
+			      ,MAIL_TITLE
+			      ,MAIL_CONTENTS
+			      ,ATTACH_FILE_YN
+			      ,SEND_DATE
+			      ,SEND_STATUS
+			      ,STATUS
+			      ,REG_DT
+			      ,REG_ID
+			      ,UPT_DT
+			      ,UPT_ID)
+		     VALUES		     
+		         ( #{MAIL_CD}
+			      ,#{MAIL_LANG}
+			      ,#{MAIL_FROM}
+			      ,#{MAIL_TO}
+			      ,#{MAIL_CC}
+			      ,dbo.GetCodeNm('MAIL_CD', #{MAIL_CD}, #{MAIL_LANG})
+			      ,#{MAIL_TITLE}
+			      ,#{MAIL_CONTENTS}
+			      ,#{ATTACH_FILE_YN}
+			      ,dbo.FmtdDate(#{SEND_DATE}, 'YYYY-MM-DD HH:MM:SS')
+			      ,#{SEND_STATUS}
+			      ,#{STATUS}
+				  , GETDATE()
+				  , #{USERID}
+				  , GETDATE()
+				  , #{USERID}
+				  )
+	</insert>	
+	
+	<select id="selectMailHistory" parameterType="BMap" resultType="BMap">
+	/* MailManagemnetMapper.selectMailHistory */
+	<include refid="page.pagingPre"/>  <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY REG_DT DESC) ROWNUM
+		     , '[' + MAIL_CD + '] ' + dbo.GetCodeNm('MAIL_CD', MAIL_CD, #{LANG}) AS MAIL_CD
+		     , MAIL_FROM
+		     , MAIL_TO
+		     , MAIL_CC
+		     , MAIL_CONTENTS
+		     , '[' + LANG + '] ' + dbo.GetCodeNm('LANGUAGE', LANG, #{LANG}) AS LANG
+		     , ATTACH_FILE_YN
+		     , MAIL_TITLE
+		     , dbo.FmtdDate(SEND_DATE, 'DD.MM.YYYY') AS SEND_DATE
+		  FROM BC_MAIL_HISTORY
+		 WHERE 1 = 1		  
+		 <if test='MAIL_CD != null and MAIL_CD != ""'>
+		 	AND MAIL_CD = #{MAIL_CD}
+		 </if>
+		 <if test='MAIL_TO != null and MAIL_TO != ""'>
+		 	AND MAIL_TO LIKE dbo.setParam(#{MAIL_TO})
+		 </if>
+		 <if test='SEND_DATE != null and SEND_DATE != ""'>
+		 	AND dbo.FmtdDate(SEND_DATE, 'DD.MM.YYYY') = #{SEND_DATE}
+		 </if>
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	
+	<select id="selectFromInfo" parameterType="HashMap" resultType="BMap">
+	/* MailManagemnetMapper.selectFromInfo */
+	   SELECT NAME_FULL
+	        , E_MAIL
+	     FROM BC_USER
+	    WHERE USER_ID = #{APPR_ID}
+	</select>
+	
+	<select id="selectApprList" parameterType="HashMap" resultType="BMap">
+	/* MailManagemnetMapper.selectApprList */
+		SELECT A.APPR_ID,
+			   (SELECT B.E_MAIL FROM BC_USER B WHERE B.USER_ID = A.APPR_ID) AS E_MAIL
+		 FROM SD_ORDER_L_APPR A
+		WHERE A.DOC_NO = #{DOC_NO}
+		  AND A.DOC_GR = #{DOC_GR}
+		  AND A.APPR_DT IS NOT NULL
+	</select>
+	
+</mapper>

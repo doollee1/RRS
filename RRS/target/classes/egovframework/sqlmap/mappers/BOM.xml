@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BOMMapper">
+	<select id="selectMaterialList" parameterType="BMap" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+			/* BOMMapper.xml -> selectMaterialList */
+				SELECT ROW_NUMBER() OVER(ORDER BY A.MATL_CD) ROWNUM,
+					   A.* 
+				  FROM (
+						SELECT BOM.MATL_CD, 
+						       CASE WHEN #{LANG} = 'EN' THEN ITEM.MATL_EN 
+								    WHEN #{LANG} = 'FR' THEN ITEM.MATL_FR 
+								    ELSE ITEM.MATL_NM END MATL_NM,
+						       DE.MATL_DESC,
+							   BOM.PLANT_CD,
+							   DBO.GETCODENM('PLANT_CD',BOM.PLANT_CD, #{LANG}) AS PLANT_NM,
+							   dbo.SetQty(BS_QTY)  AS BOM_QTY, 
+							   dbo.GetCodeNm('BASIC_UNIT',BOM.BS_UNIT,#{LANG}) AS UNIT_CD,
+							   BOM.STATUS,
+							   DBO.GETCODENM('STATUS', BOM.STATUS, #{LANG}) AS STATUS_NM,
+							   DBO.FMTVDATE(BOM.VAL_FR_DT_H, 'DD.MM.YYYY') AS VAL_FR_DT,
+							   '31.12.9999' AS VAL_TO_DT
+						  FROM MS_ITEM_BOM BOM WITH (NOLOCK) 
+					 LEFT JOIN MS_ITEM ITEM WITH (NOLOCK) 
+					        ON BOM.COMP_CD = ITEM.COMP_CD 
+						   AND BOM.MATL_CD = ITEM.MATL_CD 
+					 LEFT JOIN MS_ITEM_DESC DE WITH (NOLOCK) 
+					        ON BOM.COMP_CD = DE.COMP_CD 
+						   AND BOM.MATL_CD = DE.MATL_CD 
+						   AND DE.LANG_CD = #{LANG} 
+						 WHERE 1 = 1
+				 	<if test='MATL_CD_ST != null and MATL_CD_ST != ""'>
+				 		  AND BOM.MATL_CD like dbo.SetParam(#{MATL_CD_ST}) <!-- MATL_CD_ST만 있는경우 LIKE -->
+					</if>
+					<if test='MATL_NM_ST != null and MATL_NM_ST != ""'>
+						<if test='LANG == "EN"'>
+     		  				 AND ITEM.MATL_EN LIKE dbo.setParam(#{MATL_NM_ST})
+     		 	 		</if>
+     		  			<if test='LANG == "FR"'>
+     		  				 AND ITEM.MATL_FR LIKE dbo.setParam(#{MATL_NM_ST})
+     		  			</if>
+     		  			<if test='LANG != "EN" and LANG != "FR"'>
+     		  				 AND ITEM.MATL_NM LIKE dbo.setParam(#{MATL_NM_ST})
+     		  			</if>
+     		  		</if>
+					<if test='PLANT_CD != null and PLANT_CD != ""'>
+					      AND BOM.PLANT_CD = #{PLANT_CD}
+					</if>
+					<if test='BOM_USAGE != null and BOM_USAGE != ""'>
+					      AND BOM.BOM_USAGE = #{BOM_USAGE}
+					</if>
+					<if test='VALID_DT != null and VALID_DT != ""'>
+					      AND PARSE(#{VALID_DT} AS DATE USING 'de-DE') BETWEEN DBO.FMTVDATE(BOM.VAL_FR_DT_H, 'YYYY-MM-DD') AND '9999-12-31' 
+					</if> 
+					<if test='EXC_HD == "Y"'>
+				 		  AND BOM.DEL_YN != 'Y'
+					</if>  
+					) A
+					GROUP BY MATL_CD, MATL_NM, MATL_DESC, PLANT_CD, PLANT_NM, BOM_QTY, UNIT_CD, STATUS, STATUS_NM, VAL_FR_DT, VAL_TO_DT
+		 <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+
+	<select id="selectMaterialCode" parameterType="BMap" resultType="BMap">
+		/* BOMMapper.xml -> selectMaterialList */
+		SELECT MATL_CD
+		     , MATL_NM 
+		  FROM MS_ITEM WITH (NOLOCK) 
+		 WHERE MATL_CD = #{MATL_CD}
+	</select>	
+	
+	<select id="selectBOMList" parameterType="BMap" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+			/* BOMMapper.xml -> selectBOMList */
+			SELECT ROW_NUMBER() OVER(ORDER BY BOM.MATL_CD) ROWNUM
+			     , BOM.ITEM_SEQ 					      AS ITEM
+			     , DBO.GETCODENM('ITEM_CTG', BOM.ITEM_CTG, #{LANG}) ITEM_CTG
+			     , BOM.BOM_CD 							  AS COMPONENT
+			     , DE.MATL_DESC 						  AS COMPONENT_DESC
+			     , dbo.SetQty(BOM.BOM_QTY)				  AS QTY     
+			     , dbo.GetCodeNm('BASIC_UNIT',BOM.UNIT_CD,#{LANG}) AS UNIT
+			     , DBO.FMTVDATE(BOM.VAL_FR_DT,'DD.MM.YYYY') AS FROM_DT
+			     , '31.12.9999'            AS TO_DT
+			     , 'Rel to Sales' AS RTS /* 컬럼 누락, 요청*/
+			FROM MS_ITEM_BOM BOM  WITH (NOLOCK) 
+	   LEFT JOIN MS_ITEM_DESC DE WITH (NOLOCK) 
+	          ON BOM.COMP_CD = DE.COMP_CD
+	         AND BOM.BOM_CD = DE.MATL_CD 
+	         AND DE.LANG_CD = #{LANG}
+		   WHERE 1 = 1
+		 	 AND BOM.MATL_CD = #{MATL_CD}
+		 	 AND BOM.PLANT_CD = #{PLANT_CD} 
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->	
+	</select>
+	
+	<select id="selectBOMListAll" parameterType="BMap" resultType="BMap">
+		/* BOMMapper.xml -> selectBOMListAll */
+		SELECT BOM.MATL_CD, 
+			   CASE WHEN 'EN' = 'EN' THEN ITEM.MATL_EN 
+					WHEN 'EN' = 'FR' THEN ITEM.MATL_FR 
+					ELSE ITEM.MATL_NM END MATL_NM,
+					BOM.PLANT_CD,
+					DBO.GETCODENM('PLANT_CD',BOM.PLANT_CD, #{LANG}) AS PLANT_NM,
+					dbo.SetQty(BS_QTY)  AS BOM_QTY, 
+					dbo.GetCodeNm('BASIC_UNIT',BOM.UNIT_CD,#{LANG}) AS UNIT_CD,
+					BOM.STATUS,
+					DBO.GETCODENM('STATUS', BOM.STATUS, #{LANG}) AS STATUS_NM,
+					DBO.FMTVDATE(BOM.VAL_FR_DT_H, 'DD.MM.YYYY') AS VAL_FR_DT,
+					'31.12.9999' AS VAL_TO_DT,
+					BOM.ITEM_SEQ 					      AS ITEM,
+					DBO.GETCODENM('ITEM_CTG', BOM.ITEM_CTG, #{LANG}) ITEM_CTG,
+					BOM.BOM_CD 							  AS COMPONENT,
+					DE.MATL_DESC 						  AS COMPONENT_DESC,
+					dbo.SetQty(BOM.BOM_QTY)				  AS QTY     ,
+					BOM.UNIT_CD AS UNIT,
+					DBO.FMTVDATE(BOM.VAL_FR_DT,'DD.MM.YYYY') AS FROM_DT,
+					'31.12.9999'            AS TO_DT
+			  FROM MS_ITEM_BOM BOM WITH (NOLOCK) 
+		 LEFT JOIN MS_ITEM ITEM WITH (NOLOCK) 
+				ON BOM.COMP_CD = ITEM.COMP_CD 
+			   AND BOM.MATL_CD = ITEM.MATL_CD 
+		 LEFT JOIN MS_ITEM_DESC DE WITH (NOLOCK) 
+			    ON BOM.COMP_CD = DE.COMP_CD 
+			   AND BOM.MATL_CD = DE.MATL_CD 
+			   AND DE.LANG_CD = #{LANG}
+			 WHERE 1 = 1
+		<if test='MATL_CD_ST != null and MATL_CD_ST'>
+			   AND BOM.MATL_CD like dbo.SetParam(#{MATL_CD_ST}) <!-- MATL_CD_ST만 있는경우 LIKE -->
+		</if>
+		<if test='MATL_NM_ST != null and MATL_NM_ST'>
+			<if test='LANG == "EN"'>
+     		   AND ITEM.MATL_EN LIKE dbo.setParam(#{MATL_NM_ST})
+     		</if>
+     		<if test='LANG == "FR"'>
+     		   AND ITEM.MATL_FR LIKE dbo.setParam(#{MATL_NM_ST})
+     		</if>
+     		<if test='LANG != "EN" and LANG != "FR"'>
+     		  	AND ITEM.MATL_NM LIKE dbo.setParam(#{MATL_NM_ST})
+     		</if>
+     	</if>
+		<if test='PLANT_CD != null and PLANT_CD != ""'>
+			  AND BOM.PLANT_CD = #{PLANT_CD}
+		</if>
+		<if test='VALID_DT != null and VALID_DT != ""'>
+			  AND PARSE(#{VALID_DT} AS DATE USING 'de-DE') BETWEEN DBO.FMTVDATE(BOM.VAL_FR_DT_H, 'YYYY-MM-DD') AND '9999-12-31' 
+		</if> 
+		<if test='EXC_HD == "Y"'>
+			  AND BOM.DEL_YN != 'Y'
+		</if>  
+	</select>
+</mapper>

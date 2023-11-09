@@ -1,0 +1,69 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
+<%
+	/**
+	 * @Name : InterfaceSample
+	 * @Description : Interface 컨트롤 샘플 화면
+	 */
+%>
+<c:import url="../import/frameTop.jsp">
+	<c:param name="progcd" value="InterfaceSample" />
+</c:import>
+<div id="ctm_wrap">
+	<!-- 검색조건 영역 시작 -->
+	<form id="frmSearch" action="#">		
+		<div id="ctm_sech_wrap" >
+			<ul class="sech_ul">
+				<li class="cls"></li>
+				<li class="sech_list">
+					<label> customer code : </label>
+					<input type="text" id="CUST_CD" name="CUST_CD" value="1000006" max="7" size="12"/>
+					<label> hash code : </label>
+					<input type="text" id="Hash" name="Hash" value="$2y$11$LLNMnIfQ0Wl3dmBh4cFBCOFSu/Fwd9CqM5nh9PfhwJVm4GjLhG5Na" max="" size="" style="width: 500px;"/>					
+					<input type="button" id="sendRequest" value="external oms call" />
+				</li>		
+						
+			</ul>
+		</div>		
+	</form>			
+</div>
+<script type="text/javascript">
+(function(window) {
+  'use strict';
+  
+// var OMS_API_URL = 'https://omsdev.q-cells.com/api/sales/orders';
+var OMS_API_URL = 'http://localhost:8080/api/sales/orders';
+
+  
+  function sendRequest() {
+	  
+	var custcd = "", hash = "";
+	custcd = document.getElementById("CUST_CD").value;
+	// hash = document.getElementById("Hash").value;
+	
+	var orderData = {};	
+	orderData['custCd'] = custcd;
+	// orderData['hash'] = hash;
+	
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', OMS_API_URL);    
+    xhr.setRequestHeader('Content-Type', 'application/json');    
+    xhr.send(JSON.stringify(orderData));
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+        // TODO
+        //var popup = window.open('about:blank', '', '_blank');
+        var popup = window.open('about:blank');
+        popup.document.write(xhr.response);
+      }
+    };
+  }
+  
+  document.getElementById('sendRequest').addEventListener('click', function(e) {
+    sendRequest();
+  });
+})(window);
+</script>
+
+<c:import url="../import/frameBottom.jsp" />

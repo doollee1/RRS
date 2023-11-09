@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SapIfRecvSalesOrderMapper">	
+	<insert id="insertSapIfRecvORDER_HEADERS_OUT" parameterType="HashMap">
+		INSERT INTO IF_GET_ORDER_HEADERS_OUT(
+					 VBELN
+					,DOC_NUMBER
+					,REC_DATE  
+					,CREATED_BY
+					,DOC_DATE  
+					,SD_DOC_CAT
+					,DOC_TYPE  
+					,ORD_REASON
+					,DLV_BLOCK 
+					,BILL_BLOCK
+					,NET_VAL_HD
+					,CURRENCY  
+					,SALES_ORG 
+					,DISTR_CHAN
+					,DIVISION  
+					,SALES_GRP 
+					,SALES_OFF 
+					,CONDITIONS
+					,REQ_DATE_H
+					,DATE_TYPE 
+					,COMPL_DLV 
+					,SHIP_COND 
+					,PURCH_NO  
+					,PURCH_DATE
+					,TELEPHONE 
+					,SOLD_TO   
+					,CUST_GRP1 
+					,CUST_GRP2 
+					,CUST_GRP3 
+					,CUST_GRP4 
+					,CUST_GRP5 
+					,EXCHG_RATE
+					,C_CTR_AREA
+					,CRED_ACCNT
+					,RISK_CATEG
+					,CURR_CRED 
+					,COMP_CODE 
+					,REF_DOC
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{DOC_NUMBER}
+					,#{DOC_NUMBER}
+					,replace((case when #{REC_DATE} = '0000-00-00' then null else #{REC_DATE} end),'-','')
+					,#{CREATED_BY}
+					,replace((case when #{DOC_DATE} = '0000-00-00' then null else #{DOC_DATE} end),'-','')
+					,#{SD_DOC_CAT}
+					,#{DOC_TYPE}
+					,#{ORD_REASON}
+					,#{DLV_BLOCK}
+					,#{BILL_BLOCK}
+					,#{NET_VAL_HD}
+					,#{CURRENCY}
+					,#{SALES_ORG}
+					,#{DISTR_CHAN}
+					,#{DIVISION}
+					,#{SALES_GRP}
+					,#{SALES_OFF}
+					,#{CONDITIONS}
+					,replace((case when #{REQ_DATE_H} = '0000-00-00' then null else #{REQ_DATE_H} end),'-','')
+					,#{DATE_TYPE}
+					,#{COMPL_DLV}
+					,#{SHIP_COND}
+					,#{PURCH_NO}
+					,replace((case when #{PURCH_DATE} = '0000-00-00' then null else #{PURCH_DATE} end),'-','')
+					,#{TELEPHONE}
+					,#{SOLD_TO}
+					,#{CUST_GRP1}
+					,#{CUST_GRP2}
+					,#{CUST_GRP3}
+					,#{CUST_GRP4}
+					,#{CUST_GRP5}
+					,#{EXCHG_RATE}
+					,#{C_CTR_AREA}
+					,#{CRED_ACCNT}
+					,#{RISK_CATEG}
+					,#{CURR_CRED}
+					,#{COMP_CODE}
+					,#{REF_DOC}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvORDER_ITEMS_OUT" parameterType="HashMap">
+		INSERT INTO IF_GET_ORDER_ITEMS_OUT(
+					 DOC_NUMBER
+					,ITM_NUMBER
+					,MATERIAL  
+					,BATCH     
+					,MATL_GROUP
+					,SHORT_TEXT
+					,ITEM_CATEG
+					,HG_LV_ITEM
+					,REA_FOR_RE
+					,BASE_UOM  
+					,DLVSCHEDUS
+					,DIVISION  
+					,NET_VALUE 
+					,CURRENCY  
+					,REQ_QTY   
+					,SALES_UNIT
+					,GROSS_WEIG
+					,NET_WEIGHT
+					,UNIT_OF_WT
+					,VOLUME    
+					,VOLUMEUNIT
+					,DLV_PRIO  
+					,PLANT     
+					,STGE_LOC  
+					,SHIP_POINT
+					,ROUTE     
+					,CREAT_DATE
+					,CREATED_BY
+					,NET_PRICE 
+					,COND_P_UNT
+					,COND_UNIT 
+					,CONISOUNIT
+					,AVAILCHECK
+					,ACCT_ASSGT
+					,REBATE_GRP
+					,COMM_GROUP
+					,BATCH_MGMT
+					,SUBTOT_PP1
+					,SUBTOT_PP2
+					,SUBTOT_PP3
+					,SUBTOT_PP4
+					,SUBTOT_PP5
+					,SUBTOT_PP6
+					,FIX_DATE  
+					,PRC_GROUP1
+					,PRC_GROUP2
+					,PRC_GROUP3
+					,PRC_GROUP4
+					,PRC_GROUP5
+					,BASE_UNIT 
+					,CREDPRICIT
+					,TAX_AMOUNT
+					,GROSS_VAL 
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES ( 
+					 #{DOC_NUMBER}
+					,#{ITM_NUMBER}
+					,#{MATERIAL}
+					,#{BATCH}
+					,#{MATL_GROUP}
+					,#{SHORT_TEXT}
+					,#{ITEM_CATEG}
+					,#{HG_LV_ITEM}
+					,#{REA_FOR_RE}
+					,#{BASE_UOM}
+					,#{DLVSCHEDUS}
+					,#{DIVISION}
+					,#{NET_VALUE}
+					,#{CURRENCY}
+					,#{REQ_QTY}
+					,#{SALES_UNIT}
+					,#{GROSS_WEIG}
+					,#{NET_WEIGHT}
+					,#{UNIT_OF_WT}
+					,#{VOLUME}
+					,#{VOLUMEUNIT}
+					,#{DLV_PRIO}
+					,#{PLANT}
+					,#{STGE_LOC}
+					,#{SHIP_POINT}
+					,#{ROUTE}
+					,replace((case when #{CREAT_DATE} = '0000-00-00' then null else #{CREAT_DATE} end),'-','')
+					,#{CREATED_BY}
+					,#{NET_PRICE}
+					,#{COND_P_UNT}
+					,#{COND_UNIT}
+					,#{CONISOUNIT}
+					,#{AVAILCHECK}
+					,#{ACCT_ASSGT}
+					,#{REBATE_GRP}
+					,#{COMM_GROUP}
+					,#{BATCH_MGMT}
+					,#{SUBTOT_PP1}
+					,#{SUBTOT_PP2}
+					,#{SUBTOT_PP3}
+					,#{SUBTOT_PP4}
+					,#{SUBTOT_PP5}
+					,#{SUBTOT_PP6}
+					,#{FIX_DATE}
+					,#{PRC_GROUP1}
+					,#{PRC_GROUP2}
+					,#{PRC_GROUP3}
+					,#{PRC_GROUP4}
+					,#{PRC_GROUP5}
+					,#{BASE_UNIT}
+					,#{CREDPRICIT}
+					,#{TAX_AMOUNT}
+					,#{GROSS_VAL}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvORDER_SCHEDULES_OUT" parameterType="HashMap">
+		INSERT INTO IF_GET_ORDER_SCHEDULES_OUT(
+					 DOC_NUMBER
+					,ITM_NUMBER
+					,SCHED_LINE
+					,SCHED_TYPE
+					,RELFORDEL 
+					,REQ_DATE  
+					,REQ_QTY   
+					,CONFIR_QTY
+					,SALES_UNIT
+					,PREQ_NO   
+					,PO_TYPE   
+					,DOC_CAT   
+					,DATE_TYPE 
+					,TP_DATE   
+					,MS_DATE   
+					,LOAD_DATE 
+					,GI_DATE   
+					,REQ_DLV_BL
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES ( 
+					 #{DOC_NUMBER}
+					,#{ITM_NUMBER}
+					,#{SCHED_LINE}
+					,#{SCHED_TYPE}
+					,#{RELFORDEL}
+					,replace((case when #{REQ_DATE} = '0000-00-00' then null else #{REQ_DATE} end),'-','')
+					,#{REQ_QTY}
+					,#{CONFIR_QTY}
+					,#{SALES_UNIT}
+					,#{PREQ_NO}
+					,#{PO_TYPE}
+					,#{DOC_CAT}
+					,#{DATE_TYPE}
+					,replace((case when #{TP_DATE} = '0000-00-00' then null else #{TP_DATE} end),'-','')
+					,replace((case when #{MS_DATE} = '0000-00-00' then null else #{MS_DATE} end),'-','')
+					,replace((case when #{LOAD_DATE} = '0000-00-00' then null else #{LOAD_DATE} end),'-','')
+					,replace((case when #{GI_DATE} = '0000-00-00' then null else #{GI_DATE} end),'-','')
+					,#{REQ_DLV_BL}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvORDER_CONDITIONS_OUT" parameterType="HashMap">
+		INSERT INTO IF_GET_ORDER_CONDITIONS_OUT(
+					 SD_DOC    
+					,ITM_NUMBER
+					,COND_ST_NO
+					,COND_COUNT
+					,COND_TYPE 
+					,COND_VALUE
+					,CURRENCY  
+					,COND_D_UNT
+					,COND_P_UNT
+					,CONPRICDAT
+					,CONDVALUE 
+					,SDCURRENCY
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES ( 
+					 #{SD_DOC}
+					,#{ITM_NUMBER}
+					,#{COND_ST_NO}
+					,#{COND_COUNT}
+					,#{COND_TYPE}
+					,#{COND_VALUE}
+					,#{CURRENCY}
+					,#{COND_D_UNT}
+					,#{COND_P_UNT}
+					,replace((case when #{CONPRICDAT} = '0000-00-00' then null else #{CONPRICDAT} end),'-','')
+					,#{CONDVALUE}
+					,#{SDCURRENCY}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvORDER_PARTNERS_OUT" parameterType="HashMap">
+		INSERT INTO IF_GET_ORDER_PARTNERS_OUT(
+					 SD_DOC    
+					,ITM_NUMBER
+					,PARTN_ROLE
+					,CUSTOMER  
+					,VENDOR_NO 
+					,PERSON_NO 
+					,ADDRESS   
+					,COUNTRY   
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES ( 
+					 #{SD_DOC}
+					,#{ITM_NUMBER}
+					,#{PARTN_ROLE}
+					,#{CUSTOMER}
+					,#{VENDOR_NO}
+					,#{PERSON_NO}
+					,#{ADDRESS}
+					,#{COUNTRY}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvORDER_ADDRESS_OUT" parameterType="HashMap">
+		INSERT INTO IF_GET_ORDER_ADDRESS_OUT(
+					 DOC_NUMBER
+					,ADDRESS   
+					,NAME      
+					,NAME_2    
+					,NAME_3    
+					,NAME_4    
+					,STREET    
+					,COUNTRY   
+					,POSTL_CODE
+					,POBX_PCD  
+					,POBX_CTY  
+					,CITY      
+					,DISTRICT  
+					,REGION    
+					,CITY_CODE 
+					,COUNTY_CDE
+					,PO_BOX    
+					,TELEPHONE 
+					,FAX_NUMBER
+					,LANGU     
+					,TRANSPZONE
+					,HOUSE_NO  
+					,NAME_LIST 
+					,STREETNA  
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES ( 
+					 #{DOC_NUMBER}
+					,#{ADDRESS}
+					,#{NAME}
+					,#{NAME_2}
+					,#{NAME_3}
+					,#{NAME_4}
+					,#{STREET}
+					,#{COUNTRY}
+					,#{POSTL_CODE}
+					,#{POBX_PCD}
+					,#{POBX_CTY}
+					,#{CITY}
+					,#{DISTRICT}
+					,#{REGION}
+					,#{CITY_CODE}
+					,#{COUNTY_CDE}
+					,#{PO_BOX}
+					,#{TELEPHONE}
+					,#{FAX_NUMBER}
+					,#{LANGU}
+					,#{TRANSPZONE}
+					,#{HOUSE_NO}
+					,#{NAME_LIST}
+					,#{STREETNA  }
+					,getDate()
+					,'R'
+					)
+                    
+	</insert>
+	
+	<insert id="insertSapIfRecvORDER_STATUSHEADERS_OUT" parameterType="HashMap">
+		INSERT INTO IF_GET_ORDER_STATUSHEADERS_OUT(
+					 SD_DOC    
+					,STATSTACLC
+					,STATDYNCLC
+					,STATCREDCH
+					,STATCRECH1
+					,STATCRECH2
+					,STATCRECH3
+					,STATCRECH4
+					,STATCRECH5
+					,STATCRECH6
+					,STATCRECH7
+					,STATCRECH8
+					,TOTSTATCCH
+					,PRC_STAT_H
+					,DELIV_STAT
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES ( 
+					 #{SD_DOC}
+					,#{STATSTACLC}
+					,#{STATDYNCLC}
+					,#{STATCREDCH}
+					,#{STATCRECH1}
+					,#{STATCRECH2}
+					,#{STATCRECH3}
+					,#{STATCRECH4}
+					,#{STATCRECH5}
+					,#{STATCRECH6}
+					,#{STATCRECH7}
+					,#{STATCRECH8}
+					,#{TOTSTATCCH}
+					,#{PRC_STAT_H}
+					,#{DELIV_STAT}
+					,getDate()
+					,'R'
+					)
+                    
+	</insert>
+	
+	<insert id="insertSapIfRecvORDER_BUSINESS_OUT" parameterType="HashMap">
+		INSERT INTO IF_GET_ORDER_BUSINESS_OUT(
+					 SD_DOC    
+					,ITM_NUMBER  
+					,PRICE_GRP   
+					,CUST_GROUP  
+					,SALES_DIST  
+					,PRICE_LIST  
+					,INCOTERMS1  
+					,INCOTERMS2  
+					,ORDCOMBIND  
+					,ADD_VAL_DY  
+					,FIX_VAL_DY  
+					,PMNTTRMS    
+					,ACCNT_ASGN  
+					,EXCHG_RATE  
+					,PRICE_DATE  
+					,BILL_DATE   
+					,SERV_DATE   
+					,PURCH_NO_C  
+					,PURCH_DATE  
+					,PO_METHOD   
+					,REF_1       
+					,PURCH_NO_S  
+					,PO_DAT_S    
+					,PO_METH_S   
+					,CUSTCONGR1  
+					,CUSTCONGR2  
+					,CUSTCONGR3  
+					,CUSTCONGR4  
+					,CUSTCONGR5  
+					,EXCHG_RATE_V
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES ( 
+					 #{SD_DOC      }
+					,#{ITM_NUMBER  }
+					,#{PRICE_GRP   }
+					,#{CUST_GROUP  }
+					,#{SALES_DIST  }
+					,#{PRICE_LIST  }
+					,#{INCOTERMS1  }
+					,#{INCOTERMS2  }
+					,#{ORDCOMBIND  }
+					,#{ADD_VAL_DY  }
+					,replace((case when #{FIX_VAL_DY} = '0000-00-00' then null else #{FIX_VAL_DY} end),'-','')
+					,#{PMNTTRMS    }
+					,#{ACCNT_ASGN  }
+					,#{EXCHG_RATE  }
+					,replace((case when #{PRICE_DATE} = '0000-00-00' then null else #{PRICE_DATE} end),'-','')
+					,replace((case when #{BILL_DATE} = '0000-00-00' then null else #{BILL_DATE} end),'-','')
+					,replace((case when #{SERV_DATE} = '0000-00-00' then null else #{SERV_DATE} end),'-','')
+					,#{PURCH_NO_C  }
+					,replace((case when #{PURCH_DATE} = '0000-00-00' then null else #{PURCH_DATE} end),'-','')
+					,#{PO_METHOD   }
+					,#{REF_1       }
+					,#{PURCH_NO_S  }
+					,replace((case when #{PO_DAT_S} = '0000-00-00' then null else #{PO_DAT_S} end),'-','')
+					,#{PO_METH_S   }
+					,#{CUSTCONGR1  }
+					,#{CUSTCONGR2  }
+					,#{CUSTCONGR3  }
+					,#{CUSTCONGR4  }
+					,#{CUSTCONGR5  }
+					,#{EXCHG_RATE_V}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	<insert id="insertSapIfRecvORDER_TEXTHEADERS_OUT" parameterType="HashMap">
+		INSERT INTO IF_GET_ORDER_TEXTHEADERS_OUT(
+					 SD_DOC    
+					,ITM_NUMBER
+					,APPLOBJECT
+					,TEXT_NAME 
+					,TEXT_ID   
+					,LANGU     
+					,TITLE     
+					,FORM      
+					,STYLE     
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES ( 
+					 #{SD_DOC}
+					,#{ITM_NUMBER}
+					,#{APPLOBJECT}
+					,#{TEXT_NAME}
+					,#{TEXT_ID}
+					,#{LANGU}
+					,#{TITLE}
+					,#{FORM}
+					,#{STYLE}
+					,getDate()
+					,'R'
+					)
+                    
+	</insert>
+	
+	<insert id="insertSapIfRecvORDER_TEXTLINES_OUT" parameterType="HashMap">
+		 INSERT INTO IF_GET_ORDER_TEXTLINES_OUT (		 
+					 APPLOBJECT
+					,TEXT_NAME 
+					,TEXT_ID   
+					,LANGU     
+					,LINE_CNT  
+					,LINE      
+					,FORMAT_COL
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES ( 
+					 #{APPLOBJECT}
+					,#{TEXT_NAME}
+					,#{TEXT_ID}
+					,#{LANGU}
+					,#{LINE_CNT}
+					,#{LINE}
+					,#{FORMAT_COL}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<select id="callSpSapIfRecvSalesOrder" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_ERP_RECV_ORDER_MIG(#{COMP_CD}, #{DOC_NO}, #{USER_ID}) } 
+	</select>
+	
+	<select id="callSpSapIfRecvSyncSalesOrder" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_ERP_RECV_ORDER_SYNC(#{COMP_CD}, #{DOC_NO}, #{USER_ID}) } 
+	</select>
+		
+	<select id="getSalesOrg" resultType="String">
+		SELECT READ_CD FROM BC_COMM_L WHERE HEAD_CD = '102900' AND STATUS = 'Y'
+	</select>
+	
+	<select id="getPlant" resultType="String">
+		SELECT READ_CD FROM BC_COMM_L WHERE HEAD_CD = '103800' AND STATUS = 'Y'
+	</select>
+	
+	<insert id="insertBatchHistory" parameterType="HashMap">
+		INSERT INTO BC_BATCH_HISTORY(
+					 BATCH_NAME
+					,START_DATE
+					,END_DATE
+					,SVR_NAME
+					) 
+			VALUES ( 
+					 #{BATCH_NAME}
+					,#{START_DATE}
+					,#{END_DATE}
+					,#{SVR_NAME}
+					)
+	</insert>
+	
+	<select id="checkBatch" resultType="String" parameterType="HashMap">
+		SELECT COUNT(SEQ) FROM BC_BATCH_HISTORY
+		WHERE 1 = 1
+		AND SUBSTRING(START_DATE, 1, 8) = #{START_DATE}
+		AND BATCH_NAME = #{BATCH_NAME}
+	</select>
+</mapper>

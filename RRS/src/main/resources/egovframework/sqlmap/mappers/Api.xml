@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ApiMapper">
+	<insert id="insertLead" parameterType="HashMap">
+		INSERT INTO IF_GET_LEAD
+			(APP_ID
+			,SUR_ID
+			,SVY_ID
+			,SVY_VER
+			<if test="schVer != null and schVer != ''">
+			,SCH_VER
+			</if>
+			<if test="svySchVer != null and svySchVer != ''">
+			,SVY_SCH_VER
+			</if>
+			<if test="svyLang != null and svyLang != ''">
+			,SVY_LANG
+			</if>
+			<if test="conId != null and conId != ''">
+			,CON_ID
+			</if>
+			<if test="svyhVal != null and svyhVal != ''">
+			,SVY_VAL
+			</if>
+			<if test="valVer != null and valVer != ''">
+			,VAL_VER
+			</if>
+			<if test="countryCd != null and countryCd != ''">
+			,COUNTRY_CD
+			</if>
+			<if test="postCd != null and postCd != ''">
+			,POST_CD
+			</if>
+			<if test="cityNm != null and cityNm != ''">
+			,CITY_NM
+			</if>
+			<if test="streetNm != null and streetNm != ''">
+			,STREET_NM
+			</if>
+			<if test="hausNo != null and hausNo != ''">
+			,HAUS_NO
+			</if>
+			<if test="custNm != null and custNm != ''">
+			,CUST_NM
+			</if>
+			<if test="custGr != null and custGr != ''">
+			,CUST_GR
+			</if>
+			<if test="nameFirst != null and nameFirst != ''">
+			,NAME_FIRST
+			</if>
+			<if test="nameLast != null and nameLast != ''">
+			,NAME_LAST
+			</if>
+			<if test="gender != null and gender != ''">
+			,GENDER
+			</if>
+			<if test="email != null and email != ''">
+			,EMAIL
+			</if>
+			<if test="telNo != null and telNo != ''">
+			,TEL_NO
+			</if>
+			<if test="newsYn != null and newsYn != ''">
+			,NEWS_YN
+			</if>
+			<if test="protectYn != null and protectYn != ''">
+			,PROTECT_YN
+			</if>
+			<if test="profpartnerWant != null and profpartnerWant != ''">
+			,PROFPARTNER_WANT
+			</if>
+			<if test="cbYn != null and cbYn != ''">
+			,CB_YN
+			</if>
+			<if test="mesgTxt != null and mesgTxt != ''">
+			,MESG_TXT
+			</if>
+			<if test="website != null and website != ''">
+			,WEBSITE
+			</if>
+			<if test="energyConsumption != null and energyConsumption != ''">
+			,ENERGY_CONSUMPTION
+			</if>
+			<if test="profpartnerWantDate != null and profpartnerWantDate != ''">
+			,PROFPARTNER_WANT_DATE
+			</if>
+			<if test="contactProfPartner != null and contactProfPartner != ''">
+			,CONTACT_PROF_PARTNER
+			</if>
+			<if test="newsletterUnsubscribe != null and newsletterUnsubscribe != ''">
+			,NEWSLETTER_UNSUBSCRIBE
+			</if>
+			,IF_DT
+			,IF_STS
+			,IF_MSG
+			)
+	 VALUES (#{appId}
+			,#{surId}
+			,#{svyId}
+			,#{svyVer}
+			<if test="schVer != null and schVer != ''">
+			,#{schVer}
+			</if>
+			<if test="svySchVer != null and svySchVer != ''">
+			,#{svySchVer}
+			</if>
+			<if test="svyLang != null and svyLang != ''">
+			,#{svyLang}
+			</if>
+			<if test="conId != null and conId != ''">
+			,#{conId}
+			</if>
+			<if test="svyhVal != null and svyhVal != ''">
+			,#{svyhVal}
+			</if>
+			<if test="valVer != null and valVer != ''">
+			,#{valVer}
+			</if>
+			<if test="countryCd != null and countryCd != ''">
+			,#{countryCd}
+			</if>
+			<if test="postCd != null and postCd != ''">
+			,#{postCd}
+			</if>
+			<if test="cityNm != null and cityNm != ''">
+			,#{cityNm}
+			</if>
+			<if test="streetNm != null and streetNm != ''">
+			,#{streetNm}
+			</if>
+			<if test="hausNo != null and hausNo != ''">
+			,#{hausNo}
+			</if>
+			<if test="custNm != null and custNm != ''">
+			,#{custNm}
+			</if>
+			<if test="custGr != null and custGr != ''">
+			,#{custGr}
+			</if>
+			<if test="nameFirst != null and nameFirst != ''">
+			,#{nameFirst}
+			</if>
+			<if test="nameLast != null and nameLast != ''">
+			,#{nameLast}
+			</if>
+			<if test="gender != null and gender != ''">
+			,#{gender}
+			</if>
+			<if test="email != null and email != ''">
+			,#{email}
+			</if>
+			<if test="telNo != null and telNo != ''">
+			,#{telNo}
+			</if>
+			<if test="newsYn != null and newsYn != ''">
+			,#{newsYn}
+			</if>
+			<if test="protectYn != null and protectYn != ''">
+			,#{protectYn}
+			</if>
+			<if test="profpartnerWant != null and profpartnerWant != ''">
+			,#{profpartnerWant}
+			</if>
+			<if test="cbYn != null and cbYn != ''">
+			,#{cbYn}
+			</if>
+			<if test="mesgTxt != null and mesgTxt != ''">
+			,#{mesgTxt}
+			</if>
+			<if test="website != null and website != ''">
+			,#{website}
+			</if>
+			<if test="energyConsumption != null and energyConsumption != ''">
+			,#{energyConsumption}
+			</if>
+			<if test="profpartnerWantDate != null and profpartnerWantDate != ''">
+			,#{profpartnerWantDate}
+			</if>
+			<if test="contactProfPartner != null and contactProfPartner != ''">
+			,#{contactProfPartner}
+			</if>
+			<if test="newsletterUnsubscribe != null and newsletterUnsubscribe != ''">
+			,#{newsletterUnsubscribe}
+			</if>
+			,GETDATE()
+			,'R'
+			,'API_IF_MSG'
+			);
+	</insert>
+	
+	<select id="callSpIfMellowRecvLead" statementType="CALLABLE" resultType="String">
+		{ CALL DBO.SP_IF_MELLOW_RECV_LEAD() } 
+	</select>
+	
+</mapper>

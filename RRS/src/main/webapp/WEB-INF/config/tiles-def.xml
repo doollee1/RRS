@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+ 
+<tiles-definitions>
+ 
+    <!-- (1) 레이아웃을 적용하지않는화면-->     
+    <!-- <definition name=".apps" template="/WEB-INF/jsp/common/appsLayout.jsp">
+        <put-attribute name="header" value="" /> 
+        <put-attribute name="footer" value="/WEB-INF/jsp/common/Footer.jsp" />
+    </definition> -->
+ 
+    <!-- (2) 레이아웃을 적용하는화면-->
+    <!-- <definition name=".web" template="/WEB-INF/jsp/common/webLayout.jsp">
+        <put-attribute name="title" value="" />
+        <put-attribute name="header" value="/WEB-INF/jsp/common/Header.jsp" />   
+        <put-attribute name="footer" value="/WEB-INF/jsp/common/Footer.jsp" />
+    </definition> -->
+    
+    <!-- (1) -->    
+    <!-- <definition name="/login/*" extends=".apps">
+      <put-attribute name="body" value="/WEB-INF/jsp/login/{1}.jsp" />
+    </definition> -->
+ 
+    <!-- (2) -->
+    <!-- <definition name="/*/*" extends=".web">      
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp" />
+    </definition> -->
+    
+    <!-- TEST LAYOUT -->    
+    <definition name="/home/*" template="/WEB-INF/jsp/home/home.jsp">      
+    	<put-attribute name="imp" value="/WEB-INF/jsp/import/import.jsp"  />
+    	<put-attribute name="top" value="/WEB-INF/jsp/import/top.jsp"  />
+        <put-attribute name="navi"   value="/WEB-INF/jsp/import/left.jsp" />  
+   </definition>
+    
+     <definition name="/main/*" template="/WEB-INF/jsp/main/main.jsp">      
+    	<put-attribute name="header" value="/WEB-INF/jsp/import/frameTop.jsp"  />
+        <put-attribute name="body"   value="/WEB-INF/jsp/{1}.jsp"               />
+        <put-attribute name="footer" value="/WEB-INF/jsp/import/frameBottom.jsp"     />
+    </definition>
+    
+    <definition name="/login/*" template="/WEB-INF/jsp/import/normalLayout.jsp">      
+    	 <put-attribute name="body"   value="/WEB-INF/jsp/login/login.jsp"               />
+    </definition>
+  
+    <definition name="/system/*" template="/WEB-INF/jsp/import/normalLayout.jsp">      
+    	<put-attribute name="header" value="/WEB-INF/jsp/import/frameTop.jsp"  />
+        <put-attribute name="body"   value="/WEB-INF/jsp/system/{1}.jsp"               />
+        <put-attribute name="footer" value="/WEB-INF/jsp/import/frameBottom.jsp"     />
+    </definition>
+    
+   <!-- /TEST LAYOUT -->
+    
+</tiles-definitions>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SapIfRecvCreditBlockMapper">	
+	<insert id="insertSapIfRecvCreditBlockTData" parameterType="HashMap">
+
+		INSERT INTO IF_GET_CRDT_DATA(
+					 VBELN
+					,CMGST
+					,VKORG
+					,KUNNR
+					,IF_DT         
+					,IF_STS
+					) 
+			VALUES (
+					 #{VBELN}
+					,#{CMGST}
+					,#{VKORG}
+					,#{KUNNR}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<select id="callSpSapIfRecvCreditBlock" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_ERP_RECV_CREDIT_BLOCK(#{COMP_CD}, #{USER_ID}) } 
+	</select>
+	
+</mapper>

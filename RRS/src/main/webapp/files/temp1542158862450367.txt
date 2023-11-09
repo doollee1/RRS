@@ -1,0 +1,29 @@
+-- MyDAC version: 4.40.0.20
+-- MySQL server version: 5.5.8
+-- MySQL client version: 5.0.18
+-- Script date 2018-11-02 오후 4:11:18
+-- ---------------------------------------------------------------------- 
+-- Server: 127.0.0.1
+-- Database: oasis2
+
+
+-- 
+-- Table structure for table  `accounts`
+-- 
+
+DROP TABLE IF EXISTS `accounts`;
+CREATE TABLE `accounts` (
+  `ACCT_CODE` char(5) NOT NULL COMMENT '계정코드',
+  `ACCT_CATE_CODE` char(6) NOT NULL COMMENT 'NRDS계정',
+  `ACCT_NM` varchar(25) NOT NULL COMMENT '계정명',
+  `ACCT_PUB_DIV` char(6) NOT NULL COMMENT 'KT/송림구분',
+  `ACCT_TAX_YN` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT 'VAT포함여부',
+  `ACCT_TAX_REQ_DIV` char(6) NOT NULL COMMENT '공과금/품의서계정구분',
+  `ACCT_SORT` int(11) NOT NULL COMMENT '정렬기준',
+  `JOB_DIV_CODE` char(6) NOT NULL COMMENT '업무구분코드',
+  `ACCT_ITEM1` char(25) DEFAULT NULL COMMENT '추가항목',
+  `ACCT_USE_YN` enum('Y','N') NOT NULL DEFAULT 'Y' COMMENT '사용여부',
+  `ACCT_SYS_YN` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '시스템코드여부',
+  PRIMARY KEY (`ACCT_CODE`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='품의서공과금계정과목';
+

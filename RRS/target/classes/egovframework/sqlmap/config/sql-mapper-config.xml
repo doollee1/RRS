@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <settings>
+    	<setting name="jdbcTypeForNull" value="NULL"/>
+	</settings>
+	
+    <typeAliases>
+    	<typeAlias alias="searchVO" type="bt.btframework.common.vo.SearchVO" />
+    	<typeAlias alias="loginVO" type="bt.btframework.common.vo.LoginVO" />
+    	<typeAlias alias="codeVO" type="bt.btframework.common.vo.CodeVO" />
+    	<typeAlias alias="BMap" type="bt.btframework.utils.BMap" />
+    </typeAliases>
+    
+     <typeHandlers>
+       <typeHandler javaType="java.sql.Clob" handler="org.apache.ibatis.type.StringTypeHandler"/>
+    </typeHandlers>
+
+</configuration>

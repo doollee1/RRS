@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserAuthMapper">
+	<select id="selectUserAuthInfo" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.POLICY_CD) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,A.COMP_CD
+			  ,A.POLICY_CD
+			  ,A.USER_ID
+			  ,A.STATUS
+			  ,B.NAME_FULL
+			  ,B.USER_TP
+			  ,C.CODE_NM USER_TP_NM
+			  ,B.USER_GD
+			  ,B.DEPT_CD
+			  ,CASE WHEN #{LANG} = 'FR' THEN D.DEPT_FR
+			        WHEN #{LANG} = 'EN' THEN D.DEPT_EN
+			    	ELSE D.DEPT_NM END AS DEPT_NM
+		  FROM SY_POLICY_U A  
+	INNER JOIN BC_USER B  
+			ON A.COMP_CD = B.COMP_CD
+		   AND A.USER_ID = B.USER_ID
+	INNER JOIN BC_COMM_L C  
+			ON B.USER_TP = C.CODE
+		   AND C.HEAD_CD = '100200'
+    INNER JOIN BC_DEPT D  
+            ON A.COMP_CD = D.COMP_CD
+           AND B.DEPT_CD = D.DEPT_CD
+		 WHERE A.COMP_CD = #{G_COMP_CD}
+		   AND A.POLICY_CD = #{POLICY_CD}
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<insert id="insertUserAuthInfo" parameterType="BMap">
+		INSERT INTO SY_POLICY_U
+					(COMP_CD
+					,POLICY_CD
+					,USER_ID
+					,STATUS
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
+			 VALUES (#{COMP_CD}
+					,#{POLICY_CD}
+					,#{USER_ID}
+					,#{STATUS}
+					,NOW()
+					,#{LOGIN_USER}
+					,NOW()
+					,#{LOGIN_USER}
+					)
+	</insert>
+	
+	<update id="updateUserAuthInfo" parameterType="BMap">
+		UPDATE SY_POLICY_U
+		   SET STATUS = #{STATUS}
+			  ,UPT_DT = NOW()
+			  ,UPT_ID = #{LOGIN_USER}
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND POLICY_CD = #{POLICY_CD}
+		   AND USER_ID = #{USER_ID}
+	</update>
+	
+	<delete id="deleteUserAuthInfo" parameterType="BMap">
+		DELETE SY_POLICY_U
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND POLICY_CD = #{POLICY_CD}
+		   AND USER_ID = #{USER_ID}
+	</delete>
+	
+	<select id="selectUserAuthCnt" parameterType="BMap" resultType="int">
+		SELECT COUNT(1)
+		  FROM SY_POLICY_U  
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND POLICY_CD = #{POLICY_CD}
+		   AND USER_ID = #{USER_ID}
+	</select>
+</mapper>

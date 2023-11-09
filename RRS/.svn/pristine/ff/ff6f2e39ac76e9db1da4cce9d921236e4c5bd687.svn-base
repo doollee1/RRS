@@ -1,0 +1,753 @@
+package bt.schedule;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+
+import bt.btframework.common.FileManager;
+import bt.btframework.sap.SAPConnectorManager;
+import bt.btframework.sap.SAPDataProvider;
+import bt.btframework.sap.SAPTable;
+import bt.btframework.support.DBAbstractMapper;
+import bt.btframework.utils.BRespData;
+import bt.btframework.utils.LoginInfo;
+import bt.btframework.utils.ResponseStatus;
+import bt.common.dao.SapIfRecvProductDao;
+import bt.salesOrder.service.SalesOrderService;
+
+public class OmsScheduler extends DBAbstractMapper {
+    
+//	private String svrNm = "DEV";
+//	private String svrNm = "AP01";
+	private String svrNm = "AP02";
+	private String filePath = "D:\\log\\batchjob\\";
+	
+    @Scheduled(cron="0 0 01 * * ?") 
+    public void scheduleRun() {
+    	
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+//		
+//		Calendar calendar = Calendar.getInstance();
+//		Date startDate = calendar.getTime();
+//		
+//		StringBuffer sb = new StringBuffer();
+//		sb.append("Start Date - ");
+//		sb.append(startDate);
+//		sb.append(System.getProperty("line.separator"));
+//		
+//		Map<String, Object> param = new HashMap<String, Object>();
+//		param.put("BATCH_NAME", "clearTempDoc");
+//		param.put("START_DATE", sdf.format(startDate).substring(0, 8));
+//		
+//		int checkBatch = Integer.parseInt((String) selectByPk("SapIfRecvSalesOrderMapper.checkBatch", param));
+//		
+//		if(checkBatch < 1){
+//	    	try {
+//	    		//temp data clear
+//	    		delete("SalesOrderMapper.clearTempSalesHead", null);
+//	    		delete("SalesOrderMapper.clearTempSalesHeadCHis", null);
+//	    		delete("SalesOrderMapper.clearTempSalesHeadHis", null);
+//	    		
+//	    		delete("SalesOrderMapper.clearTempSalesItem", null);
+//	    		delete("SalesOrderMapper.clearTempSalesItemHis", null);
+//	    		
+//	    		delete("SalesOrderMapper.clearTempSalesPartner", null);
+//	    		delete("SalesOrderMapper.clearTempSalesPartnerHis", null);
+//	    		
+//	    		delete("SalesOrderMapper.clearTempSalesText", null);
+//	    		delete("SalesOrderMapper.clearTempSalesTextHis", null);
+//	    		
+//	    		delete("SalesOrderMapper.clearTempSalesScdl", null);
+//	    		delete("SalesOrderMapper.clearTempSalesScdlHis", null);
+//	    		
+//	    		delete("SalesOrderMapper.clearTempSalesCond", null);
+//	    		
+//	    		Calendar calendarEnd = Calendar.getInstance();
+//	    		Date endDate = calendarEnd.getTime();
+//	    		
+//	    		param.put("START_DATE", sdf.format(startDate));
+//	    		param.put("END_DATE",  sdf.format(endDate));
+//	    		param.put("SVR_NAME", svrNm);
+//	    		
+//				insert("SapIfRecvSalesOrderMapper.insertBatchHistory", param);
+//				
+//				sb.append("End Date - ");
+//				sb.append(endDate);
+//				sb.append(" : Success!");
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//				sb.append(" : Fail!");
+//			} finally {
+//				String fileName = svrNm + "_clearTemp_" + sdf.format(startDate).substring(0, 8);
+//				//tempData Clear로그를 남겨야 하나?
+//	//			createLog(fileName, sb.toString());
+//			}
+//		}
+    }
+    
+//    @Scheduled(cron="0 0 02 * * ?")  // ap01 dev
+    @Scheduled(cron="0 0 04 * * ?")  // ap02
+    public void productRun() {
+    	
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+//		
+//		Calendar calendar = Calendar.getInstance();
+//		Date startDate = calendar.getTime();
+//    	
+//		StringBuffer sb = new StringBuffer();
+//		sb.append("Start Date - ");
+//		sb.append(startDate);
+//		sb.append(System.getProperty("line.separator"));
+//		
+//		Map<String, Object> param = new HashMap<String, Object>();		
+//		param.put("BATCH_NAME", "getProduct");
+//		param.put("START_DATE", sdf.format(startDate).substring(0, 8));
+//		
+//		int checkBatch = Integer.parseInt((String) selectByPk("SapIfRecvSalesOrderMapper.checkBatch", param));
+//		
+//		if(checkBatch < 1){
+//	    	try {
+//	    		param.put("IS_ZCDPOR", "X");
+//	//    		param.put("IS_ZCDPOR", (String) reqMap.get("ZCDPOR"));
+//	    		
+//	    		//2. 테이블값 설정
+//	    		//T_TVKO테이블에VKORG필드에 “1000” 값세팅
+//	    		List<SAPTable> tableList = new ArrayList<SAPTable>();
+//	    		SAPTable table = new SAPTable("T_TVKO");
+//	    		
+//	    		List<String> orgList = list("SapIfRecvSalesOrderMapper.getSalesOrg", null);
+//	    		
+//	    		if(null != orgList && 0 < orgList.size()){
+//	    			for(String tempVal : orgList){
+//		        		table.put("VKORG", tempVal);
+//		//        		table.put("VKORG", (String) reqMap.get("VKORG"));
+//		        		tableList.add(table);
+//		        		
+//		        		//T_T001W테이블에WERKS필드에 “1000” 값세팅
+//		        		table = new SAPTable("T_T001W");
+//		        		
+//		        		List<String> plantList = list("SapIfRecvSalesOrderMapper.getPlant", null);
+//		        		
+//		        		if(null != plantList && 0 < plantList.size()){
+//		        			for(String plnatTemp : plantList){
+//		    	        		table.put("WERKS", plnatTemp);
+//				        		tableList.add(table);
+//		        			}
+//		        		}
+//		        		
+//	//	        		table = new SAPTable("T_MARA");
+//		        		
+//		//        		table.put("MATNR", "");					// 10000108	10000116	10000131	000000000062000010
+//		//        		table.put("MATNR", (String) reqMap.get("MATNR"));
+//		//        		tableList.add(table);
+//		        		
+//		        		//3. 호출
+//		        		List<SAPTable> result = SAPConnectorManager.execute(SAPDataProvider.BATCH, "ZZ_IF_SD_PRODUCT_MASTER", param, tableList);
+//		        		if (result != null) {
+//		        			// T_MARA, T_MAKT, T_MVKE, T_MARC, T_MBEW, T_MARM, T_T001, T_LONGTEXT
+//		        			for (int i = 0; i < result.size(); i++) {
+//		        				SAPTable tempMap = result.get(i);
+//		        				if ("T_LONGTEXT".equals(tempMap.getTableName())) {
+//		        					List<Map<String, Object>> list = tempMap.getRows();
+//		        					for (int j = 0; j < list.size(); j++) {
+//		        						insert("SapIfRecvProductMapper.insertSapIfRecvTLongText", list.get(j));
+//		        					}
+//		        				} else if ("T_MAKT".equals(tempMap.getTableName())) {
+//		        					List<Map<String, Object>> list = tempMap.getRows();
+//		        					for (int j = 0; j < list.size(); j++) {
+//		        						insert("SapIfRecvProductMapper.insertSapIfRecvTMakt", list.get(j));
+//		        					}
+//		        				} else if ("T_MARA".equals(tempMap.getTableName())) {
+//		        					List<Map<String, Object>> list = tempMap.getRows();
+//		        					for (int j = 0; j < list.size(); j++) {
+//		        						insert("SapIfRecvProductMapper.insertSapIfRecvTMara", list.get(j));
+//		        					}
+//		        				} else if ("T_MARC".equals(tempMap.getTableName())) {
+//		        					List<Map<String, Object>> list = tempMap.getRows();
+//		        					for (int j = 0; j < list.size(); j++) {
+//		        						insert("SapIfRecvProductMapper.insertSapIfRecvTMarc", list.get(j));
+//		        					}
+//		        				} else if ("T_MARM".equals(tempMap.getTableName())) {
+//		        					List<Map<String, Object>> list = tempMap.getRows();
+//		        					for (int j = 0; j < list.size(); j++) {
+//		        						insert("SapIfRecvProductMapper.insertSapIfRecvTMarm", list.get(j));
+//		        					}
+//		        				} else if ("T_MBEW".equals(tempMap.getTableName()) ){
+//		        					List<Map<String, Object>> list = tempMap.getRows();
+//		        					for (int j = 0; j < list.size(); j++) {
+//		        						insert("SapIfRecvProductMapper.insertSapIfRecvTMbew", list.get(j));
+//		        					}
+//		        				} else if ("T_MVKE".equals(tempMap.getTableName())) {
+//		        					List<Map<String, Object>> list = tempMap.getRows();
+//		        					for (int j = 0; j < list.size(); j++) {
+//		        						insert("SapIfRecvProductMapper.insertSapIfRecvTMvke", list.get(j));
+//		        					}
+//		        				} else if ("T_T001".equals(tempMap.getTableName())) {
+//		        					List<Map<String, Object>> list = tempMap.getRows();
+//		        					for (int j = 0; j < list.size(); j++) {
+//		        						insert("SapIfRecvProductMapper.insertSapIfRecvTT001", list.get(j));
+//		        					}
+//		        				} else if ("T_MCHA".equals(tempMap.getTableName())) {
+//		        					List<Map<String, Object>> list = tempMap.getRows();
+//		        					for (int j = 0; j < list.size(); j++) {
+//		        						insert("SapIfRecvProductMapper.insertSapIfRecvTMcha", list.get(j));
+//		        					}
+//		        				}
+//		        			}
+//		        			param.put("COMP_CD", "1000");
+//		        			param.put("USER_ID", "Batch_System");
+//		        			insert("SapIfRecvProductMapper.callSpSapIfRecvProduct", param);
+//		        		}
+//	        		}
+//	    		}
+//	    		
+//	    		Calendar calendarEnd = Calendar.getInstance();
+//	    		Date endDate = calendarEnd.getTime();
+//	    		
+//	    		param.put("END_DATE",  sdf.format(endDate));
+//	    		param.put("SVR_NAME", svrNm);
+//	    		
+//				insert("SapIfRecvSalesOrderMapper.insertBatchHistory", param);
+//	
+//				sb.append("End Date - ");
+//				sb.append(endDate);
+//				sb.append(" : Success!");
+//	
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				sb.append(" : Fail!");
+//			} finally {
+//				String fileName = svrNm + "_getProduct_" + sdf.format(startDate).substring(0, 8);
+//				createLog(fileName, sb.toString());
+//			}
+//		}
+    }
+    
+//    @Scheduled(cron="0 30 02 * * ?")  // ap01 dev
+    @Scheduled(cron="0 30 04 * * ?")  // ap02
+  	public void bomRun() {
+  	
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+//		
+//		Calendar calendar = Calendar.getInstance();
+//		Date startDate = calendar.getTime();
+//  	
+//		StringBuffer sb = new StringBuffer();
+//		sb.append("Start Date - ");
+//		sb.append(startDate);
+//		sb.append(System.getProperty("line.separator"));
+//		
+//		Map<String, Object> param = new HashMap<String, Object>();		
+//		param.put("BATCH_NAME", "getBom");
+//		param.put("START_DATE", sdf.format(startDate).substring(0, 8));
+//		
+//		int checkBatch = Integer.parseInt((String) selectByPk("SapIfRecvSalesOrderMapper.checkBatch", param));
+//		
+//		if(checkBatch < 1){
+//	    	try {
+//	    		param.put("IS_STLAN", "5");
+//	    		param.put("IS_STLTY", "M");
+//	    		
+//	    		//2. 테이블값 설정
+//	    		//T_TVKO테이블에VKORG필드에 “1000” 값세팅
+//	    		List<SAPTable> tableList = new ArrayList<SAPTable>();
+//	    		SAPTable table = new SAPTable("T_T001W");
+//        		
+//        		List<String> plantList = list("SapIfRecvSalesOrderMapper.getPlant", null);
+//        		
+//        		if(null != plantList && 0 < plantList.size()){
+//        			for(String plnatTemp : plantList){
+//    	        		table.put("WERKS", plnatTemp);
+//		        		tableList.add(table);
+//        			}
+//        		}
+//        		
+////	        	table = new SAPTable("T_MARA");
+//        		
+////        		table.put("MATNR", "");					// 10000108	10000116	10000131	000000000062000010
+////        		table.put("MATNR", (String) reqMap.get("MATNR"));
+////        		tableList.add(table);
+//        		
+//        		//3. 호출
+//        		List<SAPTable> result = SAPConnectorManager.execute(SAPDataProvider.BATCH, "ZZ_IF_SD_BOM_MASTER", param, tableList);
+//        		if (result != null) {
+//        			// T_MARA, T_MAKT, T_MVKE, T_MARC, T_MBEW, T_MARM, T_T001, T_LONGTEXT
+//        			for (int i = 0; i < result.size(); i++) {
+//        				SAPTable tempMap = result.get(i);
+//        				if ("T_MAST".equals(tempMap.getTableName())) {
+//        					List<Map<String, Object>> list = tempMap.getRows();
+//        					for (int j = 0; j < list.size(); j++) {
+//        						insert("SapIfRecvBomMapper.insertSapIfRecvBomMast", list.get(j));
+//        					}
+//        				} else if ("T_STKO".equals(tempMap.getTableName())) {
+//        					List<Map<String, Object>> list = tempMap.getRows();
+//        					for (int j = 0; j < list.size(); j++) {
+//        						insert("SapIfRecvBomMapper.insertSapIfRecvBomTStko", list.get(j));
+//        					}
+//        				} else if ("T_STPO".equals(tempMap.getTableName())) {
+//        					List<Map<String, Object>> list = tempMap.getRows();
+//        					for (int j = 0; j < list.size(); j++) {
+//        						insert("SapIfRecvBomMapper.insertSapIfRecvBomTStpo", list.get(j));
+//        					}
+//        				} 
+//        			}
+//        			param.put("COMP_CD", "1000");
+//        			param.put("USER_ID", "Batch_System");
+//        			insert("SapIfRecvBomMapper.callSpSapIfRecvBom", param);
+//        		}
+//
+//	    		
+//	    		Calendar calendarEnd = Calendar.getInstance();
+//	    		Date endDate = calendarEnd.getTime();
+//	    		
+//	    		param.put("END_DATE",  sdf.format(endDate));
+//	    		param.put("SVR_NAME", svrNm);
+//	    		
+//				insert("SapIfRecvSalesOrderMapper.insertBatchHistory", param);
+//	
+//				sb.append("End Date - ");
+//				sb.append(endDate);
+//				sb.append(" : Success!");
+//	
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				sb.append(" : Fail!");
+//			} finally {
+//				String fileName = svrNm + "_getBom_" + sdf.format(startDate).substring(0, 8);
+//				createLog(fileName, sb.toString());
+//			}
+//		}
+	}    
+    
+//    @Scheduled(cron="0 0 03/8 * * ?")  // ap01 dev
+    @Scheduled(cron="0 0 05/8 * * ?")  // ap02
+    public void salesRun() {
+    	
+//		SimpleDateFormat sdfBatch = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+//		
+//		Calendar calendarBatch = Calendar.getInstance();
+//		Date startDate = calendarBatch.getTime();
+//		
+//		StringBuffer sb = new StringBuffer();
+//		sb.append("Start Date - ");
+//		sb.append(startDate);
+//		sb.append(System.getProperty("line.separator"));
+//		
+//		Map<String, Object> param = new HashMap<String, Object>();
+//		param.put("BATCH_NAME", "updateSalesOrder");
+//		param.put("START_DATE", sdfBatch.format(startDate).substring(0, 8));
+//		
+//		int checkBatch = Integer.parseInt((String) selectByPk("SapIfRecvSalesOrderMapper.checkBatch", param));
+//		
+//		//하루에 두번 돈다
+//		if(checkBatch < 4){
+//	    	try {
+//	//    		param.put("IV_OPENSO", "X");
+//	    		
+//	    		List<SAPTable> tableList = new ArrayList<SAPTable>();
+//	    		
+//	    		Map<String, Object> row = new HashMap<String, Object>();
+//	
+//	//    		SAPTable table = new SAPTable("IT_KTOKD");	//Customer Account Group Z001 , Z002 ,Z003 ,Z004 ,Z006 ,CPD ,0170
+//	//
+//	//    		row.put("SIGN", "I");
+//	//    		row.put("OPTION", "EQ");
+//	//    		row.put("LOW", "Z001");
+//	//    		row.put("HIGH", "");
+//	//    		table.addRow(row);
+//	//
+//	//    		row = new HashMap<String, Object>();
+//	//    		row.put("SIGN", "I");
+//	//    		row.put("OPTION", "EQ");
+//	//    		row.put("LOW", "Z002");
+//	//    		row.put("HIGH", "");
+//	//    		table.addRow(row);
+//	//
+//	//    		row = new HashMap<String, Object>();
+//	//    		row.put("SIGN", "I");
+//	//    		row.put("OPTION", "EQ");
+//	//    		row.put("LOW", "Z003");
+//	//    		row.put("HIGH", "");
+//	//    		table.addRow(row);
+//	//
+//	//    		row = new HashMap<String, Object>();
+//	//    		row.put("SIGN", "I");
+//	//    		row.put("OPTION", "EQ");
+//	//    		row.put("LOW", "Z004");
+//	//    		row.put("HIGH", "");
+//	//    		table.addRow(row);
+//	//
+//	//    		row = new HashMap<String, Object>();
+//	//    		row.put("SIGN", "I");
+//	//    		row.put("OPTION", "EQ");
+//	//    		row.put("LOW", "Z006");
+//	//    		row.put("HIGH", "");
+//	//    		table.addRow(row);
+//	//
+//	//    		row = new HashMap<String, Object>();
+//	//    		row.put("SIGN", "I");
+//	//    		row.put("OPTION", "EQ");
+//	//    		row.put("LOW", "CPD");
+//	//    		row.put("HIGH", "");
+//	//    		table.addRow(row);
+//	//
+//	//    		row = new HashMap<String, Object>();
+//	//    		row.put("SIGN", "I");
+//	//    		row.put("OPTION", "EQ");
+//	//    		row.put("LOW", "0170");
+//	//    		row.put("HIGH", "");
+//	//    		table.addRow(row);
+//	//    		
+//	//    		tableList.add(table);
+//	
+//	    		SAPTable table = new SAPTable("IT_VKORG");	//Sales Organization
+//	    		
+//	    		List<String> orgList = list("SapIfRecvSalesOrderMapper.getSalesOrg", null);
+//	    		
+//	    		if(null != orgList && 0 < orgList.size()){
+//	    			for(String tempVal : orgList){
+//	            		row = new HashMap<String, Object>();
+//	            		row.put("SIGN", "I");
+//	            		row.put("OPTION", "EQ");
+//	            		row.put("LOW", tempVal);
+//	            		row.put("HIGH", "");
+//	            		table.addRow(row);
+//	    			}
+//	    		}
+//	    		tableList.add(table);
+//	    		
+//				table = new SAPTable("IT_AUART");
+//				row = new HashMap<String, Object>();
+//	    		row.put("SIGN", "I");
+//	    		row.put("OPTION", "EQ");
+//	    		row.put("LOW", "ZTA");
+//	    		table.addRow(row);
+//
+//				row = new HashMap<String, Object>();
+//	    		row.put("SIGN", "I");
+//	    		row.put("OPTION", "EQ");
+//	    		row.put("LOW", "ZKL");
+//	    		table.addRow(row);
+//				tableList.add(table);
+//	
+//	    		table = new SAPTable("IT_AEDAT");	//Date on Which Record Was Modify
+//	
+//	    		row = new HashMap<String, Object>();
+//	    		row.put("SIGN", "I");
+//	    		row.put("OPTION", "BT");
+//	    		
+//	    		Calendar calendar = Calendar.getInstance();
+//	    		Date toDay = calendar.getTime();
+//	    		
+//	    		//calendar.add(Calendar.DAY_OF_MONTH, -7);
+//	    		calendar.add(Calendar.DAY_OF_MONTH, -1);
+//	    		Date beforeDate = calendar.getTime();
+//	    		
+//	    		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+//	    		
+////	    		row.put("LOW", sdf.format(beforeDate));
+////	    		row.put("HIGH", sdf.format(toDay));
+//	    		
+//	    		row.put("LOW", sdf.format(beforeDate));
+//	    		row.put("HIGH", sdf.format(toDay));
+//	    		table.addRow(row);
+//	    		
+//	    		tableList.add(table);
+//	
+////	    		table = new SAPTable("IT_VBELN");	//Sales Document
+////	
+////	    		table.put("SIGN", "I");
+////	    		table.put("OPTION", "EQ");
+////	    		table.put("LOW", "0612014891");	
+////	    		table.put("HIGH", "");
+////	    		
+////	    		tableList.add(table);
+//	    		
+//	    		//3. 호출
+//	    		List<SAPTable> result = SAPConnectorManager.execute(SAPDataProvider.BATCH, "ZZ_IF_SD_SO_GET_CHANGED", tableList);
+//	    		
+//	    		if (result != null) {
+//	    			for(int i = 0; i < result.size(); i++) {
+//	    				SAPTable tempMap = result.get(i);
+//	    				
+//	    				if ("ET_ORDER_HEADERS_OUT".equals(tempMap.getTableName())) {
+//	    					List<Map<String, Object>> list = tempMap.getRows();
+//	    					for (int j = 0; j < list.size(); j++) {
+//	    						insert("SapIfRecvSalesOrderMapper.insertSapIfRecvORDER_HEADERS_OUT", list.get(j));
+//	    					}
+//	    				} else if("ET_ORDER_ITEMS_OUT".equals(tempMap.getTableName())) {
+//	    					List<Map<String, Object>> list = tempMap.getRows();
+//	    					for (int j = 0; j < list.size(); j++) {
+//	    						insert("SapIfRecvSalesOrderMapper.insertSapIfRecvORDER_ITEMS_OUT", list.get(j));
+//	    					}
+//	    				} else if("ET_ORDER_SCHEDULES_OUT".equals(tempMap.getTableName())) {
+//	    					List<Map<String, Object>> list = tempMap.getRows();
+//	    					for (int j = 0; j < list.size(); j++) {
+//	    						insert("SapIfRecvSalesOrderMapper.insertSapIfRecvORDER_SCHEDULES_OUT", list.get(j));
+//	    					}
+//	    				} else if("ET_ORDER_CONDITIONS_OUT".equals(tempMap.getTableName())) {
+//	    					List<Map<String, Object>> list = tempMap.getRows();
+//	    					for (int j = 0; j < list.size(); j++) {
+//	    						insert("SapIfRecvSalesOrderMapper.insertSapIfRecvORDER_CONDITIONS_OUT", list.get(j));
+//	    					}
+//	    				} else if("ET_ORDER_PARTNERS_OUT".equals(tempMap.getTableName())) {
+//	    					List<Map<String, Object>> list = tempMap.getRows();
+//	    					for (int j = 0; j < list.size(); j++) {
+//	    						insert("SapIfRecvSalesOrderMapper.insertSapIfRecvORDER_PARTNERS_OUT", list.get(j));
+//	    					}
+//	    				} else if("ET_ORDER_ADDRESS_OUT".equals(tempMap.getTableName())) {
+//	    					List<Map<String, Object>> list = tempMap.getRows();
+//	    					for (int j = 0; j < list.size(); j++) {
+//	    						insert("SapIfRecvSalesOrderMapper.insertSapIfRecvORDER_ADDRESS_OUT", list.get(j));
+//	    					}
+//	    				} else if("ET_ORDER_STATUSHEADERS_OUT".equals(tempMap.getTableName())) {
+//	    					List<Map<String, Object>> list = tempMap.getRows();
+//	    					for (int j = 0; j < list.size(); j++) {
+//	    						insert("SapIfRecvSalesOrderMapper.insertSapIfRecvORDER_STATUSHEADERS_OUT", list.get(j));
+//	    					}
+//	    				} else if("ET_ORDER_TEXTHEADERS_OUT".equals(tempMap.getTableName())) {
+//	    					List<Map<String, Object>> list = tempMap.getRows();
+//	    					for (int j = 0; j < list.size(); j++) {
+//	    						insert("SapIfRecvSalesOrderMapper.insertSapIfRecvORDER_TEXTHEADERS_OUT", list.get(j));
+//	    					}
+//	    				} else if("ET_ORDER_TEXTLINES_OUT".equals(tempMap.getTableName())) {
+//	    					List<Map<String, Object>> list = tempMap.getRows();
+//	    					for (int j = 0; j < list.size(); j++) {
+//	    						insert("SapIfRecvSalesOrderMapper.insertSapIfRecvORDER_TEXTLINES_OUT", list.get(j));
+//	    					}
+//	    				} else if("ET_ORDER_BUSINESS_OUT".equals(tempMap.getTableName())) {
+//	    					List<Map<String, Object>> list = tempMap.getRows();
+//	    					for (int j = 0; j < list.size(); j++) {
+//	    						insert("SapIfRecvSalesOrderMapper.insertSapIfRecvORDER_BUSINESS_OUT", list.get(j));
+//	    					}
+//	    				}
+//	    			}
+//	    			param.put("COMP_CD", "1000");
+//	    			param.put("USER_ID", "Batch_System");
+//	    			param.put("DOC_NO", "");
+//	    			insert("SapIfRecvSalesOrderMapper.callSpSapIfRecvSalesOrder", param);
+//	    		}
+//	    		
+//	    		Calendar calendarEnd = Calendar.getInstance();
+//	    		Date endDate = calendarEnd.getTime();
+//	    		
+//	    		param.put("END_DATE",  sdfBatch.format(endDate));
+//	    		param.put("SVR_NAME", svrNm);
+//	    		
+//				insert("SapIfRecvSalesOrderMapper.insertBatchHistory", param);
+//	    		
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				sb.append(" : Fail!");
+//			} finally {
+//				String fileName = svrNm + "_updateSalesOrder_" + sdfBatch.format(startDate).substring(0, 8);
+//				createLog(fileName, sb.toString());
+//			}
+//		}
+	}
+    
+//    @Scheduled(cron="0 30 01 * * ?")  // ap01 dev
+    @Scheduled(cron="0 30 03 * * ?")  // ap02  1755354
+//    @Scheduled(cron="0 24 14 * * ?")  // ap02
+    public void customerRun() {
+  	
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+//		
+//		Calendar calendar = Calendar.getInstance();
+//		Date startDate = calendar.getTime();
+//  	
+//		StringBuffer sb = new StringBuffer();
+//		sb.append("Start Date - ");
+//		sb.append(startDate);
+//		sb.append(System.getProperty("line.separator"));
+//		
+//		Map<String, Object> param = new HashMap<String, Object>();		
+//		param.put("BATCH_NAME", "getCustKLABC");
+//		param.put("START_DATE", sdf.format(startDate).substring(0, 8));
+//		
+//		int checkBatch = Integer.parseInt((String) selectByPk("SapIfRecvSalesOrderMapper.checkBatch", param));
+//		
+//		if(checkBatch < 20){
+//	    	try {
+//	    		
+//	    		//2. 테이블값 설정
+//	    		Map<String, Object> row = new HashMap<String, Object>();
+//	    		List<SAPTable> tableList = new ArrayList<SAPTable>();
+//	    		
+//	    		SAPTable table = new SAPTable("IT_KTOKD");	//
+//	    		
+//	    		row.put("SIGN", "I");
+//	    		row.put("OPTION", "EQ");
+//	    		row.put("LOW", "Z001");
+//	    		row.put("HIGH", "");
+//	    		table.addRow(row);
+//
+//	    		row = new HashMap<String, Object>();
+//	    		row.put("SIGN", "I");
+//	    		row.put("OPTION", "EQ");
+//	    		row.put("LOW", "Z002");
+//	    		row.put("HIGH", "");
+//	    		table.addRow(row);
+//
+//	    		row = new HashMap<String, Object>();
+//	    		row.put("SIGN", "I");
+//	    		row.put("OPTION", "EQ");
+//	    		row.put("LOW", "Z003");
+//	    		row.put("HIGH", "");
+//	    		table.addRow(row);
+//
+//	    		row = new HashMap<String, Object>();
+//	    		row.put("SIGN", "I");
+//	    		row.put("OPTION", "EQ");
+//	    		row.put("LOW", "Z004");
+//	    		row.put("HIGH", "");
+//	    		table.addRow(row);
+//
+//	    		row = new HashMap<String, Object>();
+//	    		row.put("SIGN", "I");
+//	    		row.put("OPTION", "EQ");
+//	    		row.put("HIGH", "");
+//	    		row.put("LOW", "Z006");
+//	    		table.addRow(row);
+//
+//	    		row = new HashMap<String, Object>();
+//	    		row.put("SIGN", "I");
+//	    		row.put("OPTION", "EQ");
+//	    		row.put("LOW", "CPD");
+//	    		row.put("HIGH", "");
+//	    		table.addRow(row);
+//
+//	    		row = new HashMap<String, Object>();
+//	    		row.put("SIGN", "I");
+//	    		row.put("OPTION", "EQ");
+//	    		row.put("LOW", "0170");
+//	    		row.put("HIGH", "");
+//	    		table.addRow(row);
+//
+//	    		tableList.add(table);
+//	    		
+////	    		table = new SAPTable("IT_BUKRS");
+////	    		row = new HashMap<String, Object>();
+////	    		row.put("SIGN", "I");
+////	    		row.put("OPTION", "EQ");
+////	    		row.put("LOW", "3500");
+////	    		row.put("HIGH", "");
+////	    		table.addRow(row);
+//
+////	    		row = new HashMap<String, Object>();
+////	    		row.put("SIGN", "I");
+////	    		row.put("OPTION", "EQ");
+////	    		row.put("LOW", "1000");
+////	    		row.put("HIGH", "");
+////	    		table.addRow(row);
+////	    		tableList.add(table);
+//
+//	    		table = new SAPTable("IT_VKORG");	//
+//
+//	    		row = new HashMap<String, Object>();
+//	    		row.put("SIGN", "I");
+//	    		row.put("OPTION", "EQ");
+//	    		row.put("LOW", "3500");
+//	    		row.put("HIGH", "");
+//	    		table.addRow(row);
+//
+//	    		row = new HashMap<String, Object>();
+//	    		row.put("SIGN", "I");
+//	    		row.put("OPTION", "EQ");
+//	    		row.put("LOW", "1000");
+//	    		row.put("HIGH", "");
+//	    		table.addRow(row);		
+//
+//	    		table = new SAPTable("IT_KUNNR");	
+//	    		row.put("SIGN", "I");
+//	    		row.put("OPTION", "EQ");
+//	    		row.put("HIGH", "");
+//	    		row.put("LOW", "1755354");
+//	    		table.addRow(row);
+//	    		
+//	    		tableList.add(table);
+//        		
+//        		//3. 호출
+//	    		List<SAPTable> result = SAPConnectorManager.execute(SAPDataProvider.ERP, "ZZ_RFC_SD_CUSTOMER_READ", tableList);
+//	    		
+//	    		if (result != null) {
+//        			// T_MARA, T_MAKT, T_MVKE, T_MARC, T_MBEW, T_MARM, T_T001, T_LONGTEXT
+//        			for (int i = 0; i < result.size(); i++) {
+//        				SAPTable tempMap = result.get(i);
+//        				 if("ET_ZZKNVV".equals(tempMap.getTableName())) {
+//        						List<Map<String, Object>> list = tempMap.getRows();
+////        						logger.debug("========== KNVV =================> " + list.toString());
+//        						for (int j = 0; j < list.size(); j++) {
+//        							insert("SapIfRecvCustomerMapper.insertSapIfRecvCustomerKNVV", list.get(j));
+//        						}
+//        				  } else if("ET_ZZKNB1".equals(tempMap.getTableName())) {
+//        						List<Map<String, Object>> list = tempMap.getRows();
+////        						logger.debug("========== KNB1 =================> " + list.toString());
+//        						for (int j = 0; j < list.size(); j++) {
+//        							insert("SapIfRecvCustomerMapper.insertSapIfRecvCustomerKNB1", list.get(j));
+//        						}
+//        				  } 
+//        			}
+//        			param.put("COMP_CD", "1000");
+//        			param.put("USER_ID", "Batch_System");
+//        			insert("SapIfRecvCustomerMapper.callSpSapIfRecvCustomerKLABC", param);
+//        		}
+//				
+//	    		
+//	    		Calendar calendarEnd = Calendar.getInstance();
+//	    		Date endDate = calendarEnd.getTime();
+//	    		
+//	    		param.put("END_DATE",  sdf.format(endDate));
+//	    		param.put("SVR_NAME", svrNm);
+//	    		
+//				insert("SapIfRecvSalesOrderMapper.insertBatchHistory", param);
+//	
+//				sb.append("End Date - ");
+//				sb.append(endDate);
+//				sb.append(" : Success!");
+//	
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				sb.append(" : Fail!");
+//			} finally {
+//				String fileName = svrNm + "_getBom_" + sdf.format(startDate).substring(0, 8);
+//				createLog(fileName, sb.toString());
+//			}
+//		}
+    }    
+    
+	
+	public void createLog(String fileName, String context) {
+//		
+//		String file = filePath + fileName + ".log";
+//		
+//		try{
+//			FileManager.mkDir(filePath);
+//			
+//			BufferedWriter fw = new BufferedWriter(new FileWriter(file, true));
+//			
+//			fw.write(context);
+//			fw.flush();
+//			fw.close();
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
+	}
+}

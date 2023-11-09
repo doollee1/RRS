@@ -1,0 +1,113 @@
+@CHARSET "UTF-8";
+
+/***** 공통 *****/
+html,body {width:100%;height:100%;}
+body,div,dl,dt,dd,ul,ol,li,form,p,button {margin:0;padding:0;}
+body,div,input,button {font:9pt Dotum;color:#2A2A2A;}
+img,iframe {border:0 none;}
+img {vertical-align:top;}
+input,select,button {vertical-align:middle;}
+input[type=text],input[type=password] {border:1px solid #9D9D9D;}
+input[type=button] {padding:2px 7px 2px 7px;border:1px solid gray;border-radius:2px;/*background-color:#fcfcfc;*/cursor:pointer;}
+input[type=button]:hover {background-color:#FF4700;}
+label,button {cursor:pointer;}
+button {padding:1px 3px 1px 3px;}
+a {/*text-decoration:none;color:#2A2A2A;*/text-decoration:underline; color:#1F8BB8;}
+a:focus {text-decoration:none;outline:none;}
+table {border:0;border-collapse:collapse;border-spacing:0;}
+table caption {text-align:left;font-weight:bold;padding-left:10px;color:#3366cc;}
+
+.show {display:block;}
+.hide {display:none;}
+.cls {clear:both;}
+.bold {font-weight:bold;}
+
+.emptyH5 {height:5px;}
+.emptyH10 {height:10px;}
+.emptyH15 {height:15px;}
+.emptyH20 {height:20px;}
+.emptyH30 {height:30px;}
+.emptyH40 {height:40px;}
+
+.bpad5 {padding-bottom:5px;}
+.bpad10 {padding-bottom:10px;}
+.bpad15 {padding-bottom:15px;}
+.bpad20 {padding-bottom:20px;}
+.bpad30 {padding-bottom:30px;}
+
+/***** 로그인화면 *****/
+#login_wrap {
+	position:absolute;
+	margin:0 auto;
+	width:100%;
+	height:100%;
+	background: url('/images/hn_oms_bg.jpg');
+	background-position: center center;
+	background-repeat:  no-repeat;
+	background-attachment: fixed;
+	background-size:  cover;
+	}
+#login_content_wrap {position:fixed; top:50%; left:50%; margin-left:-175px; margin-top:-200px;}
+#login_content {width:350px;}
+.toplogo {width:133px;padding-top:16px; padding-left:26px;}
+.top_line_g {background-image: linear-gradient(to right, #ff6600 10%, #ff6600 20%); height:5px;}
+#login_content .login_title {align:center; valign:middle; height:55px; background-color:#5a6667; color: #fff; text-align: center;}
+#login_content .login_table {margin: 0px;}
+.btn_login {width:350px;height:50px;background-color:#ff6600; !important; border-radius:3px;color:#fff;font-family:Tahoma;/*font-weight:bold;*/font-size:16px;cursor:pointer;box-shadow:0px 0px 2px 0px gray; padding-bottom: 15px;}
+
+
+
+/*background: -moz-linear-gradient(top, rgba(19,70,121,1) 0%, rgba(24,81,104,1) 100%); /* FF3.6+ */
+/*background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(24,76,127,1)), color-stop(100%,rgba(24,81,104,1))); /* Chrome,Safari4+ */
+/*background: -webkit-linear-gradient(top, rgba(19,70,121,1) 0%,rgba(24,76,127,1) 100%); /* Chrome10+,Safari5.1+ */
+/*background: -o-linear-gradient(top, rgba(19,70,121,1) 0%,rgba(24,76,127,1) 100%); /* Opera 11.10+ */
+/*background: -ms-linear-gradient(top, rgba(19,70,121,1) 0%,rgba(24,76,127,1) 100%); /* IE10+ */
+/*background: linear-gradient(to bottom, rgba(19,70,121,1) 0%,rgba(24,76,127,1) 100%); /* W3C */
+/*background-color:#f1f2f7;*/
+	/*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#134679', endColorstr='#184c7f',GradientType=0 );*/ /* IE6-9 */}
+
+/*#login_top_wrap {top:0;left:0;top:50%;left:50%;background:url(/images/bg_logintop.jpg) repeat-x !important; }*/
+/*#login_content_wrap {margin:0 auto;width:350px; height:350px; position:absolute; -webkit-top:50%; -webkit-left:50%;}*/
+/*#login_content {padding:25px 50px 50px 50px; border:0;border-radius:4px;background-color:#FFFFFF;}*/
+.ippwImg {width:38px;height:38px;border-left:1px solid #dedede;border-top: 1px solid #dedede;border-bottom:1px solid #dedede; border-radius:4px 0px 0px 4px;}
+/*.idpwInput {width:254px;height:36px;margin-bottom:10px;font-family:Tahoma;font-size:14px;border-right:1px solid #dedede !important;border-top:1px solid #dedede !important;border-bottom:1px solid #dedede !important;border-left:0 !important;border-radius:0px 4px 4px 0px;padding-left:5px} */
+.idpwInput {width:254px; padding:5px; height:45px;margin-bottom:10px;font-family:Tahoma;font-size:14px;} 
+.selectInput {width:300px;height:40px;margin-bottom:10px;font-family:Tahoma;font-size:14px;border:1px solid #dedede !important;border-radius:4px;} 
+
+.login_bottom {padding:10px 0;text-align:center;}
+
+
+
+
+
+/* 팝업 테이블 레이아웃 */
+.pop_tblForm {width:100%; min-width:360px; border-collapse:collapse; border-spacing:0; margin-top:8px;}
+.pop_ct_top_wrap {display:table; width:100%; height:21px; margin-bottom:3px;}
+.pop_ct_top_left {display:table-cell; padding-top:3px; vertical-align:top; text-align:left; font-weight:bold; color:#555555;
+padding-left: 20px !important;
+background-image: url(/images/BLUE.png);
+background-size: 10px 10px;
+background-position: left center;
+background-repeat: no-repeat;}
+.pop_ct_top_right {display:table-cell; vertical-align:bottom; text-align:right;}
+
+.pop_tblForm caption{text-align:left; border-bottom:2px solid #8BABCB; font-weight:bold; color:#555555;}
+.pop_tblForm tr {border-bottom:1px solid #C1D0DC;}
+.pop_tblForm tr:first-child {border-bottom:1px solid #C1D0DC; border-top:1px solid #ADC2D3;}
+.pop_tblForm tr:last-child {border-bottom:1px solid #ADC2D3;}
+.pop_tblForm th {padding:7px; text-align:left; border-right:1px solid #c1d0dc; height:19px; vertical-align:middle; /*text-align:right;*/ background:#DFEBF7; font-weight:normal;}
+.pop_tblForm th span {padding:0 4px 0 0; color:red;}
+.pop_tblForm td {padding:2px; background:#fff;}
+.pop_tblForm input {border-radius:3px; height:18px;}
+.pop_tblForm select {border-radius:3px; height:18px;} 
+
+#pop_ct_form_wrap input[type=text],#pop_ct_form_wrap input[type=password] {/*height:16px;*/border:1px solid #ccc;padding-left:5px;}
+#pop_ct_form_wrap select {height:22px;/*border:1px solid #b6bfcd;*/font-family: 'Roboto Mono', monospace;}
+#pop_ct_form_wrap button {height:22px;/*border:1px solid #b6bfcd !important;*/}
+
+.ui-dialog-buttonset {width:100%;text-align:right;}
+.popbtnleft {float:left;}
+.popbtnright {float:right;}
+
+.ui-dialog .ui-dialog-titlebar-close {/*background:url('../images/popup_top_close.png') no-repeat center center; */position: absolute;right: .3em;top: 50%;width: 20px;margin: -11px 6px 0 0;padding: 1px;height: 20px;}
+.ui-dialog .ui-dialog-buttonpane button {padding:0px !important;}

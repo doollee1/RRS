@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ContactPersonMapper">	
+	<insert id="insertContactPerson" parameterType="HashMap">
+		<selectKey keyProperty="CODE" resultType="STRING" order="BEFORE">
+		BEGIN TRAN
+			DECLARE	@CODE varchar(15) EXEC dbo.SP_BC_NUMBER #{COMP_CD}, 'CP', '*', @CODE OUTPUT SELECT @CODE;
+		COMMIT TRAN
+		</selectKey>
+	/* ContactPerson.xml -> insertContactPerson */
+	  INSERT INTO MS_PARTNER (COMP_CD	,CODE					,CUST_CD		,NAME_1ST		,NAME_2ND		,DEPT_CD	,FUNC_CD
+          					,FULL_NM	,SEARCH_NM				,SEARCH_NM2		,COUNTRY_CD		,CITY_NM		,POST_CD
+           					,HAUS_NO	,STREET_NM				,TEL_NO1		,TEL_NO1_EXT	,TEL_NO2
+           					,FAX_NO		,FAX_NO_EXT				,DEL_YN			,E_MAIL			,STATUS
+							,REG_DT		,REG_ID					,UPT_DT			,UPT_ID
+							,QT_YN		,SO_YN					,INV_YN			,DLV_YN)
+				   	VALUES (#{COMP_CD}	,#{CODE}				,#{H_CUST_CD}		,#{NAME_1ST}	,#{NAME_2ND}	,#{DEPT_CD}	,#{FUNC_CD}
+				   		   ,#{FULL_NM}	,#{C_SEARCH_NM1}			,#{C_SEARCH_NM2}	,#{COUNTRY_CD}	,#{CITY_CD}		,#{POST_CD}
+				   		   ,#{HAUS_NO}	,#{STREET_NM}			,#{TEL_NO}		,#{TEL_NO_EXT}	,#{MOBILE_NO}
+				   		   ,#{FAX_NO}	,#{FAX_NO_EXT}			,#{DEL_YN}		,#{E_MAIL}		,CASE #{DEL_YN} WHEN 'N' THEN 'A' WHEN 'Y' THEN 'D' END
+				   		   ,PARSE(#{REG_DT} AS DATE USING 'de-DE'), #{LOGIN_USER}, PARSE(#{REG_DT} AS DATE USING 'de-DE'), #{LOGIN_USER}
+				   		   ,#{QT_YN}	,#{SO_YN}				,#{INV_YN}		,#{DLV_YN});
+	</insert>
+	
+	<update id="updateContactPerson" parameterType="HashMap">
+		UPDATE MS_PARTNER
+		   SET NAME_1ST		= #{NAME_1ST}
+		   	  ,NAME_2ND 	= #{NAME_2ND}
+          	  ,FULL_NM		= #{FULL_NM}
+          	  ,SEARCH_NM	= #{C_SEARCH_NM1}	
+          	  ,SEARCH_NM2	= #{C_SEARCH_NM2}
+          	  ,DEPT_CD		= #{DEPT_CD}
+          	  ,FUNC_CD		= #{FUNC_CD}	
+          	  ,TEL_NO1		= #{TEL_NO}	
+          	  ,TEL_NO1_EXT	= #{TEL_NO_EXT}
+          	  ,TEL_NO2		= #{MOBILE_NO}
+           	  ,FAX_NO		= #{FAX_NO}
+           	  ,FAX_NO_EXT	= #{FAX_NO_EXT}		
+           	  ,DEL_YN		= #{DEL_YN}	
+           	  ,E_MAIL		= #{E_MAIL}	
+           	  ,STATUS		= CASE #{DEL_YN} WHEN 'N' THEN 'A' WHEN 'Y' THEN 'D' END		
+			  ,UPT_DT		= GETDATE()
+			  ,UPT_ID		= #{LOGIN_USER}
+			  ,QT_YN		= #{QT_YN}
+			  ,SO_YN		= #{SO_YN}
+			  ,INV_YN		= #{INV_YN}
+			  ,DLV_YN		= #{DLV_YN}
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND convert( nvarchar, convert( numeric, CODE) ) = #{CODE}
+		   AND CUST_CD = #{H_CUST_CD}
+	</update>
+	<select id="getContactList" parameterType="BMap" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+		/* ContactPerson.xml -> getContactList */
+			SELECT ROW_NUMBER() OVER(ORDER BY CODE) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+		      	 , CUST_CD
+		      	 , NAME_1ST
+		      	 , NAME_2ND
+		      	 , ISNULL(FULL_NM, CONCAT(NAME_1ST,' ',NAME_2ND)) AS FULL_NM
+		      	 , convert( nvarchar, convert( numeric, CODE) ) as CODE
+		      	 , SEARCH_NM 
+		      	 , SEARCH_NM2 
+		      	 , ISNULL(E_MAIL,'') AS E_MAIL
+		      	 , ISNULL(TEL_NO1,'') AS TEL_NO1
+		      FROM MS_PARTNER WITH (NOLOCK) 
+		     WHERE COMP_CD = #{COMP_CD}
+		       AND CUST_CD = #{CUST_CD}
+		       AND STATUS ='A'
+		     <if test='QT_YN == "Y"'>
+    		   AND QT_YN = 'Y'
+    		 </if>
+			 <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectCustomerCnt" parameterType="BMap" resultType="int">
+		/* ContactPerson.xml -> selectCustomerCnt */
+			SELECT COUNT(1)
+		      FROM MS_CUST_H WITH (NOLOCK) 
+		     WHERE COMP_CD = #{COMP_CD}
+		   	  AND CUST_CD = #{CUST_CD}
+	</select>
+	
+	<select id="getContactInfo" parameterType="BMap" resultType="BMap">
+		/* ContactPerson.xml -> getContactList */
+			SELECT convert( nvarchar, convert( numeric, CODE) ) as CODE
+			      ,CUST_CD AS H_CUST_CD
+			      ,NAME_1ST
+			      ,NAME_2ND
+			      ,FULL_NM
+			      ,SEARCH_NM AS C_SEARCH_NM1
+			      ,SEARCH_NM2 AS C_SEARCH_NM2
+			      ,ISNULL(DEPT_CD,'') DEPT_CD
+			      ,ISNULL(FUNC_CD,'') FUNC_CD
+			      ,COUNTRY_CD
+			      ,CITY_NM AS CITY_CD
+			      ,POST_CD
+			      ,HAUS_NO
+			      ,STREET_NM
+			      ,TEL_NO1 AS TEL_NO
+			      ,TEL_NO1_EXT AS TEL_NO_EXT
+			      ,TEL_NO2 AS MOBILE_NO
+			      ,FAX_NO
+			      ,FAX_NO_EXT
+			      ,DEL_YN
+			      ,E_MAIL
+			      ,STATUS 
+			      ,DBO.FMTDDATE(REG_DT, 'DD.MM.YYYY') REG_DT
+			      ,REG_ID
+			      ,DBO.FMTDDATE(UPT_DT, 'DD.MM.YYYY') UPT_DT
+			      ,UPT_ID
+  			      ,QT_YN		
+  			      ,SO_YN					
+  			      ,INV_YN			
+  			      ,DLV_YN
+    		  FROM MS_PARTNER WITH (NOLOCK) 
+    		 WHERE COMP_CD = #{COMP_CD}
+    		   AND CUST_CD = #{CUST_CD}
+    		   <if test='CODE != null and CODE != ""'>
+    		   AND convert( nvarchar, convert( numeric, CODE) ) = #{CODE}
+    		   </if>
+	</select>
+	
+		
+	<select id="selectContactPersonList" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+		/* ContactPerson.xml -> selectContactPersonList */
+		SELECT ROW_NUMBER() OVER(ORDER BY CODE) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			,  convert( nvarchar, convert( numeric, P.CODE)) AS CODE
+			,  P.CUST_CD			
+			,  P.FULL_NM
+			,  P.DEPT_CD
+			,  DBO.GETCODENM('DEPT_CD', P.DEPT_CD, #{LANG}) AS DEPT_CD_NM
+			,  P.FUNC_CD
+			,  DBO.GETCODENM('FUNC_CD', P.FUNC_CD, #{LANG}) AS FUNC_CD_NM
+			,  DBO.GETCODENM('COUNTRY_CD', P.COUNTRY_CD, #{LANG}) AS H_COUNTRY_NM
+			,  C.CUST_NM
+			,  C.ACCOUNT_GR
+			,  DBO.GETCODENM('ACCOUNT_GR', C.ACCOUNT_GR, #{LANG}) AS ACCOUNT_GR_NM
+			,  C.E_MAIL
+			,  C.TEL_NO			
+		FROM MS_PARTNER P  WITH (NOLOCK)
+  INNER JOIN MS_CUST_H C  WITH (NOLOCK) ON P.COMP_CD = C.COMP_CD AND P.CUST_CD = C.CUST_CD  
+       WHERE P.COMP_CD = #{COMP_CD}
+	  	<if test='CUST_CD != null and CUST_CD != ""'>
+	   	  AND P.CUST_CD LIKE DBO.SETPARAM (#{CUST_CD})
+		</if>
+		<if test='CUST_NM != null and CUST_NM != ""'>
+	   	  AND C.CUST_NM LIKE DBO.SETPARAM (#{CUST_NM})
+		</if>		
+   		<if test='SEARCH_NM1 != null and SEARCH_NM1 != ""'>
+	   	  AND C.SEARCH_NM1 LIKE DBO.SETPARAM (#{SEARCH_NM1})
+		</if>
+		<if test='SEARCH_NM2 != null and SEARCH_NM2 != ""'>
+	   	  AND C.SEARCH_NM2 LIKE DBO.SETPARAM (#{SEARCH_NM2})
+		</if>		
+
+	  	<if test='CODE != null and CODE != ""'>
+	   	  AND convert( nvarchar, convert( numeric, P.CODE ) ) LIKE DBO.SETPARAM (#{CODE})
+		</if>
+		<if test='FULL_NM != null and FULL_NM != ""'>
+	   	  AND P.FULL_NM LIKE DBO.SETPARAM (#{FULL_NM})
+		</if>
+   		<if test='NAME_1ST != null and NAME_1ST != ""'>
+	   	  AND P.NAME_1ST LIKE DBO.SETPARAM (#{NAME_1ST})
+		</if>
+		<if test='NAME_2ND != null and NAME_2ND != ""'>
+	   	  AND P.NAME_2ND LIKE DBO.SETPARAM (#{NAME_2ND})
+		</if>
+		
+		<if test='ACCOUNT_GR != null and ACCOUNT_GR != ""'>
+	   	  AND C.ACCOUNT_GR = #{ACCOUNT_GR}
+		</if>		
+		<if test='DEPT_CD != null and DEPT_CD != ""'>
+	   	  AND P.DEPT_CD = #{DEPT_CD}
+		</if>
+		<if test='FUNC_CD != null and FUNC_CD != ""'>
+	   	  AND P.FUNC_CD = #{FUNC_CD}
+		</if>		
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	
+	<select id="selectContactPersonPopup" parameterType="BMap" resultType="BMap">
+		/* ContactPerson.xml -> selectContactPersonPopup */
+			SELECT NAME_1ST
+				 , NAME_2ND
+				 , FULL_NM
+				 , convert( nvarchar, convert( numeric, CODE ) )  as CODE
+				 , SEARCH_NM
+				 , TEL_NO1 + TEL_NO1_EXT+ TEL_NO2 AS TEL_NO
+				 , E_MAIL
+				 , NAME_1ST											AS H_NAME_1ST
+				 , NAME_2ND											AS H_NAME_2ND
+				 , FULL_NM											AS H_FULL_NM
+				 , SEARCH_NM										AS H_SEARCH_NM
+				 , SEARCH_NM2										AS H_SEARCH_NM2
+				 , SEARCH_NM3										AS H_SEARCH_NM3
+				 , COUNTRY_CD										AS H_COUNTRY_CD
+				 , CITY_NM											AS H_CITY_NM
+				 , POST_CD											AS H_POST_CD
+				 , REGION_CD										AS H_REGION_CD
+				 , SORT_KEY											AS H_SORT_KEY
+				 , HAUS_NO											AS H_HAUS_NO
+				 , STREET_NM										AS H_STREET_NM
+				 , VAT_ID											AS H_VAT_ID
+				 , TAX_ID											AS H_TAX_ID
+				 , URL												AS H_URL
+				 , TEL_NO1											AS H_TEL_NO1
+				 , TEL_NO1_EXT										AS H_TEL_NO1_EXT
+				 , TEL_NO2											AS H_TEL_NO2
+				 , FAX_NO											AS H_FAX_NO
+				 , FAX_NO_EXT										AS H_FAX_NO_EXT
+				 , E_MAIL											AS H_E_MAIL
+				 , DBO.GETCODENM('COUNTRY_CD', COUNTRY_CD, #{LANG}) AS H_COUNTRY_NM
+    		  FROM MS_PARTNER WITH (NOLOCK) 
+    		 WHERE COMP_CD = #{COMP_CD}
+    		   AND CUST_CD = #{S_CUST_CD}
+    		<if test='S_FIRST_NM != null and S_FIRST_NM != ""'>
+		   	  AND NAME_1ST LIKE DBO.SETPARAM (#{S_FIRST_NM})
+			</if>
+			<if test='S_LAST_NM != null and S_LAST_NM != ""'>
+		   	  AND NAME_2ND LIKE DBO.SETPARAM (#{S_LAST_NM})
+			</if>
+			<if test='S_SEARCH_NM != null and S_SEARCH_NM != ""'>
+		   	  AND SEARCH_NM LIKE DBO.SETPARAM (#{S_SEARCH_NM})
+			</if>
+	</select>
+	
+	<select id="selectContactPersonPopup2" parameterType="BMap" resultType="BMap">
+		/* ContactPerson.xml -> selectContactPersonPopup2 */
+			SELECT CUST_CD
+				 , NAME_1ST
+				 , NAME_2ND
+				 , FULL_NM
+				 , convert( nvarchar, convert( numeric, CODE ) )  as CODE
+				 , SEARCH_NM
+				 , TEL_NO1 + TEL_NO1_EXT+ TEL_NO2 AS TEL_NO
+				 , E_MAIL
+				 , NAME_1ST											AS H_NAME_1ST
+				 , NAME_2ND											AS H_NAME_2ND
+				 , FULL_NM											AS H_FULL_NM
+				 , SEARCH_NM										AS H_SEARCH_NM
+				 , SEARCH_NM2										AS H_SEARCH_NM2
+				 , SEARCH_NM3										AS H_SEARCH_NM3
+				 , COUNTRY_CD										AS H_COUNTRY_CD
+				 , CITY_NM											AS H_CITY_NM
+				 , POST_CD											AS H_POST_CD
+				 , REGION_CD										AS H_REGION_CD
+				 , SORT_KEY											AS H_SORT_KEY
+				 , HAUS_NO											AS H_HAUS_NO
+				 , STREET_NM										AS H_STREET_NM
+				 , VAT_ID											AS H_VAT_ID
+				 , TAX_ID											AS H_TAX_ID
+				 , URL												AS H_URL
+				 , TEL_NO1											AS H_TEL_NO1
+				 , TEL_NO1_EXT										AS H_TEL_NO1_EXT
+				 , TEL_NO2											AS H_TEL_NO2
+				 , FAX_NO											AS H_FAX_NO
+				 , FAX_NO_EXT										AS H_FAX_NO_EXT
+				 , E_MAIL											AS H_E_MAIL
+				 , DBO.GETCODENM('COUNTRY_CD', COUNTRY_CD, #{LANG}) AS H_COUNTRY_NM
+    		  FROM MS_PARTNER WITH (NOLOCK) 
+    		 WHERE COMP_CD = #{COMP_CD}
+    		   AND CUST_CD != 'VN'
+    		 <if test='S_CUST_CD != null and S_CUST_CD != ""'>
+    		   AND CUST_CD LIKE DBO.SETPARAM (#{S_CUST_CD})
+    		  </if>
+    		<if test='S_FIRST_NM != null and S_FIRST_NM != ""'>
+		   	  AND NAME_1ST LIKE DBO.SETPARAM (#{S_FIRST_NM})
+			</if>
+			<if test='S_LAST_NM != null and S_LAST_NM != ""'>
+		   	  AND NAME_2ND LIKE DBO.SETPARAM (#{S_LAST_NM})
+			</if>
+	</select>
+	
+	<select id="selectVendorPopup" parameterType="BMap" resultType="BMap">
+		/* ContactPerson.xml -> selectVendorPopup */
+			SELECT CONCAT(SEARCH_NM,' ',SEARCH_NM2,' ',SEARCH_NM3) AS SEARCH_NM
+				 , COUNTRY_CD
+				 , DBO.GETCODENM('COUNTRY_CD', COUNTRY_CD, #{LANG}) AS COUNTRY_NM
+				 , CITY_NM
+				 , POST_CD
+				 , FULL_NM
+				 , convert( nvarchar, convert( numeric, CODE ) )  as CODE
+				 , NAME_1ST						AS H_NAME_1ST
+				 , NAME_2ND						AS H_NAME_2ND
+				 , FULL_NM						AS H_FULL_NM
+				 , SEARCH_NM					AS H_SEARCH_NM
+				 , SEARCH_NM2					AS H_SEARCH_NM2
+				 , SEARCH_NM3					AS H_SEARCH_NM3
+				 , COUNTRY_CD					AS H_COUNTRY_CD
+				 , CITY_NM						AS H_CITY_NM
+				 , POST_CD						AS H_POST_CD
+				 , REGION_CD					AS H_REGION_CD
+				 , SORT_KEY						AS H_SORT_KEY
+				 , HAUS_NO						AS H_HAUS_NO
+				 , STREET_NM					AS H_STREET_NM
+				 , VAT_ID						AS H_VAT_ID
+				 , TAX_ID						AS H_TAX_ID
+				 , URL							AS H_URL
+				 , TEL_NO1						AS H_TEL_NO1
+				 , TEL_NO1_EXT					AS H_TEL_NO1_EXT
+				 , TEL_NO2						AS H_TEL_NO2
+				 , FAX_NO						AS H_FAX_NO
+				 , FAX_NO_EXT					AS H_FAX_NO_EXT
+				 , E_MAIL						AS H_E_MAIL
+    		  FROM MS_PARTNER WITH (NOLOCK) 
+    		 WHERE COMP_CD = #{COMP_CD}
+    		   AND CUST_CD ='VN'
+    		<if test='S_CODE != null and S_CODE != ""'>
+		   	  AND convert( nvarchar, convert( numeric, CODE ) ) LIKE DBO.SETPARAM(#{S_CODE})
+			</if>
+			<if test='S_CUST_NM != null and S_CUST_NM != ""'>
+		   	  AND FULL_NM LIKE DBO.SETPARAM (#{S_CUST_NM})
+			</if>
+			<if test='S_SEARCH_NM != null and S_SEARCH_NM != ""'>
+		   	  AND (SEARCH_NM LIKE DBO.SETPARAM (#{S_SEARCH_NM})
+		   	   OR SEARCH_NM LIKE DBO.SETPARAM (#{S_SEARCH_NM2})
+		   	   OR SEARCH_NM LIKE DBO.SETPARAM (#{S_SEARCH_NM3})) 
+			</if>
+			<if test='S_CITY != null and S_CITY != ""'>
+		   	  AND CITY_NM LIKE '%' + #{S_CITY} + '%'
+			</if>
+			<if test='S_COUNTRY != null and S_COUNTRY != ""'>
+		   	  AND COUNTRY_CD = #{S_COUNTRY}
+			</if>
+	</select>
+</mapper>

@@ -1,0 +1,4608 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SalesOrderMapper">
+
+
+<select id="searchSalesS_Test" parameterType="BMap" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+			/* SalesOrder.xml -> searchSalesOrderList */
+			SELECT ROW_NUMBER() OVER(ORDER BY MST.REG_DT DESC, MST.DOC_DATE DESC) ROWNUM
+				, MST.COMP_CD																								AS COMP_CD
+				, MST.DOC_NO																								AS DOC_NO
+				, MST.DOC_TP + ' ' + (CASE WHEN #{LANG} = 'EN' THEN MST.DOC_TP_EN ELSE MST.DOC_TP_NM END)					AS DOC_TP
+				, MST.DOC_DATE																								AS DOC_DATE
+				, dbo.GETCODENM('APPROVAL_YN',ISNULL(MST.APPROVAL_STS,''),#{LANG})											AS APPROVAL_STS
+				, CASE WHEN MST.QT_TO_SO_DT IS NOT NULL THEN 'Created' ELSE '' END 											AS QT_TO_SO
+				, MST.PO_NO																									AS PO_NO
+				, MST.VAL_FR_DT																								AS VAL_FR_DT
+				, MST.VAL_TO_DT																								AS VAL_TO_DT
+				, MST.REQ_DELI_DT																							AS REQ_DELI_DT 
+				, MST.SOLD_CUST_CD + ' ' + MST.SOLD_CUST_NM																	AS SOLD_CUST_CD
+				, MST.DELI_BLOCK_CD + ' ' + (CASE WHEN #{LANG} = 'EN' THEN MST.DELI_BLOCK_EN ELSE MST.DELI_BLOCK_NM END)	AS DELI_BLOCK_CD
+				, MST.DIV_CD + ' ' + (CASE WHEN 'EN' = 'EN' THEN MST.DIV_EN ELSE MST.DIV_NM END)							AS DIV_CD
+				, MST.SOFF + ' ' + (CASE WHEN #{LANG} = 'EN' THEN MST.SALES_OFFICE_EN ELSE MST.SALES_OFFICE_NM END)			AS SALES_OFFICE_CD
+				, MST.SALES_GR + ' ' + (CASE WHEN #{LANG} = 'EN' THEN MST.SALES_OFFICE_EN ELSE MST.SALES_OFFICE_NM END)		AS SALES_GR
+				, MST.SORG + ' ' + (CASE WHEN #{LANG} = 'EN' THEN MST.SALES_ORG_EN ELSE MST.SALES_ORG_NM END)				AS SALES_ORG_CD
+				, MST.DISTRB_CH + ' ' + (CASE WHEN #{LANG} = 'EN' THEN MST.DISTRB_CH_EN ELSE MST.DISTRB_CH_NM END)			AS DISTRB_CH
+				, MST.DELI_PLANT_CD + ' ' + (CASE WHEN #{LANG} = 'EN' THEN MST.DELI_PLANT_EN ELSE MST.DELI_PLANT_NM END)	AS DELI_PLANT_CD
+				, MST.T_AMT																									AS T_AMT
+				, MST.VAT_AMT + '(' + MST.VAT + ')%' 																		AS VAT
+				, MST.CURR_CD																								AS CURR_CD
+				, MST.PRICE_DT																								AS PRICE_DT
+				, (SELECT CODE_NM FROM BC_COMM_L WHERE 1 = 1 AND HEAD_CD = '100300' AND CODE = MST.STATUS)					AS STATUS
+				, MST.REG_ID																								AS REG_ID
+				, dbo.FmtdDate(MST.REG_DT, 'DD.MM.YYYY HH:MM:SS')															AS REG_DT
+				, CASE WHEN MST.STATUS = 'A' THEN 'Alive' 
+		               WHEN MST.STATUS = 'D' THEN 'Delete' 
+					   WHEN MST.STATUS = 'C' THEN 'Closed'
+					   ELSE '' END AS STATUS_NM	
+				, (SELECT TOP 1 DOC_NO FROM SD_ORDER_H WHERE QT_NO = MST.DOC_NO AND convert(numeric, DOC_NO) <![CDATA[ < ]]> 700000000)
+																															AS QT_TO_SO_NO
+				, MST.QT_NO																									AS QT_NO
+				, ISNULL(MST.QT_STS_CD, '') + ' ' + (SELECT CODE_NM FROM BC_COMM_L WHERE 1 = 1 AND HEAD_CD = '110900' AND CODE = MST.QT_STS_CD)
+																															AS QT_STS_CD
+			FROM SD_ORDER_H_LIST_VW MST WITH (NOLOCK)
+			LEFT OUTER JOIN SD_ORDER_PART PART
+				ON MST.DOC_GR	= PART.DOC_GR
+				AND MST.COMP_CD = PART.COMP_CD
+				AND MST.DOC_NO	= PART.DOC_NO
+				AND PART.PF_TP	= 'ZI'
+				AND PART.ITEM_SEQ = '000000'
+			WHERE 1 = 1
+			AND MST.DOC_GR = #{DOC_GR}
+			<if test='DOC_TP != null and DOC_TP != ""'>
+				AND MST.DOC_TP = #{DOC_TP}
+			</if>
+			<if test='SOLD_CUST_CD != null and SOLD_CUST_CD != ""'>
+				AND MST.SOLD_CUST_CD LIKE '%' + DBO.SETPARAM(#{SOLD_CUST_CD}) + '%'
+			</if>
+			<if test='DOC_NO != null and DOC_NO != ""'>
+				AND MST.DOC_NO LIKE '%' + DBO.SETPARAM(#{DOC_NO}) + '%'
+			</if>
+			<if test='VAL_FR_DT != null and VAL_FR_DT != ""'>
+				AND DBO.GETDATEDE(#{VAL_FR_DT}) BETWEEN DBO.GETDATEDE(MST.VAL_FR_DT) AND DBO.GETDATEDE(MST.VAL_TO_DT)
+			</if>
+			<if test='VAL_TO_DT != null and VAL_TO_DT != ""'>
+				AND DBO.GETDATEDE(MST.VAL_TO_DT) <![CDATA[ <= ]]> DBO.GETDATEDE(#{VAL_TO_DT})
+			</if>
+			<if test='REF_DOC_H_STS != null and REF_DOC_H_STS != ""'>
+				AND MST.REF_DOC_H_STS = #{REF_DOC_H_STS}
+			</if>
+			<if test='T_REF_STS != null and T_REF_STS != ""'>
+				AND MST.T_REF_STS = #{T_REF_STS}
+			</if>
+			<if test='OVL_DVL_STS != null and OVL_DVL_STS != ""'>
+				 AND MST.OVL_DVL_STS = #{OVL_DVL_STS}
+			</if>
+			<if test='RJT_STS != null and RJT_STS != ""'>
+				AND MST.RJT_STS = #{RJT_STS}
+			</if>
+			<if test='REG_ID != null and REG_ID != ""'>
+				AND (MST.REG_ID LIKE '%' + DBO.SETPARAM(#{REG_ID}) + '%'
+				 OR dbo.getUserNm(MST.COMP_CD, MST.REG_ID) LIKE '%' + #{REG_ID})
+			</if>
+			<if test='BACK_OFC_ID != null and BACK_OFC_ID != ""'>
+				AND (PART.PF_PS_NO LIKE '%' + DBO.SETPARAM(#{BACK_OFC_ID}) + '%'
+				 OR dbo.getUserNm(MST.COMP_CD, PART.PF_PS_NO) LIKE '%' + #{BACK_OFC_ID})
+			</if>
+			
+			<if test='REG_DT != null and REG_DT != ""'>
+				 AND DBO.GETDATEDE(MST.REG_DT) = DBO.GETDATEDE(#{REG_DT})
+			</if>
+			<if test='(REG_FR_DT != null and REG_FR_DT != "") and (REG_TO_DT == null or REG_TO_DT == "")'>
+				 AND DBO.GETDATEDE(MST.REG_DT) = DBO.GETDATEDE(#{REG_FR_DT})
+			</if>
+			<if test='(REG_TO_DT != null and REG_TO_DT != "") and (REG_FR_DT == null or REG_FR_DT == "")'>
+				 AND DBO.GETDATEDE(MST.REG_DT) = DBO.GETDATEDE(#{REG_TO_DT})
+			</if>
+			<if test='(REG_FR_DT != null and REG_FR_DT != "") and (REG_TO_DT != null and REG_TO_DT != "")'>
+				 AND DBO.GETDATEDE(MST.REG_DT) <![CDATA[ >= ]]> DBO.GETDATEDE(#{REG_FR_DT})
+				 AND DBO.GETDATEDE(MST.REG_DT) <![CDATA[ <= ]]> DBO.GETDATEDE(#{REG_TO_DT})
+			</if>
+			<if test='SALES_ORG_CD != null and SALES_ORG_CD != ""'>
+				 AND MST.SOrg = #{SALES_ORG_CD}
+			</if>
+			<if test='DISTRB_CH != null and DISTRB_CH != ""'>
+				 AND MST.DISTRB_CH = #{DISTRB_CH}
+			</if>
+			<if test='DIV_CD != null and DIV_CD != ""'>
+				 AND MST.DIV_CD = #{DIV_CD}
+			</if>
+			<if test='CREDIT_STS != null and CREDIT_STS != ""'>
+				 AND MST.CREDIT_STS = #{CREDIT_STS}
+			</if>
+			<if test='OVL_STS != null and OVL_STS != ""'>
+				 AND MST.OVL_STS = #{OVL_STS}
+			</if>
+			<if test='GRADE != null and GRADE != ""'>
+				 AND MST.DELI_STS = #{DELI_STS}
+			</if>
+			<if test='APPROVAL_YN != null and APPROVAL_YN != ""'>
+				 AND MST.APPROVAL_STS = #{APPROVAL_YN}
+			</if>
+			AND MST.STATUS NOT IN ('D', 'T')
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	
+	
+	
+	
+	<select id="searchSalesOrderList" parameterType="BMap" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+			/* SalesOrder.xml -> searchSalesOrderList */
+			SELECT ROW_NUMBER() OVER(ORDER BY MST.REG_DT DESC, MST.DOC_DATE DESC) ROWNUM
+				, MST.COMP_CD																								AS COMP_CD
+				, MST.DOC_NO																								AS DOC_NO
+				, MST.DOC_TP + ' ' + (CASE WHEN #{LANG} = 'EN' THEN MST.DOC_TP_EN ELSE MST.DOC_TP_NM END)					AS DOC_TP
+				, MST.DOC_DATE																								AS DOC_DATE
+				, dbo.GETCODENM('APPROVAL_YN',ISNULL(MST.APPROVAL_STS,''),#{LANG})											AS APPROVAL_STS
+				, CASE WHEN MST.QT_TO_SO_DT IS NOT NULL THEN 'Created' ELSE '' END 											AS QT_TO_SO
+				, MST.PO_NO																									AS PO_NO
+				, MST.VAL_FR_DT																								AS VAL_FR_DT
+				, MST.VAL_TO_DT																								AS VAL_TO_DT
+				, MST.REQ_DELI_DT																							AS REQ_DELI_DT 
+				, MST.SOLD_CUST_CD + ' ' + MST.SOLD_CUST_NM																	AS SOLD_CUST_CD
+				, MST.DELI_BLOCK_CD + ' ' + (CASE WHEN #{LANG} = 'EN' THEN MST.DELI_BLOCK_EN ELSE MST.DELI_BLOCK_NM END)	AS DELI_BLOCK_CD
+				, MST.DIV_CD + ' ' + (CASE WHEN 'EN' = 'EN' THEN MST.DIV_EN ELSE MST.DIV_NM END)							AS DIV_CD
+				, MST.SOFF + ' ' + (CASE WHEN #{LANG} = 'EN' THEN MST.SALES_OFFICE_EN ELSE MST.SALES_OFFICE_NM END)			AS SALES_OFFICE_CD
+				, MST.SALES_GR + ' ' + (CASE WHEN #{LANG} = 'EN' THEN MST.SALES_OFFICE_EN ELSE MST.SALES_OFFICE_NM END)		AS SALES_GR
+				, MST.SORG + ' ' + (CASE WHEN #{LANG} = 'EN' THEN MST.SALES_ORG_EN ELSE MST.SALES_ORG_NM END)				AS SALES_ORG_CD
+				, MST.DISTRB_CH + ' ' + (CASE WHEN #{LANG} = 'EN' THEN MST.DISTRB_CH_EN ELSE MST.DISTRB_CH_NM END)			AS DISTRB_CH
+				, MST.DELI_PLANT_CD + ' ' + (CASE WHEN #{LANG} = 'EN' THEN MST.DELI_PLANT_EN ELSE MST.DELI_PLANT_NM END)	AS DELI_PLANT_CD
+				, MST.T_AMT																									AS T_AMT
+				, MST.VAT_AMT + '(' + MST.VAT + ')%' 																		AS VAT
+				, MST.CURR_CD																								AS CURR_CD
+				, MST.PRICE_DT																								AS PRICE_DT
+				, (SELECT CODE_NM FROM BC_COMM_L WHERE 1 = 1 AND HEAD_CD = '100300' AND CODE = MST.STATUS)					AS STATUS
+				, MST.REG_ID																								AS REG_ID
+				, dbo.FmtdDate(MST.REG_DT, 'DD.MM.YYYY HH:MM:SS')															AS REG_DT
+				, CASE WHEN MST.STATUS = 'A' THEN 'Alive' 
+		               WHEN MST.STATUS = 'D' THEN 'Delete' 
+					   WHEN MST.STATUS = 'C' THEN 'Closed'
+					   ELSE '' END AS STATUS_NM	
+				, (SELECT TOP 1 DOC_NO FROM SD_ORDER_H WHERE QT_NO = MST.DOC_NO AND convert(numeric, DOC_NO) <![CDATA[ < ]]> 700000000)
+																															AS QT_TO_SO_NO
+				, MST.QT_NO																									AS QT_NO
+				, ISNULL(MST.QT_STS_CD, '') + ' ' + (SELECT CODE_NM FROM BC_COMM_L WHERE 1 = 1 AND HEAD_CD = '110900' AND CODE = MST.QT_STS_CD)
+																															AS QT_STS_CD
+			FROM SD_ORDER_H_LIST_VW MST WITH (NOLOCK)
+			LEFT OUTER JOIN SD_ORDER_PART PART
+				ON MST.DOC_GR	= PART.DOC_GR
+				AND MST.COMP_CD = PART.COMP_CD
+				AND MST.DOC_NO	= PART.DOC_NO
+				AND PART.PF_TP	= 'ZI'
+				AND PART.ITEM_SEQ = '000000'
+			WHERE 1 = 1
+			AND MST.DOC_GR = #{DOC_GR}
+			<if test='DOC_TP != null and DOC_TP != ""'>
+				AND MST.DOC_TP = #{DOC_TP}
+			</if>
+			<if test='SOLD_CUST_CD != null and SOLD_CUST_CD != ""'>
+				AND MST.SOLD_CUST_CD LIKE '%' + DBO.SETPARAM(#{SOLD_CUST_CD}) + '%'
+			</if>
+			<if test='DOC_NO != null and DOC_NO != ""'>
+				AND MST.DOC_NO LIKE '%' + DBO.SETPARAM(#{DOC_NO}) + '%'
+			</if>
+			<if test='VAL_FR_DT != null and VAL_FR_DT != ""'>
+				AND DBO.GETDATEDE(#{VAL_FR_DT}) BETWEEN DBO.GETDATEDE(MST.VAL_FR_DT) AND DBO.GETDATEDE(MST.VAL_TO_DT)
+			</if>
+			<if test='VAL_TO_DT != null and VAL_TO_DT != ""'>
+				AND DBO.GETDATEDE(MST.VAL_TO_DT) <![CDATA[ <= ]]> DBO.GETDATEDE(#{VAL_TO_DT})
+			</if>
+			<if test='REF_DOC_H_STS != null and REF_DOC_H_STS != ""'>
+				AND MST.REF_DOC_H_STS = #{REF_DOC_H_STS}
+			</if>
+			<if test='T_REF_STS != null and T_REF_STS != ""'>
+				AND MST.T_REF_STS = #{T_REF_STS}
+			</if>
+			<if test='OVL_DVL_STS != null and OVL_DVL_STS != ""'>
+				 AND MST.OVL_DVL_STS = #{OVL_DVL_STS}
+			</if>
+			<if test='RJT_STS != null and RJT_STS != ""'>
+				AND MST.RJT_STS = #{RJT_STS}
+			</if>
+			<if test='REG_ID != null and REG_ID != ""'>
+				AND (MST.REG_ID LIKE '%' + DBO.SETPARAM(#{REG_ID}) + '%'
+				 OR dbo.getUserNm(MST.COMP_CD, MST.REG_ID) LIKE '%' + #{REG_ID})
+			</if>
+			<if test='BACK_OFC_ID != null and BACK_OFC_ID != ""'>
+				AND (PART.PF_PS_NO LIKE '%' + DBO.SETPARAM(#{BACK_OFC_ID}) + '%'
+				 OR dbo.getUserNm(MST.COMP_CD, PART.PF_PS_NO) LIKE '%' + #{BACK_OFC_ID})
+			</if>
+			
+			<if test='REG_DT != null and REG_DT != ""'>
+				 AND DBO.GETDATEDE(MST.REG_DT) = DBO.GETDATEDE(#{REG_DT})
+			</if>
+			<if test='(REG_FR_DT != null and REG_FR_DT != "") and (REG_TO_DT == null or REG_TO_DT == "")'>
+				 AND DBO.GETDATEDE(MST.REG_DT) = DBO.GETDATEDE(#{REG_FR_DT})
+			</if>
+			<if test='(REG_TO_DT != null and REG_TO_DT != "") and (REG_FR_DT == null or REG_FR_DT == "")'>
+				 AND DBO.GETDATEDE(MST.REG_DT) = DBO.GETDATEDE(#{REG_TO_DT})
+			</if>
+			<if test='(REG_FR_DT != null and REG_FR_DT != "") and (REG_TO_DT != null and REG_TO_DT != "")'>
+				 AND DBO.GETDATEDE(MST.REG_DT) <![CDATA[ >= ]]> DBO.GETDATEDE(#{REG_FR_DT})
+				 AND DBO.GETDATEDE(MST.REG_DT) <![CDATA[ <= ]]> DBO.GETDATEDE(#{REG_TO_DT})
+			</if>
+			<if test='SALES_ORG_CD != null and SALES_ORG_CD != ""'>
+				 AND MST.SOrg = #{SALES_ORG_CD}
+			</if>
+			<if test='DISTRB_CH != null and DISTRB_CH != ""'>
+				 AND MST.DISTRB_CH = #{DISTRB_CH}
+			</if>
+			<if test='DIV_CD != null and DIV_CD != ""'>
+				 AND MST.DIV_CD = #{DIV_CD}
+			</if>
+			<if test='CREDIT_STS != null and CREDIT_STS != ""'>
+				 AND MST.CREDIT_STS = #{CREDIT_STS}
+			</if>
+			<if test='OVL_STS != null and OVL_STS != ""'>
+				 AND MST.OVL_STS = #{OVL_STS}
+			</if>
+			<if test='GRADE != null and GRADE != ""'>
+				 AND MST.DELI_STS = #{DELI_STS}
+			</if>
+			<if test='APPROVAL_YN != null and APPROVAL_YN != ""'>
+				 AND MST.APPROVAL_STS = #{APPROVAL_YN}
+			</if>
+			AND MST.STATUS NOT IN ('D', 'T')
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="searchApprovalList" parameterType="BMap" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+				/* SalesOrder.xml -> searchApprovalList */
+		SELECT ROW_NUMBER() OVER(ORDER BY PRIORITY ASC) ROWNUM, 
+		       A.*
+		   FROM ( SELECT A.DOC_NO
+		   				<if test='APPROVAL_ID != null and APPROVAL_ID != ""'>
+		   				, B.APPROVAL_STS ,DBO.GETCODENM('APPROVAL_YN', B.ALLOW_STS, #{LANG}) AS APPROVAL_STS_NM, B.REJECT_RSN, DBO.FMTDDATE(B.APPR_DT, 'DD.MM.YYYY HH:MM:SS') APPR_DT
+						</if>
+						<if test='APPROVAL_ID == null or APPROVAL_ID == ""'><!-- APPROVAL NM이 비어있을 때는 최종승인자정보만 조회된다. -->
+						, A.APPROVAL_STS ,DBO.GETCODENM('APPROVAL_YN', A.ALLOW_STS, #{LANG}) AS APPROVAL_STS_NM, A.REJECT_RSN, DBO.FMTDDATE(A.APPR_DT, 'DD.MM.YYYY HH:MM:SS') APPR_DT
+						</if>
+						, dbo.GETCODENM('COUNTRY_CD',A.REGION,#{LANG}) AS REGION, A.SOLD_CUST_CD, A.SOLD_CUST_NM, A.ITEM_SEQ, A.DELIVERY_DATE
+						, ( SELECT NAME_FULL FROM BC_USER WHERE USER_ID = A.REG_ID ) AS CREATE_BY
+						, CASE WHEN ( SELECT COUNT(*) FROM SD_ORDER_PART P WHERE P.DOC_NO = A.DOC_NO AND P.ITEM_SEQ = A.ITEM_SEQ AND P.PF_TP = 'ZK' ) = 0
+						       THEN ( SELECT P.PF_PS_NM FROM SD_ORDER_PART P WHERE P.DOC_NO = A.DOC_NO AND P.ITEM_SEQ = '000000' AND P.PF_TP = 'ZK' ) 
+							   ELSE ( SELECT P.PF_PS_NM FROM SD_ORDER_PART P WHERE P.DOC_NO = A.DOC_NO AND P.ITEM_SEQ = A.ITEM_SEQ AND P.PF_TP = 'ZK' ) END AS KAM
+						, A.SALES_ORG_CD, A.DISTRB_CH, A.DIV_CD, A.STATUS, A.DOC_GR, A.VAL_FR_DT, A.VAL_TO_DT,A.REG_DT, A.MODI_TMS, A.DOC_NO AS REFDOC, B.PRIORITY, A.COMP_CD	
+						, (SELECT MAX(PRIORITY) FROM SD_ORDER_L_APPR WHERE COMP_CD = A.COMP_CD AND DOC_NO = A.DOC_NO AND DOC_GR = A.DOC_GR) AS MAX_PRIORITY
+						, CASE WHEN A.DESCRIPTION IS NULL THEN (SELECT D.MATL_DESC FROM MS_ITEM_DESC D WHERE D.COMP_CD = A.COMP_CD AND D.MATL_CD = A.MATL_CD AND D.LANG_CD = #{LANG})
+						       ELSE A.DESCRIPTION END AS DESCRIPTION
+						, ISNULL((SELECT DEP.DEPUTY_ID FROM BC_DEPUTY DEP WHERE DEP.COMP_CD = A.COMP_CD AND DEP.USER_ID =  B.APPR_ID AND dbo.FmtdDate(GETDATE(), 'YYYY-MM-DD') BETWEEN FROM_DT AND TO_DT),B.APPR_ID ) as DEPUTY_ID
+						, B.APPR_ID, A.ZPNN_PER, A.ZPNN_UOM, A.MATL_CD, A.ORD_QTY
+						, dbo.SetAmt2(ISNULL(A.ST_PER,0) * A.ORD_QTY / 1000000) AS MW
+						, CASE WHEN A.MATL_GR != 'M' 
+							   THEN	(CASE 								
+									 WHEN (ISNULL(A.NET_PRICE, 0) = 0) OR (ISNULL(A.ZPNN_PER,0) = 0)  THEN dbo.SetAmt(0) 
+									 ELSE dbo.SetAmt(ISNULL(A.NET_PRICE,0) / ISNULL(A.ZPNN_PER,0))
+									 END)
+							WHEN A.MATL_GR = 'M' 
+							THEN	(CASE WHEN A.ZPNN_UOM ='ST' AND ISNULL(A.ST_PER,0) != 0 THEN dbo.SetAmt(100 / ISNULL(A.ST_PER,0) * ISNULL(A.NET_PRICE,0))
+										  WHEN A.ZPNN_UOM ='WP' AND ISNULL(A.ZPNN_PER,0) != 0 THEN dbo.SetAmt(100 / ISNULL(A.ZPNN_PER,0) * ISNULL(A.NET_PRICE,0))
+										  ELSE dbo.SetAmt(0) 
+										  END) END AS REQUESTED_PRICE
+
+						 , CASE WHEN A.MATL_GR != 'M' 
+								THEN	(CASE 
+										 WHEN (ISNULL(A.ERP_NET_PRICE, 0) = 0) OR (ISNULL(A.ZPNN_PER,0) = 0)  THEN dbo.SetAmt(0) 
+										 ELSE dbo.SetAmt(ISNULL(A.ERP_NET_PRICE,0) / ISNULL(A.ZPNN_PER,0))
+										 END)
+							WHEN A.MATL_GR = 'M' 
+							THEN ( CASE WHEN A.UOM ='ST' AND A.ST_PER != 0 THEN dbo.SetAmt(100 / ISNULL(A.ST_PER,0) * ISNULL(A.ERP_NET_PRICE,0))
+										WHEN A.UOM ='WP' THEN dbo.SetAmt(100 / ISNULL(A.PER,0) * ISNULL(A.ERP_NET_PRICE,0))
+										ELSE dbo.SetAmt(0) END ) END AS ERP_PRICE
+						, ( SELECT NAME_FULL FROM BC_USER 
+							 WHERE USER_ID = ( SELECT OA.APPR_ID FROM SD_ORDER_L_APPR OA 
+									            WHERE OA.PRIORITY = (SELECT MAX(M.PRIORITY) FROM SD_ORDER_L_APPR M WHERE M.COMP_CD = A.COMP_CD AND M.DOC_NO = A.DOC_NO AND M.DOC_GR = A.DOC_GR)
+												  AND OA.COMP_CD = A.COMP_CD AND OA.DOC_NO = A.DOC_NO AND OA.DOC_GR = A.DOC_GR AND OA.APPR_DT IS NOT NULL ) ) AS APPR_NM
+					FROM (
+						  SELECT A.COMP_CD, A.DOC_GR, A.DOC_NO, B.ITEM_SEQ, B.MATL_CD, B.MATL_DESC AS DESCRIPTION, B.ITEM_CTG_GR, DBO.FMTDDATE(B.DELI_DT_1ST, 'DD.MM.YYYY') AS DELIVERY_DATE 
+							   , B.NET_PRICE, B.NET_CURR_CD, B.ATP_QTY, A.DELI_PLANT_CD, B.ERP_NET_PRICE, B.ERP_NET_VAL, A.SOLD_CUST_CD, A.SALES_OFFICE_CD, A.SALES_GR, A.SALES_ORG_CD
+							   , A.DISTRB_CH, A.DIV_CD, A.STATUS, A.REG_DT, B.ZPNN_PER, B.ZPNN_UOM, B.PER, B.UOM, B.ORD_QTY, A.REG_ID
+							   , (SELECT max(REF_CHR3) FROM BC_COMM_L WHERE HEAD_CD = '103400' AND READ_CD = A.SALES_GR ) AS REGION
+						       , DBO.FMTDDATE(A.VAL_FR_DT, 'DD.MM.YYYY')      VAL_FR_DT
+						       , DBO.FMTDDATE(A.VAL_TO_DT, 'DD.MM.YYYY')      VAL_TO_DT	
+								, CASE WHEN C.DIV_CD = '20' THEN 'M' ELSE 'B' END  AS MATL_GR
+							   , ( SELECT DISTINCT E.CUST_NM FROM MS_CUST_H E	WITH (NOLOCK) WHERE E.COMP_CD = '1000' AND E.CUST_CD = A.SOLD_CUST_CD) AS SOLD_CUST_NM
+							   , ( SELECT CASE WHEN UI.ALT_UNIT_CD = 'WP' THEN CONVERT(NUMERIC, UI.UNIT_DIV) * 1
+										       WHEN UI.ALT_UNIT_CD = 'KW' THEN CONVERT(NUMERIC, UI.UNIT_DIV) * 1000
+											   WHEN UI.ALT_UNIT_CD = 'MWP' THEN CONVERT(NUMERIC, UI.UNIT_DIV) *1000000
+											   END AS UNT
+							          FROM MS_ITEM_UNIT UI WITH(NOLOCK)
+							               JOIN MS_ITEM MI WITH(NOLOCK) 
+							                 ON MI.COMP_CD = UI.COMP_CD AND MI.MATL_CD = UI.MATL_CD
+							         WHERE 1 = 1
+								       AND UI.COMP_CD = '1000'	
+								       AND UI.ALT_UNIT_CD IN ('WP','KW','MWP')
+								       AND MI.BASIC_UNIT = 'PCS'
+								       AND UI.MATL_CD = B.MATL_CD
+								  ) AS ST_PER						
+							   , dbo.FmtdDate(A.UPT_DT, 'YYYYMMDDHHMISS')			AS MODI_TMS
+							   , A.ALLOW_STS
+							   , A.APPROVAL_STS
+							   , DBO.GETCODENM('APPROVAL_YN', A.ALLOW_STS, 'EN') AS APPROVAL_STS_NM
+							   , A.REJECT_RSN
+							   , A.APPR_DT
+						    FROM SD_ORDER_H A		WITH (NOLOCK)
+						    JOIN SD_ORDER_ITEM B		WITH (NOLOCK)
+						         			ON B.COMP_CD = A.COMP_CD AND B.DOC_GR = A.DOC_GR AND B.DOC_NO = A.DOC_NO AND B.STATUS != 'D'
+						    INNER JOIN MS_ITEM C		WITH (NOLOCK)
+						         			ON C.COMP_CD = B.COMP_CD AND C.MATL_CD = B.MATL_CD 
+						) A 
+				INNER JOIN SD_ORDER_L_APPR B WITH (NOLOCK)
+				        ON A.COMP_CD = B.COMP_CD
+					   AND A.DOC_NO = B.DOC_NO 
+					   <if test='APPROVAL_YN != null and APPROVAL_YN != ""'>
+						  	AND B.APPROVAL_STS = #{APPROVAL_YN}
+							<if test='APPROVAL_YN == "Q"'> <!-- 미승인 주문은 자기차례 주문만 조회되도록 -->
+								AND dbo.GetApprovalId('ID', A.COMP_CD, A.DOC_GR, A.DOC_NO) like '%' +  #{APPROVAL_ID} + '%'
+								AND B.PRIORITY = ( SELECT MIN(PRIORITY) FROM SD_ORDER_L_APPR WHERE DOC_NO = B.DOC_NO AND APPROVAL_STS = #{APPROVAL_YN} AND APPR_DT IS NULL)
+					 		</if>					   
+					   </if>	
+					   AND B.ALLOW_STS NOT IN ('A','')
+					   AND B.ALLOW_STS IS NOT NULL
+					WHERE 1 = 1
+						AND A.STATUS != 'T' <!-- STATUS T인것은 제외 (임시데이터) -->
+					    AND A.DOC_GR = #{DOC_GR}
+					<if test='SOLD_CUST_CD != null and SOLD_CUST_CD != ""'>
+						AND a.SOLD_CUST_CD LIKE '%' + DBO.SETPARAM(#{SOLD_CUST_CD}) + '%'
+					</if>
+					<if test='DOC_NO != null and DOC_NO != ""'>
+						AND A.DOC_NO LIKE '%' + DBO.SETPARAM(#{DOC_NO}) + '%'
+					</if>
+					<if test='VAL_FR_DT != null and VAL_FR_DT != ""'>
+						AND a.VAL_FR_DT = DBO.GETDATEDE(#{VAL_FR_DT})
+					</if>
+					<if test='VAL_TO_DT != null and VAL_TO_DT != ""'>
+						AND a.VAL_TO_DT = DBO.GETDATEDE(#{VAL_TO_DT})
+					</if>
+					<if test='SALES_ORG_CD != null and SALES_ORG_CD != ""'>
+						 AND a.SALES_ORG_CD = #{SALES_ORG_CD}
+					</if>
+					<if test='DISTRB_CH != null and DISTRB_CH != ""'>
+						 AND a.DISTRB_CH = #{DISTRB_CH}
+					</if>
+					<if test='DIV_CD != null and DIV_CD != ""'>
+						 AND a.DIV_CD = #{DIV_CD}
+					</if>
+					<if test='APR_YEAR != null and APR_YEAR != ""'>
+						 AND SUBSTRING(CONVERT(CHAR(10), B.APPR_DT, 23),1,4) = #{APR_YEAR}
+					</if>
+					<if test='APR_MONTH != null and APR_MONTH != ""'>
+						 AND SUBSTRING(CONVERT(CHAR(10), B.APPR_DT, 23),6,2) = #{APR_MONTH}
+					</if>
+					AND A.STATUS <![CDATA[ <> ]]> 'D'
+					)A
+					WHERE ( A.APPR_ID like '%' +  #{APPROVAL_ID} + '%' or A.DEPUTY_ID like '%' +  #{APPROVAL_ID} + '%' )
+					<if test='APPROVAL_YN == "Y" and APPROVAL_ID == "" '>
+					  AND ( A.APPROVAL_STS = 'Y' and A.MAX_PRIORITY = A.PRIORITY )
+					</if>
+					<if test='APPROVAL_ID == null or APPROVAL_ID == ""'>
+					  AND A.PRIORITY = A.MAX_PRIORITY
+					</if>
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="searchApprovalList2" parameterType="BMap" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+				/* SalesOrder.xml -> searchApprovalList */
+		SELECT ROW_NUMBER() OVER(ORDER BY REG_DT DESC) ROWNUM, 
+		       A.*
+		   FROM (SELECT A.COMP_CD 			AS	 COMP_CD
+						,A.DOC_NO 			AS 	 DOC_NO
+						,A.Doc_Date 			AS 	 DOC_DATE
+						,A.DOC_TP				AS 	 SA_TY
+						,A.DOC_TP_NM			AS   SA_TY_NM
+						,A.PO_NO 				AS 	 PO_NO
+						,A.VAL_FR_DT          AS 	 VAL_FR_DT
+						,A.VAL_TO_DT 			AS 	 VAL_TO_DT
+						,A.REQ_DELI_DT		AS   DELI_DT_1ST
+						,A.REG_ID 			AS   REG_ID
+						,CONCAT(A.SOLD_CUST_CD,' ',A.SOLD_CUST_NM)	AS   SOLD_CUST_CD
+						,A.SOLD_CUST_NM
+						,A.CREDIT_STS			AS	 CREDIT_STS				
+						,A.OVL_DVL_STS		AS 	 OVL_DVL_STS				
+						,A.DELI_BLOCK_CD 		AS   DELI_BLOCK_CD
+						,CONCAT(A.DELI_BLOCK_CD,' ',DBO.GETCODENM('DELI_BLOCK_CD', A.DELI_BLOCK_CD, #{LANG})) AS DELI_BLOCK_NM
+						,A.VOL_UNIT 			AS   BASIC_UNIT
+						,A.DIV_CD 			AS   DIV_CD
+						,CONCAT(A.DIV_CD,' ',DBO.GETCODENM('DIV_CD', A.DIV_CD, #{LANG})) AS DIV_NM
+						,A.Status				AS   STATUS
+						,A.SOff				AS   SALES_OFFICE_CD 
+						,A.SALES_GR  			AS   SALES_GR        
+						,A.SOrg				AS   SALES_ORG_CD    /* 컬럼 없음*/
+						,A.DELI_PLANT_CD		AS 	 DELI_PLANT_CD
+						,CONCAT(A.DELI_PLANT_CD,' ',DBO.GETCODENM('PLANT_CD', A.DELI_PLANT_CD, #{LANG}))	AS   DELI_PLANT_NM
+						,A.DISTRB_CH 			AS   DISTRB_CH
+						,CONCAT(A.DISTRB_CH,' ',DBO.GETCODENM('DISTRB_CH', A.DISTRB_CH, #{LANG})) AS   DISTRB_CH_NM
+						,''					AS   GOOD_ISUE_DT
+						,A.PRICE_DT 			AS   PRICE_DT
+						,A.CURR_CD			AS   CURR_CD
+						,A.REG_DT 			AS   REG_DT
+						,B.ALLOW_STS      
+						,B.APPROVAL_STS                 
+						,DBO.GETCODENM('APPROVAL_YN', B.ALLOW_STS, #{LANG}) AS APPROVAL_STS_NM
+						,B.REJECT_RSN
+						,dbo.FmtdDate(B.APPR_DT, 'DD.MM.YYYY hh:mm:ss') APPR_DT
+						,B.APPR_ID
+						,A.ERP_NET_AMT
+						,A.NET_AMT
+						,A.DIF_NET_AMT 
+						,dbo.FmtdDate(A.UPT_DT, 'YYYYMMDDHHMISS')			AS MODI_TMS
+				  FROM SD_ORDER_H_LIST_VW A WITH (NOLOCK)
+				INNER JOIN SD_ORDER_L_APPR B WITH (NOLOCK)
+				        ON A.COMP_CD = B.COMP_CD
+					   AND A.DOC_NO = B.DOC_NO 
+					   AND B.APPR_ID = #{APPROVAL_ID}
+					   <if test='APPROVAL_YN != null and APPROVAL_YN != ""'>
+						  	AND B.APPROVAL_STS = #{APPROVAL_YN}
+							<if test='APPROVAL_YN == "Q"'> <!-- 미승인 주문은 자기차례 주문만 조회되도록 -->
+								AND dbo.GetApprovalId('ID', A.COMP_CD, A.DOC_GR, A.DOC_NO) =  #{APPROVAL_ID}
+					 		</if>
+					   </if>
+	
+					   AND B.ALLOW_STS NOT IN ('A','')
+					   AND B.ALLOW_STS IS NOT NULL
+					WHERE 1 = 1
+						AND A.STATUS != 'T' <!-- STATUS T인것은 제외 (임시데이터) -->
+					    AND A.DOC_GR = #{DOC_GR}
+					<if test='DOC_TP != null and DOC_TP != ""'>
+						AND A.DOC_TP = #{DOC_TP}
+					</if>
+					<if test='SOLD_CUST_CD != null and SOLD_CUST_CD != ""'>
+						AND SOLD_CUST_CD LIKE '%' + DBO.SETPARAM(#{SOLD_CUST_CD}) + '%'
+					</if>
+					<if test='DOC_NO != null and DOC_NO != ""'>
+						AND A.DOC_NO LIKE '%' + DBO.SETPARAM(#{DOC_NO}) + '%'
+					</if>
+					<if test='VAL_FR_DT != null and VAL_FR_DT != ""'>
+						AND VAL_FR_DT = DBO.GETDATEDE(#{VAL_FR_DT})
+					</if>
+					<if test='VAL_TO_DT != null and VAL_TO_DT != ""'>
+						AND VAL_TO_DT = DBO.GETDATEDE(#{VAL_TO_DT})
+					</if>
+					<if test='SALES_ORG_CD != null and SALES_ORG_CD != ""'>
+						 AND SOrg = #{SALES_ORG_CD}
+					</if>
+					<if test='DISTRB_CH != null and DISTRB_CH != ""'>
+						 AND DISTRB_CH = #{DISTRB_CH}
+					</if>
+					<if test='DIV_CD != null and DIV_CD != ""'>
+						 AND DIV_CD = #{DIV_CD}
+					</if>
+					<if test='CREDIT_STS != null and CREDIT_STS != ""'>
+						 AND CREDIT_STS = #{CREDIT_STS}
+					</if>
+					<if test='OVL_DVL_STS != null and OVL_DVL_STS != ""'>
+						 AND OVL_DVL_STS = #{OVL_DVL_STS}
+					</if>
+					AND A.STATUS <![CDATA[ <> ]]> 'D'
+					)A 
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+		
+	<select id="getSalesSeq" parameterType="HashMap" resultType="String">
+		/* SalesOrder.xml -> getSalesSeq */
+		DECLARE	@seq varchar(15) EXEC dbo.SP_BC_NUMBER_SO #{G_COMP_CD}, #{DOC_GR}, #{SALES_ORG_CD}, '*', @seq OUTPUT SELECT @seq;
+	</select>
+	
+	<select id="getSalesSeq_new" parameterType="HashMap" resultType="String">
+		/* SalesOrder.xml -> getSalesSeq */
+		DECLARE	@seq varchar(15) EXEC dbo.SP_BC_NUMBER #{G_COMP_CD}, #{DOC_GR}, '*', @seq OUTPUT SELECT @seq;
+	</select>
+	
+	<insert id="insertSalesHeader" parameterType="HashMap">
+		/* SalesOrder.xml -> insertSalesHeader */
+		INSERT INTO SD_ORDER_H(
+			  COMP_CD
+			, DOC_GR
+			, DOC_NO
+			, SO_NO
+			, SALES_ORG_CD
+			, DISTRB_CH
+			, DIV_CD
+			, REF_DOC_NO
+			, DOC_TP
+			, SOLD_CUST_CD
+			, SHIP_CUST_CD
+			, CUST_CL
+			, INDUSTRY_CD
+			, PO_NO
+			, CREDIT_STS
+			<!-- , OVL_DLV_STS -->
+			, OVL_STS
+			<!-- /* , ORD_TP 컬럼없음 */ -->
+			, SALES_OFFICE_CD
+			, SALES_GR
+			, REQ_PERI_CD
+			<if test='REQ_DELI_DT != null and REQ_DELI_DT != ""'>
+			, REQ_DELI_DT
+			</if>
+			<if test='VAL_FR_DT != null and VAL_FR_DT != ""'>
+			, VAL_FR_DT
+			</if>
+			<if test='VAL_TO_DT != null and VAL_TO_DT != ""'>
+			, VAL_TO_DT
+			</if>
+			, ORD_RESN_CD
+			, DELI_PLANT_CD
+			, CMP_DELI_YN
+			, T_WT
+			, T_WT_UNIT
+			, VOL_QTY
+			, VOL_UNIT
+			, T_AMT
+			, NET_AMT
+			, CURR_CD
+			<if test='PRICE_DT != null and PRICE_DT != ""'>
+			, PRICE_DT
+			</if>
+			, PAY_TERM
+			, INCOTERMS_CD
+			, DELI_BLOCK_CD
+			<if test='QT_STS_CD != null and QT_STS_CD != ""'>
+			, QT_STS_CD
+			</if>			
+			, DELI_STS
+			, DUN_BLOCK_CD
+			, SHP_CON_CD
+			, REL_POD_YN
+			, REF_DOC_H_STS
+			, T_REF_STS
+			, RJT_STS
+			, CUST_STS
+			, ATTR_ORD
+			<if test='PO_DT != null and PO_DT != ""'>
+			, PO_DT
+			</if>
+			, INCOTERMS_DESC
+			, VAT_AMT
+			, VAT
+			<if test='ERP_T_AMT != null and ERP_T_AMT != ""'>
+			, ERP_T_AMT
+			</if>
+			<if test='ERP_NET_AMT != null and ERP_NET_AMT != ""'>
+			, ERP_NET_AMT
+			</if>
+			<if test='ERP_VAT_AMT != null and ERP_VAT_AMT != ""'>
+			, ERP_VAT_AMT
+			</if>
+			, ALLOW_STS
+			, APPROVAL_STS
+			
+			, SUR_CHARGE_AMT
+			
+			
+			, DLV_AMT
+			
+			, DC_TP
+			
+			, DC_VAL
+			
+			<if test='AVAIL_AMT != null and AVAIL_AMT != ""'>
+			, AVAIL_AMT
+			</if>
+			, LEAD_NO
+			, STATUS
+			, REG_DT
+			, REG_ID
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, UPT_DT
+			, UPT_ID
+			</if>
+			, QT_NO
+			, SEG_CD
+			, Q_BONUS_YN
+			, EXCHG_RATE
+		)VALUES(
+			  #{G_COMP_CD}
+			, #{DOC_GR}
+			, #{DOC_NO}
+			, #{SO_NO}
+			, #{SALES_ORG_CD}
+			, #{DISTRB_CH}
+			, #{DIV_CD}
+			, #{REF_DOC_NO}
+			, #{DOC_TP}
+			, #{SOLD_CUST_CD}
+			, #{SHIP_CUST_CD}
+			, #{CUST_CL}
+			, #{INDUSTRY_CD}
+			, #{PO_NO}
+			, #{CREDIT_STS}
+			<!-- , #{OVL_DLV_STS} -->
+			, #{OVL_STS}
+			<!-- /* , #{ORD_TP} 컬럼없음 */ -->
+			, #{SALES_OFFICE_CD}
+			, #{SALES_GR}
+			, #{DT_TP}
+			<if test='REQ_DELI_DT != null and REQ_DELI_DT != ""'>
+			, PARSE(#{REQ_DELI_DT} AS DATE USING 'de-DE')
+			</if>
+			<if test='VAL_FR_DT != null and VAL_FR_DT != ""'>
+			, PARSE(#{VAL_FR_DT} AS DATE USING 'de-DE')
+			</if>
+			<if test='VAL_TO_DT != null and VAL_TO_DT != ""'>
+			, PARSE(#{VAL_TO_DT} AS DATE USING 'de-DE')
+			</if>
+			, #{ORD_RESN_CD}
+			, #{DELI_PLANT_CD}
+			, #{CMP_DELI_YN}
+			, dbo.getCastNum(#{T_WT})
+			, #{WEIGHT}
+			, dbo.getCastNum(#{VOL_QTY})
+			, #{VOLUME}
+			, dbo.getCastNum(#{T_AMT})
+			, dbo.getCastNum(#{NET_AMT})
+			, #{CURR_CD}
+			<if test='PRICE_DT != null and PRICE_DT != ""'>
+			, PARSE(#{PRICE_DT} AS DATE USING 'de-DE')
+			</if>
+			, #{PAY_TERM}
+			, #{INCOTERMS_CD}
+			<!-- , #{DELI_BLOCK_CD} -->
+			, 'G4'
+			<if test='QT_STS_CD != null and QT_STS_CD != ""'>
+			, #{QT_STS_CD}
+			</if>
+			, #{DELI_STS}
+			, #{DUN_BLOCK}
+			, #{SHP_CON_CD}
+			, #{REL_POD_YN}
+			, #{REF_DOC_H_STS}
+			, #{T_REF_STS}
+			, #{RJT_STS}
+			, #{CUST_STS}
+			, #{ATTR_ORD}
+			<if test='PO_DT != null and PO_DT != ""'>
+			, PARSE(#{PO_DT} AS DATE USING 'de-DE')
+			</if>
+			, #{INCOTERMS_DESC}
+			, dbo.getCastNum(#{VAT_AMT})
+			, dbo.getCastNum(#{VAT})
+			<if test='ERP_T_AMT != null and ERP_T_AMT != ""'>
+			, dbo.getCastNum(#{ERP_T_AMT})
+			</if>
+			<if test='ERP_NET_AMT != null and ERP_NET_AMT != ""'>
+			, dbo.getCastNum(#{ERP_NET_AMT})
+			</if>
+			<if test='ERP_VAT_AMT != null and ERP_VAT_AMT != ""'>
+			, dbo.getCastNum(#{ERP_VAT_AMT})
+			</if>
+			, #{ALLOW_STS}
+			, #{APPROVAL_STS}
+			<if test='SUR_CHARGE_AMT != null and SUR_CHARGE_AMT != ""'>
+			, dbo.getCastNum(#{SUR_CHARGE_AMT})
+			</if>
+			<if test='SUR_CHARGE_AMT == null or SUR_CHARGE_AMT == ""'>
+			, NULL
+			</if>
+			<if test='DLV_AMT != null and DLV_AMT != ""'>
+			, dbo.getCastNum(#{DLV_AMT})
+			</if>
+			<if test='DLV_AMT == null or DLV_AMT == ""'>
+			, NULL
+			</if>
+			, #{DC_TP}
+			<if test='DC_VAL != null and DC_VAL != ""'>
+			, dbo.getCastNum(#{DC_VAL})
+			</if>			
+			<if test='DC_VAL == null or DC_VAL == ""'>
+			, NULL
+			</if>
+			<if test='AVAIL_AMT != null and AVAIL_AMT != ""'>
+			, dbo.getCastNum(#{AVAIL_AMT})
+			</if>
+			, #{LEAD_NO}
+			, #{DOC_STATUS}
+			, GETDATE()
+			, #{USERID}
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, GETDATE()
+			, #{USERID}
+			</if>
+			, #{QT_NO}
+			, #{SEG_CD}
+			, #{Q_BONUS_YN}
+			, TRY_PARSE(#{EXCHG_RATE} AS float USING 'de-DE')
+		)
+	</insert>
+	
+	<update id="updateSalesHeader" parameterType="HashMap">
+		/* SalesOrder.xml -> updateSalesHeader */
+		UPDATE SD_ORDER_H
+		SET   SO_NO				= #{SO_NO}
+			, SALES_ORG_CD		= #{SALES_ORG_CD}
+			, DISTRB_CH			= #{DISTRB_CH}
+			, DIV_CD			= #{DIV_CD}
+			, REF_DOC_NO		= #{REF_DOC_NO}
+			, DOC_TP			= #{DOC_TP}
+			, SOLD_CUST_CD		= #{SOLD_CUST_CD}
+			, SHIP_CUST_CD		= #{SHIP_CUST_CD}
+			, CUST_CL			= #{CUST_CL}
+			, INDUSTRY_CD		= #{INDUSTRY_CD}
+			, PO_NO				= #{PO_NO}
+			, CREDIT_STS		= #{CREDIT_STS}
+			<!-- , OVL_DLV_STS		= #{OVL_DLV_STS}  -->
+			, OVL_STS			= #{OVL_STS}
+			<!-- , ORD_TP			= #{ORD_TP} 컬럼 없음  -->
+			, SALES_OFFICE_CD	= #{SALES_OFFICE_CD}
+			, SALES_GR			= #{SALES_GR}
+			, REQ_PERI_CD		= #{DT_TP}
+			<if test='REQ_DELI_DT != null and REQ_DELI_DT != ""'>
+			, REQ_DELI_DT		= PARSE(#{REQ_DELI_DT} AS DATE USING 'de-DE')
+			</if>
+			<if test='VAL_FR_DT != null and VAL_FR_DT != ""'>
+			, VAL_FR_DT			= PARSE(#{VAL_FR_DT} AS DATE USING 'de-DE')
+			</if>
+			<if test='VAL_TO_DT != null and VAL_TO_DT != ""'>
+			, VAL_TO_DT			= PARSE(#{VAL_TO_DT} AS DATE USING 'de-DE')
+			</if>
+			, ORD_RESN_CD		= #{ORD_RESN_CD}
+			, DELI_PLANT_CD		= #{DELI_PLANT_CD}
+			, CMP_DELI_YN		= #{CMP_DELI_YN}
+			, T_WT				= dbo.getCastNum(#{T_WT})
+			, T_WT_UNIT			= #{WEIGHT}
+			, VOL_QTY			= dbo.getCastNum(#{VOL_QTY})
+			, VOL_UNIT			= #{VOLUME}
+			, T_AMT				= dbo.getCastNum(#{T_AMT})
+			, NET_AMT			= dbo.getCastNum(#{NET_AMT})
+			, CURR_CD			= #{CURR_CD}
+			<if test='PRICE_DT != null and PRICE_DT != ""'>
+			, PRICE_DT			= PARSE(#{PRICE_DT} AS DATE USING 'de-DE')
+			</if>
+			, PAY_TERM			= #{PAY_TERM}
+			, INCOTERMS_CD		= #{INCOTERMS_CD}
+			, DELI_BLOCK_CD		= #{DELI_BLOCK_CD}
+			<if test='QT_STS_CD != null and QT_STS_CD != ""'>
+			, QT_STS_CD		    = #{QT_STS_CD}
+			</if>
+			, DELI_STS			= #{DELI_STS}
+			, DUN_BLOCK_CD		= #{DUN_BLOCK}
+			, SHP_CON_CD		= #{SHP_CON_CD}
+			, REL_POD_YN		= #{REL_POD_YN}
+			, REF_DOC_H_STS		= #{REF_DOC_H_STS}
+			, T_REF_STS			= #{T_REF_STS}
+			, RJT_STS			= #{RJT_STS}
+			, CUST_STS			= #{CUST_STS}
+			, ATTR_ORD			= #{ATTR_ORD}
+			<if test='PO_DT != null and PO_DT != ""'>
+			, PO_DT				= PARSE(#{PO_DT} AS DATE USING 'de-DE')
+			</if>
+			, INCOTERMS_DESC	= #{INCOTERMS_DESC}
+			<if test='VAT_AMT != null and VAT_AMT != ""'>
+			, VAT_AMT			= dbo.getCastNum(#{VAT_AMT})
+			</if>
+			<if test='VAT != null and VAT != ""'>
+			, VAT				= dbo.getCastNum(#{VAT})
+			</if>
+			<if test='ERP_T_AMT != null and ERP_T_AMT != ""'>
+			, ERP_T_AMT			= dbo.getCastNum(#{ERP_T_AMT})
+			</if>
+			<if test='ERP_NET_AMT != null and ERP_NET_AMT != ""'>
+			, ERP_NET_AMT		= dbo.getCastNum(#{ERP_NET_AMT})
+			</if>
+			<if test='ERP_VAT_AMT != null and ERP_VAT_AMT != ""'>
+			, ERP_VAT_AMT		= dbo.getCastNum(#{ERP_VAT_AMT})
+			</if>
+			<if test='SUR_CHARGE_AMT != null and SUR_CHARGE_AMT != ""'>
+			, SUR_CHARGE_AMT	= dbo.getCastNum(#{SUR_CHARGE_AMT})
+			</if>
+			<if test='SUR_CHARGE_AMT == null or SUR_CHARGE_AMT == ""'>
+			, SUR_CHARGE_AMT	= NULL
+			</if>
+			<if test='DLV_AMT != null and DLV_AMT != ""'>
+			, DLV_AMT			= dbo.getCastNum(#{DLV_AMT})
+			</if>
+			<if test='DLV_AMT == null or DLV_AMT == ""'>
+			, DLV_AMT			= NULL
+			</if>
+			, DC_TP				= #{DC_TP}
+			<if test='DC_VAL != null and DC_VAL != ""'>
+			, DC_VAL			= dbo.getCastNum(#{DC_VAL})
+			</if>
+			<if test='DC_VAL == null or DC_VAL == ""'>
+			, DC_VAL			= NULL
+			</if>
+			<if test='AVAIL_AMT != null and AVAIL_AMT != ""'>
+			, AVAIL_AMT			= dbo.getCastNum(#{AVAIL_AMT})
+			</if>
+			, ALLOW_STS			= #{ALLOW_STS}
+			, APPROVAL_STS		= #{APPROVAL_STS}
+			, REJECT_RSN		= #{REJECT_RSN}
+			, RSN_RJT_CD		= #{RSN_RJT_CD}
+			, STATUS			= #{DOC_STATUS}
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, UPT_DT			= GETDATE()
+			, UPT_ID			= #{USERID}
+			</if>
+			, SEG_CD			= #{SEG_CD}
+			, Q_BONUS_YN		= #{Q_BONUS_YN}
+			, EXCHG_RATE		= TRY_PARSE(#{EXCHG_RATE} AS float USING 'de-DE')
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{DOC_NO}
+	</update>
+	
+	
+	<insert id="insertSalesPf" parameterType="HashMap">
+		/* SalesOrder.xml -> insertSalesPf */
+		INSERT INTO SD_ORDER_PART(
+			  COMP_CD
+			, DOC_GR
+			, DOC_NO
+			, ITEM_SEQ
+			, SALES_ORG_CD
+			, DISTRB_CH
+			, DIV_CD
+			, PF_TP
+			, PF_NM
+			, PF_PS_NO
+			, PF_PS_NM
+			, PF_DESC
+			, DEFAULT_YN
+			, TITLE
+			, NAME_1ST
+			, NAME_2ND
+			, STREET_NM
+			, STREET_NM2
+			, HAUS_NO
+			, POST_CD
+			, CITY_CD
+			, COUNTRY_CD
+			, REGION_CD
+			, TIME_ZONE
+			, TRANSP_ZONE
+			, PO_BOX
+			, PO_POST_CD
+			, COMP_POST_CD
+			, LANG_CD
+			, TEL_NO
+			, TEL_NO_EXT
+			, MOBILE_NO
+			, FAX_NO
+			, FAX_NO_EXT
+			, E_MAIL
+			, STD_COM_MTD
+			, DATA_LINE
+			, COMMENTS
+			, UNLD_PT
+			, VAT_REG_NO
+			, SYNC_FLAG
+			, STATUS
+			, REG_DT
+			, REG_ID
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, UPT_DT
+			, UPT_ID
+			</if>
+		)VALUES(
+			  #{G_COMP_CD}
+			, #{DOC_GR}
+			, #{DOC_NO}
+			, #{ITEM_SEQ}
+			, #{SALES_ORG_CD}
+			, #{DISTRB_CH}
+			, #{DIV_CD}
+			, #{PF_TP}
+			, #{PF_NM}
+			, #{PF_PS_NO}
+			, #{PF_PS_NM}
+			, #{PF_DESC}
+			, #{DEFAULT_YN}
+			, #{TITLE}
+			, #{NAME_1ST}
+			, #{NAME_2ND}
+			, #{STREET_NM}
+			, #{STREET_NM2}
+			, #{HAUS_NO}
+			, #{POST_CD}
+			, #{CITY_CD}
+			, #{COUNTRY_CD}
+			, #{REGION_CD}
+			, #{TIME_ZONE}
+			, #{TRANSP_ZONE}
+			, #{PO_BOX}
+			, #{PO_POST_CD}
+			, #{COMP_POST_CD}
+			, #{LANG_CD}
+			, #{TEL_NO}
+			, #{TEL_NO_EXT}
+			, #{MOBILE_NO}
+			, #{FAX_NO}
+			, #{FAX_NO_EXT}
+			, #{E_MAIL}
+			, #{STD_COM_MTD}
+			, #{DATA_LINE}
+			, #{COMMENTS}
+			, #{UNLD_PT}
+			, #{VAT_REG_NO}
+			, #{SYNC_FLAG}
+			, 'I'
+			, GETDATE()
+			, #{USERID}
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, GETDATE()
+			, #{USERID}
+			</if>
+		)
+	</insert>
+	
+	<update id="updateSalesPf" parameterType="HashMap">
+		/* SalesOrder.xml -> updateSalesPf */
+		UPDATE SD_ORDER_PART
+		SET   SALES_ORG_CD		= #{SALES_ORG_CD}
+			, DISTRB_CH			= #{DISTRB_CH}
+			, DIV_CD			= #{DIV_CD}
+			, PF_TP				= #{PF_TP}
+			, PF_NM				= #{PF_NM}
+			, PF_PS_NO			= #{PF_PS_NO}
+			, PF_PS_NM			= #{PF_PS_NM}
+			, PF_DESC			= #{PF_DESC}
+			, DEFAULT_YN		= #{DEFAULT_YN}
+			, TITLE				= #{TITLE}
+			, NAME_1ST			= #{NAME_1ST}
+			, NAME_2ND			= #{NAME_2ND}
+			, STREET_NM			= #{STREET_NM}
+			, STREET_NM2		= #{STREET_NM2}
+			, HAUS_NO			= #{HAUS_NO}
+			, POST_CD			= #{POST_CD}
+			, CITY_CD			= #{CITY_CD}
+			, COUNTRY_CD		= #{COUNTRY_CD}
+			, REGION_CD			= #{REGION_CD}
+			, TIME_ZONE			= #{TIME_ZONE}
+			, TRANSP_ZONE		= #{TRANSP_ZONE}
+			, PO_BOX			= #{PO_BOX}
+			, PO_POST_CD		= #{PO_POST_CD}
+			, COMP_POST_CD		= #{COMP_POST_CD}
+			, LANG_CD			= #{LANG_CD}
+			, TEL_NO			= #{TEL_NO}
+			, TEL_NO_EXT		= #{TEL_NO_EXT}
+			, MOBILE_NO			= #{MOBILE_NO}
+			, FAX_NO			= #{FAX_NO}
+			, FAX_NO_EXT		= #{FAX_NO_EXT}
+			, E_MAIL			= #{E_MAIL}
+			, STD_COM_MTD		= #{STD_COM_MTD}
+			, DATA_LINE			= #{DATA_LINE}
+			, COMMENTS			= #{COMMENTS}
+			, UNLD_PT			= #{UNLD_PT}
+			, VAT_REG_NO		= #{VAT_REG_NO}
+			, STATUS			= #{DOC_STATUS}
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, UPT_DT			= GETDATE()
+			, UPT_ID			= #{USERID}
+			</if>
+		WHERE 1 = 1
+		AND COMP_CD  = #{G_COMP_CD}
+		AND DOC_GR   = #{DOC_GR}
+		AND DOC_NO   = #{DOC_NO}
+		AND ITEM_SEQ = #{ITEM_SEQ}
+		AND PF_TP    = #{PF_TP}
+	</update>
+	
+	<select id="checkDupPf" parameterType="HashMap" resultType="String">
+		/* SalesOrder.xml -> checkDupPf */
+		SELECT COUNT(ITEM_SEQ) FROM SD_ORDER_PART
+		WHERE 1 = 1
+		AND COMP_CD  = #{G_COMP_CD}
+		AND DOC_GR   = #{DOC_GR}
+		AND DOC_NO   = #{DOC_NO}
+		AND ITEM_SEQ = #{ITEM_SEQ}
+		AND PF_TP    = #{PF_TP}
+	</select>
+	
+	<insert id="insertSalesItem" parameterType="HashMap">
+		/* SalesOrder.xml -> insertSalesItem */
+		INSERT INTO SD_ORDER_ITEM(
+			  COMP_CD
+			, DOC_GR
+			, DOC_NO
+			, ITEM_SEQ
+			, MATL_CD
+			, MATL_DESC
+			, ITEM_CTG_GR
+			<if test='ORD_QTY != null and ORD_QTY != ""'>
+			, ORD_QTY
+			</if>
+			, ORD_UNIT_CD
+			<if test='DELI_DT_1ST != null and DELI_DT_1ST != ""'>
+			, DELI_DT_1ST
+			</if>
+			, DELI_DT_1ST_TP
+			<if test='ATP_QTY != null and ATP_QTY != ""'>
+			, ATP_QTY
+			</if>
+			, ATP_UNIT_CD
+			<if test='UNIT1_QTY != null and UNIT1_QTY != ""'>
+			, UNIT1_QTY
+			</if>
+			, UNIT1_CD
+			<if test='UNIT2_QTY != null and UNIT2_QTY != ""'>
+			, UNIT2_QTY
+			</if>
+			, UNIT2_CD
+			<if test='NET_PRICE != null and NET_PRICE != ""'>
+			, NET_PRICE
+			</if>
+			, NET_CURR_CD
+			<if test='NET_VAL != null and NET_VAL != ""'>
+			, NET_VAL
+			</if>
+			<if test='PRICE_DT != null and PRICE_DT != ""'>
+			, PRICE_DT
+			</if>
+			, BOM_NO
+			, BATCH_NO
+			<if test='ORD_PROB != null and ORD_PROB != ""'>
+			, ORD_PROB
+			</if>
+			, USAGE_CD
+			, RSN_RJT_CD
+			, SHIP_PO_CD
+			, RUT_CD
+			, DELI_PRIOR_CD
+			, STORE_LOC
+			<if test='MAX_P_DELI != null and MAX_P_DELI != ""'>
+			, MAX_P_DELI
+			</if>
+			<if test='PER != null and PER != ""'>
+			, PER
+			</if>
+			, UOM
+			, SCDL_LINE_YN
+			, FIX_DT_QTY_YN
+			, INFO_TEXT
+			<if test='ERP_NET_PRICE != null and ERP_NET_PRICE != ""'>
+			, ERP_NET_PRICE
+			</if>
+			<if test='ERP_NET_VAL != null and ERP_NET_VAL != ""'>
+			, ERP_NET_VAL
+			</if>
+			, PLANT_CD
+			, LONG_TEXT
+			<if test='PITEMSEQ != null and PITEMSEQ != ""'>
+			, HG_LV_ITEM
+			</if>
+			, STATUS
+			, REG_DT
+			, REG_ID
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, UPT_DT
+			, UPT_ID
+			</if>
+			<if test='ZPNN_PRICE != null and ZPNN_PRICE != ""'>
+			, ZPNN_PRICE
+			</if>
+			<if test='ZPNN_PER != null and ZPNN_PER != ""'>
+			, ZPNN_PER
+			</if>
+			, ZPNN_UOM
+		)VALUES(
+			  #{G_COMP_CD}
+			, #{DOC_GR}
+			, #{DOC_NO}
+			, #{ITEM_SEQ}
+			, #{MATL_CD}
+			, #{MATL_DESC}
+			, #{ITEM_CTG_GR}
+			<if test='ORD_QTY != null and ORD_QTY != ""'>
+			, #{ORD_QTY}
+			</if>
+			, #{ORD_UNIT_CD}
+			<if test='DELI_DT_1ST != null and DELI_DT_1ST != ""'>
+			, PARSE(#{DELI_DT_1ST} AS DATE USING 'de-DE')
+			</if>
+			, #{DELI_DT_1ST_TP}
+			<if test='ATP_QTY != null and ATP_QTY != ""'>
+			, dbo.getCastNum(#{ATP_QTY})
+			</if>
+			, #{ATP_UNIT_CD}
+			<if test='UNIT1_QTY != null and UNIT1_QTY != ""'>
+			, #{UNIT1_QTY}
+			</if>
+			, #{UNIT1_CD}
+			<if test='UNIT2_QTY != null and UNIT2_QTY != ""'>
+			, #{UNIT2_QTY}
+			</if>
+			, #{UNIT2_CD}
+			<if test='NET_PRICE != null and NET_PRICE != ""'>
+			, #{NET_PRICE}
+			</if>
+			, #{CURR}
+			<if test='NET_VAL != null and NET_VAL != ""'>
+			, dbo.getCastNum(#{NET_VAL})
+			</if>
+			<if test='PRICE_DT != null and PRICE_DT != ""'>
+			, PARSE(#{PRICE_DT} AS DATE USING 'de-DE')
+			</if>
+			, #{BOM_NO}
+			, #{BATCH_NO}
+			<if test='ORD_PROB != null and ORD_PROB != ""'>
+			, #{ORD_PROB}
+			</if>
+			, #{USAGE_CD}
+			, #{RSN_RJT_CD}
+			, #{SHIP_PO_CD}
+			, #{RUT_CD}
+			, #{DELI_PRIOR_CD}
+			, #{STORE_LOC}
+			<if test='MAX_P_DELI != null and MAX_P_DELI != ""'>
+			, #{MAX_P_DELI}
+			</if>
+			<if test='PER != null and PER != ""'>
+			, #{PER}
+			</if>
+			, #{UOM}
+			, #{SCDL_LINE_YN}
+			, #{FIX_DT_QTY_YN}
+			, #{INFO_TEXT}
+			<if test='ERP_NET_PRICE != null and ERP_NET_PRICE != ""'>
+			, dbo.getCastNum(#{ERP_NET_PRICE})
+			</if>
+			<if test='ERP_NET_VAL != null and ERP_NET_VAL != ""'>
+			, dbo.getCastNum(#{ERP_NET_VAL})
+			</if>
+			, #{PLANT_CD}
+			, #{LONG_TEXT}
+			<if test='PITEMSEQ != null and PITEMSEQ != ""'>
+			, #{PITEMSEQ}
+			</if>
+			, 'I'
+			, GETDATE()
+			, #{USERID}
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, GETDATE()
+			, #{USERID}
+			</if>
+			<if test='ZPNN_PRICE != null and ZPNN_PRICE != ""'>
+			, dbo.getCastNum(#{ZPNN_PRICE})
+			</if>
+			<if test='ZPNN_PER != null and ZPNN_PER != ""'>
+			, #{ZPNN_PER}
+			</if>
+			, #{ZPNN_UOM}
+		)
+	</insert>
+	
+	<update id="updateSalesItem" parameterType="HashMap">
+		/* SalesOrder.xml -> updateSalesItem */
+		UPDATE SD_ORDER_ITEM
+		SET   ITEM_SEQ			= #{ITEM_SEQ}
+			, MATL_CD			= #{MATL_CD}
+			, MATL_DESC			= #{MATL_DESC}
+			, ITEM_CTG_GR		= #{ITEM_CTG_GR}
+			<if test='ORD_QTY != null and ORD_QTY != ""'>
+			, ORD_QTY			= #{ORD_QTY}
+			</if>
+			, ORD_UNIT_CD		= #{ORD_UNIT_CD}
+			<if test='DELI_DT_1ST != null and DELI_DT_1ST != ""'>
+			, DELI_DT_1ST		= PARSE(#{DELI_DT_1ST} AS DATE USING 'de-DE')
+			</if>
+			, DELI_DT_1ST_TP	= #{DELI_DT_1ST_TP}
+			<if test='ATP_QTY != null and ATP_QTY != ""'>
+			, ATP_QTY			= #{ATP_QTY}
+			</if>
+			, ATP_UNIT_CD		= #{ATP_UNIT_CD}
+			<if test='UNIT1_QTY != null and UNIT1_QTY != ""'>
+			, UNIT1_QTY			= #{UNIT1_QTY}
+			</if>
+			, UNIT1_CD			= #{UNIT1_CD}
+			<if test='UNIT2_QTY != null and UNIT2_QTY != ""'>
+			, UNIT2_QTY			= #{UNIT2_QTY}
+			</if>
+			, UNIT2_CD			= #{UNIT2_CD}
+			<if test='NET_PRICE != null and NET_PRICE != ""'>
+			, NET_PRICE			= #{NET_PRICE}
+			</if>
+			, NET_CURR_CD		= #{CURR}
+			, NET_VAL			= dbo.getCastNum(#{NET_VAL})
+			<if test='PRICE_DT != null and PRICE_DT != ""'>
+			, PRICE_DT			= PARSE(#{PRICE_DT} AS DATE USING 'de-DE')
+			</if>
+			, BOM_NO			= #{BOM_NO}
+			, BATCH_NO			= #{BATCH_NO}
+			<if test='ORD_PROB != null and ORD_PROB != ""'>
+			, ORD_PROB			= #{ORD_PROB}
+			</if>
+			, USAGE_CD			= #{USAGE_CD}
+			, RSN_RJT_CD		= #{RSN_RJT_CD}
+			, SHIP_PO_CD		= #{SHIP_PO_CD}
+			, RUT_CD			= #{RUT_CD}
+			, DELI_PRIOR_CD		= #{DELI_PRIOR_CD}
+			, STORE_LOC			= #{STORE_LOC}
+			<if test='MAX_P_DELI != null and MAX_P_DELI != ""'>
+			, MAX_P_DELI		= #{MAX_P_DELI}
+			</if>
+			<if test='PER != null and PER != ""'>
+			, PER				= #{PER}
+			</if>
+			, UOM				= #{UOM}
+			, SCDL_LINE_YN		= #{SCDL_LINE_YN}
+			, FIX_DT_QTY_YN		= #{FIX_DT_QTY_YN}
+			, INFO_TEXT			= #{INFO_TEXT}
+			<if test='ERP_NET_PRICE != null and ERP_NET_PRICE != ""'>
+			, ERP_NET_PRICE		= dbo.getCastNum(#{ERP_NET_PRICE})
+			</if>
+			<if test='ERP_NET_VAL != null and ERP_NET_VAL != ""'>
+			, ERP_NET_VAL		= dbo.getCastNum(#{ERP_NET_VAL})
+			</if>
+			, PLANT_CD			= #{PLANT_CD}
+			, LONG_TEXT			= #{LONG_TEXT}
+			<if test='PITEMSEQ != null and PITEMSEQ != ""'>
+			, HG_LV_ITEM		= #{PITEMSEQ}
+			</if>
+			, STATUS			= #{DOC_STATUS}
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, UPT_DT			= GETDATE()
+			, UPT_ID			= #{USERID}
+			</if>
+			<if test='ZPNN_PRICE != null and ZPNN_PRICE != ""'>
+			, ZPNN_PRICE		= dbo.getCastNum(#{ZPNN_PRICE})
+			</if>
+			<if test='ZPNN_PER != null and ZPNN_PER != ""'>
+			, ZPNN_PER			= #{ZPNN_PER}
+			</if>
+			, ZPNN_UOM			= #{ZPNN_UOM}
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{DOC_NO}
+		AND ITEM_SEQ = #{ITEM_SEQ}
+	</update>
+	
+	<insert id="insertSalesScdl" parameterType="HashMap">
+		/* SalesOrder.xml -> insertSalesScdl */
+		INSERT INTO SD_ORDER_SCDL(
+			  COMP_CD
+			, DOC_GR
+			, DOC_NO
+			, SEQ
+			, ITEM_SEQ
+			, MATL_CD
+			, PERI_CD
+			<if test='DELI_DT != null and DELI_DT != ""'>
+			, DELI_DT
+			</if>
+			<if test='ORD_QTY != null and ORD_QTY != ""'>
+			, ORD_QTY
+			</if>
+			<if test='CFM_QTY != null and CFM_QTY != ""'>
+			, CFM_QTY
+			</if>
+			, SALES_UNIT_CD
+			<if test='ATP_QTY != null and ATP_QTY != ""'>
+			, ATP_QTY
+			</if>
+			, DELI_BLOCK_CD
+			, BATCH_NO
+			, STATUS
+			, REG_DT
+			, REG_ID
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, UPT_DT
+			, UPT_ID
+			</if>
+		)VALUES(
+			  #{G_COMP_CD}
+			, #{DOC_GR}
+			, #{DOC_NO}
+			, #{SEQ}
+			, #{ITEM_SEQ}
+			, #{MATL_CD}
+			, #{PERI_CD}
+			<if test='DELI_DT != null and DELI_DT != ""'>
+			, PARSE(#{DELI_DT} AS DATE USING 'de-DE')
+			</if>
+			<if test='ORD_QTY != null and ORD_QTY != ""'>
+			, #{ORD_QTY}
+			</if>
+			<if test='CFM_QTY != null and CFM_QTY != ""'>
+			, #{CFM_QTY}
+			</if>
+			, #{SALES_UNIT_CD}
+			<if test='ATP_QTY != null and ATP_QTY != ""'>
+			, #{ATP_QTY}
+			</if>
+			, #{DELI_BLOCK_CD}
+			, #{BATCH_NO}
+			, 'I'
+			, GETDATE()
+			, #{USERID}
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, GETDATE()
+			, #{USERID}
+			</if>
+		)
+	</insert>
+	
+	<update id="updateSalesScdl" parameterType="HashMap">
+		/* SalesOrder.xml -> updateSalesScdl */
+		UPDATE SD_ORDER_SCDL
+		SET   DELI_BLOCK_CD			= #{DELI_BLOCK_CD}
+			<if test='ORD_QTY != null and ORD_QTY != ""'>
+			, ORD_QTY				= #{ORD_QTY}
+			</if>
+			<if test='DELI_DT != null and DELI_DT != ""'>
+			, DELI_DT				= PARSE(#{DELI_DT} AS DATE USING 'de-DE')
+			</if>
+		<!-- PERI_CD				= #{PERI_CD}
+			<if test='CFM_QTY != null and CFM_QTY != ""'>
+			, CFM_QTY				= #{CFM_QTY}
+			</if>
+			, SALES_UNIT_CD			= #{SALES_UNIT_CD}
+			<if test='ATP_QTY != null and ATP_QTY != ""'>
+			, ATP_QTY				= #{ATP_QTY}
+			</if>
+			, BATCH_NO				= #{BATCH_NO}
+			, STATUS				= #{DOC_STATUS}
+			-->
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, UPT_DT				= GETDATE()
+			, UPT_ID				= #{USERID}
+			</if>
+		WHERE 1 = 1
+		AND COMP_CD  = #{G_COMP_CD}
+		AND DOC_GR   = #{DOC_GR}
+		AND DOC_NO   = #{DOC_NO}
+		AND ITEM_SEQ = #{ITEM_SEQ}
+		AND SEQ      = 1
+		AND MATL_CD  = #{MATL_CD}
+	</update>
+	
+	<update id="updateSalesScdlItem" parameterType="HashMap">
+		/* SalesOrder.xml -> updateSalesScdlItem */
+		UPDATE SD_ORDER_SCDL
+		SET  
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			  UPT_DT				= GETDATE()
+			, UPT_ID				= #{USERID}
+			</if>
+			<if test='ORD_QTY != null and ORD_QTY != ""'>
+			, ORD_QTY				= #{ORD_QTY}
+			</if>
+			<if test='DELI_DT != null and DELI_DT != ""'>
+			, DELI_DT				= PARSE(#{DELI_DT} AS DATE USING 'de-DE')
+			</if>
+			<if test='BATCH_NO != null and BATCH_NO != ""'>
+			, BATCH_NO				= #{BATCH_NO}
+			</if>
+			, MATL_CD				= #{MATL_CD}
+			<if test='DOC_STATUS != null and DOC_STATUS != ""'>
+			, STATUS				= #{DOC_STATUS}
+			</if>
+		WHERE 1 = 1
+		AND COMP_CD  = #{G_COMP_CD}
+		AND DOC_GR   = #{DOC_GR}
+		AND DOC_NO   = #{DOC_NO}
+		AND ITEM_SEQ = #{ITEM_SEQ}
+		AND SEQ      = 1
+	</update>
+	
+	<select id="selectSalesOrderInfo" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectSalesOrderInfo */
+		SELECT MST.COMP_CD										AS COMP_CD
+			 , MST.DOC_GR										AS DOC_GR
+			 , MST.DOC_NO										AS DOC_NO
+			 , MST.SO_NO										AS SO_NO
+			 , MST.SALES_ORG_CD									AS SALES_ORG_CD
+			 , MST.DISTRB_CH									AS DISTRB_CH
+			 , MST.DIV_CD										AS DIV_CD
+			 , MST.REF_DOC_NO									AS REF_DOC_NO
+			 , MST.DOC_TP										AS DOC_TP
+			 , DBO.GETCODENM('DOC_TP', MST.DOC_TP, #{LANG})		AS DOC_TP_NM
+			 , MST.SOLD_CUST_CD									AS SOLD_CUST_CD
+			 , CUST.CUST_NM										AS SOLD_CUST_NM
+			 , MST.SHIP_CUST_CD									AS SHIP_CUST_CD
+			 , (SELECT TOP(1) PF_PS_NM FROM SD_ORDER_PART with (nolock) WHERE PF_TP ='WE' AND COMP_CD = #{G_COMP_CD} AND DOC_GR = #{DOC_GR} AND DOC_NO = #{DOC_NO} AND ITEM_SEQ = '000000' ORDER BY DEFAULT_YN, SEQ) as SHIP_CUST_NM
+			 , (SELECT TOP(1) PF_PS_NO FROM SD_ORDER_PART with (nolock) WHERE PF_TP ='RE' AND COMP_CD = #{G_COMP_CD} AND DOC_GR = #{DOC_GR} AND DOC_NO = #{DOC_NO} AND ITEM_SEQ = '000000' ORDER BY DEFAULT_YN, SEQ) AS BILL_CUST_CD
+			 , (SELECT TOP(1) PF_PS_NM FROM SD_ORDER_PART with (nolock) WHERE PF_TP ='RE' AND COMP_CD = #{G_COMP_CD} AND DOC_GR = #{DOC_GR} AND DOC_NO = #{DOC_NO} AND ITEM_SEQ = '000000' ORDER BY DEFAULT_YN, SEQ) AS BILL_CUST_NM
+			 , MST.CUST_CL										AS CUST_CL
+			 , DBO.GETCODENM('GRADE', MST.CUST_CL, #{LANG}) 	AS CUST_CL_NM
+			 , MST.INDUSTRY_CD									AS INDUSTRY_CD
+			 , DBO.GETCODENM('INDUSTRY_CD', MST.INDUSTRY_CD, #{LANG})
+			 													AS INDUSTRY_NM
+			 , MST.PO_NO										AS PO_NO
+			 , DBO.FMTVDATE(MST.PO_DT, 'DD.MM.YYYY')			AS PO_DT
+			 , MST.CREDIT_STS									AS CREDIT_STS
+			 , MST.OVL_DVL_STS									AS OVL_DVL_STS
+			 , MST.OVL_STS										AS OVL_STS
+			 , MST.SALES_OFFICE_CD								AS SALES_OFFICE_CD
+			 , MST.SALES_GR										AS SALES_GR
+			 , MST.REQ_PERI_CD									AS REQ_PERI_CD
+			 , DBO.FMTVDATE(MST.REQ_DELI_DT, 'DD.MM.YYYY')		AS REQ_DELI_DT
+			 , DBO.FMTVDATE(MST.VAL_FR_DT, 'DD.MM.YYYY')		AS VAL_FR_DT
+			 , DBO.FMTVDATE(MST.VAL_TO_DT, 'DD.MM.YYYY')		AS VAL_TO_DT
+			 , MST.ORD_RESN_CD									AS ORD_RESN_CD
+			 , MST.DELI_PLANT_CD								AS DELI_PLANT_CD
+			 , MST.CMP_DELI_YN									AS CMP_DELI_YN
+			 , dbo.SetAmt(MST.T_WT)								AS T_WT
+			 , MST.T_WT_UNIT									AS WEIGHT
+			 , cast(format(MST.VOL_QTY, 'G', 'de-de')as varchar(30)) AS VOL_QTY
+			 , MST.VOL_UNIT										AS VOLUME
+			 , dbo.SetAmt(MST.T_AMT)							AS T_AMT
+			 , dbo.SetAmt(MST.NET_AMT)							AS NET_AMT
+			 , MST.CURR_CD										AS CURR_CD
+			 , DBO.FMTVDATE(MST.PRICE_DT, 'DD.MM.YYYY')			AS PRICE_DT
+			 , MST.PAY_TERM										AS PAY_TERM
+			 , DBO.GETCODENM('PAY_TERM', MST.PAY_TERM, #{LANG}) AS PAY_TERM_NM
+			 , MST.INCOTERMS_CD									AS INCOTERMS_CD
+			 , MST.DELI_BLOCK_CD								AS DELI_BLOCK_CD
+			 , MST.QT_STS_CD									AS QT_STS_CD
+			 , MST.DELI_STS										AS DELI_STS
+			 , MST.DUN_BLOCK_CD									AS DUN_BLOCK
+			 , MST.SHP_CON_CD									AS SHP_CON_CD
+			 , MST.REL_POD_YN									AS REL_POD_YN
+			 , MST.REF_DOC_H_STS								AS REF_DOC_H_STS
+			 , MST.T_REF_STS									AS T_REF_STS
+			 , MST.RJT_STS										AS RJT_STS
+			 , MST.LEAD_NO										AS LEAD_NO
+			 , MST.BLK_RSN_CD									AS BLK_RSN_CD
+			 , MST.CUST_STS										AS CUST_STS
+			 , MST.APRV_TP										AS APRV_TP
+			 , MST.VAT											AS VAT
+			 , dbo.SetAmt(MST.VAT_AMT)							AS VAT_AMT
+			 , MST.INCOTERMS_DESC								AS INCOTERMS_DESC
+			 , MST.ALLOW_STS									AS ALLOW_STS
+			 , dbo.SetAmt(MST.ERP_T_AMT)						AS ERP_T_AMT
+			 , dbo.SetAmt(MST.ERP_NET_AMT)						AS ERP_NET_AMT
+			 , MST.ERP_VAT_AMT									AS ERP_VAT_AMT
+			 , dbo.SetAmt(MST.SUR_CHARGE_AMT)					AS SUR_CHARGE_AMT
+			 , dbo.FmtdDate(MST.UPT_DT, 'YYYYMMDDHHMISS')		AS MODI_TMS
+			 , dbo.FmtdDate(MST.REG_DT, 'YYYYMMDD')				AS REG_DT
+			 , DBO.GETCODENM('SALES_ORG_CD', MST.SALES_ORG_CD, #{LANG})
+			 													AS SALES_ORG_CD_NM
+			 , DBO.GETCODENM('DISTRB_CH', MST.DISTRB_CH, #{LANG})
+			 													AS DISTRB_CH_NM
+			 , DBO.GETCODENM('DIV_CD', MST.DIV_CD, #{LANG})		AS DIV_CD_NM
+			 , C_SALES.CUST_GR									AS CUST_GR_CD
+			 , DBO.GETCODENM('CUST_GR', C_SALES.CUST_GR, #{LANG})
+			 													AS CUST_GR_NM
+			 , DBO.GETCODENM('INDUSTRY_CD', MST.INDUSTRY_CD, #{LANG})
+			 													AS INDUSTRY_CD_NM
+			 , dbo.SetAmt(MST.DLV_AMT)							AS DLV_AMT
+			 , DC_TP											AS DC_TP
+			 , dbo.SetAmt(DC_VAL)								AS DC_VAL
+			 , dbo.SetAmt(AVAIL_AMT)							AS AVAIL_AMT
+			 , QT_TO_SO_ID										AS QT_TO_SO_ID
+			 , ATTR_ORD											AS ATTR_ORD
+			 , MST.STATUS										AS STATUS
+			 , CUST.ACCOUNT_GR									AS ACCOUNT_GR
+			 , MST.REG_ID										AS REG_ID
+			 , MST.QT_NO										AS QT_NO
+			 , MST.SEG_CD										AS SEG_CD
+			 , MST.Q_BONUS_YN									AS Q_BONUS_YN
+			 , cast(format(MST.EXCHG_RATE, 'G', 'de-de') as varchar(30))  AS EXCHG_RATE
+			 , MST.REASON_REJECT
+		FROM SD_ORDER_H MST
+		LEFT JOIN MS_CUST_H CUST ON MST.SOLD_CUST_CD = CUST.CUST_CD AND MST.COMP_CD = CUST.COMP_CD
+		LEFT JOIN MS_CUST_SALES C_SALES ON CUST.COMP_CD = C_SALES.COMP_CD AND CUST.CUST_CD = C_SALES.CUST_CD
+			AND  MST.SALES_ORG_CD = C_SALES.SALES_ORG_CD AND MST.DISTRB_CH = C_SALES.DISTRB_CH AND MST.DIV_CD = C_SALES.DIV_CD
+		WHERE 1 = 1
+		AND MST.DOC_NO  = #{DOC_NO}
+		AND MST.COMP_CD = #{G_COMP_CD}
+		AND MST.DOC_GR  = #{DOC_GR}
+		AND MST.STATUS <![CDATA[ <> ]]> 'D'
+	</select>
+
+	<select id="selectApprovalInfo" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectApprovalInfo */
+		   SELECT DOC_NO										 	AS DOC_NO
+				, DOC_TP										 	AS DOC_TP
+				, PO_NO																
+				, DBO.GETCODENM('DOC_TP', DOC_TP, #{LANG}) 		 	AS DOC_TP_NM
+				, VAL_FR_DT										 	AS VAL_FR_DT
+				, VAL_TO_DT										 	AS VAL_TO_DT
+				, SOLD_CUST_CD									 	AS	SOLD_CUST_CD
+				, SOLD_CUST_NM	
+				, SHIP_CUST_CD									 	AS	SHIP_CUST_CD
+				, SHIP_CUST_NM
+				, SOrg											 	AS SALES_ORG_CD
+				, DBO.GETCODENM('SALES_ORG_CD', SOrg, #{LANG}) 	 	AS SALES_ORG_NM
+				, DISTRB_CH										 	AS DISTRB_CH
+				, DBO.GETCODENM('DISTRB_CH', DISTRB_CH, #{LANG}) 	AS DISTRB_CH_NM
+				, DIV_CD										 	AS DIV_CD
+				, DBO.GETCODENM('DIV_CD', DIV_CD, #{LANG}) 			AS DIV_NM 
+				, REQ_DELI_DT									 	AS DELI_DT
+				, DELI_PLANT_CD
+				, DBO.GETCODENM('PLANT_CD', DELI_PLANT_CD, #{LANG})	AS DELI_PLANT_NM
+				, T_AMT												AS	T_AMT
+				, PRICE_DT											AS PRICE_DT
+				, NET_AMT											AS	NET_AMT
+				, VAT_AMT
+				, VAT		
+				, PAY_TERM											AS	PAY_TERM
+				, DBO.GETCODENM('PAY_TERM', PAY_TERM, #{LANG}) 	AS PAY_TERM_NM
+				, INCOTERMS_CD					
+				, INCOTERMS_DESC									AS	INCOTERMS_DESC
+				, DELI_STS											AS	CMP_DELI_YN  /*추후 값에 따라 변경 해야함*/
+		 		, ORD_RESN_CD										AS	ORD_RESN_CD
+		 		, dbo.FmtdDate(UPT_DT, 'YYYYMMDDHHMISS')			AS MODI_TMS
+ 				, (SELECT TOP(1) PF_PS_NO FROM SD_ORDER_PART with (nolock) WHERE PF_TP ='RE' AND COMP_CD = #{G_COMP_CD} AND DOC_GR = #{DOC_GR} AND DOC_NO = #{DOC_NO} ORDER BY DEFAULT_YN, SEQ) AS BILL_CUST_CD
+			 	, (SELECT TOP(1) PF_PS_NM FROM SD_ORDER_PART with (nolock) WHERE PF_TP ='RE' AND COMP_CD = #{G_COMP_CD} AND DOC_GR = #{DOC_GR} AND DOC_NO = #{DOC_NO} ORDER BY DEFAULT_YN, SEQ) AS BILL_CUST_NM
+		  FROM SD_ORDER_H_LIST_VW VW WITH (NOLOCK)
+		  WHERE 1 = 1
+		   AND DOC_NO  = #{DOC_NO}
+		   AND COMP_CD = #{G_COMP_CD}
+		   AND DOC_GR  = #{DOC_GR}
+		<!-- AND STATUS <![CDATA[ <> ]]> 'D' -->
+	</select>	
+	
+	<select id="selectApprovalItem" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectApprovalItem */
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+	  	SELECT ROW_NUMBER() OVER(ORDER BY CONVERT(INT,A.ITEM_SEQ) ASC) ROWNUM
+			 , A.ITEM_SEQ 
+			 , A.MATL_CD 
+			 , A.MATL_DESC 
+			 , A.BASIC_UNIT
+			 , A.ORD_UNIT_CD
+			 , dbo.SetQty(A.ORD_QTY) AS ORD_QTY
+			 , dbo.setAmt(A.ERP_NET_PRICE) AS ERP_NET_PRICE 
+			 , dbo.setAmt(A.ERP_NET_VAL) AS ERP_NET_VAL
+			 , dbo.setAmt(A.NET_PRICE) AS NET_PRICE
+			 , dbo.setAmt(A.NET_VAL) AS NET_VAL
+			 , dbo.SetQty(A.ATP_QTY) AS ATP_QTY
+			 , dbo.SetAmt2(ISNULL(A.ST_PER,0) * A.ORD_QTY / 1000000) AS MW
+			 , DBO.FMTVDATE(a.DELI_DT_1ST, 'DD.MM.YYYY') as DELI_DT_1ST
+			 , CASE WHEN A.MATL_GR != 'M' THEN dbo.SetAmt(ISNULL(A.NET_PRICE,0) / ISNULL(A.ZPNN_PER,0) )
+			        WHEN A.MATL_GR = 'M' 
+					THEN ( CASE WHEN A.ZPNN_UOM ='ST' AND A.ST_PER != 0 THEN  dbo.SetAmt(100 / ISNULL(A.ST_PER,0) * ISNULL(A.NET_PRICE,0))
+								WHEN A.ZPNN_UOM ='WP' THEN dbo.SetAmt(100 / ISNULL(A.ZPNN_PER,0) * ISNULL(A.NET_PRICE,0))
+								ELSE dbo.SetAmt(0) END ) END AS REQUESTED_PRICE
+			 , CASE WHEN A.MATL_GR != 'M' THEN dbo.SetAmt(ISNULL(A.ERP_NET_PRICE,0) / ISNULL(A.ZPNN_PER,0) )
+			        WHEN A.MATL_GR = 'M' 
+					THEN ( CASE WHEN A.UOM ='ST' AND A.ST_PER != 0 THEN dbo.SetAmt(100 / ISNULL(A.ST_PER,0) * ISNULL(A.ERP_NET_PRICE,0))
+								WHEN A.UOM ='WP' THEN dbo.SetAmt(100 / ISNULL(A.PER,0) * ISNULL(A.ERP_NET_PRICE,0))
+								ELSE dbo.SetAmt(0) END ) END AS ERP_PRICE								
+			, (SELECT H.CURR_CD FROM SD_ORDER_H H WHERE H.DOC_NO = #{DOC_NO}) AS CURR_CD			
+			, (CASE 
+					WHEN A.MATL_GR != 'M' THEN '1' + DBO.GETCODENM('BASIC_UNIT', 'ST', #{LANG}) 
+					ELSE '100WP'
+			   END) AS PRICE_UNIT
+	    FROM ( SELECT ORD.ITEM_SEQ 
+					, ORD.MATL_CD 
+					, ISNULL(ORD.MATL_DESC, ITEM_DESC.MATL_DESC) AS MATL_DESC 
+					, MST.BASIC_UNIT
+					, ORD.ORD_UNIT_CD
+					, ORD.ORD_QTY
+					, ORD.ERP_NET_PRICE
+					, ORD.ERP_NET_VAL
+					, ORD.NET_PRICE
+					, ORD.NET_VAL
+					, ORD.ATP_QTY
+					, ORD.ZPNN_UOM
+					, ORD.ZPNN_PER
+					, ORD.UOM
+					, ORD.PER
+					, ord.DELI_DT_1ST
+					, CASE WHEN MST.DIV_CD = '20' THEN 'M' ELSE 'B' END  AS MATL_GR
+					,( SELECT CASE WHEN UI.ALT_UNIT_CD = 'WP' THEN CONVERT(NUMERIC, UI.UNIT_DIV) * 1
+								   WHEN UI.ALT_UNIT_CD = 'KW' THEN CONVERT(NUMERIC, UI.UNIT_DIV) * 1000
+								   WHEN UI.ALT_UNIT_CD = 'MWP' THEN CONVERT(NUMERIC, UI.UNIT_DIV) *1000000
+								   END AS UNT
+						  FROM MS_ITEM_UNIT UI WITH(NOLOCK)
+								JOIN MS_ITEM MI WITH(NOLOCK) 
+									ON MI.COMP_CD = UI.COMP_CD AND MI.MATL_CD = UI.MATL_CD
+							WHERE 1 = 1
+							AND UI.COMP_CD = '1000'	
+							AND UI.ALT_UNIT_CD IN ('WP','KW','MWP')
+							AND MI.BASIC_UNIT = 'PCS'
+							AND UI.MATL_CD = ORD.MATL_CD
+						) AS ST_PER
+		 	 	  FROM SD_ORDER_ITEM ORD WITH (NOLOCK)
+				INNER JOIN MS_ITEM MST WITH (NOLOCK)
+				   ON ORD.COMP_CD = MST.COMP_CD
+				  AND ORD.MATL_CD = MST.MATL_CD
+				INNER JOIN MS_ITEM_DESC ITEM_DESC
+				   ON MST.COMP_CD = ITEM_DESC.COMP_CD 
+				  AND MST.MATL_CD = ITEM_DESC.MATL_CD 
+				  AND ITEM_DESC.LANG_CD = #{LANG}
+				  WHERE 1 = 1
+				    AND ORD.DOC_NO  = #{DOC_NO}
+					AND ORD.COMP_CD = #{G_COMP_CD}
+					AND ORD.DOC_GR  = #{DOC_GR}
+					AND ORD.STATUS != 'D'
+				) A
+		<!-- AND STATUS <![CDATA[ <> ]]> 'D' -->
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>	
+	
+	<select id="selectPartnerFnc" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectPartnerFnc */
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY PF_TP ASC) ROWNUM
+			 , COMP_CD									AS COMP_CD
+			 , DOC_NO									AS DOC_NO
+			 , SEQ										AS SEQ
+			 , PF_TP									AS PF_TP
+			 , PF_NM									AS PF_NM
+			 , PF_PS_NM									AS PF_PS_NM
+			 , PF_PS_NO									AS PF_PS_NO
+			 , PF_DESC									AS PF_DESC
+			 , TITLE									AS TITLE
+			 , NAME_1ST									AS NAME_1ST
+			 , NAME_2ND									AS NAME_2ND
+			 , STREET_NM								AS STREET_NM
+			 , STREET_NM2								AS STREET_NM2
+			 , ISNULL(STREET_NM,'')
+               + ISNULL((CASE WHEN STREET_NM2 IS NULL THEN '' ELSE ' ' + STREET_NM2 END),'') 
+               + ISNULL((CASE WHEN HAUS_NO IS NULL THEN '' ELSE ' ' + HAUS_NO END),'') AS STREET
+			 , HAUS_NO									AS HAUS_NO
+			 , POST_CD									AS POST_CD
+			 , CITY_CD									AS CITY_CD
+			 , COUNTRY_CD								AS COUNTRY_CD
+			 , REGION_CD								AS REGION_CD
+			 , TIME_ZONE								AS TIME_ZONE
+			 , TRANSP_ZONE								AS TRANSP_ZONE
+			 , PO_BOX									AS PO_BOX
+			 , PO_POST_CD								AS PO_POST_CD
+			 , COMP_POST_CD								AS COMP_POST_CD
+			 , LANG_CD									AS LANG_CD
+			 , TEL_NO									AS TEL_NO
+			 , TEL_NO_EXT								AS TEL_NO_EXT
+			 , MOBILE_NO								AS MOBILE_NO
+			 , FAX_NO									AS FAX_NO
+			 , FAX_NO_EXT								AS FAX_NO_EXT
+			 , E_MAIL									AS E_MAIL
+			 , STD_COM_MTD								AS STD_COM_MTD
+			 , DATA_LINE								AS DATA_LINE
+			 , COMMENTS									AS COMMENTS
+			 , UNLD_PT									AS UNLD_PT
+			 , VAT_REG_NO								AS VAT_REG_NO
+			 , SYNC_FLAG								AS SYNC_FLAG
+			 , DEFAULT_YN								AS DEFAULT_YN
+		FROM SD_ORDER_PART
+		WHERE 1 = 1
+		AND DOC_NO   = #{DOC_NO}
+		AND COMP_CD  = #{G_COMP_CD}
+		AND DOC_GR   = #{DOC_GR}
+		AND ITEM_SEQ = #{ITEM_SEQ}
+		AND STATUS <![CDATA[ <> ]]> 'D'
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+
+	<select id="selectText" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectText */
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY SD_TEXT.TEXT_TP DESC) ROWNUM
+			 , SD_TEXT.COMP_CD									AS COMP_CD
+			 , SD_TEXT.DOC_NO									AS DOC_NO
+			 , SD_TEXT.SEQ										AS SEQ
+			 , TEXT_TP											AS TEXT_TP
+			 , SD_TEXT.LANG_CD									AS LANG_CD
+			 , SD_TEXT.MATL_TEXT								AS MATL_TEXT
+		FROM SD_ORDER_TEXT SD_TEXT
+		WHERE 1 = 1
+		AND SD_TEXT.DOC_NO  = #{DOC_NO}
+		AND SD_TEXT.COMP_CD = #{G_COMP_CD}
+		AND SD_TEXT.DOC_GR  = #{DOC_GR}	
+		AND STATUS <![CDATA[ <> ]]> 'D'
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+
+	<select id="selectItemTab" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectItemTab */
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY CONVERT(INT, SO.ITEM_SEQ) ASC) ROWNUM
+			 , SO.COMP_CD										AS COMP_CD
+			 , SO.DOC_GR										AS DOC_GR
+			 , SO.DOC_NO										AS DOC_NO
+			 , SO.SEQ											AS SEQ
+			 , SO.ITEM_SEQ										AS ITEM_SEQ
+			 , SO.MATL_CD										AS MATL_CD
+			 , SO.ITEM_CTG_GR									AS ITEM_CTG_GR
+			 , dbo.SetAmt(SO.ORD_QTY)							AS ORD_QTY
+			 , ISNULL(SO.ORD_UNIT_CD,'')						AS ORD_UNIT_CD
+			 , CASE WHEN SO.DELI_DT_1ST_TP = 'W' THEN CONVERT(VARCHAR, DATEPART(WEEK, SO.DELI_DT_1ST)) + '.' + SUBSTRING(DBO.FMTVDATE(SO.DELI_DT_1ST, 'DD.MM.YYYY'), 7, 10)
+					WHEN SO.DELI_DT_1ST_TP = 'M' THEN SUBSTRING(DBO.FMTVDATE(SO.DELI_DT_1ST, 'DD.MM.YYYY'), 4, 10)
+					ELSE DBO.FMTVDATE(SO.DELI_DT_1ST, 'DD.MM.YYYY') END 
+			 													AS DELI_DT_1ST
+			 , SO.DELI_DT_1ST_TP								AS DELI_DT_1ST_TP
+			 , SO.ATP_QTY										AS ATP_QTY
+			 , SO.ATP_UNIT_CD									AS ATP_UNIT_CD
+			 , SO.UNIT1_QTY										AS UNIT1_QTY
+			 , SO.UNIT1_CD										AS UNIT1_CD
+			 , SO.UNIT2_QTY										AS UNIT2_QTY
+			 , SO.UNIT2_CD										AS UNIT2_CD
+			 , dbo.SetAmt(ISNULL(SO.NET_PRICE,0))				AS NET_PRICE
+			 , ISNULL(SO.NET_CURR_CD,'')						AS CURR
+			 , ISNULL(SO.NET_CURR_CD,'')						AS OLD_CURRENCY			 
+			 , dbo.SetAmt(ISNULL(SO.NET_VAL,0))					AS NET_VAL
+			 , dbo.FmtdDate(SO.PRICE_DT, 'DD.MM.YYYY')			AS PRICE_DT
+			 , SO.BOM_NO										AS BOM_NO
+			 , SO.BATCH_NO										AS BATCH_NO
+			 , SO.ORD_PROB										AS ORD_PROB
+			 , SO.USAGE_CD										AS USAGE_CD
+			 , SO.RSN_RJT_CD									AS RSN_RJT_CD
+			 , SO.RSN_RJT_CD									AS DB_RSN_RJT_CD
+			 , SO.SHIP_PO_CD									AS SHIP_PO_CD
+			 , SO.RUT_CD										AS RUT_CD
+			 , SO.DELI_PRIOR_CD									AS DELI_PRIOR_CD
+			 , SO.MAX_P_DELI									AS AMX_P_DELI
+			 , SO.SCDL_LINE_YN									AS SCDL_LINE_YN
+			 , SO.FIX_DT_QTY_YN									AS FIX_DT_QTY_YN
+			 , SO.INFO_TEXT										AS INFO_TEXT
+			 , ISNULL(SO.MATL_DESC,MTL_DESC.MATL_DESC)			AS MATL_DESC
+			 , SO.STATUS										AS STATUS
+			 , SO.REG_DT										AS REG_DT
+			 , SO.REG_ID										AS REG_ID
+			 , SO.UPT_DT										AS UPT_DT
+			 , SO.UPT_ID										AS UPT_ID
+			 , MTL.DIV_CD										AS DIV_CD
+			 , SO.PLANT_CD										AS PLANT_CD
+			 , MTL.BASIC_UNIT									AS BASIC_UNIT
+			 , ISNULL(SO.UOM,'')								AS UOM
+			 , ISNULL(SO.PER,0)									AS PER
+			 , SO.ZPNN_UOM										AS ZPNN_UOM
+			 , SO.ZPNN_PER										AS ZPNN_PER
+			 , dbo.SetAmt(ERP_NET_PRICE)						AS ERP_NET_PRICE
+			 , dbo.SetAmt(ZPNN_PRICE)							AS ZPNN_PRICE
+			 , dbo.SetAmt(ERP_NET_VAL)							AS ERP_NET_VAL
+			 , CASE WHEN '' = ISNULL(SO.LONG_TEXT, '')
+			 		THEN (SELECT CONVERT(VARCHAR, LONG_TEXT) FROM MS_ITEM_LONGTEXT 
+			 		WHERE 1 = 1 AND MATL_CD = SO.MATL_CD AND LANG_CD = #{LANG} AND SALES_ORG_CD = #{SALES_ORG_CD}
+			 		AND DISTRB_CH = #{DISTRB_CH} AND TEXT_ID = '0001')
+			 		ELSE SO.LONG_TEXT END						AS LONG_TEXT
+			 , SO.APPR_PRICE									AS APPR_PRICE
+			 , case when SO.HG_LV_ITEM = '0' then null
+			        else SO.HG_LV_ITEM end 						AS pItemSeq
+			 , MTL.GROSS_WT										AS GROSS_WT
+			 , MTL.NET_WT										AS NET_WT
+			 , MTL.WT_UNIT										AS WT_UNIT
+			 , MTL.VOL_QTY										AS VOL_QTY
+			 , MTL.VOL_UNIT										AS VOL_UNIT
+			 , MTL.WP_OUT										AS OUTPUT
+			 , SO.STORE_LOC										AS STORE_LOC
+			 , SO.REASON_REJECT									AS REASON_REJECT
+			 
+	 		, dbo.SetAmt(ISNULL( ( SELECT (CASE WHEN  0   <![CDATA[ < ]]>  ISNULL(ZPNM_PRICE, 0) THEN ZPNM_PRICE
+			                     ELSE ISNULL(ZPL0_PRICE, 0)  END)
+				           FROM (SELECT ( SELECT SUM(PRICE) 
+				                            FROM SD_ORDER_L_COND
+											WHERE 1 = 1
+											AND DOC_NO   = #{DOC_NO}
+											AND COMP_CD  = #{G_COMP_CD}
+											AND DOC_GR   = #{DOC_GR}
+											AND PRICE IS NOT NULL
+											AND COND_TP = 'ZPNM'
+											AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, SO.ITEM_SEQ)) AS ZPNM_PRICE 
+										, ( SELECT SUM(PRICE) FROM SD_ORDER_L_COND
+											WHERE 1 = 1
+											AND DOC_NO   = #{DOC_NO}
+											AND COMP_CD  = #{G_COMP_CD}
+											AND DOC_GR   = #{DOC_GR}
+											AND PRICE IS NOT NULL
+											AND COND_TP = 'ZPL0'
+											AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, SO.ITEM_SEQ)) AS ZPL0_PRICE 
+									FROM SD_ORDER_L_COND
+									WHERE 1 = 1
+									AND DOC_NO   = #{DOC_NO}
+									AND COMP_CD  = #{G_COMP_CD}
+									AND DOC_GR   = #{DOC_GR}
+									AND PRICE IS NOT NULL
+									AND COND_TP IN ('ZPL0', 'ZPNM')
+									AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC,SO.ITEM_SEQ)
+									GROUP BY ITEM_SEQ
+							) SUM_TABLE
+						GROUP BY SUM_TABLE.ZPNM_PRICE, SUM_TABLE.ZPL0_PRICE),0)) AS ITEM_SUM
+							 
+			 , ISNULL((SELECT (CASE WHEN 0 <![CDATA[ < ]]> ISNULL(ZPNM_PRICE, 0) THEN ZPNM_PRICE + ISNULL(Other, 0) - ISNULL(Other_Print, 0) ELSE ISNULL(ZPR0_PRICE, 0) + ISNULL(Other, 0) - ISNULL(Other_Print, 0)  END)
+				FROM (SELECT SUM(PRICE) AS PRICE
+							, ( SELECT SUM(PRICE) FROM SD_ORDER_L_COND
+								WHERE 1 = 1
+								AND DOC_NO   = #{DOC_NO}
+								AND COMP_CD  = #{G_COMP_CD}
+								AND DOC_GR   = #{DOC_GR}
+								AND PRICE IS NOT NULL
+								AND COND_TP = 'ZPNM'
+								AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, SO.ITEM_SEQ)) AS ZPNM_PRICE
+							, ( SELECT SUM(PRICE) FROM SD_ORDER_L_COND
+								WHERE 1 = 1
+								AND DOC_NO   = #{DOC_NO}
+								AND COMP_CD  = #{G_COMP_CD}
+								AND DOC_GR   = #{DOC_GR}
+								AND PRICE IS NOT NULL
+								--AND COND_TP = 'ZPR0'
+								AND COND_TP = 'ZPL0'
+								AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, SO.ITEM_SEQ)) AS ZPR0_PRICE
+							, ( SELECT SUM(PRICE) FROM SD_ORDER_L_COND
+								WHERE 1 = 1
+								AND DOC_NO   = #{DOC_NO}
+								AND COMP_CD  = #{G_COMP_CD}
+								AND DOC_GR   = #{DOC_GR}
+								AND PRICE IS NOT NULL
+								AND COND_TP NOT IN ('ZPL1', 'ZVKS', 'ZPNM', 'ZVKD', 'ZPB1', 'ZSR6', 'ZPNN', 'MWST', 'ZPL0') --'ZPR0',
+								AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, SO.ITEM_SEQ)) AS Other
+							, ( SELECT SUM(PRICE) FROM SD_ORDER_L_COND
+								WHERE 1 = 1
+								AND DOC_NO   = #{DOC_NO}
+								AND COMP_CD  = #{G_COMP_CD}
+								AND DOC_GR   = #{DOC_GR}
+								AND PRICE IS NOT NULL
+								AND COND_TP IN ('ZDC3', 'ZDC4', 'ZSR4', 'ZFK0')
+								AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, SO.ITEM_SEQ)) AS Other_Print
+						FROM SD_ORDER_L_COND
+						WHERE 1 = 1
+						AND DOC_NO   = #{DOC_NO}
+						AND COMP_CD  = #{G_COMP_CD}
+						AND DOC_GR   = #{DOC_GR}
+						AND PRICE IS NOT NULL
+						AND COND_TP NOT IN ('ZPL1', 'ZVKS',  'ZVKD', 'ZPB1', 'ZSR6', 'ZPNN', 'MWST','ZDC3', 'ZDC4', 'ZSR4', 'ZFK0')
+						AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, SO.ITEM_SEQ)
+						GROUP BY ITEM_SEQ
+				) SUM_TABLE
+				GROUP BY SUM_TABLE.ZPNM_PRICE, SUM_TABLE.ZPR0_PRICE, SUM_TABLE.Other, SUM_TABLE.Other_Print),0) AS PRINT_ITEM_SUM
+		FROM SD_ORDER_ITEM SO WITH(NOLOCK)
+		JOIN MS_ITEM MTL WITH(NOLOCK) ON SO.MATL_CD = MTL.MATL_CD AND SO.COMP_CD = MTL.COMP_CD
+		LEFT OUTER JOIN MS_ITEM_DESC MTL_DESC WITH(NOLOCK) ON MTL.COMP_CD = MTL_DESC.COMP_CD AND MTL.MATL_CD = MTL_DESC.MATL_CD AND MTL_DESC.LANG_CD = #{LANG}
+		WHERE 1 = 1
+		AND SO.DOC_NO  = #{DOC_NO}
+		AND SO.COMP_CD = #{G_COMP_CD}
+		AND SO.DOC_GR  = #{DOC_GR}
+		AND SO.STATUS <![CDATA[ <> ]]> 'D'
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="setGridForm" parameterType="HashMap" resultType="String">
+		/* SalesOrder.xml -> setGridForm */
+		SELECT dbo.SetAmt(#{netVal})
+	</select>
+	
+
+	<select id="selectScdlTab" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectScdlTab */
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY SC.SEQ ASC) ROWNUM
+			 , SC.COMP_CD									AS COMP_CD
+			 , SC.DOC_GR									AS DOC_GR
+			 , SC.DOC_NO									AS DOC_NO
+			 , SC.SEQ										AS SEQ
+			 , SC.ITEM_SEQ									AS ITEM_SEQ
+			 , SC.MATL_CD									AS MATL_CD
+			 , SC.PERI_CD									AS PERI_CD
+			 , CASE WHEN PERI_CD = 'W' THEN CONVERT(VARCHAR, DATEPART(WEEK, DELI_DT)) + '.' + SUBSTRING(DBO.FMTVDATE(DELI_DT, 'DD.MM.YYYY'), 7, 10)
+					WHEN PERI_CD = 'M' THEN SUBSTRING(DBO.FMTVDATE(DELI_DT, 'DD.MM.YYYY'), 4, 10)
+					ELSE DBO.FMTVDATE(DELI_DT, 'DD.MM.YYYY') END 
+															AS DELI_DT
+			 , dbo.SetQty(SC.ORD_QTY)						AS ORD_QTY
+			 , dbo.SetQty(SC.CFM_QTY)						AS CFM_QTY
+			 , SC.SALES_UNIT_CD								AS SALES_UNIT_CD
+			 , SC.ATP_QTY									AS ATP_QTY
+			 , SC.DELI_BLOCK_CD								AS DELI_BLOCK_CD
+			 , SC.BATCH_NO									AS BATCH_NO
+			 , SC.STATUS									AS STATUS
+		FROM SD_ORDER_SCDL SC
+		INNER JOIN SD_ORDER_ITEM ITEM ON SC.ITEM_SEQ = ITEM.ITEM_SEQ AND SC.DOC_NO = ITEM.DOC_NO
+		WHERE 1 = 1
+		AND SC.DOC_NO   = #{DOC_NO}
+		AND SC.COMP_CD  = #{G_COMP_CD}
+		AND SC.DOC_GR   = #{DOC_GR}
+		<if test='ITEM_SEQ != null and ITEM_SEQ != ""'>
+		AND SC.ITEM_SEQ = #{ITEM_SEQ}
+		</if>
+		<if test='MATL_CD != null and MATL_CD != ""'>
+		AND SC.MATL_CD  = #{MATL_CD}
+		</if>
+		AND SC.STATUS <![CDATA[ <> ]]> 'D'
+		AND ITEM.STATUS <![CDATA[ <> ]]> 'D'
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+
+	<update id="updateApproval" parameterType="HashMap">
+		/* SalesOrder.xml -> updateApproval */
+		UPDATE SD_ORDER_H
+		   SET ALLOW_STS = #{APPROVAL_STS}
+		     , APPROVAL_STS = #{APPROVAL_STS}
+		     , REJECT_RSN = #{REJECT_RSN}
+		     <if test='DOC_GR == "QT" and APPROVAL_STS ==  "Y"'>
+		     , QT_STS_CD = 'E0012'  <!-- 승인 완료 시 QT_STS_CD를 Won/PO received 상태로 업데이트 -->
+		     </if>
+		     , APPR_ID = #{USER_ID}
+		     , APPR_DT = GETDATE()
+		     , UPT_DT = GETDATE()
+		     , UPT_ID = #{USER_ID}
+		WHERE COMP_CD = #{G_COMP_CD}
+		  AND DOC_GR  = #{DOC_GR}
+		  AND DOC_NO = #{DOC_NO}
+	</update>
+
+	<update id="updateApproval_pre" parameterType="HashMap">
+		/* SalesOrder.xml -> updateApproval_pre */
+		UPDATE SD_ORDER_L_APPR
+		   SET ALLOW_STS = #{APPROVAL_STS}
+		     , APPROVAL_STS = #{APPROVAL_STS}
+		     , REJECT_RSN = #{REJECT_RSN}
+		     , APPR_DT = GETDATE()
+		     , UPT_DT = GETDATE()
+		     , UPT_ID = #{USER_ID}
+		WHERE COMP_CD = #{G_COMP_CD}
+		  AND DOC_GR  = #{DOC_GR}
+		  AND DOC_NO = #{DOC_NO}
+		  AND APPR_ID = #{APPR_ID}
+	</update>
+	
+	<select id="selectApprovalCnt" parameterType="BMap" resultType="int">
+		/* SalesOrder.xml -> selectApprovalCnt */
+		SELECT COUNT(1)
+		  FROM SD_ORDER_H
+		WHERE COMP_CD = #{G_COMP_CD}
+		  AND DOC_GR  = #{DOC_GR}
+		  AND DOC_NO =  #{DOC_NO} 
+		  AND ALLOW_STS = 'Q'
+		  AND APPROVAL_STS = 'Q'
+	</select>
+	
+	<select id="selectBomList" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectBomList */
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY SEQ ASC) ROWNUM
+			, BOM.BOM_USAGE									AS BOM_USAGE
+			, BOM.BOM_CTG									AS BOM_CTG
+			, BOM.BS_QTY									AS BS_QTY
+			, BOM.BS_UNIT									AS BS_UNIT
+			, BOM.BOM_STS									AS BOM_STS
+			, BOM.BOM_CD									AS BOM_CD
+			, BOM.BOM_QTY									AS BOM_QTY
+			, BOM.UNIT_CD									AS UNIT_CD
+			, DBO.FMTVDATE(BOM.VAL_FR_DT, 'DD.MM.YYYY')		AS VAL_FR_DT
+			, BOM.ITEM_CTG									AS ITEM_CTG
+			, DE.MATL_DESC									AS MATL_DESC
+			, BOM.PLANT_CD									AS PLANT_CD
+			, MST.DIV_CD									AS DIV_CD
+			, dbo.GetItemCtg2(BOM.COMP_CD,'ZTA',#{MATL_CD}, BOM.BOM_CD, #{SALES_ORG_CD}, #{DISTRB_CH}, #{ITEM_SEQ}) as ITEM_CTG_GR
+		FROM MS_ITEM MST WITH (NOLOCK)
+		LEFT JOIN MS_ITEM_BOM BOM  WITH (NOLOCK)
+			ON MST.MATL_CD = BOM.MATL_CD
+		LEFT JOIN MS_ITEM_DESC DE WITH (NOLOCK)
+			ON BOM.COMP_CD = DE.COMP_CD AND BOM.BOM_CD = DE.MATL_CD AND DE.LANG_CD = #{LANG}
+		WHERE 1 = 1
+		AND BOM.MATL_CD  = #{MATL_CD}
+		AND BOM.PLANT_CD = #{PLANT_CD}
+		<!-- AND STATUS <![CDATA[ <> ]]> 'D' -->
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectPfList" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectPfList */
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY PFLIST_OUT.PF_TP ASC) ROWNUM
+			 , PFLIST_OUT.SALES_ORG_CD			AS SALSE_ORG_CD
+			 , PFLIST_OUT.DISTRB_CH				AS DISTRB_CH
+			 , PFLIST_OUT.DIV_CD				AS DIV_CD
+			 , PFLIST_OUT.PF_TP					AS PF_TP
+			 , PFLIST_OUT.PF_NM					AS PF_NM
+			 , PFLIST_OUT.PF_PS_NO				AS PF_PS_NO
+			 , PFLIST_OUT.PF_PS_NM				AS PF_PS_NM
+			 , PFLIST_OUT.PF_DESC				AS PF_DESC
+			 , PFLIST_OUT.PF_CNT				AS PF_CNT
+			 , PFLIST_OUT.DELI_PLANT_CD			AS DELI_PLANT_CD
+			 , CUST.SEARCH_NM1					AS NAME_1ST
+			 , CUST.SEARCH_NM2					AS NAME_2ND
+			 , CUST.STREET_NM					AS STREET_NM
+			 , CUST.HAUS_NO						AS HAUS_NO
+			 , CUST.POST_CD						AS POST_CD
+			 , CUST.CITY_CD						AS CITY_CD
+			 , CUST.COUNTRY_CD					AS COUNTRY_CD
+			 , CUST.REGION_CD					AS REGION_CD
+			 , CUST.TIME_ZONE					AS TIME_ZONE
+			 , CUST.TRANSP_ZONE					AS TRANSP_ZONE
+			 , CUST.LANG_CD						AS LANG_CD
+			 , CUST.TEL_NO						AS TEL_NO
+			 , CUST.TEL_NO_EXT					AS TEL_NO_EXT
+			 , CUST.MOBILE_NO					AS MOBILE_NO
+			 , CUST.FAX_NO						AS FAX_NO
+			 , CUST.FAX_NO_EXT					AS FAX_NO_EXT
+			 , CUST.E_MAIL						AS E_MAIL
+			 , CUST.VAT_REG_NO					AS VAT_REG_NO
+			 , CUST.ACCOUNT_GR					AS ACCOUNT_GR
+		FROM (
+		SELECT SALES_ORG_CD						AS SALES_ORG_CD	
+			 , DISTRB_CH						AS DISTRB_CH
+			 , DIV_CD							AS DIV_CD
+			 , PF_TP							AS PF_TP
+			 , PF_NM							AS PF_NM
+			 , (SELECT TOP 1 PF_PS_NO FROM MS_CUST_PART WHERE 1 = 1 AND CUST_CD = #{CUST_CD} AND PF_TP = PFLIST.PF_TP  ORDER BY DEFAULT_YN DESC, SEQ)
+			 									AS PF_PS_NO
+			 , (SELECT TOP 1 PF_PS_NM FROM MS_CUST_PART WHERE 1 = 1 AND CUST_CD = #{CUST_CD} AND PF_TP = PFLIST.PF_TP  ORDER BY DEFAULT_YN DESC, SEQ)
+			 									AS PF_PS_NM
+			 , (SELECT TOP 1 PF_DESC FROM MS_CUST_PART WHERE 1 = 1 AND CUST_CD = #{CUST_CD} AND PF_TP = PFLIST.PF_TP  ORDER BY DEFAULT_YN DESC, SEQ)
+			 									AS PF_DESC
+			 , (SELECT COUNT(*) FROM MS_CUST_PART WHERE COMP_CD = '1000' AND CUST_CD = #{CUST_CD} AND STATUS = 'Y' AND PF_TP = PFLIST.PF_TP AND SALES_ORG_CD = PFLIST.SALES_ORG_CD AND DISTRB_CH = PFLIST.DISTRB_CH AND DIV_CD = PFLIST.DIV_CD)
+			 									AS PF_CNT
+			 , ( SELECT DELI_PLANT_CD FROM MS_CUST_SALES WHERE COMP_CD = '1000' AND CUST_CD = #{CUST_CD} AND SALES_ORG_CD = #{SALES_ORG_CD} AND DISTRB_CH = #{DISTRB_CH} AND DIV_CD = #{DIV_CD} ) AS DELI_PLANT_CD
+		FROM (
+		SELECT PART.SALES_ORG_CD		AS SALES_ORG_CD
+				 , PART.DISTRB_CH			AS DISTRB_CH
+				 , PART.DIV_CD				AS DIV_CD
+				 , PART.PF_TP				AS PF_TP
+				 , PART.PF_NM 				AS PF_NM
+				 
+			FROM MS_CUST_H MST WITH (NOLOCK)
+			INNER JOIN MS_CUST_PART PART WITH (NOLOCK)
+				ON PART.COMP_CD = MST.COMP_CD AND PART.CUST_CD = MST.CUST_CD AND MST.STATUS = 'Y' AND PART.STATUS = 'Y' AND PART.PF_TP <![CDATA[ <> ]]> 'AP'
+			WHERE 1 = 1
+			AND MST.COMP_CD = '1000'
+			AND MST.CUST_CD       = #{CUST_CD}
+			AND PART.SALES_ORG_CD = #{SALES_ORG_CD}
+			AND PART.DISTRB_CH    = #{DISTRB_CH}
+			AND PART.DIV_CD       = #{DIV_CD}
+			GROUP BY SALES_ORG_CD, DISTRB_CH, DIV_CD, PF_TP, PF_NM, MST.CUST_CD
+		) PFLIST ) PFLIST_OUT
+		LEFT JOIN MS_CUST_H CUST WITH(NOLOCK) ON PFLIST_OUT.PF_PS_NO = CUST.CUST_CD AND CUST.COMP_CD = '1000'
+		WHERE 1 = 1
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectPfPopList" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectPfPopList */
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY PART.SEQ) ROWNUM
+				 , PART.SALES_ORG_CD		AS SALES_ORG_CD
+				 , PART.DISTRB_CH			AS DISTRB_CH
+				 , PART.DIV_CD				AS DIV_CD
+				 , PART.PF_TP				AS PF_TP
+				 , (SELECT CODE_NM FROM BC_COMM_L WHERE 1 = 1 AND HEAD_CD = '105300' AND READ_CD = PART.PF_TP)
+				 							AS PF_NM
+				 , PART.PF_PS_NO			AS PF_PS_NO
+				 , PART.PF_PS_NM			AS PF_PS_NM
+				 , ISNULL(PART.PF_DESC, '')	AS PF_DESC
+				 , PART.DEFAULT_YN			AS DEFAULT_YN
+				 , MST.CUST_CD				AS CUST_CD
+				 , MST.SEARCH_NM1			AS NAME_1ST
+				 , MST.SEARCH_NM2			AS NAME_2ND
+				 , MST.STREET_NM			AS STREET_NM
+				 , MST.HAUS_NO				AS HAUS_NO
+				 , MST.POST_CD				AS POST_CD
+				 , MST.CITY_CD				AS CITY_CD
+				 , MST.COUNTRY_CD			AS COUNTRY_CD
+				 , MST.REGION_CD			AS REGION_CD
+				 , MST.TIME_ZONE			AS TIME_ZONE
+				 , MST.TRANSP_ZONE			AS TRANSP_ZONE
+				 , MST.LANG_CD				AS LANG_CD
+				 , MST.TEL_NO				AS TEL_NO
+				 , MST.TEL_NO_EXT			AS TEL_NO_EXT
+				 , MST.MOBILE_NO			AS MOBILE_NO
+				 , MST.FAX_NO				AS FAX_NO
+				 , MST.FAX_NO_EXT			AS FAX_NO_EXT
+				 , MST.E_MAIL				AS E_MAIL
+				 , MST.VAT_REG_NO			AS VAT_REG_NO
+				 , MST.ACCOUNT_GR			AS ACCOUNT_GR
+			FROM MS_CUST_H MST WITH (NOLOCK)
+			INNER JOIN MS_CUST_PART PART WITH (NOLOCK)
+				ON PART.COMP_CD = MST.COMP_CD AND PART.CUST_CD = MST.CUST_CD AND MST.STATUS = 'Y' AND PART.STATUS = 'Y'
+			WHERE 1 = 1
+			AND MST.COMP_CD = '1000'
+			<if test='CUST_CD != null and CUST_CD != ""'>
+				AND MST.CUST_CD       = #{CUST_CD}
+			</if>
+			AND PART.SALES_ORG_CD = #{SALES_ORG_CD}
+			AND PART.DISTRB_CH    = #{DISTRB_CH}
+			AND PART.DIV_CD       = #{DIV_CD}
+			AND PART.PF_TP        = #{PF_TP}
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectTextList" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectTextList */
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY TAIL.CODE) ROWNUM
+			 , TAIL.CODE	AS TEXT_TP
+			 , #{LANG}		AS LANG_CD
+		FROM BC_COMM_H MST 
+		LEFT JOIN BC_COMM_L TAIL ON MST.HEAD_CD = TAIL.HEAD_CD
+		WHERE 1 = 1
+		AND MST.HEAD_ID = 'TEXT_TP'
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="callSpIfErpSendOrderInsert" statementType="CALLABLE" parameterType="HashMap">
+		/* SalesOrder.xml -> callSpIfErpSendOrderInsert */
+		{ CALL DBO.SP_IF_ERP_SEND_ORDER_INSERT(#{COMP_CD}, #{DOC_NO}, #{SAVE_TYPE}, #{USER_ID}) } 
+	</select>
+	
+	<select id="selectIfSalesHeader" parameterType="HashMap" resultType="HashMap">
+		SELECT IF_SEQ
+		
+			, VBELN	
+		
+			, UPDATEFLAG, 	REFOBJTYPE, 	REFOBJKEY, 		REFDOCTYPE, 	DOC_TYPE	
+			, SALES_ORG, 	DISTR_CHAN, 	DIVISION, 		SALES_GRP, 		SALES_OFF	
+			, REQ_DATE_H, 	DATE_TYPE, 		PURCH_DATE, 	PO_METHOD, 		REF_1
+			, TELEPHONE, 	PRICE_GRP, 		CUST_GROUP, 	SALES_DIST, 	PRICE_LIST
+			, INCOTERMS1, 	INCOTERMS2, 	PMNTTRMS, 		DLV_BLOCK, 		BILL_BLOCK
+			, ORD_REASON, 	COMPL_DLV, 		PRICE_DATE, 	QT_VALID_F, 	QT_VALID_T
+			, CT_VALID_F, 	CT_VALID_T, 	CUST_GRP1, 		CUST_GRP2, 		CUST_GRP3
+			, CUST_GRP4, 	CUST_GRP5, 		PURCH_NO_C, 	PURCH_NO_S, 	PO_DAT_S
+			, PO_METH_S, 	SD_DOC_CAT, 	DOC_DATE, 		SHIP_COND, 		DLVSCHDUSE
+			, REF_DOC, 		ASS_NUMBER, 	ORDCOMB_IN, 	BILL_SCHED, 	INVO_SCHED
+			, ADD_VAL_DY, 	FIX_VAL_DY, 	PYMT_METH, 		ACCNT_ASGN, 	EXCHG_RATE
+			, BILL_DATE, 	SERV_DATE, 		DUNN_KEY, 		DUNN_BLOCK, 	PMTGAR_PRO
+			, DEPARTM_NO, 	REC_POINT, 		CSTCNDGRP1, 	CSTCNDGRP2, 	CSTCNDGRP3
+			, CSTCNDGRP4, 	CSTCNDGRP5, 	DLV_TIME, 		CURRENCY, 		TAXDST_CTY
+			, EUTRI_DEAL, 	VERSION, 		SHIP_TYPE, 		S_PROC_IND, 	ZZLOGINFO
+			, ZZORDERINFO, 	ZZPODKZ, 		BAPIFLAG, 		CREATED_BY, 	IF_DT
+			, IF_STS, 		IF_MSG			
+		  FROM IF_SD_ORDER_HEADER_IN WITH (NOLOCK)
+		 WHERE VBELN = #{DOC_NO}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfSalesItems" parameterType="HashMap" resultType="HashMap">
+		SELECT    IF_SEQ
+		
+				, VBELN	
+		
+				, UPDATEFLAG
+				, ITM_NUMBER
+				, HG_LV_ITEM
+				, PO_ITM_NO
+				, MATERIAL
+				, ALT_TO_ITM
+				, CUST_MAT22
+				, BATCH
+				, PART_DLV
+				, REASON_REJ
+				, BILL_BLOCK
+				, BILL_DATE
+				, PLANT
+				, STORE_LOC
+				, TARGET_QTY
+				, TARGET_QU
+				, ITEM_CATEG
+				, SHORT_TEXT
+				, PRC_GROUP1
+				, PRC_GROUP2
+				, PRC_GROUP3
+				, PRC_GROUP4
+				, PRC_GROUP5
+				, PROD_HIERA
+				, MATL_GROUP
+				, PURCH_NO_C
+				, PURCH_DATE
+				, PO_METHOD
+				, REF_1
+				, PURCH_NO_S
+				, PO_DAT_S
+				, PO_METH_S
+				, REF_1_S
+				, POITM_NO_S
+				, PRICE_GRP
+				, CUST_GROUP
+				, SALES_DIST
+				, PRICE_LIST
+				, INCOTERMS1
+				, INCOTERMS2
+				, SALES_UNIT
+				, TRG_QTY_NO
+				, TRGQTY_DEN
+				, DIVISION
+				, GROSS_WGHT
+				, NET_WEIGHT
+				, UNTOF_WGHT
+				, DLV_PRIO
+				, SHIP_POINT
+				, ROUTE
+				, MAT_PR_GRP
+				, MATFRGTGRP
+				, MAX_PL_DLV
+				, REF_DOC
+				, REF_DOC_IT
+				, ZZORDERINFO_POS
+				, IF_DT
+				, IF_STS
+				, IF_MSG
+		  FROM IF_SD_ORDER_ITEMS_IN WITH (NOLOCK)
+		 WHERE VBELN = #{DOC_NO}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfSalesSchedules" parameterType="HashMap" resultType="HashMap">
+		SELECT    IF_SEQ
+		
+				, VBELN	
+		
+				, UPDATEFLAG
+				, ITM_NUMBER
+				, SCHED_LINE
+				, REQ_DATE
+				, DATE_TYPE
+				, REQ_QTY
+				, IF_DT
+				, IF_STS
+				, IF_MSG
+				, REQ_DLV_BL
+		  FROM IF_SD_ORDER_SCHEDULES_IN WITH (NOLOCK)
+		 WHERE VBELN = #{DOC_NO}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfSalesPartners" parameterType="HashMap" resultType="HashMap">
+		SELECT    IF_SEQ
+		
+				, VBELN	
+		
+				, UPDATEFLAG
+				, PARTN_ROLE
+				, PARTN_NUMB
+				, ITM_NUMBER
+				, TITLE
+				, NAME
+				, NAME_2
+				, NAME_3
+				, NAME_4
+				, STREET
+				, STR_SUPPL1
+				, HOUSE_NO
+				, COUNTRY
+				, POSTL_CODE
+				, POBX_PCD
+				, POBX_CTY
+				, CITY
+				, DISTRICT
+				, REGION
+				, PO_BOX
+				, TELEPHONE
+				, TELEPHONE2
+				, TELEBOX
+				, FAX_NUMBER
+				, TELETEX_NO
+				, TELEX_NO
+				, LANGU
+				, LANGU_ISO
+				, UNLOAD_PT
+				, TRANSPZONE
+				, ADDRESS
+				, PRIV_ADDR
+				, ADDR_TYPE
+				, ADDR_ORIG
+				, ADDR_LINK
+				, REFOBJTYPE
+				, REFOBJKEY
+				, REFLOGSYS
+				, IF_DT
+				, IF_STS
+				, IF_MSG
+		  FROM IF_SD_ORDER_PARTNERS WITH (NOLOCK)
+		 WHERE VBELN = #{DOC_NO}
+		   AND IF_STS = 'R'
+		   AND ITM_NUMBER = '000000'
+		 
+		UNION ALL
+		
+		SELECT    IF_SEQ
+		
+				, VBELN	
+		
+				, UPDATEFLAG
+				, PARTN_ROLE
+				, PARTN_NUMB
+				, ITM_NUMBER
+				, TITLE
+				, NAME
+				, NAME_2
+				, NAME_3
+				, NAME_4
+				, STREET
+				, STR_SUPPL1
+				, HOUSE_NO
+				, COUNTRY
+				, POSTL_CODE
+				, POBX_PCD
+				, POBX_CTY
+				, CITY
+				, DISTRICT
+				, REGION
+				, PO_BOX
+				, TELEPHONE
+				, TELEPHONE2
+				, TELEBOX
+				, FAX_NUMBER
+				, TELETEX_NO
+				, TELEX_NO
+				, LANGU
+				, LANGU_ISO
+				, UNLOAD_PT
+				, TRANSPZONE
+				, ADDRESS
+				, PRIV_ADDR
+				, ADDR_TYPE
+				, ADDR_ORIG
+				, ADDR_LINK
+				, REFOBJTYPE
+				, REFOBJKEY
+				, REFLOGSYS
+				, IF_DT
+				, IF_STS
+				, IF_MSG
+		  FROM IF_SD_ORDER_PARTNERS WITH (NOLOCK)
+		 WHERE VBELN = #{DOC_NO}
+		   AND IF_STS = 'R'
+		   AND ITM_NUMBER <![CDATA[ <> ]]> '000000'
+		   AND PARTN_ROLE NOT IN ('AG', 'ZK')
+	</select>
+	
+	<select id="selectIfSalesPartnerchanges" parameterType="HashMap" resultType="HashMap">
+		SELECT IF_SEQ
+		
+			 , VBELN	
+		
+			 , DOCUMENT
+			 , ITM_NUMBER
+			 , UPDATEFLAG
+			 , PARTN_ROLE
+			 , P_NUMB_OLD
+			 , P_NUMB_NEW
+			 , ADDRESS
+			 , IF_DT
+			 , IF_STS
+			 , IF_MSG		
+		  FROM IF_SD_ORDER_PARTNERCHANGES WITH (NOLOCK)
+		 WHERE VBELN = #{DOC_NO}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfSalesConditions" parameterType="HashMap" resultType="HashMap">
+		SELECT    IF_SEQ
+		
+				, VBELN	
+		
+				, UPDATEFLAG
+				, ITM_NUMBER
+				, COND_ST_NO
+				, COND_COUNT
+				, COND_TYPE
+				, CONVERT(NUMERIC(13, 3), COND_VALUE) AS COND_VALUE
+				, CURRENCY
+				, COND_UNIT
+				, COND_P_UNT
+				, IF_DT
+				, IF_STS
+				, IF_MSG
+		  FROM IF_SD_ORDER_CONDITIONS_IN WITH (NOLOCK)
+		 WHERE VBELN = #{DOC_NO}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="selectIfSalesText" parameterType="HashMap" resultType="HashMap">
+		SELECT    IF_SEQ
+		
+				, VBELN	
+		
+				, UPDATEFLAG
+		
+				, DOC_NUMBER
+	
+				, ITM_NUMBER
+				, TEXT_ID
+				, LANGU
+				, FORMAT_COL
+				, TEXT_LINE
+				, IF_DT
+				, IF_STS
+				, IF_MSG
+		  FROM IF_SD_ORDER_TEXT WITH (NOLOCK)
+		 WHERE VBELN = #{DOC_NO}
+		   AND IF_STS = 'R'
+		 ORDER BY IF_DT DESC
+	</select>
+	
+	<select id="callSpIfErpSendOrderStsUpdate" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_ERP_SEND_ORDER_STS_UPDATE(#{COMP_CD}, #{DOC_NO}, #{IF_STS}) } 
+	</select>
+	
+	<insert id="insertSalesText" parameterType="HashMap">
+		/* SalesOrder.xml -> insertSalesText */
+		INSERT INTO SD_ORDER_TEXT(
+			  COMP_CD
+			, DOC_GR
+			, DOC_NO
+			, TEXT_TP
+			, LANG_CD
+			, MATL_TEXT
+			, STATUS
+			, REG_DT
+			, REG_ID
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, UPT_DT
+			, UPT_ID
+			</if>
+		)VALUES(
+			  #{G_COMP_CD}
+			, #{DOC_GR}
+			, #{DOC_NO}
+			, #{TEXT_TP}
+			, #{LANG_CD}
+			, #{MATL_TEXT}
+			, 'I'
+			, GETDATE()
+			, #{USERID}
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, GETDATE()
+			, #{USERID}			
+			</if>
+		)
+	</insert>
+	
+	<update id="updateSalesText" parameterType="HashMap">
+		/* SalesOrder.xml -> updateSalesText */
+		UPDATE SD_ORDER_TEXT
+		SET   TEXT_TP			= #{TEXT_TP}
+			, LANG_CD			= #{LANG_CD}
+			, MATL_TEXT			= #{MATL_TEXT}
+			, STATUS			= #{DOC_STATUS}
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, UPT_DT			= GETDATE()
+			, UPT_ID			= #{USERID}
+			</if>
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{DOC_NO}
+		AND TEXT_TP = #{TEXT_TP}
+		AND LANG_CD = #{LANG_CD}
+	</update>
+	
+	<select id="getSalesTempSeq" parameterType="HashMap" resultType="String">
+		/* SalesOrder.xml -> getSalesTempSeq */
+		SELECT ISNULL(MAX(DOC_NO) + 1, '999000001') FROM SD_ORDER_H WHERE 1 = 1 AND STATUS IN ('T', 'I') AND DOC_NO LIKE '999%'
+	</select>
+	
+	<delete id="deleteSalesHeader" parameterType="HashMap">
+	/* SalesOrder.xml -> deleteSalesHeader */
+		DELETE SD_ORDER_H WHERE 1 = 1 AND DOC_GR = #{DOC_GR} AND DOC_NO = #{DOC_NO}
+	</delete>
+	
+	<delete id="deleteSalesPf" parameterType="HashMap">
+		/* SalesOrder.xml -> deleteSalesPf */
+		DELETE SD_ORDER_PART WHERE 1 = 1 AND DOC_GR = #{DOC_GR} AND DOC_NO = #{DOC_NO}
+		<if test='ITEM_SEQ != null and ITEM_SEQ != ""'>
+		AND ITEM_SEQ = #{ITEM_SEQ}
+		</if>
+		<if test='PF_TP != null and PF_TP != ""'>
+		AND PF_TP = #{PF_TP}
+		</if>
+	</delete>
+	
+	<delete id="deleteSalesText" parameterType="HashMap">
+		/* SalesOrder.xml -> deleteSalesText */
+		DELETE SD_ORDER_TEXT WHERE 1 = 1 AND DOC_GR = #{DOC_GR} AND DOC_NO = #{DOC_NO} AND TEXT_TP = #{TEXT_TP}
+	</delete>
+	
+	<delete id="deleteSalesItem" parameterType="HashMap">
+		/* SalesOrder.xml -> deleteSalesItem */
+		DELETE SD_ORDER_ITEM WHERE 1 = 1 AND DOC_GR = #{DOC_GR} AND DOC_NO = #{DOC_NO} 
+		<if test='ITEM_SEQ != null and ITEM_SEQ != ""'>
+		AND ITEM_SEQ = #{ITEM_SEQ}
+		</if>
+	</delete>
+	
+	<delete id="deleteSalesScdl" parameterType="HashMap">
+		/* SalesOrder.xml -> deleteSalesScdl */
+		DELETE SD_ORDER_SCDL WHERE 1 = 1 AND DOC_GR = #{DOC_GR} AND DOC_NO = #{DOC_NO}
+		<if test='ITEM_SEQ != null and ITEM_SEQ != ""'>
+		AND ITEM_SEQ = #{ITEM_SEQ}
+		</if>
+	</delete>
+	
+	<update id="createSalesHeader" parameterType="HashMap">
+		/* SalesOrder.xml -> createSalesHeader */
+		UPDATE SD_ORDER_H
+		SET   DOC_NO			= #{DOC_NO}
+			, STATUS			= 'A'
+			, REG_DT			= GETDATE()
+			, REG_ID			= #{USERID}
+			, UPT_DT			= GETDATE()
+			, UPT_ID			= #{USERID}
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{TEMP_DOC_NO}
+	</update>
+	
+	<update id="createSalesPf" parameterType="HashMap">
+		/* SalesOrder.xml -> createSalesPf */
+		UPDATE SD_ORDER_PART
+		SET   DOC_NO			= #{DOC_NO}
+			, STATUS			= 'A'
+			, REG_DT			= GETDATE()
+			, REG_ID			= #{USERID}
+			, UPT_DT			= GETDATE()
+			, UPT_ID			= #{USERID}
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{TEMP_DOC_NO}
+	</update>
+	
+	<update id="createSalesText" parameterType="HashMap">
+		/* SalesOrder.xml -> createSalesText */
+		UPDATE SD_ORDER_TEXT
+		SET   DOC_NO			= #{DOC_NO}
+			, STATUS			= 'A'
+			, REG_DT			= GETDATE()
+			, REG_ID			= #{USERID}
+			, UPT_DT			= GETDATE()
+			, UPT_ID			= #{USERID}
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{TEMP_DOC_NO}
+	</update>
+	
+	<update id="createSalesItem" parameterType="HashMap">
+		/* SalesOrder.xml -> createSalesItem */
+		UPDATE SD_ORDER_ITEM
+		SET   DOC_NO			= #{DOC_NO}
+			, STATUS			= 'A'
+			, REG_DT			= GETDATE()
+			, REG_ID			= #{USERID}
+			, UPT_DT			= GETDATE()
+			, UPT_ID			= #{USERID}
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{TEMP_DOC_NO}
+	</update>
+	
+	<update id="createSalesScdl" parameterType="HashMap">
+		/* SalesOrder.xml -> createSalesScdl */
+		UPDATE SD_ORDER_SCDL
+		SET   DOC_NO			= #{DOC_NO}
+			, STATUS			= 'A'
+			, REG_DT			= GETDATE()
+			, REG_ID			= #{USERID}
+			, UPT_DT			= GETDATE()
+			, UPT_ID			= #{USERID}
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{TEMP_DOC_NO}
+	</update>
+	
+	<update id="createSalesCondition" parameterType="HashMap">
+		/* SalesOrder.xml -> createSalesCondition */
+		UPDATE SD_ORDER_L_COND
+		SET   DOC_NO			= #{DOC_NO}
+			, STATUS			= 'A'
+			, REG_DT			= GETDATE()
+			, REG_ID			= #{USERID}
+			, UPT_DT			= GETDATE()
+			, UPT_ID			= #{USERID}
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{TEMP_DOC_NO}
+	</update>
+	
+	<update id="confirmSalesOrder" parameterType="HashMap">
+		/* SalesOrder.xml -> confirmSalesOrder */
+		UPDATE SD_ORDER_H
+		SET   ALLOW_STS			= #{ALLOW_STS}
+			, APPROVAL_STS		= #{APPROVAL_STS}
+			, UPT_DT			= GETDATE()
+			, UPT_ID			= #{USERID}
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{DOC_NO}
+	</update>
+	
+	<update id="deleteSalesOrder" parameterType="HashMap">
+		/* SalesOrder.xml -> deleteSalesOrder */
+		UPDATE SD_ORDER_H
+		SET   STATUS			= 'D'
+			, UPT_DT			= GETDATE()
+			, UPT_ID			= #{USERID}
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{DOC_NO}
+	</update>
+	
+	<select id="checkItemCatGrpCodeGrid" parameterType="BMap" resultType="String">
+	/* SalesOrder.xml -> checkItemCatGrpCodeGrid */
+		SELECT COUNT(*)
+		FROM BC_COMM_H HEAD  WITH (NOLOCK) 
+		JOIN BC_COMM_L TAIL ON HEAD.HEAD_CD = TAIL.HEAD_CD AND TAIL.STATUS = 'Y'
+		WHERE 1 = 1
+		AND HEAD.HEAD_CD = '109400'
+		AND HEAD.STATUS = 'Y'
+		AND TAIL.CODE = #{DOC_TP} + (SELECT ITEM_CTG_GR FROM MS_ITEM_ORG WHERE MATL_CD = #{MATL_CD} AND SALES_ORG_CD = #{SALES_ORG_CD}
+										AND DISTRB_CH = #{DISTRB_CH}) + #{SEL_ITEM_CTG}
+	</select>
+	
+	<select id="getItemCatGrpCodeGrid" parameterType="BMap" resultType="String">
+	/* SalesOrder.xml -> getItemCatGrpCodeGrid */
+		SELECT dbo.GetItemCtg2(#{G_COMP_CD}, #{DOC_TP}, #{MATL_CD}, '', #{SALES_ORG_CD}, #{DISTRB_CH}, #{ITEM_SEQ})
+	</select>
+	
+	<delete id="deletePriceCondition" parameterType="HashMap">
+	/* SalesOrder.xml -> deletePriceCondition */
+		DELETE SD_ORDER_L_COND WHERE 1 = 1 AND COMP_CD = #{G_COMP_CD} AND DOC_GR = #{DOC_GR} AND DOC_NO = #{DOC_NO}
+	</delete>
+	
+	<insert id="insertPriceCondition" parameterType="HashMap">
+		/* SalesOrder.xml -> insertPriceCondition */
+		INSERT INTO SD_ORDER_L_COND(
+			  COMP_CD
+			, DOC_GR
+			, DOC_NO
+			, ITEM_SEQ
+			, STEP_NO
+			, COND_CNTR
+			, COND_TP
+			, COND_VAL
+			, PRICE			
+			, CURRENCY
+			, COND_CURR_CD			
+			, COND_UNIT_CD
+			, COND_P_UNIT_CD
+			, STATUS
+			, REG_DT
+			, REG_ID
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, UPT_DT
+			, UPT_ID
+			</if>
+		)VALUES(
+			  #{G_COMP_CD}
+			, #{DOC_GR}
+			, #{DOC_NO}
+			, #{ITM_NUMBER}
+			, #{COND_ST_NO}
+			, #{COND_COUNT}
+			, #{COND_TYPE}
+			, #{COND_VALUE}
+			, #{CONDVALUE}			
+			, #{CURRENCY}
+			, #{CURRENCY_2}			
+			, #{COND_UNIT}
+			, #{COND_P_UNT}
+			, 'I'
+			, GETDATE()
+			, #{USERID}
+			<if test='DOC_STATUS != null and DOC_STATUS != "T"'>
+			, GETDATE()
+			, #{USERID}
+			</if>
+		)
+	</insert>
+	
+	<select id="selectSalesGrp" parameterType="BMap" resultType="CodeVO">
+	/* SalesOrder.xml -> selectSalesGrp */
+	SELECT A.CODE, A.VALUE
+      FROM (
+    SELECT TAIL.READ_CD CODE          
+            , DBO.GetCodeNm(HEAD.HEAD_ID, TAIL.CODE, #{LANG}) + ' - ' + TAIL.READ_CD VALUE
+       FROM BC_COMM_H HEAD  WITH (NOLOCK)
+       JOIN BC_COMM_L TAIL ON HEAD.HEAD_CD = TAIL.HEAD_CD AND TAIL.STATUS = 'Y'
+       WHERE 1 = 1
+       AND HEAD.HEAD_CD = '103400'
+       AND HEAD.STATUS = 'Y'
+       AND TAIL.CODE LIKE #{SALES_ORG} + '%') A
+       ORDER BY A.VALUE
+	</select>
+	
+	<select id="selectConditionTab" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectConditionTab */
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		SELECT ROW_NUMBER() OVER(ORDER BY ITEM_SEQ ASC) ROWNUM
+			  , CONVERT(VARCHAR, ITEM_SEQ)				AS ITEM_SEQ
+			  , MATL_CD									AS MATL_CD
+			  , MATL_DESC								AS MATL_DESC
+			  FROM (
+					SELECT '000'						AS ITEM_SEQ
+						  , ''							AS MATL_CD
+						  , ''							AS MATL_DESC
+						  
+					UNION ALL
+					
+					SELECT CONVERT(VARCHAR, ITEM_SEQ)	AS ITEM_SEQ
+						 , MATL_CD						AS MATL_CD
+						 , DESCRIPTION					AS MATL_DESC
+					FROM SD_ORDER_ITEM_LIST_VW
+					WHERE 1 = 1
+					AND DOC_NO  = #{DOC_NO}
+					AND COMP_CD = #{G_COMP_CD}
+					AND DOC_GR  = #{DOC_GR}
+					AND STATUS <![CDATA[ <> ]]> 'D'
+			) CONDIT
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectConditionDtlTab" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectConditionDtlTab */
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+			SELECT ROW_NUMBER() OVER(ORDER BY STEP_NO ASC) ROWNUM
+				  , CONVERT(VARCHAR, COMP_CD)							AS COMP_CD
+				  , DOC_GR												AS DOC_GR
+				  , CONVERT(VARCHAR, DOC_NO)							AS DOC_NO
+				  , CASE WHEN '0' = CONVERT(VARCHAR, CONVERT(NUMERIC, ITEM_SEQ)) THEN '000' ELSE CONVERT(VARCHAR, CONVERT(NUMERIC, ITEM_SEQ)) END
+				  														AS ITEM_SEQ
+				  , CONVERT(VARCHAR, STEP_NO)							AS STEP_NO
+				  , CONVERT(VARCHAR, COND_CNTR)							AS COND_CNTR
+				  , (SELECT CODE_EN FROM BC_COMM_L WHERE HEAD_CD = '110400' 
+				     AND READ_CD = SD_ORDER_L_COND.COND_TP)				AS COND_DESC
+				  , COND_TP												AS COND_TP
+				  , DBO.SetAmt(COND_VAL)								AS COND_VAL
+				  , DBO.SetAmt(PRICE)									AS PRICE
+				  , CURRENCY											AS CURRENCY
+				  , COND_CURR_CD										AS COND_CURR_CD
+				  , DBO.GETCODENM('BASIC_UNIT', COND_UNIT_CD, #{LANG})	AS COND_UNIT_CD
+				  , CONVERT(VARCHAR, DBO.SETAMT(COND_P_UNIT_CD))		AS COND_P_UNIT_CD
+				  , CONVERT(VARCHAR, SEQ)								AS SEQ
+			FROM SD_ORDER_L_COND
+			WHERE 1 = 1
+			AND DOC_NO   = #{DOC_NO}
+			AND COMP_CD  = #{G_COMP_CD}
+			AND DOC_GR   = #{DOC_GR}
+			AND PRICE IS NOT NULL
+			AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, #{ITEM_SEQ})
+			and COND_TP not in ('ZVKD' , 'ZVKS', '') 
+			
+			UNION ALL
+			
+			SELECT '9999999'											AS ROWNUM
+				  , #{G_COMP_CD}										AS COMP_CD
+				  , #{DOC_GR}											AS DOC_GR
+				  , #{DOC_NO}											AS DOC_NO
+				  , 'SUM'												AS ITEM_SEQ
+				  , ''													AS STEP_NO
+				  , ''													AS COND_CNTR
+				  , ''													AS COND_DESC
+				  , ''													AS COND_TP
+				  , ''													AS COND_VAL
+				  , DBO.SetAmt(
+				  (CASE WHEN 0 <![CDATA[ < ]]> ISNULL(ZPNM_PRICE, 0) THEN ZPNM_PRICE + ISNULL(Other, 0) ELSE ISNULL(ZPR0_PRICE, 0) + ISNULL(Other, 0)  END)
+				  )														AS PRICE				  
+				  , ''													AS CURRENCY
+				  , COND_CURR_CD										AS COND_CURR_CD
+				  , ''													AS COND_UNIT_CD
+				  , ''													AS COND_P_UNIT_CD
+				  , ''													AS SEQ
+			FROM (SELECT  ITEM_SEQ
+						, SUM(PRICE) AS PRICE
+						, ( SELECT SUM(PRICE) FROM SD_ORDER_L_COND
+							WHERE 1 = 1
+							AND DOC_NO   = #{DOC_NO}
+							AND COMP_CD  = #{G_COMP_CD}
+							AND DOC_GR   = #{DOC_GR}
+							AND PRICE IS NOT NULL
+							AND COND_TP = 'ZPNM'
+							AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, #{ITEM_SEQ})) AS ZPNM_PRICE
+						, ( SELECT SUM(PRICE) FROM SD_ORDER_L_COND
+							WHERE 1 = 1
+							AND DOC_NO   = #{DOC_NO}
+							AND COMP_CD  = #{G_COMP_CD}
+							AND DOC_GR   = #{DOC_GR}
+							AND PRICE IS NOT NULL
+							--AND COND_TP = 'ZPR0'
+							AND COND_TP = 'ZPL0'
+							AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, #{ITEM_SEQ})) AS ZPR0_PRICE
+						, ( SELECT SUM(PRICE) FROM SD_ORDER_L_COND
+							WHERE 1 = 1
+						AND DOC_NO   = #{DOC_NO}
+						AND COMP_CD  = #{G_COMP_CD}
+						AND DOC_GR   = #{DOC_GR}
+							AND PRICE IS NOT NULL
+							AND COND_TP NOT IN ('ZPL1', 'ZVKS',  'ZPNM', 'ZVKD', 'ZPB1', 'ZSR6', 'ZPNN', 'MWST', 'ZPL0') --'ZPR0',
+							AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, #{ITEM_SEQ})) AS Other
+						, MAX(COND_CURR_CD) AS COND_CURR_CD
+					FROM SD_ORDER_L_COND
+					WHERE 1 = 1
+					AND DOC_NO   = #{DOC_NO}
+					AND COMP_CD  = #{G_COMP_CD}
+					AND DOC_GR   = #{DOC_GR}
+					AND PRICE IS NOT NULL
+					AND COND_TP NOT IN ('ZPL1', 'ZVKS',  'ZVKD', 'ZPB1', 'ZSR6', 'ZPNN', 'MWST')
+					AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, #{ITEM_SEQ})
+					GROUP BY ITEM_SEQ
+			) SUM_TABLE
+			GROUP BY ITEM_SEQ, ZPNM_PRICE, ZPR0_PRICE, Other, COND_CURR_CD
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<insert id="copySalesHeader" parameterType="HashMap">
+		/* SalesOrder.xml -> copySalesHeader */
+		INSERT INTO SD_ORDER_H(
+			  COMP_CD
+			, DOC_GR
+			, DOC_NO
+			, SO_NO
+			, SALES_ORG_CD
+			, DISTRB_CH
+			, DIV_CD
+			, REF_DOC_NO
+			, DOC_TP
+			, SOLD_CUST_CD
+			, SHIP_CUST_CD
+			, CUST_CL
+			, INDUSTRY_CD
+			, PO_NO
+			, CREDIT_STS
+			<!-- , OVL_DLV_STS -->
+			, OVL_STS
+			<!-- /* , ORD_TP 컬럼없음 */ -->
+			, SALES_OFFICE_CD
+			, SALES_GR
+			, REQ_PERI_CD
+			, REQ_DELI_DT
+			, VAL_FR_DT
+			, VAL_TO_DT
+			, ORD_RESN_CD
+			, DELI_PLANT_CD
+			, CMP_DELI_YN
+			, T_WT
+			, T_WT_UNIT
+			, VOL_QTY
+			, VOL_UNIT
+			, T_AMT
+			, NET_AMT
+			, CURR_CD
+			, PRICE_DT
+			, PAY_TERM
+			, INCOTERMS_CD
+			, DELI_BLOCK_CD
+			, QT_STS_CD
+			, DELI_STS
+			, DUN_BLOCK_CD
+			, SHP_CON_CD
+			, REL_POD_YN
+			, REF_DOC_H_STS
+			, T_REF_STS
+			, RJT_STS
+			, CUST_STS
+			, ATTR_ORD
+			, PO_DT
+			, INCOTERMS_DESC
+			, VAT_AMT
+			, VAT
+			, ERP_T_AMT
+			, ERP_NET_AMT
+			, ERP_VAT_AMT
+			, ALLOW_STS
+			, APPROVAL_STS
+			, LEAD_NO
+			, STATUS
+			, REG_DT
+			, REG_ID
+			, UPT_DT
+			, UPT_ID
+			, QT_NO
+			, EXCHG_RATE
+		) SELECT
+			  COMP_CD
+			, #{I_DOC_GR}
+			, #{TEMP_DOC_NO}
+			, SO_NO
+			, SALES_ORG_CD
+			, DISTRB_CH
+			, DIV_CD
+			, #{DOC_NO}
+			, DOC_TP
+			, SOLD_CUST_CD
+			, SHIP_CUST_CD
+			, CUST_CL
+			, INDUSTRY_CD
+			, PO_NO
+			, ''
+			<!-- , OVL_DLV_STS -->
+			, ''
+			<!-- /* , ORD_TP 컬럼없음 */ -->
+			, SALES_OFFICE_CD
+			, SALES_GR
+			, REQ_PERI_CD
+			<if test='SOC != null and SOC != ""'>
+			, REQ_DELI_DT
+			, VAL_FR_DT
+			, VAL_TO_DT
+			</if>
+			<if test='SOC == null or SOC == ""'>
+			, getDate()
+			, getDate()
+			, getDate()
+			</if>
+			
+			, ORD_RESN_CD
+			, DELI_PLANT_CD
+			, CMP_DELI_YN
+			, T_WT
+			, T_WT_UNIT
+			, VOL_QTY
+			, VOL_UNIT
+			, T_AMT
+			, NET_AMT
+			, CURR_CD
+			<if test='SOC != null and SOC != ""'>
+			, PRICE_DT
+			</if>
+			<if test='SOC == null or SOC == ""'>
+			, getDate()
+			</if>
+			, PAY_TERM
+			, INCOTERMS_CD
+			, DELI_BLOCK_CD
+			, QT_STS_CD
+			, DELI_STS
+			, DUN_BLOCK_CD
+			, SHP_CON_CD
+			, REL_POD_YN
+			, REF_DOC_H_STS
+			, T_REF_STS
+			, RJT_STS
+			, CUST_STS
+			, ATTR_ORD
+			<if test='SOC != null and SOC != ""'>
+			, PO_DT
+			</if>
+			<if test='SOC == null or SOC == ""'>
+			, getDate()
+			</if>
+			, INCOTERMS_DESC
+			<if test='SOC != null and SOC != ""'>
+			, VAT_AMT
+			, VAT
+			, ERP_T_AMT
+			, ERP_NET_AMT
+			, ERP_VAT_AMT
+			</if>
+			<if test='SOC == null or SOC == ""'>
+			, null
+			, null
+			, null
+			, null
+			, null
+			</if>
+			, ''
+			, ''
+			, LEAD_NO
+			, 'T'
+			, getDate()
+			, #{USER_ID}
+			, getDate()
+			, #{USER_ID}
+			, ''
+			<!-- , #{QT_NO} -->
+			, EXCHG_RATE
+		FROM SD_ORDER_H
+		WHERE 1 = 1
+		AND DOC_NO   = #{DOC_NO}
+		AND COMP_CD  = #{G_COMP_CD}
+		AND DOC_GR   = #{S_DOC_GR}
+	</insert>
+	
+	<insert id="copySalesPf" parameterType="HashMap">
+		/* SalesOrder.xml -> copySalesPf */
+		INSERT INTO SD_ORDER_PART(
+			  COMP_CD
+			, DOC_GR
+			, DOC_NO
+			, ITEM_SEQ
+			, SALES_ORG_CD
+			, DISTRB_CH
+			, DIV_CD
+			, PF_TP
+			, PF_NM
+			, PF_PS_NO
+			, PF_PS_NM
+			, PF_DESC
+			, DEFAULT_YN
+			, TITLE
+			, NAME_1ST
+			, NAME_2ND
+			, STREET_NM
+			, STREET_NM2
+			, HAUS_NO
+			, POST_CD
+			, CITY_CD
+			, COUNTRY_CD
+			, REGION_CD
+			, TIME_ZONE
+			, TRANSP_ZONE
+			, PO_BOX
+			, PO_POST_CD
+			, COMP_POST_CD
+			, LANG_CD
+			, TEL_NO
+			, TEL_NO_EXT
+			, MOBILE_NO
+			, FAX_NO
+			, FAX_NO_EXT
+			, E_MAIL
+			, STD_COM_MTD
+			, DATA_LINE
+			, COMMENTS
+			, UNLD_PT
+			, VAT_REG_NO
+			, SYNC_FLAG
+			, STATUS
+			, REG_DT
+			, REG_ID
+			, UPT_DT
+			, UPT_ID
+		) SELECT
+			  COMP_CD
+			, #{I_DOC_GR}
+			, #{TEMP_DOC_NO}
+			, ITEM_SEQ
+			, SALES_ORG_CD
+			, DISTRB_CH
+			, DIV_CD
+			, PF_TP
+			, PF_NM
+			, PF_PS_NO
+			, PF_PS_NM
+			, PF_DESC
+			, DEFAULT_YN
+			, TITLE
+			, NAME_1ST
+			, NAME_2ND
+			, STREET_NM
+			, STREET_NM2
+			, HAUS_NO
+			, POST_CD
+			, CITY_CD
+			, COUNTRY_CD
+			, REGION_CD
+			, TIME_ZONE
+			, TRANSP_ZONE
+			, PO_BOX
+			, PO_POST_CD
+			, COMP_POST_CD
+			, LANG_CD
+			, TEL_NO
+			, TEL_NO_EXT
+			, MOBILE_NO
+			, FAX_NO
+			, FAX_NO_EXT
+			, E_MAIL
+			, STD_COM_MTD
+			, DATA_LINE
+			, COMMENTS
+			, UNLD_PT
+			, VAT_REG_NO
+			, SYNC_FLAG
+			, 'T'
+			, getDate()
+			, #{USER_ID}
+			, getDate()
+			, #{USER_ID}
+		FROM SD_ORDER_PART
+		WHERE 1 = 1
+		AND DOC_NO   = #{DOC_NO}
+		AND COMP_CD  = #{G_COMP_CD}
+		AND DOC_GR   = #{S_DOC_GR}
+	</insert>
+	
+	<insert id="copySalesText" parameterType="HashMap">
+		/* SalesOrder.xml -> copySalesText */
+		INSERT INTO SD_ORDER_TEXT(
+			  COMP_CD
+			, DOC_GR
+			, DOC_NO
+			, TEXT_TP
+			, LANG_CD
+			, MATL_TEXT
+			, STATUS
+			, REG_DT
+			, REG_ID
+			, UPT_DT
+			, UPT_ID
+		) SELECT
+			  COMP_CD
+			, #{I_DOC_GR}
+			, #{TEMP_DOC_NO}
+			, TEXT_TP
+			, LANG_CD
+			, MATL_TEXT
+			, 'T'
+			, getDate()
+			, #{USER_ID}
+			, getDate()
+			, #{USER_ID}
+		FROM SD_ORDER_TEXT
+		WHERE 1 = 1
+		AND DOC_NO   = #{DOC_NO}
+		AND COMP_CD  = #{G_COMP_CD}
+		AND DOC_GR   = #{S_DOC_GR}
+	</insert>
+	
+	<insert id="copySalesItem" parameterType="HashMap">
+		/* SalesOrder.xml -> copySalesItem */
+		INSERT INTO SD_ORDER_ITEM(
+			  COMP_CD
+			, DOC_GR
+			, DOC_NO
+			, ITEM_SEQ
+			, MATL_CD
+			, ITEM_CTG_GR
+			, ORD_QTY
+			, ORD_UNIT_CD
+			, DELI_DT_1ST
+			, DELI_DT_1ST_TP
+			, ATP_QTY
+			, ATP_UNIT_CD
+			, UNIT1_QTY
+			, UNIT1_CD
+			, UNIT2_QTY
+			, UNIT2_CD
+			, NET_PRICE
+			, NET_CURR_CD
+			, NET_VAL
+			, PRICE_DT
+			, BOM_NO
+			, BATCH_NO
+			, ORD_PROB
+			, USAGE_CD
+			, RSN_RJT_CD
+			, SHIP_PO_CD
+			, RUT_CD
+			, DELI_PRIOR_CD
+			, MAX_P_DELI
+			, PER
+			, UOM
+			, SCDL_LINE_YN
+			, FIX_DT_QTY_YN
+			, INFO_TEXT
+			, ERP_NET_PRICE
+			, ERP_NET_VAL
+			, PLANT_CD
+			, LONG_TEXT
+			, HG_LV_ITEM
+			<if test='SOC != null and SOC != ""'>
+			, APPR_PRICE
+			</if>
+			, STATUS
+			, REG_DT
+			, REG_ID
+			, UPT_DT
+			, UPT_ID
+			, ZPNN_PRICE
+			, ZPNN_UOM
+			, ZPNN_PER
+		) SELECT 
+			  COMP_CD
+			, #{I_DOC_GR}
+			, #{TEMP_DOC_NO}
+			, ITEM_SEQ
+			, MATL_CD
+			<if test='SOC != null and SOC != ""'>
+			, (SELECT dbo.GetItemCtg2(#{G_COMP_CD}, 'ZTA', MATL_CD, '',
+				(SELECT SALES_ORG_CD FROM SD_ORDER_H WHERE DOC_NO = #{DOC_NO} AND DOC_GR = #{I_DOC_GR} AND COMP_CD = #{G_COMP_CD}),
+				(SELECT DISTRB_CH FROM SD_ORDER_H WHERE DOC_NO = #{DOC_NO} AND DOC_GR = #{I_DOC_GR} AND COMP_CD = #{G_COMP_CD}), ITEM_SEQ)
+			)
+			</if>
+			<if test='SOC == null or SOC == ""'>
+			, ITEM_CTG_GR
+			</if>
+			, ORD_QTY
+			, ORD_UNIT_CD
+			<if test='SOC != null and SOC != ""'>
+			, DELI_DT_1ST
+			</if>
+			<if test='SOC == null or SOC == ""'>
+			, getDate() + 7
+			</if>
+			, DELI_DT_1ST_TP
+			<if test='SOC != null and SOC != ""'>
+			, ATP_QTY
+			, ATP_UNIT_CD
+			</if>
+			<if test='SOC == null or SOC == ""'>
+			, null
+			, null
+			</if>
+			, UNIT1_QTY
+			, UNIT1_CD
+			, UNIT2_QTY
+			, UNIT2_CD
+			<if test='SOC != null and SOC != ""'>
+			, NET_PRICE
+			, NET_CURR_CD
+			, NET_VAL
+			, PRICE_DT
+			</if>
+			<if test='SOC == null or SOC == ""'>
+			, NET_PRICE
+			, NET_CURR_CD
+			, null
+			, getDate()
+			</if>
+			, BOM_NO
+			, BATCH_NO
+			, ORD_PROB
+			, USAGE_CD
+			, RSN_RJT_CD
+			, SHIP_PO_CD
+			, RUT_CD
+			, DELI_PRIOR_CD
+			, MAX_P_DELI
+			<if test='SOC != null and SOC != ""'>
+			, PER
+			, UOM
+			</if>
+			<if test='SOC == null or SOC == ""'>
+			, null
+			, null
+			</if>
+			, SCDL_LINE_YN
+			, FIX_DT_QTY_YN
+			, INFO_TEXT
+			<if test='SOC != null and SOC != ""'>
+			, ERP_NET_PRICE
+			, ERP_NET_VAL
+			</if>
+			<if test='SOC == null or SOC == ""'>
+			, null
+			, null
+			</if>
+			, PLANT_CD
+			, LONG_TEXT
+			, HG_LV_ITEM
+			<if test='SOC != null and SOC != ""'>
+			, APPR_PRICE
+			</if>
+			, 'T'
+			, getDate()
+			, #{USER_ID}
+			, getDate()
+			, #{USER_ID}
+			, ZPNN_PRICE
+			, ZPNN_UOM
+			, ZPNN_PER
+		FROM SD_ORDER_ITEM
+		WHERE 1 = 1
+		AND DOC_NO   = #{DOC_NO}
+		AND COMP_CD  = #{G_COMP_CD}
+		AND DOC_GR   = #{S_DOC_GR}
+		AND STATUS != 'D'
+	</insert>
+	
+	<select id="selectItemCatCode" parameterType="BMap" resultType="CodeVO">
+	/* SalesOrder.xml -> selectItemCatCode */
+		SELECT TAIL.READ_CD CODE			  
+		     , TAIL.READ_CD + ' - ' + DBO.GetCodeNm(HEAD.HEAD_ID, TAIL.CODE, #{LANG}) VALUE
+		FROM BC_COMM_H HEAD  WITH (NOLOCK) 
+		JOIN BC_COMM_L TAIL ON HEAD.HEAD_CD = TAIL.HEAD_CD AND TAIL.STATUS = 'Y'
+		WHERE 1 = 1
+		AND HEAD.HEAD_ID = #{HEAD_CD}
+		AND HEAD.STATUS = 'Y'
+		<if test='DOC_GR != null and DOC_GR == "QT"'>
+		AND READ_CD IN ('ZAGC', 'ZAGM', 'ZAGS', 'AGX', 'AGX')
+		</if>
+		<if test='DOC_GR != null and DOC_GR == "SO"'>
+		AND READ_CD IN ('ZTAQ', 'TAN', 'TAB', 'TANN', 'TAS', 'TAW', 'ZTAP', 'ZTAS', 'ZTEB', 'TAD', 'ZKLN')
+		</if>
+		ORDER BY TAIL.PRIORITY
+	</select>
+	
+	<select id="selectCustomerInfo" parameterType="HashMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		/* SalesOrder.xml -> selectCustomerInfo */
+		SELECT ROW_NUMBER() OVER(ORDER BY A.CUST_CD) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,A.COMP_CD COMP_CD
+			  ,A.CUST_CD CUST_CD
+			  ,A.ACCOUNT_GR ACCOUNT_GR
+			  ,DBO.GETCODENM('ACCOUNT_GR', A.ACCOUNT_GR, #{LANG}) AS ACCOUNT_GR_NM
+			  ,A.CUST_NM CUST_NM
+			  ,A.CUST_ABNM CUST_ABNM
+			  ,A.SEARCH_NM1 SEARCH_NM1
+			  ,A.SEARCH_NM2 SEARCH_NM2
+			  ,A.HAUS_NO HAUS_NO
+			  ,A.STREET_NM STREET_NM
+			  ,A.POST_CD POST_CD
+			  ,A.REGION_CD REGION_CD
+			  ,A.CITY_CD CITY_CD
+			  ,A.CITY_NM CITY_NM
+			  ,A.COUNTRY_CD COUNTRY_CD
+			  ,A.TIME_ZONE TIME_ZONE
+			  ,A.TRANSP_ZONE TRANSP_ZONE
+			  ,A.LANG_CD LANG_CD
+			  ,A.HOMEPAGE HOMEPAGE
+			  ,A.MOBILE_NO MOBILE_NO
+			  ,A.TEL_NO TEL_NO
+			  ,A.TEL_NO_EXT TEL_NO_EXT
+			  ,A.FAX_NO FAX_NO
+			  ,A.FAX_NO_EXT FAX_NO_EXT
+			  ,A.E_MAIL E_MAIL
+			  ,A.INDUSTRY_CD INDUSTRY_CD
+			  ,A.VAT_REG_NO VAT_REG_NO
+			  ,A.LOCAT_NO1 LOCAT_NO1
+			  ,A.LOCAT_NO2 LOCAT_NO2
+			  ,A.SORT_KEY SORT_KEY
+			  ,A.CASH_MGMT_GR CASH_MGMT_GR
+			  ,A.INTEREST_IND_CD INTEREST_IND_CD
+			  ,A.PAY_HIST_YN PAY_HIST_YN
+			  ,A.DUN_PROC_CD DUN_PROC_CD
+			  ,A.DUN_BLOCK_CD DUN_BLOCK_CD
+			  ,A.DUN_LEVEL_CD DUN_LEVEL_CD
+			  ,A.POLICY_NO POLICY_NO
+			  ,A.INSURED_AMT INSURED_AMT
+			  ,CONVERT(NVARCHAR(10), A.VAL_TO_DATE, 104) VAL_TO_DATE
+			  ,A.DEDUCT_RATE DEDUCT_RATE
+			  ,A.APPLIED_INSURA APPLIED_INSURA
+			  ,A.EASY_NO EASY_NO
+			  ,CONVERT(NVARCHAR(10), A.APPLY_DATE, 104) APPLY_DATE
+			  ,CONVERT(NVARCHAR(10), A.EXPIRE_DATE, 104) EXPIRE_DATE
+			  ,A.ADD_TXT1 ADD_TXT1
+			  ,A.ADD_TXT2 ADD_TXT2
+			  ,A.GRADE GRADE
+			  ,A.EPC_CD EPC_CD
+			  ,A.CI_CD CI_CD
+			  ,A.RESI_CD RESI_CD
+			  ,A.Util_CD Util_CD
+			  ,A.MARK_PF MARK_PF
+			  ,A.INVS_CD INVS_CD
+			  ,A.PRMT_CD PRMT_CD
+			  ,A.SVC_PR_CD SVC_PR_CD
+			  ,A.ENG_CNSL_CD ENG_CNSL_CD
+			  ,A.RECON_ACC_CD RECON_ACC_CD
+			  ,B.SALES_ORG_CD SALES_ORG_CD
+			  ,DBO.GETCODENM('SALES_ORG_CD', B.SALES_ORG_CD, #{LANG}) AS SALES_ORG_CD_NM
+			  ,B.DISTRB_CH DISTRB_CH
+			  ,DBO.GETCODENM('DISTRB_CH', B.DISTRB_CH, #{LANG}) AS DISTRB_CH_NM
+			  ,B.DIV_CD DIV_CD
+			  ,DBO.GETCODENM('DIV_CD', B.DIV_CD, #{LANG}) AS DIV_CD_NM
+			  ,B.SALES_OFFICE_CD SALES_OFFICE_CD
+			  ,B.SALES_GR SALES_GR
+			  ,B.CUST_GR CUST_GR
+			  ,B.CURR_CD CURR_CD
+			  ,B.PRICE_GR PRICE_GR
+			  ,B.CUST_PRICE_PROC_CD CUST_PRICE_PROC_CD
+			  ,B.CUST_STATS_GR CUST_STATS_GR
+			  ,B.LIST_PRICE LIST_PRICE
+			  ,B.DELI_PRIOR_CD DELI_PRIOR_CD
+			  ,B.DELI_PLANT_CD DELI_PLANT_CD
+			  ,B.SHIP_CONDI_CD SHIP_CONDI_CD
+			  ,B.REL_POD_YN REL_POD_YN
+			  ,B.COMPLT_DELI_REQ_YN COMPLT_DELI_REQ_YN
+			  ,B.PART_DELI_ITEM_CD PART_DELI_ITEM_CD
+			  ,B.MAX_PART_DELIS MAX_PART_DELIS
+			  ,B.INCOTERMS_CD INCOTERMS_CD
+			  ,B.TERM_PAY_CD TERM_PAY_CD
+			  ,B.ACCT_ASSMT_GR ACCT_ASSMT_GR
+			  ,DBO.GETCODENM('INDUSTRY_CD', A.INDUSTRY_CD, #{LANG}) AS INDUSTRY_NM
+			  ,DBO.GETCODENM('CUST_GR', B.CUST_GR, #{LANG}) AS CUST_GR_NM
+			  ,DBO.GETCODENM('GRADE', A.GRADE, #{LANG}) AS GRADE_NM
+		  FROM MS_CUST_H A WITH (NOLOCK) INNER JOIN MS_CUST_SALES B WITH (NOLOCK)
+		       ON B.COMP_CD = A.COMP_CD AND B.CUST_CD = A.CUST_CD AND A.STATUS = 'Y' AND B.STATUS = 'Y'
+		 WHERE
+			  1 = 1
+			  AND A.COMP_CD = '1000'
+			  <if test="CUST_CD != null and CUST_CD != ''">
+			  AND (A.CUST_CD LIKE '%' + #{CUST_CD} + '%' OR A.CUST_NM LIKE '%' + #{CUST_CD} + '%')
+			  </if>
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectQuotationReport" parameterType="BMap" resultType="BMap">
+	/* SalesOrder.xml -> selectQuotationReport */
+			  SELECT H.DOC_NO, 
+			     CONCAT(H.DOC_NO,' / ',dbo.FmtdDate(H.PRICE_DT, 'DD.MM.YYYY')) 			AS DOC_NO_DATE,
+				 H.SOLD_CUST_CD,
+				 dbo.GetCodeNm('SHP_CON_CD', SHP_CON_CD, #{LANG}) AS SHP_CON_CD,
+				 ISNULL(CONCAT(INCOTERMS_CD,' ',INCOTERMS_DESC),'') 						AS INCOTERMS_NM,
+				 ISNULL(dbo.GetCodeNm('PAY_TERM',H.PAY_TERM,#{LANG}),'') 					AS PAY_TERM_NM,
+				 ISNULL(DBO.GetUserNm(H.COMP_CD, H.REG_ID) ,'') 							AS REG_ID,
+				 ISNULL(dbo.FmtdDate(H.PRICE_DT, 'DD.MM.YYYY'),'') 							AS PRICE_DT,
+				 dbo.SetAmt(ISNULL(H.T_AMT,0))												AS T_AMT,	
+				 dbo.SetAmt(ISNULL(H.SUR_CHARGE_AMT + H.DLV_AMT,0))							AS DLV_AMT,
+				 CONCAT(dbo.SetAmt(ISNULL(VAT,0)),'%')										AS VAT,
+				 dbo.SetAmt(ISNULL(H.NET_AMT,0))											AS NET_AMT,
+				 dbo.SetAmt(ISNULL(H.VAT_AMT,0))											AS VAT_AMT,
+				 H.PO_NO																	AS PO_NO,
+				 (SELECT dbo.SetQty(SUM(ORD_QTY)) 
+				  	FROM SD_ORDER_ITEM
+				   WHERE COMP_CD  = #{G_COMP_CD} 
+				     AND DOC_GR   = #{DOC_GR} 
+				     AND DOC_NO   = #{DOC_NO}
+				     AND CONVERT(NUMERIC, ITEM_SEQ) % 100 = 0) AS VOL_QTY,
+				 (SELECT dbo.SetAmt(SUM(ORD.ORD_QTY * CASE WHEN ITEM.WP_OUT = '' THEN 0 ELSE ISNULL(ITEM.WP_OUT,0) END)) 
+				    FROM SD_ORDER_ITEM ORD 
+				   INNER JOIN MS_ITEM ITEM
+    				 ON ORD.COMP_CD = ITEM.COMP_CD
+				    AND ORD.MATL_CD = ITEM.MATL_CD
+				  WHERE ORD.COMP_CD  =  #{G_COMP_CD}
+				    AND ORD.DOC_GR   =  #{DOC_GR}
+				    AND ORD.DOC_NO   =  #{DOC_NO}) AS T_WP,
+				CONCAT(ISNULL((SELECT dbo.SetAmt(DC_VAL * -1) FROM SD_ORDER_H  
+						 WHERE COMP_CD  = #{G_COMP_CD}
+						   AND DOC_GR   = #{DOC_GR}
+						   AND DOC_NO   = #{DOC_NO}
+						   AND DC_TP ='R'),0),'%') AS DC_VAL,
+				ISNULL((SELECT dbo.SetAmt(SUM(PRICE)) FROM SD_ORDER_L_COND 
+						 WHERE COMP_CD  = #{G_COMP_CD}
+						   AND DOC_GR   = #{DOC_GR}
+						   AND COND_TP ='ZDC4' 
+						   AND DOC_NO = #{DOC_NO}
+						   AND ITEM_SEQ !='000000' 
+						   AND COND_CURR_CD IS NOT NULL),'') AS DC_VAL_P,
+				ISNULL((SELECT dbo.SetAmt(SUM(PRICE)) FROM SD_ORDER_L_COND 
+						 WHERE COMP_CD  = #{G_COMP_CD}
+						   AND DOC_GR   = #{DOC_GR}
+						   AND COND_TP IN ('ZDC3','ZSR4') 
+						   AND DOC_NO = #{DOC_NO}
+						   AND ITEM_SEQ !='000000' 
+						   AND COND_CURR_CD IS NOT NULL),'') AS DC_VAL_A,
+				ISNULL((SELECT dbo.SetAmt(SUM(PRICE)) FROM SD_ORDER_L_COND 
+						 WHERE COMP_CD  = #{G_COMP_CD}
+						   AND DOC_GR   = #{DOC_GR}
+						   AND COND_TP ='ZFK0' 
+						   AND DOC_NO = #{DOC_NO}
+						   AND ITEM_SEQ !='000000' 
+						   AND COND_CURR_CD IS NOT NULL),'') AS DVL_AMT
+		  FROM SD_ORDER_H H
+	    WHERE COMP_CD  = #{G_COMP_CD}
+	      AND DOC_GR   = #{DOC_GR}
+		  AND DOC_NO   = #{DOC_NO}
+	</select>
+	<select id="selectContactPersonReport" parameterType="BMap" resultType="BMap">
+			/* SalesOrder.xml -> selectContactPersonReport */
+		  SELECT TOP(1) ISNULL(B.NAME_FULL,'') AS FULL_NM,
+				ISNULL(B.TEL_NO,'') AS TEL_NO1,
+				ISNULL(A.TEL_NO,'') AS FAX_NO,
+				ISNULL(B.E_MAIL,'') AS E_MAIL 
+		   FROM SD_ORDER_PART A 
+		  LEFT JOIN BC_USER B 
+		  ON A.COMP_CD = B.COMP_CD 
+		  AND A.PF_PS_NO = B.USER_ID 
+		  WHERE A.DOC_NO = #{DOC_NO}
+		    AND A.pf_tp ='ZI'
+	</select>
+	<select id="selectByOrderOf" parameterType="BMap" resultType="BMap">
+			/* SalesOrder.xml -> selectByOrderOf */
+		  SELECT TOP(1) ISNULL(B.NAME_FULL,'') AS FULL_NM,
+				ISNULL(B.TEL_NO,'') AS TEL_NO1,
+				ISNULL(B.E_MAIL,'') AS E_MAIL FROM SD_ORDER_PART A 
+		  LEFT JOIN BC_USER B 
+		  ON A.COMP_CD = B.COMP_CD 
+		  AND A.PF_PS_NO = B.USER_ID 
+		  WHERE A.DOC_NO = #{DOC_NO}
+		    AND A.pf_tp ='ZK'
+	</select>
+	
+	<select id="selectCreateFor" parameterType="BMap" resultType="BMap">
+			/* SalesOrder.xml -> selectCreateFor */
+			SELECT TOP(1) ISNULL(B.FULL_NM,'') AS FULL_NM
+				 , ISNULL(B.TEL_NO1,'') AS TEL_NO1
+				 , ISNULL(B.E_MAIL,'') AS E_MAIL 
+		      FROM SD_ORDER_H A 
+		           LEFT JOIN MS_PARTNER B
+		                     ON A.COMP_CD = B.COMP_CD
+		                    AND A.SOLD_CUST_CD = B.CUST_CD
+			 WHERE A.DOC_NO = #{DOC_NO}
+	</select>
+	
+	<select id="selectCustAddr" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectCustAddr */
+		SELECT ISNULL(SOLD.CUST_NM,'') AS SOLD_CUST_NM
+		     , CASE WHEN ISNULL(SOLD.STREET_NM2, '') = '' THEN CONCAT(ISNULL(SOLD.STREET_NM, ''), ' ', ISNULL(SOLD.HAUS_NO, ''))
+		            ELSE ISNULL(CONCAT(ISNULL(CONCAT(SOLD.STREET_NM2,' ', ISNULL(SOLD.HAUS_NO, ''), '<![CDATA[<br>]]>'),''),ISNULL(SOLD.STREET_NM,'')),'')
+		            END AS SOLD_STREET
+			 , ISNULL(CONCAT(SOLD.POST_CD,' ',SOLD.CITY_NM),'') AS SOLD_POST
+			 , ISNULL(SHIP.CUST_NM,'') AS SHIP_CUST_NM
+		     , CASE WHEN ISNULL(SHIP.STREET_NM2, '') = '' THEN CONCAT(ISNULL(SHIP.STREET_NM, ''), ' ', ISNULL(SHIP.HAUS_NO, ''))
+		            ELSE ISNULL(CONCAT(ISNULL(CONCAT(SHIP.STREET_NM2,' ', ISNULL(SHIP.HAUS_NO, ''), '<![CDATA[<br>]]>'),''),ISNULL(SHIP.STREET_NM,'')),'')
+		            END AS SHIP_STREET
+		     , ISNULL(CONCAT(SHIP.POST_CD,' ',SHIP.CITY_NM),'') AS SHIP_POST
+		     , ISNULL(CP.FULL_NM,'') AS CP_FULLNM
+		     , ISNULL(CP.TEL_NO1,'') AS CP_TELL
+			 , ISNULL(CP.E_MAIL,'') AS CP_EMAIL
+			 , SOLD.LANG_CD
+			 , ISNULL(( SELECT ISNULL(SOP.PF_PS_NM,'')  FROM SD_ORDER_PART SOP WHERE SOP.DOC_GR = 'SO' AND SOP.ITEM_SEQ = '000000' AND SOP.PF_TP = 'RE' AND SOP.DOC_NO = ORD.DOC_NO ),'') AS BILL_CUST_NM			 
+		     , CASE WHEN ISNULL((SELECT SOP.STREET_NM2 FROM SD_ORDER_PART SOP WHERE SOP.DOC_GR = 'SO' AND SOP.ITEM_SEQ = '000000' AND SOP.PF_TP = 'RE' AND SOP.DOC_NO = ORD.DOC_NO ),'')  = ''
+					THEN (SELECT CONCAT(ISNULL(SOP.STREET_NM, ''), ' ' , ISNULL(SOP.HAUS_NO, '')) FROM SD_ORDER_PART SOP WHERE SOP.DOC_GR = 'SO' AND SOP.ITEM_SEQ = '000000' AND SOP.PF_TP = 'RE' AND SOP.DOC_NO = ORD.DOC_NO )
+					ELSE ISNULL((SELECT ISNULL(CONCAT(ISNULL(CONCAT(SOP.STREET_NM2,' ',SOP.HAUS_NO, '<![CDATA[<br>]]>'),''),ISNULL(SOP.STREET_NM,'')),'') 
+								FROM SD_ORDER_PART SOP WHERE SOP.DOC_GR = 'SO' AND SOP.ITEM_SEQ = '000000' AND SOP.PF_TP = 'RE' AND SOP.DOC_NO = ORD.DOC_NO ), '')
+		            END AS BILL_STREET
+			 , ISNULL(( SELECT ISNULL(CONCAT(SOP.POST_CD,' ',SOP.CITY_CD),'')  FROM SD_ORDER_PART SOP WHERE SOP.DOC_GR = 'SO' AND SOP.ITEM_SEQ = '000000' AND SOP.PF_TP = 'RE' AND SOP.DOC_NO = ORD.DOC_NO ),'') AS BILL_POST
+			 , ORD.SALES_ORG_CD
+		  FROM SD_ORDER_H ORD
+	 LEFT JOIN MS_CUST_H SOLD 
+		    ON ORD.COMP_CD = SOLD.COMP_CD
+		   AND ORD.SOLD_CUST_CD = SOLD.CUST_CD
+	 LEFT JOIN MS_CUST_H SHIP
+		    ON ORD.COMP_CD = SHIP.COMP_CD
+		   AND ORD.SHIP_CUST_CD = SHIP.CUST_CD
+    LEFT JOIN MS_PARTNER CP
+	       ON ORD.SOLD_CUST_CD = CP.CUST_CD
+	  	  AND CP.FUNC_CD = #{FUNC_CD}
+	      AND CP.CODE = (SELECT MAX(CODE) FROM MS_PARTNER WHERE FUNC_CD = #{FUNC_CD} AND CUST_CD = ORD.SOLD_CUST_CD)
+	     WHERE ORD.COMP_CD = #{G_COMP_CD}
+		   AND ORD.DOC_NO = #{DOC_NO} 
+		   AND ORD.DOC_GR = #{DOC_GR}
+	</select>
+	
+	<select id="getShipToBySold" parameterType="BMap" resultType="BMap">
+	/* SalesOrder.xml -> getShipToBySold */
+		SELECT * FROM (SELECT TOP 1 PF_PS_NO + ';' + PF_PS_NM + ';' + (select TOP 1 ms.deli_plant_cd from ms_cust_sales ms where ms.cust_cd = #{CUST_CD} ) AS PARTNER
+		FROM MS_CUST_PART
+		WHERE 1 = 1
+		AND PF_TP = 'WE'
+		AND COMP_CD = #{G_COMP_CD}
+		AND CUST_CD = #{CUST_CD}
+		AND STATUS  = 'Y'
+		ORDER BY DEFAULT_YN DESC, SEQ) A 
+		UNION ALL
+		SELECT * FROM (SELECT TOP 1 PF_PS_NO + ';' + PF_PS_NM + ';' + (select TOP 1 ms.deli_plant_cd from ms_cust_sales ms where ms.cust_cd = #{CUST_CD} ) AS PARTNER
+		FROM MS_CUST_PART
+		WHERE 1 = 1
+		AND PF_TP = 'RE'
+		AND COMP_CD = #{G_COMP_CD}
+		AND CUST_CD = #{CUST_CD}
+		AND STATUS  = 'Y'
+		ORDER BY DEFAULT_YN DESC, SEQ) B
+	</select>
+
+	<select id="getModiTms" parameterType="BMap" resultType="String">
+	/* SalesOrder.xml -> getModiTms */
+		SELECT dbo.FmtdDate(UPT_DT, 'YYYYMMDDHHMISS') FROM SD_ORDER_H 
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_NO = #{DOC_NO} 
+		AND DOC_GR = #{DOC_GR}
+	</select>
+	
+	<select id="getIfyn" parameterType="BMap" resultType="int">
+	/* SalesOrder.xml -> getIfyn */
+		SELECT COUNT(1) FROM SD_ORDER_H 
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_NO = #{DOC_NO} 
+		AND DOC_GR = #{DOC_GR}
+		AND IF_DT IS NOT NULL
+	</select>
+	
+	<select id="selectBatchPopList" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectBatchPopList */
+		SELECT BATCH_NO FROM MS_ITEM_BATCH
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND MATL_CD = #{MATL_CD}
+		AND PLANT_CD = #{PLANT_CD}
+		AND ISNULL(DEL_YN, 'N') <![CDATA[ <> ]]> 'N'
+		AND STATUS <![CDATA[ <> ]]> 'D'
+		ORDER BY SEQ
+	</select>
+	
+	<select id="getApprData" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> getApprData */
+		SELECT REF_CHR1, REF_CHR2, REF_CHR3, REF_NUM1, REF_NUM2 FROM BC_COMM_L where head_cd = '110600' and code = #{CODE}
+	</select>
+	
+	<delete id="deleteAppr" parameterType="HashMap">
+	/* SalesOrder.xml -> deleteAppr */
+		DELETE SD_ORDER_L_APPR WHERE 1 = 1 AND COMP_CD = #{G_COMP_CD} AND DOC_GR = #{DOC_GR} AND DOC_NO = #{DOC_NO}
+	</delete>
+	
+	<insert id="insertAppr" parameterType="HashMap">
+		/* SalesOrder.xml -> insertAppr */
+		INSERT INTO SD_ORDER_L_APPR(
+			  COMP_CD
+			, DOC_GR
+			, DOC_NO
+			, APPR_ID
+			, ALLOW_STS
+			, APPROVAL_STS
+			, PRIORITY
+			, STATUS
+			, REG_DT
+			, REG_ID
+			, UPT_DT
+			, UPT_ID
+			)VALUES(
+			  #{G_COMP_CD}
+			, #{DOC_GR}
+			, #{DOC_NO}
+			, #{APPR_ID}
+			, #{ALLOW_STS}
+			, #{APPROVAL_STS}
+			, #{PRIORITY}
+			, #{DOC_STATUS}
+			, GETDATE()
+			, #{USERID}
+			, GETDATE()
+			, #{USERID}
+			)
+	</insert>
+	<select id="selectApprovalList" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectApprovalList */
+		SELECT CONCAT(APPR_ID,'/',dbo.GetUserNm(#{COMP_CD},APPR_ID)) AS APPROVAL_ID
+			 , ISNULL((SELECT DEP.DEPUTY_ID
+			      		FROM BC_DEPUTY DEP 
+					    WHERE DEP.COMP_CD = APPR.COMP_CD 
+				          AND DEP.USER_ID = APPR.APPR_ID 
+				          AND dbo.FmtdDate(GETDATE(), 'YYYY-MM-DD') BETWEEN FROM_DT AND TO_DT),'') AS DEPUTY_ID
+			 , APPR_ID
+		     , DBO.GETCODENM('APPROVAL_YN', APPROVAL_STS, #{LANG}) APPROVAL_STS_NM
+		     , APPROVAL_STS
+		     , ISNULL(REJECT_RSN,'') AS REJECT_RSN
+		     , PRIORITY
+		     , dbo.FmtdDate(APPR_DT, 'DD.MM.YYYY hh:mm:ss') AS APPR_DT
+		     , (SELECT MAX(PRIORITY) FROM SD_ORDER_L_APPR WHERE COMP_CD = #{COMP_CD} AND DOC_NO = #{DOC_NO} AND DOC_GR = #{DOC_GR}) AS MAX_PRIORITY
+		     , (SELECT MIN(PRIORITY) FROM SD_ORDER_L_APPR WHERE COMP_CD = #{COMP_CD} AND DOC_NO = #{DOC_NO} AND DOC_GR = #{DOC_GR} AND APPROVAL_STS = 'Q' AND APPR_DT IS NULL) AS MIN_PRIORITY
+   			 , dbo.GetApprovalId('ID',#{COMP_CD},#{DOC_GR}, #{DOC_NO}) AS NEXT_APPROVAL_ID
+		  FROM SD_ORDER_L_APPR APPR WITH (NOLOCK)	
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND DOC_NO = #{DOC_NO}
+		   AND DOC_GR = #{DOC_GR}
+		 ORDER BY PRIORITY
+	</select>
+	
+	<select id="selectApprovalId" resultType="BMap">
+		/* SalesOrder.xml -> "selectApprovalId" */
+		SELECT REF_CHR1 AS approval_1
+		     , REF_CHR2 AS approval_2
+		     , REF_CHR3 AS approval_3
+ 		  FROM BC_COMM_L
+		 WHERE HEAD_CD ='110600'
+	</select>
+	
+	<select id="getIfSts" parameterType="HashMap" resultType="String">
+		/* SalesOrder.xml -> getIfSts */
+		SELECT IF_STS FROM SD_ORDER_H WHERE 1 = 1 AND COMP_CD = #{G_COMP_CD} AND DOC_NO = #{DOC_NO} AND DOC_GR = #{DOC_GR}
+	</select>
+	
+	<update id="updateNetPrice" parameterType="HashMap">
+		/* SalesOrder.xml -> "updateNetPrice" */
+		 UPDATE SD_ORDER_ITEM 
+		    SET APPR_PRICE = NET_PRICE			
+		      , UPT_DT	   = GETDATE()
+			  , UPT_ID	   = #{USER_ID}
+		  WHERE 1 = 1  
+		    AND COMP_CD = #{COMP_CD}
+		    AND DOC_GR = #{DOC_GR}
+		    AND DOC_NO = #{DOC_NO}
+	</update>
+	
+	
+	<update id="updateNetPriceNull" parameterType="HashMap">
+		/* SalesOrder.xml -> "updateNetPriceNull" */
+		 UPDATE SD_ORDER_ITEM 
+		    SET APPR_PRICE = NULL			
+		      , UPT_DT	   = GETDATE()
+			  , UPT_ID	   = #{USER_ID}
+		  WHERE 1 = 1  
+		    AND COMP_CD = #{COMP_CD}
+		    AND DOC_GR = #{DOC_GR}
+		    AND DOC_NO = #{DOC_NO}
+	</update>
+	
+	
+	<update id="updateQuotToSales" parameterType="HashMap">
+		/* SalesOrder.xml -> updateQuotToSales */
+		UPDATE SD_ORDER_H
+		SET   QT_TO_SO_ID		= #{USERID}
+			, QT_TO_SO_DT		= GETDATE()
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = 'QT'
+		AND DOC_NO  = #{QT_NO}
+	</update>
+	
+	<update id="salesOrderClosedByHeader" parameterType="HashMap">
+		/* SalesOrder.xml -> salesOrderClosedByHeader */
+		UPDATE SD_ORDER_H
+		SET   STATUS		= #{STATUS}
+			, RSN_RJT_CD	= #{RSN_RJT_CD}
+			, QT_STS_CD		= (CASE WHEN #{STATUS} = 'C' THEN 'E0006' ELSE '' END)
+			, UPT_DT		= GETDATE()
+			, UPT_ID		= #{USERID}
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{DOC_NO}
+	</update>
+	
+	<update id="salesOrderClosedByItem" parameterType="HashMap">
+		/* SalesOrder.xml -> salesOrderClosedByItem */
+		UPDATE SD_ORDER_ITEM
+		SET   STATUS		= #{STATUS}
+			, RSN_RJT_CD	= #{RSN_RJT_CD}
+			, UPT_DT		= GETDATE()
+			, UPT_ID		= #{USERID}
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{DOC_NO}
+		AND STATUS != 'D'
+	</update>
+	
+	<update id="releaseCreditBlock" parameterType="HashMap">
+		/* SalesOrder.xml -> releaseCreditBlock */
+		UPDATE SD_ORDER_H
+		  SET CREDIT_STS = ''
+			, UPT_DT	 = GETDATE()
+			, UPT_ID	 = #{USER_ID} 
+		WHERE COMP_CD = #{G_COMP_CD}
+		  AND DOC_GR = 'SO'
+		  AND DOC_NO = ISNULL(CONVERT(DECIMAL, #{IS_ORDER}), 0) 
+	</update>
+	
+	<select id="getPartnerData" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> getPartnerData */
+		SELECT CUST.CUST_NM						AS CUST_NM
+			 , CUST.SEARCH_NM1					AS NAME_1ST
+			 , CUST.SEARCH_NM2					AS NAME_2ND
+			 , CUST.STREET_NM					AS STREET_NM
+			 , CUST.HAUS_NO						AS HAUS_NO
+			 , CUST.POST_CD						AS POST_CD
+			 , CUST.CITY_CD						AS CITY_CD
+			 , CUST.COUNTRY_CD					AS COUNTRY_CD
+			 , CUST.REGION_CD					AS REGION_CD
+			 , CUST.TIME_ZONE					AS TIME_ZONE
+			 , CUST.TRANSP_ZONE					AS TRANSP_ZONE
+			 , CUST.LANG_CD						AS LANG_CD
+			 , CUST.TEL_NO						AS TEL_NO
+			 , CUST.TEL_NO_EXT					AS TEL_NO_EXT
+			 , CUST.MOBILE_NO					AS MOBILE_NO
+			 , CUST.FAX_NO						AS FAX_NO
+			 , CUST.FAX_NO_EXT					AS FAX_NO_EXT
+			 , CUST.E_MAIL						AS E_MAIL
+			 , CUST.VAT_REG_NO					AS VAT_REG_NO
+			 , CUST.ACCOUNT_GR					AS ACCOUNT_GR
+			 , CUST.POST_CD						AS POST_CD
+		FROM MS_CUST_H CUST WITH(NOLOCK)
+		WHERE 1 = 1
+		AND CUST.COMP_CD = '1000'
+		AND CUST.CUST_CD = #{CUST_CD}
+	</select>
+	
+	<select id="getContactPersonData" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> getContactPersonData */
+		SELECT CUST.NAME_1ST					AS CUST_NM
+			 , CUST.SEARCH_NM					AS NAME_1ST
+			 , CUST.SEARCH_NM2					AS NAME_2ND
+			 , CUST.STREET_NM					AS STREET_NM
+			 , CUST.HAUS_NO						AS HAUS_NO
+			 , CUST.POST_CD						AS POST_CD
+			 , (SELECT TOP 1 READ_CD FROM BC_COMM_L WHERE HEAD_CD = '101800' AND CODE_NM = CUST.CITY_NM)
+			 									AS CITY_CD
+			 , CUST.COUNTRY_CD					AS COUNTRY_CD
+			 , CUST.REGION_CD					AS REGION_CD
+			 , (SELECT TIME_ZONE FROM MS_CUST_H WHERE COMP_CD = '1000' AND CUST_CD = CUST.CUST_CD)
+			 									AS TIME_ZONE
+			 , (SELECT TRANSP_ZONE FROM MS_CUST_H WHERE COMP_CD = '1000' AND CUST_CD = CUST.CUST_CD)
+			 									AS TRANSP_ZONE
+			 , (SELECT LANG_CD FROM MS_CUST_H WHERE COMP_CD = '1000' AND CUST_CD = CUST.CUST_CD)
+			 									AS LANG_CD
+			 , CUST.TEL_NO1						AS TEL_NO
+			 , CUST.TEL_NO1_EXT					AS TEL_NO_EXT
+			 , CUST.TEL_NO2						AS MOBILE_NO
+			 , CUST.FAX_NO						AS FAX_NO
+			 , CUST.FAX_NO_EXT					AS FAX_NO_EXT
+			 , CUST.E_MAIL						AS E_MAIL
+			 , (SELECT VAT_REG_NO FROM MS_CUST_H WHERE COMP_CD = '1000' AND CUST_CD = CUST.CUST_CD)
+			 									AS VAT_REG_NO
+			 , CUST.ACCOUNT_GR					AS ACCOUNT_GR
+		FROM MS_PARTNER CUST WITH(NOLOCK)
+		WHERE 1 = 1
+		AND CUST.CODE = #{CUST_CD}
+	</select>
+	
+	<delete id="clearTempSalesHead">
+	/* SalesOrder.xml -> clearTempSalesHead */
+		DELETE SD_ORDER_H WHERE 1 = 1 AND DOC_NO LIKE ('999%')
+	</delete>
+	
+	<delete id="clearTempSalesHeadCHis">
+	/* SalesOrder.xml -> clearTempSalesHead */
+		DELETE SD_ORDER_H_CHG_HIS WHERE 1 = 1 AND DOC_NO LIKE ('999%')
+	</delete>
+	
+	<delete id="clearTempSalesHeadHis">
+	/* SalesOrder.xml -> clearTempSalesHeadHis */
+		DELETE SD_ORDER_H_HIS WHERE 1 = 1 AND DOC_NO LIKE ('999%')
+	</delete>
+	
+	<delete id="clearTempSalesItem">
+	/* SalesOrder.xml -> clearTempSalesItem */
+		DELETE SD_ORDER_ITEM WHERE 1 = 1 AND DOC_NO LIKE ('999%')
+	</delete>
+	
+	<delete id="clearTempSalesItemHis">
+	/* SalesOrder.xml -> clearTempSalesItemHis */
+		DELETE SD_ORDER_ITEM_HIS WHERE 1 = 1 AND DOC_NO LIKE ('999%')
+	</delete>
+	
+	<delete id="clearTempSalesPartner">
+	/* SalesOrder.xml -> clearTempSalesPartner */
+		DELETE SD_ORDER_PART WHERE 1 = 1 AND DOC_NO LIKE ('999%')
+	</delete>
+	
+	<delete id="clearTempSalesPartnerHis">
+	/* SalesOrder.xml -> clearTempSalesPartner */
+		DELETE SD_ORDER_PART_HIS WHERE 1 = 1 AND DOC_NO LIKE ('999%')
+	</delete>
+	
+	<delete id="clearTempSalesText">
+	/* SalesOrder.xml -> clearTempSalesText */
+		DELETE SD_ORDER_TEXT WHERE 1 = 1 AND DOC_NO LIKE ('999%')
+	</delete>
+	
+	<delete id="clearTempSalesTextHis">
+	/* SalesOrder.xml -> clearTempSalesTextHis */
+		DELETE SD_ORDER_TEXT_HIS WHERE 1 = 1 AND DOC_NO LIKE ('999%')
+	</delete>
+	
+	<delete id="clearTempSalesScdl">
+	/* SalesOrder.xml -> clearTempSalesScdl */
+		DELETE SD_ORDER_SCDL WHERE 1 = 1 AND DOC_NO LIKE ('999%')
+	</delete>
+	
+	<delete id="clearTempSalesScdlHis">
+	/* SalesOrder.xml -> clearTempSalesScdlHis */
+		DELETE SD_ORDER_SCDL_HIS WHERE 1 = 1 AND DOC_NO LIKE ('999%')
+	</delete>
+	
+	<delete id="clearTempSalesCond">
+	/* SalesOrder.xml -> clearTempSalesCond */
+		DELETE SD_ORDER_L_COND WHERE 1 = 1 AND DOC_NO LIKE ('999%')
+	</delete>
+	
+	<select id="selectHisTab" parameterType="BMap" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+		/* SalesOrder.xml -> selectHisTab */
+		SELECT ROW_NUMBER() OVER(ORDER BY ISEQ DESC) ROWNUM
+			, CASE WHEN CRUD = 'U' THEN 'UPDATE' 
+			  ELSE 'DELETE' END													AS ACT
+			, CASE WHEN TABLE_ID = 'SD_ORDER_H' THEN 'Header' 
+				   WHEN TABLE_ID = 'SD_ORDER_ITEM' THEN 'Item' 
+				   WHEN TABLE_ID = 'SD_ORDER_TEXT' THEN 'Text' 
+				   WHEN TABLE_ID = 'SD_ORDER_PART' THEN 'Partner Function'
+				   ELSE 'Schedule' END + ' - ' + HIS.FIELD_ID					AS FIELD
+			, OLD_VALUE															AS OLD_VAL
+			, NEW_VALUE															AS NEW_VAL
+			, DBO.FMTDDATE(HIS.REG_DT, 'DD.MM.YYYY HH:MM:SS')					AS CHG_DT
+			, USR.NAME_FULL														AS CHG_NM
+			FROM SD_ORDER_H_CHG_HIS HIS
+			LEFT OUTER JOIN BC_USER USR ON HIS.UPT_ID = USR.USER_ID
+			WHERE 1 = 1
+			AND ISEQ NOT IN (
+			(SELECT ISEQ FROM SD_ORDER_H_CHG_HIS WHERE 1 = 1 AND FIELD_ID = 'STATUS' AND OLD_VALUE IN ('I', 'T'))
+			)
+			AND TABLE_ID <![CDATA[ <> ]]> 'SD_ORDER_L_COND'
+			AND HIS.COMP_CD = #{G_COMP_CD}
+			AND HIS.DOC_GR  = #{DOC_GR}
+			AND HIS.DOC_NO  = #{DOC_NO}
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="setDeliPlantCombo" parameterType="BMap" resultType="CodeVO">
+	/* SalesOrder.xml -> setDeliPlantCombo */
+		SELECT TAIL.READ_CD CODE			  
+		     , TAIL.READ_CD + ' - ' + DBO.GetCodeNm(HEAD.HEAD_ID, TAIL.CODE, #{LANG}) VALUE
+		FROM BC_COMM_H HEAD  WITH (NOLOCK) 
+		JOIN BC_COMM_L TAIL ON HEAD.HEAD_CD = TAIL.HEAD_CD AND TAIL.STATUS = 'Y'
+		WHERE 1 = 1
+		AND HEAD.HEAD_CD = '104500'
+		AND HEAD.STATUS = 'Y'
+		AND TAIL.CODE LIKE #{CODE} + '%'
+		ORDER BY TAIL.PRIORITY
+	</select>
+	
+	<select id="selectSegement" parameterType="HashMap" resultType="String">
+		/* SalesOrder.xml -> selectSegement */
+		SELECT CONVERT(VARCHAR, HEAD.REF_NUM1) 
+			+ ';' + CONVERT(VARCHAR, HEAD.REF_NUM2)
+			+ ';' + CONVERT(VARCHAR, HEAD.REF_NUM3)
+			+ ';' + CONVERT(VARCHAR, HEAD.REF_NUM4)
+			+ ';' + CONVERT(VARCHAR, HEAD.REF_NUM5)
+		FROM BC_COMM_H HEAD  WITH (NOLOCK) 
+		WHERE HEAD.HEAD_ID = #{HEAD_CD}
+		AND HEAD.STATUS = 'Y'
+	</select>
+	
+	<select id="getItemCondition" parameterType="HashMap" resultType="String">
+		/* SalesOrder.xml -> getItemCondition */
+		SELECT (CASE WHEN 0 <![CDATA[ < ]]> ISNULL(ZPNM_PRICE, 0) THEN ZPNM_PRICE + ISNULL(Other, 0) ELSE ISNULL(ZPR0_PRICE, 0) + ISNULL(Other, 0)  END)
+		FROM (SELECT SUM(PRICE) AS PRICE
+					, ( SELECT SUM(PRICE) FROM SD_ORDER_L_COND
+						WHERE 1 = 1
+						AND DOC_NO   = #{DOC_NO}
+						AND COMP_CD  = #{G_COMP_CD}
+						AND DOC_GR   = #{DOC_GR}
+						AND PRICE IS NOT NULL
+						AND COND_TP = 'ZPNM'
+						AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, #{ITEM_SEQ})) AS ZPNM_PRICE
+					, ( SELECT SUM(PRICE) FROM SD_ORDER_L_COND
+						WHERE 1 = 1
+						AND DOC_NO   = #{DOC_NO}
+						AND COMP_CD  = #{G_COMP_CD}
+						AND DOC_GR   = #{DOC_GR}
+						AND PRICE IS NOT NULL
+						--AND COND_TP = 'ZPR0'
+						AND COND_TP = 'ZPL0'
+						AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, #{ITEM_SEQ})) AS ZPR0_PRICE
+					, ( SELECT SUM(PRICE) FROM SD_ORDER_L_COND
+						WHERE 1 = 1
+						AND DOC_NO   = #{DOC_NO}
+						AND COMP_CD  = #{G_COMP_CD}
+						AND DOC_GR   = #{DOC_GR}
+						AND PRICE IS NOT NULL
+						AND COND_TP NOT IN ('ZPL1', 'ZVKS', 'ZPNM', 'ZVKD', 'ZPB1', 'ZSR6', 'ZPNN', 'MWST', 'ZPL0') --'ZPR0', 
+						AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, #{ITEM_SEQ})) AS Other
+				FROM SD_ORDER_L_COND
+				WHERE 1 = 1
+				AND DOC_NO   = #{DOC_NO}
+				AND COMP_CD  = #{G_COMP_CD}
+				AND DOC_GR   = #{DOC_GR}
+				AND PRICE IS NOT NULL
+				AND COND_TP NOT IN ('ZPL1', 'ZVKS',  'ZVKD', 'ZPB1', 'ZSR6', 'ZPNN', 'MWST')
+				AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, #{ITEM_SEQ})
+				GROUP BY ITEM_SEQ
+		) SUM_TABLE
+		GROUP BY SUM_TABLE.ZPNM_PRICE, SUM_TABLE.ZPR0_PRICE, SUM_TABLE.Other
+	</select>
+	
+	<select id="searchExternalList" parameterType="BMap" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+			/* SalesOrder.xml -> searchExternalList */
+			SELECT ROW_NUMBER() OVER(ORDER BY MST.ORDER_H_NUM DESC) ROWNUM
+				 , MST.CUST_CD + ' ' + CUST.CUST_NM							AS CUST
+				 , MST.CUST_CD												AS SOLD_CUST_CD
+				 , MST.ORDER_H_NUM											AS EXT_DOC_NO
+				 , MST.PROJECT_AND_PON										AS PO_NO
+				 , dbo.FmtdDate(MST.REQ_DELI_DT, 'DD.MM.YYYY')				AS REQ_DELI_DT
+				 , dbo.FmtdDate(MST.REG_DT, 'DD.MM.YYYY HH:MM:SS')			AS REG_DT
+				 , SHIP.SHIP_TO_PF_PS_NO + ' ' +  SHIP_CUST.CUST_NM			AS SHIP_TO_NM
+				 , SHIP.SHIP_TO_PF_PS_NO									AS PF_PS_NO
+				 , SHIP.PAYMENT_TERM										AS PAYMENT_TERM
+				 , (SELECT TOP 1 DBO.GetCodeNm('PAY_TERM', SHIP.PAYMENT_TERM, #{LANG})
+					FROM BC_COMM_H H
+					INNER JOIN BC_COMM_L L ON H.HEAD_CD = L.HEAD_CD 
+					AND L.STATUS = 'Y'
+					WHERE H.HEAD_ID = 'PAY_TERM'
+					AND (L.CODE LIKE dbo.setParam(SHIP.PAYMENT_TERM)
+						OR CODE_EN LIKE dbo.setParam(SHIP.PAYMENT_TERM)
+						)
+					)														AS PAY_TERM_NM
+				 , SHIP.DELIV_DIV											AS INCOTERMS
+				 , SHIP.FIRST_NM											AS NAME_1ST
+				 , SHIP.SUB_NM												AS NAME_2ND
+				 , SHIP.ST_HOUSE_NUMBER										AS STREET_NM
+				 , SHIP.ADDR_COMP_CO										AS ADDR_COMP_CO
+				 , SHIP.POSTCODE											AS POST_CD
+				 , SHIP.PLACE												AS PLACE
+				 , SHIP.COUNTRY												AS COUNTRY
+				 , SHIP.REMARKS												AS REMARKS
+				 , MST.SALES_ORG_CD											AS SALES_ORG_CD
+				 , MST.DISTRB_CH											AS DISTRB_CH
+				 , MST.DIV_CD												AS DIV_CD
+				 , SHIP.UNLOAD_EQUIP_COMMENT								AS UNLOAD_EQUIP_COMMENT				
+				 , v.OM_NO													AS OM_NO			
+				 , v.OM_NM													AS OM_NM
+			FROM IF_QC_EXT_ORDER_H MST
+	  INNER	JOIN MS_CUST_H CUST ON MST.CUST_CD = CUST.CUST_CD AND CUST.COMP_CD = '1000'
+	  INNER JOIN IF_QC_EXT_DELIV_INFO SHIP ON MST.ORDER_H_NUM =SHIP.ORDER_H_NUM
+	  INNER JOIN MS_CUST_H SHIP_CUST ON SHIP.SHIP_TO_PF_PS_NO = SHIP_CUST.CUST_CD AND SHIP_CUST.COMP_CD = '1000'			
+	   LEFT JOIN (
+					select distinct COMP_CD, CUST_CD, SALES_ORG_CD, DISTRB_CH, DIV_CD, PF_PS_NO AS OM_NO, PF_PS_NM AS OM_NM
+					  from MS_CUST_PART 
+					 where PF_TP = 'ZI'
+					   and DEFAULT_YN = 'Y'
+				 ) v on v.COMP_CD = MST.COMP_CD and v.CUST_CD = MST.CUST_CD and v.SALES_ORG_CD = MST.SALES_ORG_CD and v.DISTRB_CH = MST.DISTRB_CH and v.DIV_CD = mst.DIV_CD
+		   WHERE 1 = 1
+			<if test='SOLD_CUST_CD != null and SOLD_CUST_CD != ""'>
+				AND MST.CUST_CD LIKE '%' + DBO.SETPARAM(#{SOLD_CUST_CD}) + '%'
+			</if>
+			<if test='OM_NO != null and OM_NO != ""'>
+				AND v.OM_NO = #{OM_NO}
+			</if>
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="searchExternalItemList" parameterType="BMap" resultType="BMap">
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+			/* SalesOrder.xml -> "searchExternalItemList" */
+			SELECT ROW_NUMBER() OVER(ORDER BY ITEM_LIST.MATL_CD DESC) ROWNUM
+				, EXT_DOC_NO
+				, MATL_CD
+				, MATL_DESC
+				, MATL_GR
+				, SALES_ORG_CD
+				, DISTRB_CH
+				, DIV_CD
+				, QTY
+				, BASIC_UNIT
+				, REQ_DELI_DT
+				, AVAIL_ITEM
+				, NET_VAL
+				, WP_OUT
+				, UOM
+			FROM (
+				SELECT MODULE.MATL_CD									AS MATL_CD
+					, MTL_DESC.MATL_DESC								AS MATL_DESC
+					, MODULE_ITEM.MATL_GR								AS MATL_GR
+					, MTL_ORG.SALES_ORG_CD								AS SALES_ORG_CD
+					, MTL_ORG.DISTRB_CH									AS DISTRB_CH
+					, MODULE_ITEM.DIV_CD								AS DIV_CD
+					, MODULE.PCS										AS QTY
+					, MODULE_ITEM.BASIC_UNIT							AS BASIC_UNIT
+					, DBO.FMTDDATE(MODULE.REQ_DELI_DT, 'DD.MM.YYYY')	AS REQ_DELI_DT
+					, 'Y'												AS AVAIL_ITEM
+					, MST.ORDER_H_NUM									AS EXT_DOC_NO
+					, dbo.SetAmt(MODULE.PRICE * 10)						AS NET_VAL
+					, '10'												AS WP_OUT
+					, 'WP'												AS UOM
+				FROM IF_QC_EXT_ORDER_H MST
+				JOIN IF_QC_EXT_MODULE_INFO MODULE ON MST.ORDER_H_NUM = MODULE.ORDER_H_NUM
+				JOIN MS_ITEM MODULE_ITEM ON MODULE.MATL_CD = MODULE_ITEM.MATL_CD
+				LEFT OUTER JOIN MS_ITEM_DESC MTL_DESC WITH(NOLOCK)
+				ON MST.COMP_CD = MTL_DESC.COMP_CD AND MODULE.MATL_CD = MTL_DESC.MATL_CD AND MTL_DESC.LANG_CD = 'EN'
+				LEFT OUTER JOIN MS_ITEM_ORG MTL_ORG WITH(NOLOCK)
+				ON MST.COMP_CD = MTL_ORG.COMP_CD AND MODULE_ITEM.MATL_CD = MTL_ORG.MATL_CD
+				AND MST.SALES_ORG_CD = MTL_ORG.SALES_ORG_CD AND MST.DISTRB_CH = MTL_ORG.DISTRB_CH
+				
+				UNION ALL
+				
+				SELECT BOS.MATL_CD										AS MATL_CD
+					, MTL_DESC.MATL_DESC								AS MATL_DESC
+					, BOS_ITEM.MATL_GR									AS MATL_GR
+					, MTL_ORG.SALES_ORG_CD								AS SALES_ORG_CD
+					, MTL_ORG.DISTRB_CH									AS DISTRB_CH
+					, BOS_ITEM.DIV_CD									AS DIV_CD
+					, BOS.PCS											AS QTY
+					, BOS_ITEM.BASIC_UNIT								AS BASIC_UNIT
+					, DBO.FMTDDATE(BOS.REQ_DELI_DT, 'DD.MM.YYYY')		AS REQ_DELI_DT
+					, 'Y'												AS AVAIL_ITEM
+					, MST.ORDER_H_NUM									AS EXT_DOC_NO
+					, ''												AS NET_VAL
+					, '10'												AS WP_OUT
+					, 'WP'												AS UOM
+				FROM IF_QC_EXT_ORDER_H MST
+				JOIN IF_QC_EXT_BOS_INFO BOS ON MST.ORDER_H_NUM = BOS.ORDER_H_NUM
+				JOIN MS_ITEM BOS_ITEM ON BOS.MATL_CD = BOS_ITEM.MATL_CD
+				LEFT OUTER JOIN MS_ITEM_DESC MTL_DESC WITH(NOLOCK)
+				ON MST.COMP_CD = MTL_DESC.COMP_CD AND BOS.MATL_CD = MTL_DESC.MATL_CD AND MTL_DESC.LANG_CD = 'EN'
+				LEFT OUTER JOIN MS_ITEM_ORG MTL_ORG WITH(NOLOCK)
+				ON MST.COMP_CD = MTL_ORG.COMP_CD AND BOS_ITEM.MATL_CD = MTL_ORG.MATL_CD
+				AND MST.SALES_ORG_CD = MTL_ORG.SALES_ORG_CD AND MST.DISTRB_CH = MTL_ORG.DISTRB_CH
+			) ITEM_LIST
+			WHERE 1 = 1
+			AND EXT_DOC_NO = #{EXT_DOC_NO}
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="getPlantCD" parameterType="BMap" resultType="String">
+	/* SalesOrder.xml -> getPlantCD */
+		SELECT READ_CD FROM BC_COMM_L
+		WHERE 1 = 1
+		AND HEAD_CD = '103800'
+		AND REF_CHR2 = #{SALES_ORG_CD}
+	</select>
+	
+	<select id="getCounrtyHead" parameterType="HashMap" resultType="String">
+		/* SalesOrder.xml -> getCounrtyHead */
+		SELECT TOP 1 REF_CHR2 FROM BC_COMM_L
+		WHERE 1 = 1
+		AND HEAD_CD = '103400'
+		AND STATUS = 'Y'
+		
+		AND REF_CHR3 = (SELECT MAX(REF_CHR3) FROM BC_COMM_L WHERE HEAD_CD = '103400' and READ_CD = #{SALES_GR})
+		AND REF_NUM1 = 1
+		AND REF_CHR2 IS NOT NULL
+	</select>
+	
+	
+<!-- 		AND CODE LIKE #{SALES_OFFICE_CD} + '%' -->
+	
+	<select id="getSalesPlanning" parameterType="HashMap" resultType="String">
+		/* SalesOrder.xml -> getSalesPlanning */
+		SELECT REF_CHR1 FROM BC_COMM_L
+		WHERE 1 = 1
+		AND HEAD_CD = '111200'
+		AND CODE = (SELECT MAX(REF_CHR3) FROM BC_COMM_L WHERE HEAD_CD = '103400' and READ_CD = #{SALES_GR})
+	</select>
+	
+	<insert id="moveAppr" parameterType="HashMap">
+		/* SalesOrder.xml -> moveAppr */
+		INSERT INTO SD_ORDER_L_APPR_HIS(
+			    COMP_CD
+			  , DOC_GR
+			  , DOC_NO
+			  , APPR_ID
+			  , PRIORITY
+			  , APPR_DT
+			  , APRV_TP
+			  , ALLOW_STS
+			  , APPROVAL_STS
+			  , REJECT_RSN
+			  , STATUS
+			  , REG_DT
+			  , REG_ID
+			  , UPT_DT
+			  , UPT_ID
+			) 
+		SELECT  COMP_CD
+			  , DOC_GR
+			  , DOC_NO
+			  , APPR_ID
+			  , PRIORITY
+			  , APPR_DT
+			  , APRV_TP
+			  , ALLOW_STS
+			  , APPROVAL_STS
+			  , REJECT_RSN
+			  , STATUS
+			  , REG_DT
+			  , REG_ID
+			  , UPT_DT
+			  , UPT_ID
+		FROM SD_ORDER_L_APPR
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{DOC_NO}
+	</insert>
+	
+		
+	<select id="selectPDFConditionTab" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> selectPDFConditionTab */
+		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+			SELECT ROW_NUMBER() OVER(ORDER BY STEP_NO ASC) ROWNUM
+				  , CONVERT(VARCHAR, COMP_CD)							AS COMP_CD
+				  , DOC_GR												AS DOC_GR
+				  , CONVERT(VARCHAR, DOC_NO)							AS DOC_NO
+				  , CASE WHEN '0' = CONVERT(VARCHAR, CONVERT(NUMERIC, ITEM_SEQ)) THEN '000' ELSE CONVERT(VARCHAR, CONVERT(NUMERIC, ITEM_SEQ)) END
+				  														AS ITEM_SEQ
+				  , CONVERT(VARCHAR, STEP_NO)							AS STEP_NO
+				  , CONVERT(VARCHAR, COND_CNTR)							AS COND_CNTR
+				  , DBO.GETCODENM('COND_TP', SD_ORDER_L_COND.COND_TP, #{LANG}) AS  COND_DESC
+				  , COND_TP												AS COND_TP
+				  , DBO.SetAmt(COND_VAL)								AS COND_VAL
+				  , DBO.SetAmt(PRICE)									AS PRICE
+				  , CURRENCY											AS CURRENCY
+				  , COND_CURR_CD										AS COND_CURR_CD
+				  , COND_UNIT_CD										AS COND_UNIT_CD
+				  , CONVERT(VARCHAR, DBO.SETAMT(COND_P_UNIT_CD))		AS COND_P_UNIT_CD
+				  , CONVERT(VARCHAR, SEQ)								AS SEQ
+			FROM SD_ORDER_L_COND
+			WHERE 1 = 1
+			AND DOC_NO   = #{DOC_NO}
+			AND COMP_CD  = #{G_COMP_CD}
+			AND DOC_GR   = #{DOC_GR}
+			AND PRICE IS NOT NULL
+			AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, #{ITEM_SEQ})
+			and COND_TP in ('ZSR5' , 'ZSR7', 'ZDC1', 'ZDC2')   
+			
+			UNION ALL
+			
+			SELECT '9999999'											AS ROWNUM
+				  , #{G_COMP_CD}										AS COMP_CD
+				  , #{DOC_GR}											AS DOC_GR
+				  , #{DOC_NO}											AS DOC_NO
+				  , ''													AS ITEM_SEQ
+				  , ''													AS STEP_NO
+				  , ''													AS COND_CNTR
+				  , DBO.GETCODENM('COND_TP', 'ZSRQ', #{LANG})			AS COND_DESC
+				  , ''													AS COND_TP
+				  , ''													AS COND_VAL
+				  , DBO.SetAmt(PRICE)									AS PRICE				  
+				  , ''													AS CURRENCY
+				  , COND_CURR_CD										AS COND_CURR_CD
+				  , ''													AS COND_UNIT_CD
+				  , ''													AS COND_P_UNIT_CD
+				  , ''													AS SEQ
+			FROM (SELECT  ITEM_SEQ
+						, SUM(PRICE) AS PRICE
+						, MAX(COND_CURR_CD) AS COND_CURR_CD
+					FROM SD_ORDER_L_COND
+					WHERE 1 = 1
+					AND DOC_NO   = #{DOC_NO}
+					AND COMP_CD  = #{G_COMP_CD}
+					AND DOC_GR   = #{DOC_GR}
+					AND PRICE IS NOT NULL
+					AND COND_TP IN ('ZSR5' , 'ZSR7', 'ZDC1', 'ZDC2') 
+					AND CONVERT(NUMERIC, ITEM_SEQ) = CONVERT(NUMERIC, #{ITEM_SEQ})
+					GROUP BY ITEM_SEQ
+			) SUM_TABLE
+			GROUP BY ITEM_SEQ, PRICE, COND_CURR_CD
+		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<update id="syncSalesOrder" parameterType="HashMap">
+		/* SalesOrder.xml -> syncSalesOrder */		
+		UPDATE SD_ORDER_H
+		SET   CMP_DELI_YN		= #{CMP_DELI_YN}
+			, REQ_PERI_CD		= #{REQ_PERI_CD}
+			, ORD_RESN_CD		= #{ORD_RESN_CD}
+			, SHP_CON_CD		= #{SHP_CON_CD}
+			, SALES_OFFICE_CD	= #{SALES_OFFICE_CD}
+			, NET_AMT			= #{NET_AMT}
+			, ATTR_ORD			= #{ATTR_ORD}		
+			, PO_NO				= #{PO_NO}
+			, DISTRB_CH			= #{DISTRB_CH}
+			, REQ_DELI_DT		= #{REQ_DELI_DT}
+			, SALES_GR			= #{SALES_GR}
+			, SALES_ORG_CD		= #{SALES_ORG_CD}
+			, DIV_CD			= #{DIV_CD}
+			, CURR_CD			= #{CURR_CD}
+			, DELI_BLOCK_CD		= #{DELI_BLOCK_CD}
+			, PO_DT				= #{PO_DT}		
+			, UPT_DT			= GETDATE()
+			, UPT_ID			= #{USERID}
+		WHERE 1 = 1
+		AND COMP_CD = #{G_COMP_CD}
+		AND DOC_GR  = #{DOC_GR}
+		AND DOC_NO  = #{DOC_NO}
+	</update>
+	
+<!-- 	<update id="syncScheduline" parameterType="HashMap">
+		/* SalesOrder.xml -> syncScheduline */
+		UPDATE SD_ORDER_SCDL
+		   SET CFM_QTY 			= #{CONFIR_QTY}
+		   	 , MS_DT 			= #{MS_DATE}
+		   	 , DELI_DT 			= #{REQ_DATE}
+		   	 , GI_DT 			= #{GI_DATE}
+		   	 , PERI_CD 			= #{DATE_TYPE}
+		   	 , DELI_BLOCK_CD	= #{REQ_DLV_BL}		   	 
+		   	 , ORD_QTY			= #{REQ_QTY}
+		   	 , LOAD_DT			= #{LOAD_DATE}		   	 
+		   	 , SALES_UNIT_CD	= #{SALES_UNIT}		   	 
+		   	 , TP_DT			= #{TP_DATE}			   	 
+		   	 
+		 WHERE COMP_CD			= #{COMP_CD}
+		   AND DOC_GR			= #{DOC_GR}
+		   AND DOC_NO			= #{DOC_NO}
+		   AND ITEM_SEQ			= CONVERT(numeric, #{ITM_NUMBER})
+		   AND SEQ				= CONVERT(numeric, #{SCHED_LINE})
+	</update>--> 
+	
+	<update id="syncItemUpdate" parameterType="HashMap">
+		/* SalesOrder.xml -> syncItemUpdate */
+		UPDATE SD_ORDER_ITEM
+		   SET USAGE_CD 		= #{DLVSCHEDUS}
+		   	 , RUT_CD			= #{ROUTE}		   	 
+		   	 , PLANT_CD			= #{PLANT}		   	 
+		   	 , BATCH_NO			= #{BATCH}		   	 
+		   	 , NET_CURR_CD		= #{CURRENCY}
+		   	 , ITEM_CTG_GR		= #{ITEM_CATEG}		   	 
+		   	 , NET_VAL			= #{NET_VALUE}		   	 	   	 
+		   	 , NET_PRICE		= #{NET_PRICE}		   	 
+		   	 , MATL_DESC		= #{SHORT_TEXT}		 
+		   	 , DELI_PRIOR_CD	= #{DLV_PRIO}	
+		   	 , ORD_QTY			= #{REQ_QTY}
+		   	 , STORE_LOC		= #{STGE_LOC}		   	 
+		   	 , MATL_CD 			= CONVERT(nvarchar, CONVERT(NUMERIC, #{MATERIAL}))
+		   	 , SHIP_PO_CD		= #{SHIP_POINT}		   	 
+		   	 , UOM				= #{COND_UNIT}		   	 
+		   	 , HG_LV_ITEM		= CONVERT(NUMERIC, #{HG_LV_ITEM})
+		   	 , PER				= #{COND_P_UNT}			
+			 , ORD_UNIT_CD		= (case when #{SALES_UNIT} ='ST' then 'PCS' else #{SALES_UNIT} end)
+			 , RSN_RJT_CD		= #{REA_FOR_RE}
+			 , DELI_DT_1ST		= ( case 
+										when #{REQ_DATE} <![CDATA[<>]]> '' then PARSE(#{REQ_DATE} AS DATE USING 'de-DE')
+										else NULL
+									end)
+			 , PRICE_DT			= ( case 
+										when #{PRICE_DATE} <![CDATA[<>]]> '' then PARSE(#{PRICE_DATE} AS DATE USING 'de-DE')
+										else NULL
+									end)
+			, UNIT1_QTY         = NULL  
+			, UNIT1_CD         	= NULL    
+			, UNIT2_QTY        	= NULL                   
+			, UNIT2_CD          = NULL        
+			, BOM_NO            = NULL        
+			, ORD_PROB          = NULL      
+			, MAX_P_DELI        = NULL 
+						
+			, UPT_DT			= GETDATE()
+			, UPT_ID			= #{USERID}
+						
+		 WHERE COMP_CD			= #{COMP_CD}
+		   AND DOC_GR			= #{DOC_GR}
+		   AND DOC_NO			= #{DOC_NO}
+		   AND ITEM_SEQ			= CONVERT(NUMERIC, #{ITM_NUMBER})	 
+	</update>
+	
+	<insert id="syncItemInsert" parameterType="HashMap">
+		/* SalesOrder.xml -> syncItemInsert */
+		INSERT INTO SD_ORDER_ITEM (
+			  COMP_CD
+			, DOC_GR			
+			, DOC_NO			
+			, ITEM_SEQ					
+			, MATL_CD			
+			, MATL_DESC			
+			, BATCH_NO			
+			, ITEM_CTG_GR
+			, HG_LV_ITEM
+			, RSN_RJT_CD			
+			, ORD_QTY
+			, ORD_UNIT_CD	
+			, DELI_PRIOR_CD	
+			, DELI_DT_1ST_TP
+			, PLANT_CD
+			, STORE_LOC
+			, SHIP_PO_CD
+			, RUT_CD
+			, PER
+			, UOM
+			, ZPNN_PER	
+			, ZPNN_UOM
+			, NET_CURR_CD	
+			, NET_PRICE	
+			, ERP_NET_PRICE
+			, NET_VAL
+			, ERP_NET_VAL	
+			, USAGE_CD
+			, DELI_DT_1ST	
+			, PRICE_DT
+			, ZPNN_PRICE			
+			, STATUS			
+			, REG_DT
+			, REG_ID	
+			, UPT_DT
+			, UPT_ID
+
+		) VALUES (
+			  #{COMP_CD}
+			, #{DOC_GR}			
+			, CONVERT(nvarchar, CONVERT(NUMERIC, #{DOC_NUMBER}))
+			, CONVERT(nvarchar, CONVERT(NUMERIC, #{ITM_NUMBER}))
+			, CONVERT(nvarchar, CONVERT(NUMERIC, #{MATERIAL}))
+			, #{SHORT_TEXT}	
+			, #{BATCH}
+			, #{ITEM_CATEG}
+			, CONVERT(numeric, #{HG_LV_ITEM})		
+			, #{REA_FOR_RE}
+			, #{REQ_QTY}
+			, (case when #{SALES_UNIT} ='ST' then 'PCS' else #{SALES_UNIT} end)	
+			, #{DLV_PRIO}	
+			, ( SELECT	REQ_PERI_CD 
+				FROM	SD_ORDER_H 
+				WHERE	COMP_CD = #{COMP_CD}
+				AND		DOC_GR	= #{DOC_GR} 
+				AND		DOC_NO	= convert(nvarchar,convert(numeric, #{DOC_NUMBER})))
+			, #{PLANT}
+			, #{STGE_LOC}
+			, #{SHIP_POINT}		
+			, #{ROUTE}
+			, #{COND_P_UNT}
+			, #{COND_UNIT}		
+			, #{COND_P_UNT}
+			, #{COND_UNIT}			
+			, #{CURRENCY}	
+			, #{NET_PRICE}
+			, #{NET_PRICE}
+			
+			, #{NET_VALUE}		
+			, #{NET_VALUE}	
+			, #{DLVSCHEDUS}  
+			, ( case 
+					when #{REQ_DATE} <![CDATA[<>]]> '' then PARSE(#{REQ_DATE} AS DATE USING 'de-DE')
+					else NULL
+				end)
+			, ( case 
+					when #{PRICE_DATE} <![CDATA[<>]]> '' then PARSE(#{PRICE_DATE} AS DATE USING 'de-DE')
+					else NULL
+				end)
+			, #{NET_PRICE}
+			, 'I'
+			, GETDATE()
+			, #{USERID}
+			, GETDATE()
+			, #{USERID}
+		)
+	</insert>
+	
+	
+	<insert id="syncScheduline" parameterType="HashMap">
+		/* SalesOrder.xml -> syncScheduline */
+		INSERT INTO SD_ORDER_SCDL (
+			  COMP_CD
+			, DOC_GR
+			, DOC_NO
+			, ITEM_SEQ
+			, SEQ
+			, MATL_CD
+			, PERI_CD
+			, DELI_DT	
+			, ORD_QTY
+			, CFM_QTY
+			, SALES_UNIT_CD					
+			, DELI_BLOCK_CD			
+			, BATCH_NO				
+			, STATUS
+			, REG_DT
+			, REG_ID			
+			, UPT_DT
+			, UPT_ID			
+		)VALUES(
+			  #{COMP_CD}
+			, #{DOC_GR}
+			, #{DOC_NO}
+			, CONVERT(NUMERIC, #{ITM_NUMBER})
+			, CONVERT(NUMERIC, #{SCHED_LINE})			
+			, CONVERT(NUMERIC, #{MATL_CD})			
+			, #{DATE_TYPE}			
+			, PARSE(#{REQ_DATE} AS DATE USING 'de-DE')
+			, #{REQ_QTY}	
+			, #{CONFIR_QTY}	
+			, (case when #{SALES_UNIT} ='ST' then 'PCS' else #{SALES_UNIT} end)
+			, #{REQ_DLV_BL}						
+			, #{BATCH_NO}					
+			, 'A'
+			, GETDATE()
+			, #{USERID}			
+			, GETDATE()
+			, #{USERID}		
+		)
+	</insert>
+	
+
+	<insert id="syncCondition" parameterType="HashMap">
+		/* SalesOrder.xml -> syncCondition */
+		INSERT INTO SD_ORDER_L_COND(
+			  COMP_CD
+			, DOC_GR
+			, DOC_NO
+			, ITEM_SEQ
+			, STEP_NO
+			, COND_CNTR
+			, COND_TP
+			, COND_VAL
+			, PRICE			
+			, COND_CURR_CD
+			, CURRENCY				
+			, COND_UNIT_CD
+			, COND_P_UNIT_CD
+			, STATUS
+			, REG_DT
+			, REG_ID		
+			, UPT_DT
+			, UPT_ID		
+		)VALUES(
+			  #{G_COMP_CD}
+			, #{DOC_GR}
+			, #{DOC_NO}			
+			, CONVERT(NUMERIC, #{ITM_NUMBER})			
+			, CONVERT(NUMERIC, #{COND_ST_NO})
+			, #{COND_COUNT}
+			, #{COND_TYPE}
+			, #{COND_VALUE}
+			, #{CONDVALUE}			
+			, #{CURRENCY}
+			, #{SDCURRENCY}
+			, #{COND_D_UNT}			
+			, #{COND_P_UNT}
+			, 'A'
+			, GETDATE()
+			, #{USERID}		
+			, GETDATE()
+			, #{USERID}		
+		)
+	</insert>
+	
+	<select id="selectZfk0Items" parameterType="BMap" resultType="BMap">	
+		SELECT ITEM_SEQ, SUM(COND_VAL) AS COND_VALUE, MAX(COND_UNIT_CD) AS COND_UNIT, MAX(COND_P_UNIT_CD) AS COND_P_UNT, MAX(COND_CURR_CD) AS CURRENCY
+		  FROM SD_ORDER_L_COND
+		 WHERE DOC_NO  = #{DOC_NO}
+		   AND COMP_CD = #{COMP_CD}
+		   AND DOC_GR  = #{DOC_GR}
+		   AND COND_TP = 'ZFK0'
+		   AND ITEM_SEQ = '#{ITEM_SEQ}
+		 GROUP BY ITEM_SEQ
+	</select>
+
+	
+	<select id="selectExistsItem" parameterType="HashMap" resultType="HashMap">	
+		/* SalesOrder.xml -> selectExistsItem */
+		SELECT COMP_CD, DOC_GR, DOC_NO, ITEM_SEQ
+		  FROM SD_ORDER_ITEM 
+		 WHERE DOC_GR		= #{DOC_GR}
+		   AND DOC_NO		= #{DOC_NO}
+		   AND ITEM_SEQ		= CONVERT(VARCHAR, CONVERT(NUMERIC, #{ITM_NUMBER}))
+	</select>
+	
+	
+	<delete id="syncItemDelete" parameterType="HashMap">
+		/* SalesOrder.xml -> syncItemDelete */
+		DELETE SD_ORDER_ITEM 
+		 WHERE DOC_GR = #{DOC_GR} 
+		   AND DOC_NO = #{DOC_NO}
+		   AND ITEM_SEQ NOT IN
+		<foreach item="item" collection="ITEMS" open="(" separator="," close=")">
+		 	 CONVERT(VARCHAR, CONVERT(NUMERIC, #{item.ITEM_SEQ}))
+		</foreach>
+	</delete>
+
+
+	
+	<select id="selectItemWP" parameterType="BMap" resultType="String">	
+		SELECT CASE WHEN A.ALT_UNIT_CD = 'WP' THEN CONVERT(NUMERIC, A.UNIT_DIV) * 1
+	                WHEN A.ALT_UNIT_CD = 'KW' THEN CONVERT(NUMERIC, A.UNIT_DIV) * 1000
+			        WHEN A.ALT_UNIT_CD = 'MWP' THEN CONVERT(NUMERIC, A.UNIT_DIV) *1000000
+			        END AS UNT
+          FROM MS_ITEM_UNIT A WITH(NOLOCK)
+               JOIN MS_ITEM B WITH(NOLOCK) 
+                 ON B.COMP_CD = A.COMP_CD AND B.MATL_CD = A.MATL_CD
+         WHERE 1 = 1
+	       AND A.COMP_CD = '1000'	
+	       AND A.ALT_UNIT_CD IN ('WP','KW','MWP')
+	       AND B.BASIC_UNIT = 'PCS'
+	       AND A.MATL_CD = #{MATL_CD}
+	</select>
+	
+	<select id="selectItemAppr" parameterType="BMap" resultType="BMap">		
+		SELECT A.COMP_CD, A.DOC_GR, A.SALES_ORG_CD, A.DISTRB_CH, A.DIV_CD, A.DOC_NO, A.ITEM_SEQ, A.MATL_CD, A.ZPNN_PER, A.ZPNN_UOM, A.ORD_QTY
+		     , dbo.SetAmt2(ISNULL(A.ST_PER,0) * A.ORD_QTY / 1000000) AS MW
+		     , CASE WHEN A.ZPNN_UOM ='ST' AND A.ST_PER != 0 THEN  dbo.SetAmt(100 / ISNULL(A.ST_PER,0) * ISNULL(A.NET_PRICE,0))
+		            WHEN A.ZPNN_UOM ='WP' THEN dbo.SetAmt(100 / ISNULL(A.ZPNN_PER,0) * ISNULL(A.NET_PRICE,0))
+		            ELSE dbo.SetAmt(0) END AS REQUESTED_PRICE
+		     , CASE WHEN A.UOM ='ST' AND A.ST_PER != 0 THEN dbo.SetAmt(100 / ISNULL(A.ST_PER,0) * ISNULL(A.ERP_NET_PRICE,0))
+		            WHEN A.UOM ='WP' THEN dbo.SetAmt(100 / ISNULL(A.PER,0) * ISNULL(A.ERP_NET_PRICE,0))
+		            ELSE dbo.SetAmt(0) END AS ERP_PRICE 	
+		 FROM ( SELECT A.COMP_CD, A.DOC_GR, A.DOC_NO, B.ITEM_SEQ, B.MATL_CD, B.ITEM_CTG_GR, B.NET_PRICE, B.NET_CURR_CD
+		             , B.ATP_QTY, A.DELI_PLANT_CD, B.ERP_NET_PRICE, B.ERP_NET_VAL, A.SOLD_CUST_CD, A.SALES_OFFICE_CD
+		             , A.SALES_GR, A.SALES_ORG_CD, A.DISTRB_CH, A.DIV_CD, B.ZPNN_PER, B.ZPNN_UOM, B.ORD_QTY, B.PER, B.UOM
+		             ,( SELECT CASE WHEN UI.ALT_UNIT_CD = 'WP' THEN CONVERT(NUMERIC, UI.UNIT_DIV) * 1
+		                            WHEN UI.ALT_UNIT_CD = 'KW' THEN CONVERT(NUMERIC, UI.UNIT_DIV) * 1000
+								    WHEN UI.ALT_UNIT_CD = 'MWP' THEN CONVERT(NUMERIC, UI.UNIT_DIV) *1000000
+								    END AS UNT
+						  FROM MS_ITEM_UNIT UI WITH(NOLOCK)
+						  JOIN MS_ITEM MI WITH(NOLOCK) 
+						       ON MI.COMP_CD = UI.COMP_CD AND MI.MATL_CD = UI.MATL_CD
+						 WHERE UI.COMP_CD = '1000'	
+						   AND UI.ALT_UNIT_CD IN ('WP','KW','MWP')
+						   AND MI.BASIC_UNIT = 'PCS'
+						   AND UI.MATL_CD = B.MATL_CD
+		               ) AS ST_PER
+		         FROM SD_ORDER_H A WITH (NOLOCK)
+		         JOIN SD_ORDER_ITEM B WITH (NOLOCK)
+		              ON B.COMP_CD = A.COMP_CD AND B.DOC_GR = A.DOC_GR AND B.DOC_NO = A.DOC_NO
+		        ) A 
+		WHERE A.DOC_NO = #{DOC_NO}
+	</select>
+	
+	<select id="getPDFHeaderData" parameterType="BMap" resultType="BMap">
+		/* SalesOrder.xml -> getPDFHeaderData */
+		SELECT SD_TEXT.COMP_CD		AS COMP_CD
+			 , SD_TEXT.DOC_NO		AS DOC_NO
+			 , SD_TEXT.SEQ			AS SEQ
+			 , SD_TEXT.TEXT_TP		AS TEXT_TP
+			 , SD_TEXT.LANG_CD		AS LANG_CD
+			 , SD_TEXT.MATL_TEXT	AS MATL_TEXT
+		FROM SD_ORDER_TEXT SD_TEXT
+		WHERE 1 = 1
+		AND SD_TEXT.DOC_NO  = #{DOC_NO}
+		AND SD_TEXT.COMP_CD = #{G_COMP_CD}
+		AND SD_TEXT.DOC_GR  = #{DOC_GR}
+		AND SD_TEXT.LANG_CD = #{LANG}
+		AND SD_TEXT.TEXT_TP = '0001'
+		AND SD_TEXT.STATUS <![CDATA[ <> ]]> 'D'
+	</select>	
+		
+	<select id="selectItemPlant" parameterType="BMap" resultType="BMap">
+	    /* SalesOrderMapper.selectItemPlant */
+		SELECT B.PLANT_CD
+		     , B.PLANT_CD + '-' + DBO.GETCODENM('DELI_PLANT_CD', B.PLANT_CD, 'EN') AS PLANT_NM
+		  FROM MS_ITEM A
+		  LEFT OUTER JOIN MS_ITEM_PLANT B
+		    ON A.COMP_CD = B.COMP_CD AND A.MATL_CD = B.MATL_CD AND B.STATUS = 'A'
+		 WHERE A.STATUS = 'A'
+		   AND A.MATL_CD = #{MATL_CD}
+	</select>			
+		
+	<select id="selectStoreLocPopList" parameterType="BMap" resultType="BMap">
+	    /* SalesOrderMapper.selectStoreLocPopList */
+		SELECT B.STORE_LOC
+		     , B.STORE_LOC + '-' + B.STORE_LOC_NM AS STORE_LOC_NM
+		  FROM MS_ITEM A
+		  LEFT OUTER JOIN MS_ITEM_STORE_LOC B
+		    ON A.COMP_CD = B.COMP_CD AND A.MATL_CD = B.MATL_CD AND B.STATUS = 'A' AND B.DEL_YN = 'N'
+		 WHERE A.STATUS = 'A'
+		   AND A.MATL_CD = #{MATL_CD}
+		   AND B.PLANT_CD = #{PLANT_CD}
+	</select>
+</mapper>

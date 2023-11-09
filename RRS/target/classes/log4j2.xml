@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="warn">
+	<properties>
+		<property name="name">app</property>
+		<property name="pattern">%d %5p [%c] %m%n</property>
+		<property name="pattern2">[%d]%m%n</property>
+	</properties>
+	<appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="${pattern}"/>
+		</Console>
+		<RollingFile name="RollingFile" fileName="C:/OMS/WebApp/logs/${name}_all.log" filePattern="C:/OMS/WebApp/logs/$${date:yyyy-MM}/${name}_all-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout>
+				<pattern>${pattern}</pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy />Rotated everyday
+				<SizeBasedTriggeringPolicy size="10 MB"/> Or every 10 MB
+			</Policies>
+		</RollingFile>
+		
+		<RollingFile name="RollingBtFile" fileName="C:/OMS/WebApp/logs/${name}_bt.log" filePattern="C:/OMS/WebApp/logs/$${date:yyyy-MM}/${name}_bt-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout>
+				<pattern>${pattern}</pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy />Rotated everyday
+				<SizeBasedTriggeringPolicy size="10 MB"/> Or every 10 MB
+			</Policies>
+		</RollingFile>
+		
+		<RollingFile name="RollingRfcFile" fileName="C:/OMS/WebApp/logs/${name}_rfc.log" filePattern="C:/OMS/WebApp/logs/$${date:yyyy-MM}/${name}_rfc-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout>
+				<pattern>${pattern2}</pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy />Rotated everyday
+				<SizeBasedTriggeringPolicy size="10 MB"/> Or every 10 MB
+			</Policies>
+		</RollingFile>
+		
+		<RollingFile name="RollingCallFile" fileName="C:/OMS/WebApp/logs/${name}_call.log" filePattern="C:/OMS/WebApp/logs/$${date:yyyy-MM}/${name}_call-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout>
+				<pattern>${pattern2}</pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy />Rotated everyday
+				<SizeBasedTriggeringPolicy size="10 MB"/> Or every 10 MB
+			</Policies>
+		</RollingFile>
+	</appenders>
+	<loggers>
+		<Root level="warn" additivity="false">
+			<appender-ref ref="Console"/>
+			<appender-ref ref="RollingFile"/>
+			<appender-ref ref="RollingBtFile"/>
+		</Root>
+		<Logger name="jdbc.sqlonly" level="trace" additivity="false">
+			<appender-ref ref="Console"/>
+			<appender-ref ref="RollingFile"/>
+		</Logger>
+		<Logger name="bt" level="trace" additivity="false">
+			<appender-ref ref="Console"/>
+			<appender-ref ref="RollingFile"/>
+			<appender-ref ref="RollingBtFile"/>
+		</Logger>
+		<Logger name="bt.btframework.sap.SAPConnectorManager" level="trace" additivity="false">
+			<appender-ref ref="Console"/>
+			<appender-ref ref="RollingFile"/>
+			<appender-ref ref="RollingRfcFile"/>
+		</Logger>
+		<Logger name="bt.btframework.aops.ServiceInterceptor" level="trace" additivity="false">
+			<appender-ref ref="Console"/>
+			<appender-ref ref="RollingFile"/>
+			<appender-ref ref="RollingCallFile"/>
+		</Logger>
+	</loggers>
+</configuration>

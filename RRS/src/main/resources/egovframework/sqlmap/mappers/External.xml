@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ExternalMapper">
+	<!-- selectSalesMster List -->
+	<select id="selectSalesMster" parameterType="BMap" resultType="BMap">
+	/* External.xml -> selectSalesMster */
+		SELECT ISNULL(dbo.getCodeNm('DELI_BLOCK_CD',DELI_BLOCK_CD, #{LANG}),'') AS DELI_BLOCK_NM
+		     , DELI_BLOCK_CD
+		     , DOC_NO
+			 , PO_NO
+			 , dbo.FmtvDate(REQ_DELI_DT,'DD.MM.YYYY') REQ_DELI_DT
+			 , INCOTERMS_CD
+			 , ISNULL(dbo.getCodeNm('PAY_TERM',PAY_TERM, #{LANG}),'') AS PAY_TERM
+			 , CONCAT(dbo.setAmt(T_WT),' ',T_WT_UNIT) AS T_WT
+			 , ISNULL(dbo.setAmt(T_AMT),0) AS T_AMT
+			 , ISNULL(CURR_CD,'') AS CURR_CD
+			 , ISNULL(dbo.getCodeNm('OVL_STS',OVL_STS, #{LANG}),'') AS OVL_STS 
+			 , CASE WHEN SUBSTRING(PAY_TERM,1,2) = 'CA' THEN 'Z2' ELSE 'Z1' END AS DLV_BLOCK
+			 , CONCAT(dbo.FmtvDate(VAL_FR_DT,'DD.MM.YYYY'), ' - ', dbo.FmtvDate(VAL_TO_DT,'DD.MM.YYYY') 	) AS VALID_TERM
+			 --, REASON_REJECT
+		  FROM SD_ORDER_H H
+		 WHERE H.COMP_CD = #{COMP_CD}
+		   AND H.DOC_GR = #{DOC_GR}
+		   AND H.SOLD_CUST_CD = #{CUST_CD}
+		   AND H.STATUS <![CDATA[ <> ]]> 'T'
+		   AND H.STATUS <![CDATA[ <> ]]> 'D'
+	  ORDER BY DOC_NO DESC
+	</select>
+
+	<select id="selectSalesDetail" parameterType="BMap" resultType="BMap">
+	/* External.xml -> selectSalesDetail */
+		SELECT H.DOC_NO
+			 , H.DELI_BLOCK_CD AS H_DELI_BLOCK_CD
+			 , SC.DELI_BLOCK_CD AS L_DELI_BLOCK_CD
+		     , L.ITEM_SEQ
+			 , L.MATL_CD
+			 , DE.MATL_DESC
+			 , dbo.setQty(L.ORD_QTY) AS ORD_QTY
+			 , dbo.getCodeNm('BASIC_UNIT', L.ORD_UNIT_CD, #{LANG}) AS ORD_UNIT_CD
+			 , L.DELI_DT_1ST_TP AS DELI_TP
+			 , dbo.FmtdDate(L.DELI_DT_1ST, 'DD.MM.YYYY') AS DELI_DT
+			 , ISNULL(dbo.setAmt(L.NET_PRICE),0.00) AS NET_PRICE
+			 , ISNULL(dbo.setAmt(L.NET_VAL),0.00) AS NET_VAL 
+			 , L.NET_CURR_CD
+			 , ISNULL(dbo.getCodeNm('OVL_STS',OVL_STS, #{LANG}),'') AS OVL_STS 
+			 , ISNULL(dbo.getCodeNm('OVL_DVL_STS',OVL_DVL_STS, #{LANG}),'') AS OVL_DVL_STS 
+			 <if test ="DOC_GR == 'QT'">
+			 , ISNULL((SELECT DOC_NO FROM SD_ORDER_H WHERE COMP_CD = #{COMP_CD} AND DOC_GR ='SD' AND QT_NO = H.DOC_NO),'') AS SO_NO 
+			 </if>
+			 <if test ="DOC_GR == 'SO'">
+			 , ISNULL((SELECT DOC_NO FROM SD_ORDER_H WHERE COMP_CD = #{COMP_CD} AND DOC_GR ='SD' AND QT_NO = H.DOC_NO),'') AS QT_NO 
+			 </if>
+			 , ISNULL(FIX_DT_QTY_YN,'') AS FIX_DT_QTY_YN
+			 , CASE WHEN SUBSTRING(PAY_TERM,1,2) = 'CA' THEN 'Z2' ELSE 'Z1' END AS DLV_BLOCK
+			 --, L.REASON_REJECT
+		  FROM SD_ORDER_H H
+	INNER JOIN SD_ORDER_ITEM L 
+	        ON H.COMP_CD = L.COMP_CD
+		   AND H.DOC_NO = L.DOC_NO 
+	INNER JOIN SD_ORDER_SCDL SC
+			ON L.COMP_CD = SC.COMP_CD
+		   AND L.DOC_GR = SC.DOC_GR 
+		   AND L.DOC_NO = SC.DOC_NO
+		   AND L.ITEM_SEQ = SC.ITEM_SEQ 
+		   AND SC.SEQ = '1'
+	 LEFT JOIN MS_ITEM_DESC DE
+	        ON L.COMP_CD = DE.COMP_CD 
+		   AND L.MATL_CD = DE.MATL_CD
+		   AND DE.LANG_CD = #{LANG}
+		 WHERE H.COMP_CD = #{COMP_CD}
+		   AND H.DOC_GR = #{DOC_GR}
+		   AND H.SOLD_CUST_CD = #{CUST_CD}
+		   AND H.STATUS <![CDATA[ <> ]]> 'T'
+		   AND H.STATUS <![CDATA[ <> ]]> 'D'
+	</select>
+	<select id="selectInvoiceAddr" parameterType="BMap" resultType="BMap">
+	/* External.xml -> selectInvoiceAddr */
+		SELECT CUST_NM
+		     , HAUS_NO
+			 , STREET_NM
+			 , CITY_NM
+			 , POST_CD + ' ' + dbo.getCodeNm('REGION_CD', CONCAT(COUNTRY_CD,REGION_CD), #{LANG}) AS REGION
+			 , dbo.getCodeNm('COUNTRY_CD', COUNTRY_CD, #{LANG}) AS COUNTRY
+			 , VAT_REG_NO
+		  FROM MS_CUST_H 
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND CUST_CD = #{CUST_CD}
+	</select>
+	<select id="selectOrderProcess" parameterType="BMap" resultType="BMap">
+	/* External.xml -> selectOrderProcess */
+	
+		SELECT
+			(select count(1) from (
+				select QT_NO
+				from SD_ORDER_H 
+				where QT_NO is not null
+				and QT_NO <![CDATA[<>]]> ''
+				and COMP_CD 		= #{COMP_CD}
+				and SOLD_CUST_CD 	= #{CUST_CD}
+				and DOC_GR = 'SO'
+				group by QT_NO
+			) v) AS QT_COMPLETED
+		,	(select count(1) 
+				from SD_ORDER_H 
+				where COMP_CD 		= #{COMP_CD}
+				and SOLD_CUST_CD 	= #{CUST_CD}
+				and DOC_GR = 'QT'
+				and QT_STS_CD <![CDATA[<>]]> 'E0006'
+				and QT_STS_CD <![CDATA[<>]]> 'E0015'
+				and DOC_NO not in ( select QT_NO from SD_ORDER_H where QT_NO is not null and QT_NO <![CDATA[<>]]> '' and COMP_CD = #{COMP_CD} and SOLD_CUST_CD = #{CUST_CD} and DOC_GR = 'SO' group by QT_NO)
+			) AS QT_OPEN
+		,	(select count(1) 
+				from SD_ORDER_H 
+				where COMP_CD 		= #{COMP_CD}
+				and SOLD_CUST_CD 	= #{CUST_CD}
+				and DOC_GR	= 'QT'
+				and QT_STS_CD = 'E0006'
+			) AS QT_CANCELED		
+		 , (select COUNT(1)
+				from SD_ORDER_H 
+				where COMP_CD 		= #{COMP_CD}
+				and SOLD_CUST_CD 	= #{CUST_CD}
+				and DOC_GR = 'SO' 
+				and STATUS = 'D'
+				and CONVERT(char(10), REG_DT, 112) between #{IS_FKDAT} and #{IS_FKDAT1}
+		   ) AS SD_CANCELED
+	</select>
+	
+	<select id="selectCustomerLang" parameterType="BMap" resultType="BMap">
+	/* External.xml -> selectCustomerLang */
+		SELECT CUST_CD
+			 , LANG_CD
+			 , CASE 
+			   WHEN (SELECT COUNT(1) 
+					   FROM MS_CUST_SALES
+					  WHERE COMP_CD 		= #{COMP_CD}
+					    AND CUST_CD 		= #{CUST_CD}
+					    AND SALES_ORG_CD 	= '1000'
+					    AND DISTRB_CH 		= '10'
+					    AND STATUS 			= 'Y') > 0 THEN 'Y'
+			   ELSE 'N'
+			   END AS SALE_YN		   			 
+		  FROM MS_CUST_H 
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND CUST_CD = #{CUST_CD}
+	</select>
+	
+	<select id="selectContactPerson" parameterType="BMap" resultType="BMap">
+	/* External.xml -> selectContactPerson */
+		SELECT * FROM (
+			SELECT    TOP 1
+					PF_TP AS TYPE_CD
+			, dbo.GetCodeNm('PF_TP',PF_TP, #{LANG}) TYPE_NM
+			, PF_PS_NM
+			, ISNULL(B.TEL_NO,'') TEL
+			, ISNULL(B.E_MAIL,'') E_MAIL
+		   FROM MS_CUST_PART A 
+			   LEFT JOIN BC_USER B
+			 ON A.COMP_CD = B.COMP_CD
+			AND A.PF_PS_NO = B.USER_ID
+			 WHERE A.COMP_CD = #{COMP_CD}
+			   AND A.CUST_CD = #{CUST_CD}
+			   AND PF_TP ='ZK'
+			   AND A.STATUS = 'Y'
+		  ORDER BY A.DEFAULT_YN DESC
+		) v1
+		UNION ALL
+		SELECT * FROM (
+			 SELECT TOP 1
+					PF_TP AS TYPE_CD
+			   , dbo.GetCodeNm('PF_TP',PF_TP, #{LANG}) TYPE_NM
+			, PF_PS_NM
+			, ISNULL(B.TEL_NO,'') TEL
+			, ISNULL(B.E_MAIL,'') E_MAIL
+			FROM MS_CUST_PART A 
+			   LEFT JOIN BC_USER B
+			 ON A.COMP_CD = B.COMP_CD
+			AND A.PF_PS_NO = B.USER_ID
+			 WHERE A.COMP_CD = #{COMP_CD}
+			   AND A.CUST_CD = #{CUST_CD}
+			   AND PF_TP ='ZI'
+			   AND A.STATUS = 'Y'
+			ORDER BY A.DEFAULT_YN DESC 
+		) v2
+	</select>
+	
+	<select id="selectCommonCodeList" parameterType="Map" resultType="BMap">
+	/* CommonCode.xml -> selectCommonCodeList */
+		SELECT
+			 A.HEAD_ID HEAD_ID
+		   , DBO.GetHeadNm(A.HEAD_ID, #{LANG}) HEAD_NM
+		   , DBO.GetCodeNm(A.HEAD_ID, B.CODE, #{LANG}) CODE_NM
+		   , B.READ_CD + ' - ' +DBO.GetCodeNm(A.HEAD_ID, B.CODE, #{LANG}) S_CODE_NM
+		   , B.READ_CD CODE
+		   , B.CODE REFVALUE
+		   , B.REF_CNT CNT
+		   , B.REF_CHR1 REF1
+		   , B.REF_CHR2 REF2
+		   , B.REF_CHR3 REF3
+		FROM BC_COMM_H A 
+  INNER JOIN BC_COMM_L B
+	      ON B.HEAD_CD = A.HEAD_CD
+		 AND B.REF_CHR5 = 'EX'
+	   WHERE A.STATUS = 'Y'
+	     AND B.STATUS = 'Y'
+		 AND A.HEAD_ID IN		 
+			<foreach item="code" collection="codeList" open="(" close=")" separator=",">
+				#{code}
+			</foreach>
+	  ORDER BY B.PRIORITY ASC
+	</select>
+	
+	<select id="selectModuleList" parameterType="Map" resultType="BMap">
+	/* External.xml -> selectModuleList  */
+		SELECT DISTINCT
+			  MATL_GR AS MATL_GR_CD
+			, CASE 
+				WHEN #{LANG} = 'EN' THEN CODE_EN
+				WHEN #{LANG} = 'FR' THEN CODE_FR
+				WHEN #{LANG} = 'DE' THEN CODE_NM
+			    ELSE
+					CODE_EN
+			  END AS MATL_GR
+			, B.WP_OUT 
+		  FROM MS_EXTER_MODULE_INFO A 
+	INNER JOIN MS_ITEM B 
+		    ON A.COMP_CD = B.COMP_CD
+		   AND A.MATL_CD = B.MATL_CD
+	INNER JOIN BC_COMM_L L
+			ON B.MATL_GR = L.CODE
+	  ORDER BY B.MATL_GR DESC, B.WP_OUT ASC	
+	</select>
+	
+	<select id="selectBomList" parameterType="Map" resultType="BMap">
+	/* External.xml -> selectBomList  */	
+		  SELECT CONCAT(A.KIND_CD,'|',A.COUNTRY_CD) AS KIND_CD, A.MATL_CD, B.MATL_DESC
+		    FROM MS_EXTER_BOS_INFO A 
+		   INNER JOIN MS_ITEM_DESC B 
+		      ON A.COMP_CD = B.COMP_CD 
+		     AND A.MATL_CD = B.MATL_CD
+		     AND B.LANG_CD = #{LANG}
+	</select>
+	
+	<select id="selectModuleWpOutList" parameterType="Map" resultType="BMap">
+	/* External.xml -> selectModuleWpOutList */
+	         SELECT MATL_GR, i.WP_OUT
+			   FROM MS_EXTER_MODULE_INFO M
+		 INNER JOIN MS_ITEM i 				
+				 ON M.COMP_CD = i.COMP_CD
+				AND m.MATL_CD = i.MATL_CD		
+		   GROUP BY i.MATL_GR, i.WP_OUT
+		   ORDER BY WP_OUT
+	</select>
+	
+	<update id="confirmSalesOrderHead" parameterType="HashMap">
+	/* External.xml -> confirmSalesOrderHead */		  
+		  UPDATE SD_ORDER_H
+			 SET DELI_BLOCK_CD = #{DELI_BLOCK_CD}
+			   , REASON_REJECT = #{REASON_REJECT}
+		   WHERE COMP_CD 	= #{COMP_CD}
+		     AND DOC_NO 	= #{DOC_NO}
+			 AND DOC_GR 	= 'SO'
+	</update>	
+		
+	<update id="confirmSalesOrderItem" parameterType="HashMap">
+	/* External.xml -> confirmSalesOrderItem */	
+		UPDATE SD_ORDER_SCDL
+		   SET DELI_BLOCK_CD 	= #{DELI_BLOCK_CD}		   	 
+	     WHERE COMP_CD 			= #{COMP_CD}
+		   AND DOC_NO 			= #{DOC_NO}
+		   AND DOC_GR 			= 'SO'	
+		   AND ITEM_SEQ 		= #{ITEM_SEQ}
+	</update>	
+	
+	<update id="rejectSalesOrderItem" parameterType="HashMap">
+	/* External.xml -> rejectSalesOrderItem */	
+		UPDATE SD_ORDER_ITEM
+		   SET REASON_REJECT 	= #{REASON_REJECT}		   	 
+	     WHERE COMP_CD 			= #{COMP_CD}
+		   AND DOC_NO 			= #{DOC_NO}
+		   AND DOC_GR 			= 'SO'	
+		   AND ITEM_SEQ 		= #{ITEM_SEQ}
+	</update>
+		
+	<insert id="insertConfirmHis" parameterType="HashMap">
+	/* External.xml -> insertConfirmHis */
+		INSERT INTO IF_QC_EXT_ORDER_CONFIRM_HISTORY
+					( DOC_NO			
+					, DIV				
+					, DLV_BLOCK		
+					, ITM_NUMBER		
+					, SCHED_LINE		
+					, REQ_DLV_BL		
+					, CUST_CD
+					, TOKEN_ID			
+					, IF_DT
+					)
+			 VALUES ( #{DOC_NO}			
+					, #{DIV}				
+					, #{DLV_BLOCK}		
+					, #{ITM_NUMBER}		
+					, #{SCHED_LINE}		
+					, #{REQ_DLV_BL}		
+					, #{CUST_CD}
+					, #{TOKEN_ID}		
+					, GETDATE()
+					)
+	</insert>	
+			
+	<select id="selectShiptoList" parameterType="Map" resultType="BMap">
+	/* External.xml -> selectShiptoList */
+				SELECT DISTINCT B.CUST_CD
+					 , A.SALES_ORG_CD AS SALES_ORG_CD
+					 , A.DISTRB_CH AS DISTRB_CH
+					 , CUST_NM AS COMPANY_NM
+					 , B.CUST_ABNM
+					 , CONCAT(STREET_NM,' ',HAUS_NO) AS STREET_NM
+					 , CONCAT(ADD_TXT1, ' ',ADD_TXT2) AS ADDR
+					 , POST_CD
+					 , CITY_NM
+					 , COUNTRY_CD
+					 , DBO.GetCodeNm('COUNTRY_CD',COUNTRY_CD,#{LANG}) AS COUNTRY_NM
+				  FROM MS_CUST_PART A
+		    INNER JOIN MS_CUST_H B
+				  	ON A.COMP_CD = B.COMP_CD 
+			       AND A.PF_PS_NO = B.CUST_CD
+			     WHERE A.CUST_CD = #{CUST_CD}
+			       AND A.PF_TP = 'WE'
+			       AND A.DIV_CD IN ('20','40')
+	</select>
+	
+	<insert id="insertQCSalesOrderHead" parameterType="HashMap">
+	/* External.xml -> insertQCSalesOrderHead */
+		INSERT INTO IF_QC_EXT_ORDER_H
+					( COMP_CD
+					, CUST_CD
+					, ORDER_H_NUM
+					, PROJECT_AND_PON
+					, COUNTRY_CD
+					, REQ_DELI_DT					
+					, SALES_ORG_CD
+					, DISTRB_CH
+					, DIV_CD					
+					, TOKEN_ID
+					, REG_DT					
+					, IF_DT
+					, IF_STS
+					, IF_MSG
+					)
+			 VALUES ( #{COMP_CD}
+					, #{CUST_CD}
+					, #{ORDER_H_NUM}
+					, #{PROJECT_AND_PON}
+					, #{COUNTRY_CD}					
+					, CONVERT(datetime, #{REQ_DELI_DT}, 103)					
+					, #{SALES_ORG_CD}
+					, #{DISTRB_CH}
+					, #{DIV_CD}					
+					, #{TOKEN_ID}	
+					, GETDATE()			
+					, GETDATE()
+					, 'R'
+					, ''
+					)
+	</insert>	
+	
+	
+	<insert id="insertQCSalesOrderDelivInfo" parameterType="HashMap">
+	/* External.xml -> insertQCSalesOrderDelivInfo */
+		INSERT INTO IF_QC_EXT_DELIV_INFO
+					( COMP_CD
+					, CUST_CD
+					, ORDER_H_NUM
+					, DELIV_DIV
+					, IS_UNLOAD_EQUIP
+					, UNLOAD_EQUIP_COMMENT	
+					, PAYMENT_TERM
+					, DELIV_COMP_NM
+					, FIRST_NM
+					, SUB_NM
+					, ST_HOUSE_NUMBER
+					, ADDR_COMP_CO
+					, POSTCODE
+					, PLACE
+					, COUNTRY
+					, REMARKS
+					, SHIP_TO_PF_PS_NO
+					, SHIP_TO_SALES_ORG_CD
+					, SHIP_TO_DISTRB_CH
+					, SHIP_TO_DIV_CD
+					, IF_DT
+					, IF_STS
+					, IF_MSG
+					)
+			 VALUES ( #{COMP_CD}
+					, #{CUST_CD}
+					, #{ORDER_H_NUM}
+					, #{DELIV_DIV}
+					, #{IS_UNLOAD_EQUIP}
+					, #{UNLOAD_EQUIP_COMMENT}
+					, #{TERM_PAY_CD}
+					, #{DELIV_COMP_NM}
+					, #{FIRST_NM}
+					, #{SUB_NM}
+					, #{ST_HOUSE_NUMBER}
+					, #{ADDR_COMP_CO}
+					, #{POSTCODE}
+					, #{PLACE}
+					, #{COUNTRY}
+					, #{REMARKS}
+					, #{SHIP_TO_PF_PS_NO}
+					, #{SHIP_TO_SALES_ORG_CD}
+					, #{SHIP_TO_DISTRB_CH}
+					, #{SHIP_TO_DIV_CD}
+					, GETDATE()
+					, 'R'
+					, ''
+					)
+	</insert>	
+	
+	
+	<insert id="insertQCSalesOrderModule" parameterType="HashMap">
+	/* External.xml -> insertQCSalesOrderModule */
+		INSERT INTO IF_QC_EXT_MODULE_INFO
+					( COMP_CD
+					, CUST_CD
+					, ORDER_H_NUM
+					, ORDER_MODU_SEQ
+					, MATL_GR
+					, WP_OUT
+					, PCS
+					, MW
+					, PRICE
+					, REQ_DELI_DT
+					, MATL_CD
+					, SRC_PRICE
+					, IF_DT
+					, IF_STS
+					, IF_MSG
+
+					)
+			 VALUES ( #{COMP_CD}
+					, #{CUST_CD}
+					, #{ORDER_H_NUM}
+					, #{ORDER_MODU_SEQ}
+					, #{MATL_GR}
+					, #{WP_OUT}
+					, #{PCS}
+					, dbo.getCastNum(#{WATT})
+					, dbo.getCastNum(#{PRICE})					
+					, CONVERT(datetime, #{REQ_DELI_DT}, 103)					
+					, (
+						SELECT TOP 1 m.MATL_CD
+						  FROM MS_EXTER_MODULE_INFO m
+				    INNER JOIN MS_ITEM i ON m.MATL_CD = i.MATL_CD
+					     WHERE i.MATL_GR = #{MATL_GR}
+						   AND i.WP_OUT  = #{WP_OUT}				
+					  )
+					, #{PRICE}
+					, GETDATE()
+					, 'R'
+					, ''
+					)
+	</insert>
+	
+	
+	<insert id="insertQCSalesOrderBOSInfo" parameterType="HashMap">
+	/* External.xml -> insertQCSalesOrderBOSInfo */
+		INSERT INTO IF_QC_EXT_BOS_INFO
+					( COMP_CD
+					, CUST_CD
+					, ORDER_H_NUM
+					, ORDER_BOS_SEQ
+					, MATL_CD
+					, PCS
+					, REQ_DELI_DT
+					, IF_DT
+					, IF_STS
+					, IF_MSG
+					)
+			 VALUES ( #{COMP_CD}
+					, #{CUST_CD}
+					, #{ORDER_H_NUM}
+					, #{ORDER_BOS_SEQ}
+					, #{MATL_CD}
+					, #{PCS}				
+					, CONVERT(datetime, #{REQ_DELI_DT}, 103)
+					, GETDATE()
+					, 'R'
+					, ''
+					)
+	</insert>
+	
+	<select id="selectShipToCustPartList" parameterType="HashMap" resultType="HashMap">
+	/* External.xml -> selectShipToCustPartList */
+		SELECT 
+			  COMP_CD
+			, CUST_CD
+			, SEQ
+			, SALES_ORG_CD
+			, DISTRB_CH
+			, DIV_CD
+			, PF_TP
+			, PF_NM
+			, PF_PS_NO
+			, PF_PS_NM
+		  FROM MS_CUST_PART
+		 WHERE COMP_CD 	= #{COMP_CD}
+		   AND CUST_CD 	= #{CUST_CD}
+		   AND PF_TP 	= 'WE'
+		   AND DIV_CD 	IN ('20', '40')
+		   AND PF_PS_NO = #{SHIP_TO_PF_PS_NO}
+		   AND STATUS 	= 'Y'
+	  ORDER BY DIV_CD ASC
+	</select>
+	
+	<select id="selectSoldToCustPartList" parameterType="HashMap" resultType="HashMap">
+	/* External.xml -> selectSoldToCustPartList */
+		SELECT 
+			  COMP_CD
+			, CUST_CD
+			, SEQ
+			, SALES_ORG_CD
+			, DISTRB_CH
+			, DIV_CD
+			, PF_TP
+			, PF_NM
+			, PF_PS_NO
+			, PF_PS_NM
+		  FROM MS_CUST_PART
+		 WHERE COMP_CD 	= #{COMP_CD}
+		   AND CUST_CD 	= #{CUST_CD}
+		   AND PF_TP 	= 'AG'
+		   AND DIV_CD 	IN ('20', '40')
+		   AND STATUS 	= 'Y'
+	  ORDER BY DIV_CD ASC
+	</select>
+	
+</mapper>
