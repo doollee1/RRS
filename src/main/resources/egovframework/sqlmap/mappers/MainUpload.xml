@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MainUploadMapper">
+
+	<delete id="deleteMainUpload" parameterType="BMap">
+	/* MainUploadMapper.deleteMainUpload */
+		Truncate Table MC_MAIN_DS_EXCEL
+	</delete>
+
+	<insert id="insertMainUpload" parameterType="HashMap">
+		/* MainUploadMapper.insertMainUpload */		
+		INSERT INTO MC_MAIN_DS_EXCEL
+		           ( ORDER_GRADING
+		           , DOCUMENT_ID
+		           <if test="BEZ_ATT != null and BEZ_ATT != ''">
+		           , BEZ_ATT
+		           </if>
+		           , REGION
+		           , PRODUCT
+		           , VOLUME_IN_WP
+		           , VOLUME_IN_MW
+		           <if test="QUANTITY_IN_PCS != null and QUANTITY_IN_PCS != ''">
+		           , QUANTITY_IN_PCS
+		           </if>
+			       <if test="INVOICE_DATE != null and INVOICE_DATE != ''">
+		           , INVOICE_DATE
+		           </if>
+		           , REVENUE_MONTH
+		           , YEAR
+			       <if test="Q_PARTNER != null and Q_PARTNER != ''">
+		           , Q_PARTNER
+		           </if>
+		           , REG_DT
+		           , REG_ID
+		           , UPT_DT
+		           , UPT_ID)
+		     VALUES
+		           ( #{ORDER_GRADING}
+			       , #{DOCUMENT_ID}
+		           <if test="BEZ_ATT != null and BEZ_ATT != ''">
+			       , #{BEZ_ATT}
+			       </if>
+			       , #{REGION}
+			       , #{PRODUCT}
+			       , #{VOLUME_IN_WP}
+			       , #{VOLUME_IN_MW}
+		           <if test="QUANTITY_IN_PCS != null and QUANTITY_IN_PCS != ''">
+			       , #{QUANTITY_IN_PCS}
+			       </if>
+			       <if test="INVOICE_DATE != null and INVOICE_DATE != ''">
+			       , #{INVOICE_DATE}
+			       </if>
+			       , #{REVENUE_MONTH}
+			       , #{YEAR}
+			       <if test="Q_PARTNER != null and Q_PARTNER != ''">
+			       , #{Q_PARTNER}
+			       </if>
+				   , GETDATE()
+				   , 'admin'
+				   , GETDATE()
+				   , 'admin'
+		           )
+	</insert>	
+
+
+	<insert id="insertMainUpload2" parameterType="HashMap">
+		/* MainUploadMapper.insertMainUpload */		
+		INSERT INTO MC_MAIN_DS_EXCEL
+		           ( ORDER_GRADING
+		           , DOCUMENT_ID
+		           <if test="LISP != null and LISP != ''">
+		           , LISP
+		           </if>
+		           <if test="LS_POS != null and LS_POS != ''">
+		           , LS_POS
+		           </if>
+		           , PTYP
+		           <if test="BEZ_ATT != null and BEZ_ATT != ''">
+		           , BEZ_ATT
+		           </if>
+		           <if test="BEZ_NUTZUNG != null and BEZ_NUTZUNG != ''">
+		           , BEZ_NUTZUNG
+		           </if>
+		           , VART
+		           , AUFTR_GEB
+		           , CUSTOMER
+		           <if test="COUNTRY != null and COUNTRY != ''">
+		           , COUNTRY
+		           </if>
+		           <if test="BESTELLNUMMER != null and BESTELLNUMMER != ''">
+		           , BESTELLNUMMER
+		           </if>
+		           , VKORG
+		           , VWEG
+		           , REGION
+		           , REG
+		           , SP
+		           , KAM
+		           , ANGEL_AM
+		           , MATERIAL
+		           , PRODUCT
+		           , USAGE
+		           <if test="ORIGIN != null and ORIGIN != ''">
+		           , ORIGIN
+		           </if>
+		           , PRODUCT_GROUP
+		           , WARENGRUPPENBEZ_2
+		           <if test="WERK != null and WERK != ''">
+		           , WERK
+		           </if>
+			       <if test="LORT != null and LORT != ''">
+		           , LORT
+		           </if>
+			       <if test="CHARGE != null and CHARGE != ''">
+		           , CHARGE
+		           </if>
+		           , WL_DATUM
+		           <if test="LIEFDATUM != null and LIEFDATUM != ''">
+		           , LIEFDATUM
+		           </if>
+		           , WARENAUSG
+		           , DELIVERY_WEEK
+			       <if test="INCTM != null and INCTM != ''">
+		           , INCTM
+		           </if>
+			       <if test="INCO_2 != null and INCO_2 != ''">
+		           , INCO_2
+		           </if>
+		           , PAYMENT_TERM
+		           , POWERCLASS
+		           , VOLUME_IN_WP
+		           , VOLUME_IN_MW
+		           <if test="QUANTITY_IN_PCS != null and QUANTITY_IN_PCS != ''">
+		           , QUANTITY_IN_PCS
+		           </if>
+		           , AMOUNT
+		           , CURR
+		           , PRICE_WP
+		           <if test="LIEFERUNG != null and LIEFERUNG != ''">
+		           , LIEFERUNG
+		           </if>
+		           <if test="LIEFER_MNG != null and LIEFER_MNG != ''">
+		           , LIEFER_MNG
+		           </if>
+			       <if test="ISTWA_DAT != null and ISTWA_DAT != ''">
+		           , ISTWA_DAT
+		           </if>
+			       <if test="INVOICE_DATE != null and INVOICE_DATE != ''">
+		           , INVOICE_DATE
+		           </if>
+		           , PL_FKDAT
+		           , FAK_LEIST
+		           , NETTOWERT
+			       <if test="FAKTURA != null and FAKTURA != ''">
+		           , FAKTURA
+		           </if>
+		           , REVENUE_MONTH
+		           , YEAR
+			       <if test="Q_PARTNER != null and Q_PARTNER != ''">
+		           , Q_PARTNER
+		           </if>
+		           , REG_DT
+		           , REG_ID
+		           , UPT_DT
+		           , UPT_ID)
+		     VALUES
+		           ( #{ORDER_GRADING}
+			       , #{DOCUMENT_ID}
+			       <if test="LISP != null and LISP != ''">
+			       , #{LISP}
+		           </if>
+		           <if test="LS_POS != null and LS_POS != ''">
+			       , #{LS_POS}
+			       </if>
+			       , #{PTYP}
+		           <if test="BEZ_ATT != null and BEZ_ATT != ''">
+			       , #{BEZ_ATT}
+			       </if>
+		           <if test="BEZ_NUTZUNG != null and BEZ_NUTZUNG != ''">
+			       , #{BEZ_NUTZUNG}
+			       </if>
+			       , #{VART}
+			       , #{AUFTR_GEB}
+			       , #{CUSTOMER}
+		           <if test="COUNTRY != null and COUNTRY != ''">
+			       , #{COUNTRY}
+			       </if>
+		           <if test="BESTELLNUMMER != null and BESTELLNUMMER != ''">
+			       , #{BESTELLNUMMER}
+			       </if>
+			       , #{VKORG}
+			       , #{VWEG}
+			       , #{REGION}
+			       , #{REG}
+			       , #{SP}
+			       , #{KAM}
+			       , #{ANGEL_AM}
+			       , #{MATERIAL}
+			       , #{PRODUCT}
+			       , #{USAGE}
+		           <if test="ORIGIN != null and ORIGIN != ''">
+			       , #{ORIGIN}
+		           </if>
+			       , #{PRODUCT_GROUP}
+			       , #{WARENGRUPPENBEZ_2}
+		           <if test="WERK != null and WERK != ''">
+			       , #{WERK}
+		           </if>
+			       <if test="LORT != null and LORT != ''">
+			       , #{LORT}
+		           </if>
+			       <if test="CHARGE != null and CHARGE != ''">
+			       , #{CHARGE}
+		           </if>
+			       , #{WL_DATUM}
+		           <if test="LIEFDATUM != null and LIEFDATUM != ''">
+			       , #{LIEFDATUM}
+		           </if>
+			       , #{WARENAUSG}
+			       , #{DELIVERY_WEEK}
+			       <if test="INCTM != null and INCTM != ''">
+			       , #{INCTM}
+			       </if>
+			       <if test="INCO_2 != null and INCO_2 != ''">
+			       , #{INCO_2}
+			       </if>
+			       , #{PAYMENT_TERM}
+			       , #{POWERCLASS}
+			       , #{VOLUME_IN_WP}
+			       , #{VOLUME_IN_MW}
+		           <if test="QUANTITY_IN_PCS != null and QUANTITY_IN_PCS != ''">
+			       , #{QUANTITY_IN_PCS}
+			       </if>
+			       , #{AMOUNT}
+			       , #{CURR}
+			       , #{PRICE_WP}
+		           <if test="LIEFERUNG != null and LIEFERUNG != ''">
+			       , #{LIEFERUNG}
+			       </if>
+			       <if test="LIEFER_MNG != null and LIEFER_MNG != ''">
+			       , #{LIEFER_MNG}
+			       </if>
+			       <if test="ISTWA_DAT != null and ISTWA_DAT != ''">
+			       , #{ISTWA_DAT}
+			       </if>
+			       <if test="INVOICE_DATE != null and INVOICE_DATE != ''">
+			       , #{INVOICE_DATE}
+			       </if>
+			       , #{PL_FKDAT}
+			       , #{FAK_LEIST}
+			       , #{NETTOWERT}
+			       <if test="FAKTURA != null and FAKTURA != ''">
+			       , #{FAKTURA}
+			       </if>
+			       , #{REVENUE_MONTH}
+			       , #{YEAR}
+			       <if test="Q_PARTNER != null and Q_PARTNER != ''">
+			       , #{Q_PARTNER}
+			       </if>
+				   , GETDATE()
+				   , 'admin'
+				   , GETDATE()
+				   , 'admin'
+		           )
+	</insert>	
+	
+		
+	<select id="insertMainDS" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_MC_MAIN_DS(#{USERID}) } 
+	</select>	
+</mapper>

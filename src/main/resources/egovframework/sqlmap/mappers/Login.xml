@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="LoginMapper">
+	<select id="selectUserInfo" parameterType="BMap" resultType="loginVO">
+	/* Login.xml -> selectUserInfo */
+		SELECT COMP_CD		COMPCD
+			  ,USER_ID		USERID
+			  ,NAME_1ST		NAME1ST
+			  ,NAME_2ND		NAME2ND
+			  ,NAME_FULL	NAMEFULL
+			  ,USER_TP		USERTP
+			  ,USER_GD		USERGD
+			  ,DEPT_CD		DEPTCD
+			  ,CUST_CD		CUSTCD
+			  ,AUTH_GR		AUTHGR
+			  ,LANG_CD		LANGCD
+			  ,WRONG_CNT	WRONGCNT
+			  ,LOCK_YN		LOCKYN
+			  ,STATUS		STATUS
+			  ,E_MAIL       EMAIL
+			  ,WEB_ID		ERPID
+		  FROM BC_USER 
+		 WHERE USER_ID = #{USER_ID}
+	</select>
+	
+	<select id="selectCmUserByUserId" parameterType="BMap" resultType="integer">
+		<![CDATA[
+		/* Login.xml -> selectCmUserByUserId */
+		SELECT COUNT(*)
+		  FROM BC_USER 
+		 WHERE USER_ID = #{USER_ID}
+		]]>
+	</select>
+	
+	<select id="selectCmUserByUseYn" parameterType="BMap" resultType="integer">
+		<![CDATA[
+		/* Login.xml -> selectCmUserByUseYn */
+		SELECT COUNT(*)
+		  FROM BC_USER 
+		 WHERE USER_ID = #{USER_ID}
+		   AND STATUS = 'A'
+		]]>
+	</select>
+	
+	<select id="selectCmUserByAcntLockAt" parameterType="BMap" resultType="integer">
+		<![CDATA[
+		/* Login.xml -> selectCmUserByAcntLockAt */
+		SELECT COUNT(*)
+		  FROM BC_USER 
+		 WHERE USER_ID = #{USER_ID}
+		   AND LOCK_YN = 'Y'
+		    
+		]]>
+	</select>
+	
+	<select id="selectCmUserForContractReq" parameterType="BMap" resultType="integer">
+		<![CDATA[
+		/* Login.xml -> selectCmUserForContractReq */
+		SELECT COUNT(*)
+		  FROM BC_USER 
+		 WHERE USER_ID = #{USER_ID}
+		   AND PW_CURR = #{PASSWORD}
+		   AND STATUS = 'A'
+		   AND LOCK_YN = 'N'
+		]]>
+	</select>
+	
+	<select id="selectCmUserForAcntLockAt" parameterType="BMap" resultType="BMap">
+		<![CDATA[
+		/* Login.xml -> selectCmUserForAcntLockAt */
+		SELECT LOCK_YN
+		     , WRONG_CNT
+		  FROM BC_USER 
+		 WHERE USER_ID = #{USER_ID}
+		]]>
+	</select>
+	
+	<select id="selectCmUserForLoginFailrCo" parameterType="BMap" resultType="integer">
+		<![CDATA[
+		/* Login.xml -> selectCmUserForLoginFailrCo */
+		SELECT IFNULL(WRONG_CNT, 0)
+		  FROM BC_USER 
+		 WHERE USER_ID = #{USER_ID}
+		]]>
+	</select>
+	
+	<update id="updateCmUserForLoginFailrCo" parameterType="BMap">
+		<![CDATA[
+		/* Login.xml -> updateCmUserForLoginFailrCo */
+		UPDATE BC_USER
+		   SET WRONG_CNT = '0'
+		 WHERE USER_ID = #{USER_ID}
+		   AND PW_CURR = #{PASSWORD}
+		]]>
+	</update>
+	
+	<select id="updateCmUserForAcntLockAt" parameterType="BMap" resultType="int">
+		<![CDATA[
+		/* Login.xml -> updateCmUserForAcntLockAt */
+		UPDATE BC_USER
+		   SET WRONG_CNT = #{WRONG_CNT}
+		     , LOCK_YN = CASE WHEN IFNULL(WRONG_CNT, 0) > 3  THEN 'Y'
+                              ELSE 'N'
+               END                              
+		 WHERE USER_ID = #{USER_ID};
+		 
+		 COMMIT;
+		]]>
+	</select>
+	
+	<insert id="insertCmSysConectByLogin" parameterType="BMap">
+		<![CDATA[
+		/* Login.xml -> insertCmSysConectByLogin */
+		INSERT INTO SY_LOGIN_HIS
+			        (USER_ID
+		           , LOG_DATE
+		           , USER_IP
+		           , USER_OS
+		           , USERBROWSER
+		           , ACT_LOG
+			        )
+			 VALUES (#{USER_ID}
+			 	   , NOW()
+			       , #{USER_IP}
+			       , #{USER_OS}
+			       , #{USERBROWSER}
+			       , #{STATUS}
+				    )
+		]]>
+	</insert>
+	
+	<update id="insertLoginDate" parameterType="BMap">
+	<![CDATA[
+	/* Login.xml -> insertLoginDate */
+	UPDATE BC_USER 
+	   SET LOGIN_DT = NOW()
+	 WHERE USER_ID = #{USER_ID}
+	]]>
+	</update>
+	
+	<select id="chk_init" parameterType="BMap" resultType="int">
+	<![CDATA[
+	/* Login.xml -> chk_init */
+	SELECT COUNT(1)
+	  FROM BC_USER
+	 WHERE USER_ID =#{USER_ID}
+	   AND LOGIN_DT IS NOT NULL
+	]]>
+	</select>
+	
+</mapper>

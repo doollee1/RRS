@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AppMapper">
+	<select id="selectProgInfo" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+	/* App.xml -> selectProgInfo */
+		SELECT ROW_NUMBER() OVER(ORDER BY A.COMP_cD, A.SYSTEM_CD, A.PROG_CD) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,A.COMP_CD
+			  ,A.SYSTEM_CD
+			  ,A.PROG_CD
+			  ,A.PROG_NM
+			  ,A.PROG_EN
+			  ,A.PROG_FR
+			  ,A.PROG_4TH
+			  ,A.PROG_URL
+			  ,A.PROG_GROUP
+			  ,A.PROG_LV
+			  ,A.PRIORITY
+			  ,A.STATUS
+			  ,GETCODENM('USED_OR_NOT', A.STATUS, #{LANG}) AS STATUS_NM
+		  FROM SY_PROGRAM A 
+		 WHERE A.COMP_CD = #{G_COMP_CD}
+		<if test='S_SYSTEM_CD != null and S_SYSTEM_CD != ""'>
+		   AND A.SYSTEM_CD = #{S_SYSTEM_CD}
+		</if>
+		<if test='S_PROG_GROUP != null and S_PROG_GROUP != ""'>
+		   AND A.PROG_GROUP = #{S_PROG_GROUP}
+		</if>
+		<if test='USED_OR_NOT != null and USED_OR_NOT != ""'>
+		   AND A.STATUS = #{USED_OR_NOT}
+		</if>
+		<if test='S_PROG_LV != null and S_PROG_LV != ""'>
+		   AND A.PROG_LV = #{S_PROG_LV}
+		</if>
+		<if test='S_PROG_LV == null or S_PROG_LV == ""'>
+		   AND A.PROG_LV != '0'
+		</if>
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<insert id="insertProgInfo" parameterType="BMap">
+	/* App.xml -> insertProgInfo */
+		INSERT INTO SY_PROGRAM
+					(COMP_CD
+					,SYSTEM_CD
+					,PROG_CD
+					,PROG_NM
+					,PROG_EN
+					,PROG_FR
+					,PROG_4TH
+					,PROG_URL
+					,PROG_GROUP
+					,PROG_LV
+					,PRIORITY
+					,STATUS
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
+			 VALUES (#{G_COMP_CD}
+					,#{SYSTEM_CD}
+					,Replace(#{PROG_CD},' ','')
+					,#{PROG_NM}
+					,#{PROG_EN}
+					,#{PROG_FR}
+					,#{PROG_4TH}
+					,#{PROG_URL}
+					,#{PROG_GROUP}
+					,#{PROG_LV}
+					,#{PRIORITY}
+					,#{STATUS}
+					,NOW()
+					,#{LOGIN_USER}
+					,NOW()
+					,#{LOGIN_USER}
+					)
+	</insert>
+	
+	<update id="updateProgInfo" parameterType="BMap">
+		/* App.xml -> updateProgInfo */
+		UPDATE SY_PROGRAM
+		   SET PROG_NM = #{PROG_NM}
+			  ,PROG_EN = #{PROG_EN}
+			  ,PROG_FR = #{PROG_FR}
+			  ,PROG_4TH = #{PROG_4TH}
+			  ,PROG_URL = #{PROG_URL}
+			  ,PROG_GROUP = #{PROG_GROUP}
+			  ,PROG_LV = #{PROG_LV}
+			  ,PRIORITY = #{PRIORITY}
+			  ,STATUS = #{STATUS}
+			  ,UPT_DT = NOW()
+			  ,UPT_ID = #{LOGIN_USER}
+		 WHERE COMP_CD = #{G_COMP_CD}
+		   AND SYSTEM_CD = #{SYSTEM_CD}
+		   AND PROG_CD = #{PROG_CD}
+	</update>
+	
+	<delete id="deleteProgInfo" parameterType="BMap">
+	/* App.xml -> deleteProgInfo */
+		DELETE SY_PROGRAM
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND SYSTEM_CD = #{SYSTEM_CD}
+		   AND PROG_CD = #{PROG_CD}
+	</delete>
+	
+	<select id="selectProgCnt" parameterType="BMap" resultType="int">
+	/* App.xml -> selectProgCnt */
+		SELECT COUNT(1)
+		  FROM SY_PROGRAM 
+		 WHERE COMP_CD = #{G_COMP_CD}
+		   AND SYSTEM_CD = #{SYSTEM_CD}
+		   AND PROG_CD = #{PROG_CD}
+	</select>
+	
+	<select id="selectMiddleMenuCombo" parameterType="BMap" resultType="CodeVO">
+	/* App.xml -> selectMiddleMenuCombo */
+		SELECT PROG_CD CODE
+			  ,CASE WHEN #{LANG} = 'FR' THEN PROG_FR
+			        WHEN #{LANG} = 'EN' THEN PROG_EN
+			    	ELSE PROG_NM END AS VALUE
+		  FROM SY_PROGRAM 
+		 WHERE COMP_CD = #{G_COMP_CD}
+		   AND SYSTEM_CD = #{SYSTEM_CD}
+		   AND STATUS = 'Y'
+		   AND PROG_LV = '0' 
+	</select>
+	
+	<select id="selectProgramCombo" parameterType="BMap" resultType="CodeVO">
+	/* App.xml -> selectProgramCombo */
+		SELECT PROG_CD CODE
+			  ,CASE WHEN #{LANG} = 'DE' THEN PROG_NM
+			        WHEN #{LANG} = 'EN' THEN PROG_EN
+			    	ELSE PROG_NM END AS VALUE
+		  FROM SY_PROGRAM 
+		 WHERE COMP_CD = #{G_COMP_CD}
+		   AND PROG_GROUP = #{S_PROG_GROUP}
+		   AND STATUS = 'Y'
+		   AND PROG_LV = '1' 
+	</select>
+	
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FileMapper">
+	<insert id="insertFileInfo" parameterType="BMap">
+		INSERT INTO BC_FILE
+					(FILE_UID
+					,SRC_FILE_NM
+					,NEW_FILE_NM
+					,FILE_SEQ
+					,FILE_SIZE
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
+			 VALUES (#{FILE_UID}
+					,#{SRC_FILE_NM}
+					,#{NEW_FILE_NM}
+					,#{FILE_SEQ}
+					,#{FILE_SIZE}
+					,GETDATE()
+					,#{LOGIN_USER}
+					,GETDATE()
+					,#{LOGIN_USER}
+					)
+	</insert>
+	
+	<select id="selectFileInfo" parameterType="BMap" resultType="BMap">
+		SELECT FILE_UID
+			  ,SRC_FILE_NM
+			  ,NEW_FILE_NM
+			  ,FILE_SEQ
+			  ,FILE_SIZE
+		  FROM BC_FILE WITH (NOLOCK) 
+		 WHERE FILE_UID = #{FILE_UID}
+	</select>
+	
+	<delete id="deleteFileInfo" parameterType="BMap">
+		DELETE BC_FILE
+		 WHERE FILE_UID = #{FILE_UID}
+		   AND NEW_FILE_NM = #{NEW_FILE_NM}
+	</delete>
+</mapper>

@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SapCrmIfRecvCustomerMapper">	
+	<insert id="insertSapCrmIfRecvBPMAST" parameterType="HashMap">
+		INSERT INTO IF_GET_CRM_BP_MAST(
+					 PARTNER   
+					,TYPE      
+					,TYPE_TXT  
+					,GROUP_CD     
+					,GROUP_TXT 
+					,SORT1     
+					,SORT2     
+					,TITLE     
+					,TITLE_MEDI
+					,NAME1     
+					,NAME2     
+					,NAME_LAST 
+					,NAME_FIRST
+					,LANGU_CORR
+					,SPTXT     
+					,PERSNUMBER
+					,CRUSR     
+					,CRDAT     
+					,CRTIM     
+					,CHUSR     
+					,CHDAT     
+					,ADDRNUMBER
+					,CITY1     
+					,POST_CODE1
+					,POST_CODE2
+					,PO_BOX    
+					,TRANSPZONE
+					,VTEXT     
+					,STREET    
+					,HOUSE_NUM1
+					,STR_SUPPL1
+					,COUNTRY   
+					,LANGU     
+					,LANDX     
+					,REGION    
+					,FAX_NUMBER
+					,FAX_EXTENS
+					,MC_NAME1  
+					,MC_CITY1  
+					,MC_STREET 
+					,TAXJURCODE
+					,TIME_ZONE 
+					,TEL_NUMBER
+					,TEL_EXTENS
+					,CEL_NUMBER
+					,SMTP_ADDR 
+					,INDUSTRY             
+					,INDUSTRY_TXT         
+					,ACCOUNT_GROUP        
+					,ACCOUNT_GROUP_TXT    
+					,CLASSIFIC            
+					,CLASSIFIC_TXT        
+					,EPC                  
+					,EPC_TXT              
+					,C_I                  
+					,C_I_TXT              
+					,RESIDENTIAL          
+					,RESIDENTIAL_TXT      
+					,UTILITY              
+					,UTILITY_TXT          
+					,MARKET_PLATFORM      
+					,MARKET_PLATFORM_TXT  
+					,INVESTOR             
+					,INVESTOR_TXT         
+					,PROMOTOR             
+					,PROMOTOR_TXT         
+					,SERVICE_PROVIDER     
+					,SERVICE_PROVIDER_TXT 
+					,ENERGY_CONSULTING    
+					,ENERGY_CONSULTING_TXT
+					,IF_DT              
+					,IF_STS            
+					) 
+			VALUES (
+					 #{PARTNER}
+					,#{TYPE}
+					,#{TYPE_TXT}
+					,#{GROUP}
+					,#{GROUP_TXT}
+					,#{SORT1}
+					,#{SORT2}
+					,#{TITLE}
+					,#{TITLE_MEDI}
+					,#{NAME1}
+					,#{NAME2}
+					,#{NAME_LAST}
+					,#{NAME_FIRST}
+					,#{LANGU_CORR}
+					,#{SPTXT}
+					,#{PERSNUMBER}
+					,#{CRUSR}
+					,replace((case when #{CRDAT} = '0000-00-00' then null else #{CRDAT} end),'-','')
+					,replace(#{CRTIM},':','')
+					,#{CHUSR}
+					,replace((case when #{CHDAT} = '0000-00-00' then null else #{CHDAT} end),'-','')
+					,#{ADDRNUMBER}
+					,#{CITY1}
+					,#{POST_CODE1}
+					,#{POST_CODE2}
+					,#{PO_BOX}
+					,#{TRANSPZONE}
+					,#{VTEXT}
+					,#{STREET}
+					,#{HOUSE_NUM1}
+					,#{STR_SUPPL1}
+					,#{COUNTRY}
+					,#{LANGU}
+					,#{LANDX}
+					,#{REGION}
+					,#{FAX_NUMBER}
+					,#{FAX_EXTENS}
+					,#{MC_NAME1}
+					,#{MC_CITY1}
+					,#{MC_STREET}
+					,#{TAXJURCODE}
+					,#{TIME_ZONE}
+					,#{TEL_NUMBER}
+					,#{TEL_EXTENS}
+					,#{CEL_NUMBER}
+					,#{SMTP_ADDR}
+					,#{INDUSTRY}
+					,#{INDUSTRY_TXT}
+					,#{ACCOUNT_GROUP}
+					,#{ACCOUNT_GROUP_TXT}
+					,#{CLASSIFIC}
+					,#{CLASSIFIC_TXT}
+					,#{EPC}
+					,#{EPC_TXT}
+					,#{C_I}
+					,#{C_I_TXT}
+					,#{RESIDENTIAL}
+					,#{RESIDENTIAL_TXT}
+					,#{UTILITY}
+					,#{UTILITY_TXT}
+					,#{MARKET_PLATFORM}
+					,#{MARKET_PLATFORM_TXT}
+					,#{INVESTOR}
+					,#{INVESTOR_TXT}
+					,#{PROMOTOR}
+					,#{PROMOTOR_TXT}
+					,#{SERVICE_PROVIDER}
+					,#{SERVICE_PROVIDER_TXT}
+					,#{ENERGY_CONSULTING}
+					,#{ENERGY_CONSULTING_TXT}
+					,GETDATE()
+					,'R'
+					)
+
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvBPREL" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_BPREL(
+					 RELNR          
+					,BEZ50          
+					,PARTNER1       
+					,PARTNER2       
+					,PERSNUMBER     
+					,NAME_ORG1      
+					,NAME_ORG2      
+					,NAME_LAST      
+					,NAME_FIRST     
+					,ADDRNUMBER     
+					,TEL_NUMBER     
+					,TEL_EXTENS     
+					,FAX_NUMBER     
+					,FAX_EXTENS     
+					,CEL_NUMBER     
+					,SMTP_ADDR      
+					,ABTNR          
+					,TB910_BEZ20    
+					,PAFKT          
+					,TB912_BEZ30    
+					,ATTR_F         
+					,ATTR_L         
+					,ATTR_P         
+					,ATTR_Q         
+					,SALES_ORG      
+					,DIS_CHANNEL    
+					,DIS_CHANNEL_TXT
+					,DIVISION       
+					,DIVISION_TXT   
+					,RELTYP
+					,RELTYP_TXT
+					,IF_DT   
+					,IF_STS 
+					) 
+			 VALUES (
+					 #{RELNR}
+					,#{BEZ50}
+					,#{PARTNER1}
+					,#{PARTNER2}
+					,#{PERSNUMBER}
+					,#{NAME_ORG1}
+					,#{NAME_ORG2}
+					,#{NAME_LAST}
+					,#{NAME_FIRST}
+					,#{ADDRNUMBER}
+					,#{TEL_NUMBER}
+					,#{TEL_EXTENS}
+					,#{FAX_NUMBER}
+					,#{FAX_EXTENS}
+					,#{CEL_NUMBER}
+					,#{SMTP_ADDR}
+					,#{ABTNR}
+					,#{TB910_BEZ20}
+					,#{PAFKT}
+					,#{TB912_BEZ30}
+					,#{ATTR_F}
+					,#{ATTR_L}
+					,#{ATTR_P}
+					,#{ATTR_Q}
+					,#{SALES_ORG}
+					,#{DIS_CHANNEL}
+					,#{DIS_CHANNEL_TXT}
+					,#{DIVISION}
+					,#{DIVISION_TXT}
+					,#{RELTYP}
+					,#{RELTYP_TXT}
+					,GetDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvBP_SALES1" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_BP_SALES1(
+					 PARTNER1          
+					,LNK0011_SET_GUID  
+					,SALES_ORG         
+					,DIS_CHANNEL       
+					,DIS_CHANNEL_TXT   
+					,DIVISION          
+					,DIVISION_TXT      
+					,ATTRIBUTE         
+					,ATTRIBUTE_TXT     
+					,PRINT_DATE        
+					,PRINT_DATE_TXT    
+					,ORDER_DEADLINE    
+					,ORDER_DEADLINE_TXT
+					,IF_DT   
+					,IF_STS 
+					) 
+			 VALUES (
+					 #{PARTNER1          }
+					,#{SET_GUID  }
+					,#{SALES_ORG         }
+					,#{DIS_CHANNEL       }
+					,#{DIS_CHANNEL_TXT   }
+					,#{DIVISION          }
+					,#{DIVISION_TXT      }
+					,#{ATTRIBUTE         }
+					,#{ATTRIBUTE_TXT     }
+					,#{PRINT_DATE        }
+					,#{PRINT_DATE_TXT    }
+					,#{ORDER_DEADLINE    }
+					,#{ORDER_DEADLINE_TXT}
+					,GetDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvBP_SALES2" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_BP_SALES2(
+					 PARTNER1           
+					,LNK0021_SET_GUID   
+					,SALES_ORG          
+					,DIS_CHANNEL        
+					,DIS_CHANNEL_TXT    
+					,DIVISION           
+					,DIVISION_TXT       
+					,INCOTERMS1         
+					,INCOTERMS2         
+					,SHIPPING_COND      
+					,SHIPPING_COND_TXT  
+					,DLV_PRIORITY       
+					,DLV_PRIORITY_TXT   
+					,PARTIAL_DLV        
+					,PARTIAL_DLV_TXT    
+					,PARTIAL_DLV_ITM    
+					,PARTIAL_DLV_ITM_TXT
+					,MAX_NO_DLV         
+					,IF_DT   
+					,IF_STS 
+					) 
+			 VALUES (
+					 #{PARTNER1           }
+					,#{SET_GUID   }
+					,#{SALES_ORG          }
+					,#{DIS_CHANNEL        }
+					,#{DIS_CHANNEL_TXT    }
+					,#{DIVISION           }
+					,#{DIVISION_TXT       }
+					,#{INCOTERMS1         }
+					,#{INCOTERMS2         }
+					,#{SHIPPING_COND      }
+					,#{SHIPPING_COND_TXT  }
+					,#{DLV_PRIORITY       }
+					,#{DLV_PRIORITY_TXT   }
+					,#{PARTIAL_DLV        }
+					,#{PARTIAL_DLV_TXT    }
+					,#{PARTIAL_DLV_ITM    }
+					,#{PARTIAL_DLV_ITM_TXT}
+					,#{MAX_NO_DLV         }
+					,GetDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvBP_SALES3" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_BP_SALES3(
+					 PARTNER1           
+					,lnk0031_set_guid   
+					,SALES_ORG          
+					,DIS_CHANNEL        
+					,DIS_CHANNEL_TXT    
+					,DIVISION           
+					,DIVISION_TXT       
+					,CUST_PRIC_PROC     
+					,CUST_PRIC_PROC_TXT 
+					,CURRENCY           
+					,PAYMENT_TERM       
+					,PAYMENT_TERM_TXT   
+					,PRICE_GROUP        
+					,PRICE_GROUP_TXT    
+					,CUSTOMER_GROUP     
+					,CUSTOMER_GROUP_TXT 
+					,ACCOUNT_ASSNGRP    
+					,ACCOUNT_ASSNGRP_TXT
+					,PRICE_LIST_TYPE    
+					,PRICE_LIST_TYPE_TXT
+					,REBATE_RELEVANT    
+					,IF_DT   
+					,IF_STS 
+					) 
+			 VALUES (
+					 #{PARTNER1           }
+					,#{set_guid   }
+					,#{SALES_ORG          }
+					,#{DIS_CHANNEL        }
+					,#{DIS_CHANNEL_TXT    }
+					,#{DIVISION           }
+					,#{DIVISION_TXT       }
+					,#{CUST_PRIC_PROC     }
+					,#{CUST_PRIC_PROC_TXT }
+					,#{CURRENCY           }
+					,#{PAYMENT_TERM       }
+					,#{PAYMENT_TERM_TXT   }
+					,#{PRICE_GROUP        }
+					,#{PRICE_GROUP_TXT    }
+					,#{CUSTOMER_GROUP     }
+					,#{CUSTOMER_GROUP_TXT }
+					,#{ACCOUNT_ASGNGRP    }
+					,#{ACCOUNT_ASGNGRP_TXT}
+					,#{PRICE_LIST_TYPE    }
+					,#{PRICE_LIST_TYPE_TXT}
+					,#{REBATE_RELEVANT    }
+					,GetDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvBP_SALES4" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_BP_SALES4(
+					 PARTNER1            
+					,LNK0141_SET_GUID    
+					,SALES_ORG
+					,DIS_CHANNEL
+					,DIVISION
+					,SALES_OFFICE        
+					,SALES_OFFICE_TXT    
+					,SALES_GROUP         
+					,SALES_GROUP_TXT     
+					,IF_DT               
+					,IF_STS              
+					)                    
+			 VALUES (                    
+					 #{PARTNER1        } 
+					,#{SET_GUID} 
+					,#{SALES_ORG       }
+					,#{DIS_CHANNEL     }
+					,#{DIVISION        }
+					,#{SALES_OFFICE    } 
+					,#{SALES_OFFICE_TXT} 
+					,#{SALES_GROUP     } 
+					,#{SALES_GROUP_TXT } 
+					,GetDate()           
+					,'R'                 
+					)
+	</insert>
+	
+	<insert id="insertSapCrmIfRecvBP_TAXES" parameterType="BMap">
+		INSERT INTO IF_GET_CRM_BP_TAXES(
+					 PARTNER1     
+					,PARTNER_GUID 
+					,TAX_CTY      
+					,TAX_CTY_TXT  
+					,TAX_TYPE     
+					,TAX_TYPE_TXT 
+					,TAX_GROUP    
+					,TAX_GROUP_TXT
+					,IF_DT   
+					,IF_STS 
+					) 
+			 VALUES (
+					 #{PARTNER1     }
+					,#{PARTNER_GUID }
+					,#{TAX_CTY      }
+					,#{TAX_CTY_TXT  }
+					,#{TAX_TYPE     }
+					,#{TAX_TYPE_TXT }
+					,#{TAX_GROUP    }
+					,#{TAX_GROUP_TXT}
+					,GetDate()
+					,'R'
+					)
+	</insert>
+	
+	<select id="callSpSapCrmIfRecvCustomer" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_CRM_RECV_CUSTOMER(#{COMP_CD}, #{USER_ID}) }
+		<!-- { CALL DBO.X_SP_IF_CRM_RECV_CUSTOMER_20180529(#{COMP_CD}, #{USER_ID}) } -->
+	</select>
+	
+	<select id="callMappingCustNo" statementType="CALLABLE" parameterType="HashMap">		
+		{ CALL DBO.X_SP_IF_CRM_CUSTOMER_MAPPING_20180522() } 
+	</select>
+	
+</mapper>

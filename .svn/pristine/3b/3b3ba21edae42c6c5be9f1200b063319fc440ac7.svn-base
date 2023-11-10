@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SapIfRecvBomMapper">	
+	<insert id="insertSapIfRecvBomMast" parameterType="HashMap">
+		INSERT INTO IF_GET_BOM_MAST(
+					 MATNR
+					,WERKS
+					,STLNR
+					,STLAN
+					,IF_DT         
+					,IF_STS
+					) 
+			VALUES (
+					 #{MATNR}
+					,#{WERKS}
+					,#{STLNR}
+					,#{STLAN}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvBomTStko" parameterType="HashMap">
+		INSERT INTO IF_GET_BOM_STKO(
+					 STLNR
+					,STLTY
+					,DATUV
+					
+					,BMENG
+					,BMEIN
+					,STLST
+					
+					,IF_DT         
+					,IF_STS
+					) 
+			VALUES (
+					 #{STLNR}
+					,#{STLTY}
+					,#{DATUV}
+					
+					,#{BMENG}
+					,#{BMEIN}
+					,#{STLST}
+					
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvBomTStpo" parameterType="HashMap">
+		INSERT INTO IF_GET_BOM_STPO(
+					 STLNR
+					,POSNR
+					,IDNRK
+					,MENGE
+					,MEINS
+					,DATUV
+					,LKENZ
+					,POSTP
+					,IF_DT         
+					,IF_STS
+					) 
+			VALUES (
+					 #{STLNR}
+					,#{POSNR}
+					,#{IDNRK}
+					,convert(numeric(13,3),#{MENGE})
+					,#{MEINS}
+					,#{DATUV}
+					,#{LKENZ}
+					,#{POSTP}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<select id="callSpSapIfRecvBom" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_ERP_RECV_BOM(#{COMP_CD}, #{USER_ID}) } 
+	</select>
+	
+	<insert id="mergeSapIfRecvBom" parameterType="HashMap">
+			MERGE MS_ITEM_BOM AS A
+			USING
+			(
+			   SELECT distinct A.WERKS, substring(A.MATNR,11,8) MATNR
+					, (case when A.STLNR is null then ' ' else A.STLNR end) STLNR
+					, (case when A.STLAN is null then ' ' else A.STLAN end) STLAN
+					, (case when B.STLTY is null then ' ' else B.STLTY end) STLTY
+					, B.DATUV DATUV_H, B.BMENG, B.BMEIN, B.STLST
+					, (case when C.POSNR is null then ' ' else C.POSNR end) POSNR
+					, substring(C.IDNRK,11,8) IDNRK
+					, C.MENGE, (case when C.MEINS = 'ST' then 'PCS' else C.MEINS end) MEINS, C.DATUV, C.LKENZ, C.POSTP
+				 FROM IF_GET_BOM_MAST A	with (nolock)
+				      LEFT OUTER JOIN ( SELECT *
+										  FROM IF_GET_BOM_STKO	with (nolock)
+										 WHERE IF_SEQ IN (SELECT MAX(IF_SEQ)
+															FROM IF_GET_BOM_STKO
+														   WHERE IF_STS = 'R'
+														   GROUP BY STLNR, STLTY
+														  )
+									  ) B
+				     		ON  B.IF_STS = 'R' AND A.STLNR = B.STLNR
+				      LEFT OUTER JOIN ( SELECT *
+										  FROM IF_GET_BOM_STPO	with (nolock)
+										 WHERE IF_SEQ IN (SELECT MAX(IF_SEQ)
+															FROM IF_GET_BOM_STPO
+														   WHERE IF_STS = 'R'
+														   GROUP BY STLNR, POSNR, IDNRK, MEINS
+														  )
+									  ) C
+				     		ON  C.IF_STS = 'R' AND A.STLNR = C.STLNR AND B.STLNR = C.STLNR
+			    WHERE A.IF_STS = 'R'
+			) AS D
+			ON (A.COMP_CD = #{compCd} AND A.MATL_CD = D.MATNR AND A.PLANT_CD = D.WERKS AND 
+				rtrim(A.BOM_NO) = rtrim(D.STLNR) AND A.ITEM_SEQ = D.POSNR AND A.BOM_CD = D.IDNRK
+			)
+			WHEN MATCHED THEN
+			  UPDATE SET A.BOM_USAGE       = D.STLAN
+						,A.BOM_CTG         = D.STLTY
+						,A.BS_QTY		   = D.BMENG
+						,A.BS_UNIT		   = D.BMEIN
+						,A.BOM_STS		   = D.STLST
+						,A.BOM_CD          = D.IDNRK
+						,A.BOM_QTY         = convert(numeric(13,3), D.MENGE)
+						,A.UNIT_CD         = D.MEINS
+						,A.VAL_FR_DT_H     = D.DATUV_H
+						,A.VAL_FR_DT       = D.DATUV
+						,A.DEL_YN          = D.LKENZ
+						,A.ITEM_CTG        = D.POSTP
+						,A.STATUS          = 'A'		/* A(live), S(topped), D(eleted) */
+						,A.UPT_DT          = GETDATE()
+						,A.UPT_ID          = 'oms_if'
+			WHEN NOT MATCHED THEN
+				 INSERT (
+						 COMP_CD    
+						,MATL_CD        /* MATNR */       
+						,PLANT_CD       /* WERKS */
+						,BOM_NO			/* STLNR */
+						,BOM_USAGE      /* STLAN */
+						,ITEM_SEQ		/* POSNR */
+						,BOM_CTG        /* STLTY */
+						,BS_QTY			/* BMENG */
+						,BS_UNIT		/* BMEIN */
+						,BOM_STS		/* STLST */						
+						,BOM_CD       	/* IDNRK */
+						,BOM_QTY        /* MENGE */
+						,UNIT_CD        /* MEINS */
+						,VAL_FR_DT_H    /* DATUV */
+						,VAL_FR_DT      /* DATUV */
+						,DEL_YN         /* LKENZ */
+						,ITEM_CTG       /* POSTP */
+						,STATUS         /* A(live), S(topped), D(eleted) */
+						,REG_DT         /* GETDATE() */
+						,REG_ID         /* 'oms_if'  */
+						,UPT_DT         /* GETDATE() */
+						,UPT_ID         /* 'oms_if'  */
+						) 
+				 VALUES (#{compCd}
+						,D.MATNR  
+						,D.WERKS  
+						,D.STLNR
+						,D.STLAN
+						,D.POSNR
+						,D.STLTY
+						,D.BMENG
+						,D.BMEIN
+						,D.STLST						
+						,D.IDNRK
+						,convert(numeric(13,3), D.MENGE)
+						,D.MEINS  
+						,D.DATUV_H
+						,D.DATUV  
+						,D.LKENZ  
+						,D.POSTP  
+						,'A'
+						,GETDATE()
+						,'oms_if'
+						,GETDATE()
+						,'oms_if'
+						)
+						;
+			UPDATE IF_GET_BOM_MAST SET IF_STS = 'D' WHERE IF_STS = 'R';
+			UPDATE IF_GET_BOM_STKO SET IF_STS = 'D' WHERE IF_STS = 'R';
+			UPDATE IF_GET_BOM_STPO SET IF_STS = 'D' WHERE IF_STS = 'R';
+	</insert>
+
+</mapper>

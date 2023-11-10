@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/jdbc  http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd">
+
+	<bean id="transactionManager" 
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	   <property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+    <!-- Mssql  -->
+ 	<bean id="dataSourceSpied" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"> 
+	    <property name="driverClassName" value="net.sourceforge.jtds.jdbc.Driver"/>
+	    <property name="url" value="jdbc:jtds:sqlserver://183.96.28.3/OMS"/>
+	    <property name="username" value="oms"/>
+	    <property name="password" value="omssystem!"/>
+	</bean>
+<!-- 	<bean id="dataSourceSpied" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"> -->
+<!-- 	    <property name="driverClassName" value="net.sourceforge.jtds.jdbc.Driver"/> -->
+<!-- 	    <property name="url" value="jdbc:jtds:sqlserver://localhost/OMS"/> -->
+<!-- 	    <property name="username" value="oms"/> -->
+<!-- 	    <property name="password" value="omssystem!"/> -->
+<!-- 	</bean> -->
+
+    <!-- product   -->	 
+<!-- 	<bean id="dataSourceSpied" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"> -->
+<!-- 	    <property name="driverClassName" value="net.sourceforge.jtds.jdbc.Driver"/> -->
+<!-- 	    <property name="url" value="jdbc:jtds:sqlserver://192.168.151.83/OMS"/> -->
+<!-- 	    <property name="username" value="oms_web"/> -->
+<!-- 	    <property name="password" value="dhdpadptmdnpq1!"/> -->
+<!-- 	</bean>	 -->
+    
+       <bean class="net.sf.log4jdbc.Log4jdbcProxyDataSource" id="dataSource">
+        <constructor-arg ref="dataSourceSpied"></constructor-arg>
+        <property name="logFormatter">
+            <bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
+                <property name="loggingType" value="MULTI_LINE"></property>
+                <property name="sqlPrefix" value="SQL   :  "></property>
+            </bean>
+        </property>
+    </bean>
+</beans>

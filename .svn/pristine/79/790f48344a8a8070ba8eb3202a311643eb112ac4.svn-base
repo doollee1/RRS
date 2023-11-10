@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+	body {font-size:11px;}
+	p {font-size:8px;}
+	body table {font-family:verdana; font-size:10px;}
+	@media print
+		{
+    		#footer {
+         	display: block; 
+         	position: fixed; 
+         	bottom: 0;
+         	padding-top:100px;
+    		} 
+		}
+	.orange_color {color:#ff6600;}
+	.report_table_line {width:100%;}
+	.report_table_line tr {border-bottom:1px solid #ccc;}
+	.report_table_line tr td {height: 15px;}
+	.report_table_subtotal { width:100%; border-bottom: 1px solid #ccc; background-color: #DFEAFF;}
+	.report_totalprice { width:100%; border-bottom:2px solid #333;}
+	.report_footer_table {width: 100%;}
+	.report_footer_table tr td {vertical-align: top; vertical-align: text-top;font-size: 7px; font-family:verdana;}
+</style>
+</head>
+	
+<table border="0" width="100%"> 
+   <thead> 
+    <tr> 
+     <th style="width:100%"><img style="page-break-before:always;" src="/images/HWQC_logo.png" width="50%"></th> 
+   </tr> 
+   <tr> 
+    <th style="height:30px;"></th> 
+   </tr> 
+  </thead> 
+  
+  <tfoot>
+   <tr> 
+    <td width="100%" height="150px"> 
+     <table width="100%" border="0"> 
+       <tr> 
+         <td colspan="4"><br>&nbsp;</td> 
+      </tr> 
+    </table> 
+  </tfoot>	
+
+  <tbody> 
+    <tr> 
+      <td width="100%"> 
+         
+        <!-- ---- -->
+        <div class="">		
+			<p><font color="#ff6600">Hanwha Q CELLS GmbH</font><data>Sonnenallee 17-21, 06766 Bitterfeld-Wolfen (OT Thalheim), Germany</data></p>
+			<table width="100%">
+				<tr>
+					<td width="50%" valign="top">
+						<!--- <div class="orange_color">Sold-to-party</div>--->
+						<div>
+							<!---sold to address --->
+							<p>address</p>
+							<p>address</p>
+							<p>address</p>
+							<p>address</p>
+							<p>address</p>
+							<p>address</p>
+							<p>address</p>
+						</div></td>
+					<td width="50%" valign="top">
+						<!----<div class="orange_color">Bill-to-party</div>--->
+						<!--- <div>
+								<p>address</p>
+								<p>address</p>
+								<p>address</p>
+								<p>address</p>
+								</div>
+						---->
+						<div class="orange_color">Ship-to-party</div>
+						<div>
+							<!--- partner function ---->
+							<p>address</p>
+							<p>address</p>
+							<p>address</p>
+							<p>address</p>
+							<p>address</p>
+							<p>address</p>
+						</div></td>
+				</tr>
+			</table>
+			<h2><font color="#ff6600">INVOICE</font><font color="#ff6600"> 
+				<data>616014661</data></font></h2>
+			<table width="100%">
+				<tr>
+					<td width="20%">Document No./Date</td>
+					<td>data</td>
+					<td width="20%">Delivery</td>
+					<td>data</td>
+					<br>
+				</tr>
+				<tr>
+					<td>Customer No.</td>
+					<td>&nbsp;</td>
+					<td>Order</td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td>Your Reference</td>
+					<td>&nbsp;</td>
+					<td>Shipment</td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td>Your Document</td>
+					<td>&nbsp;</td>
+					<td>Incoterms</td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td>Contact</td>
+					<td>&nbsp;</td>
+					<td>Payment terms</td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td>Phone</td>
+					<td>&nbsp;</td>
+					<td>Your Vat.Reg.No.</td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+				</tr>
+			</table>
+			<p class="orange_color">Please always specify the order or invoice number as the intended use for payments.</p>
+			<div>
+			<!----- ----->
+				<p>Since your Creditlimit is about 50000 € Please advise pre-payment over 54832 €,so we can dispatch your goods. </p>
+				<p>Please use the PI-Number as refference.</p>
+			</div>
+			<table width="100%" style="border-bottom: 1px solid #333; border-top:1px solid #ff6600;" widtd="100%">
+				<tr class="orange_color">
+					<td width="10%">Pos.</td>
+					<td width="10%">Artivle No.</td>
+					<td width="30%">Description</td>
+					<td width="10%">Date</td>
+					<td width="5%">Quantity</td>
+					<td width="5%">Unit</td>
+					<td width="10%">Unit price</td>
+					<td width="5%">per</td>
+					<td width="10%" align="right">Total price</td>
+				</tr>
+			</table>
+			<table class="report_table_line">
+				<tr>
+					<td width="10%" height="15">100</td>
+					<td width="10%">10018959</td>
+					<td width="30%"><data>Q.PLUS BFR 1.1.0.280</data><br>
+						Total power of order postion:<data>197.120.00WP</data><br>
+						HS-Code:<data>85414090</data></td>
+					<td width="10%">23.11.2017</td>
+					<td width="5%">704</td>
+					<td width="5%">PCS</td>
+					<td width="10%">0.39</td>
+					<td width="5%">1wp</td>
+					<td width="10%" align="right">00.000.00</td>
+				</tr>
+			</table>
+			<table width="100%" style="border-bottom: 1px solid #ccc; background-color: #DFEAFF">
+		<tr>
+					<td width="5%"><p>Total quantity</p></td>
+					<td width="53%">&nbsp;</td>
+					<td width="2%">&nbsp;</td>
+					<td width="15%">Sub total</td>
+					<td width="2%">&nbsp;</td>
+					<td width="13%">&nbsp;</td>
+					<td width="10%" align="right">5000000000</td>
+		</tr>
+</table>
+			<table width="100%" style="border-top:1px solid #333; border-bottom:1px solid #333;">
+				<tr>
+					<td width="90%" align="center">Additional VAT</td>
+					<td width="10%" align="right">0,00%</td>
+				</tr>
+			</table>
+			<table width="100%" style="border-top:1px solid #333; border-bottom:1px solid #333;">
+				<tr>
+					<td width="90%" align="center" style="color:red">Total price in EUR</td>
+					<td width="10%" align="right" style="color:red">5000000000</td>
+			</tr>
+		</table>
+			<p>Up to 08.01.2018 without deduction 00.000.00 EUR</p>
+			<p>Intra-community supply of goods(§4 Nr.1b in connection with §6 aUStG)</p>
+			<p>Un
+				<br>
+				<br>
+			</p>
+		<p>Unless and as far as not otherwise explicitly agreed to in writing by Hanwha Q CELLS GmbH ("Q CELLS"), all deliveries and services are carried out exclusively to the general business terms and conditions of Q CELLS, which are attached to this order or which can be received from the homepage www.q-cells.com.<br>
+			The general business terms and conditions of the receiver of this invoice are excluded.<br>
+			The retention of title remains at Q CELLS until full payment.</p>
+		<p>Processing and transformation of unpaid deliveries always take place for Q CELLS as manufacturer but without obligations.</p>
+		<p>In case of processing of unpaid deliveries, Q CELLS is entitled to keep the proportional property right (co-ownership) of the new created goods in the proportion of the invoiced delivery to the value of the new created goods.</p>	
+		<p>This invoice is valid without signature.</p>	
+			
+			<hr>
+</div>
+        <!-- ---- -->
+      </td> 
+   </tr>
+ </tbody> 
+</table>
+	  
+<table id="footer"  class="report_footer_table" width="100%">
+		<tr>
+			<td width="27%"><font color="#ff6600">Hanwha Q CELLS GmbH</font><br>
+				OT Thalheim <br>
+				Sonnenallee 17-21<br>
+				06766 Bitterfeld-Wolfen, Germany<br>
+				TEL +49 (0) 3494 66 99-0<br>
+				FAX +49 (0) 3494 66 99-199<br>
+				MAIL q-cells@q-cells.com<br>
+				WEB www.hanwha-qcells.com</td>
+			<td width="18%"><font color="#ff6600">Board of directors</font><br>
+				Ji-Weon Jeong<br>
+				Maeng Yoon Kim<br>
+				Jun	Tae	Ko <br></td>
+			<td width="35%"><p><font color="#ff6600">Back account</font><br>
+				Commerzbank AG,Berlin, Germany<br>
+				Account : 199999400 (EUR, USD, AUD, JPY, GBP)<br>
+				Code : 100 400 00<br>
+				IBAN : DE68 1004 0000 0199 9994 00<br>
+				BIC (SWIFT): COBADEBB</p></td>
+			<td width="20%"><font color="#ff6600">Registered office : </font>Bitterfeld-Wolfen<br>
+				<font color="#ff6600">Tax office : </font>Bitterfeld<br>
+				<font color="#ff6600">Tax number : </font>116/107/06438<br>
+				<font color="#ff6600">Registered number : </font>18663<br>
+				<font color="#ff6600">District court : </font>Stendal<br>
+				<font color="#ff6600">VAT-ID : </font>DE284757331<br>
+				<font color="#ff6600">WEEE-Registration-No : </font>DE 927 15097 </td>
+		</tr>
+	</table>
+</html>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AppAuthMapper">
+	<select id="selectAppAuthInfo" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+	/* AppAuth.xml -> selectAppAuthInfo */
+		SELECT ROW_NUMBER() OVER(ORDER BY D.PRIORITY, B.PRIORITY) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,A.COMP_CD
+			  ,A.POLICY_CD
+			  ,C.POLICY_NM
+			  ,A.SYSTEM_CD
+			  ,A.PROG_CD
+			  ,A.STATUS
+			  ,CASE WHEN #{LANG} = 'FR' THEN B.PROG_FR
+			        WHEN #{LANG} = 'EN' THEN B.PROG_EN
+			    	ELSE B.PROG_NM END AS PROG_NM
+			  ,SUBSTRING(A.AUTH, 1, 1) AUTH_SEARCH
+			  ,SUBSTRING(A.AUTH, 2, 1) AUTH_ADD
+			  ,SUBSTRING(A.AUTH, 3, 1) AUTH_DEL
+			  ,SUBSTRING(A.AUTH, 4, 1) AUTH_SAVE
+			  ,SUBSTRING(A.AUTH, 5, 1) AUTH_PRINT
+			  ,SUBSTRING(A.AUTH, 6, 1) AUTH_UPLOAD
+			  ,SUBSTRING(A.AUTH, 7, 1) AUTH_EXCEL
+			  ,SUBSTRING(A.AUTH, 8, 1) AUTH_PDF
+			  ,SUBSTRING(A.AUTH, 9, 1) AUTH_CANCEL
+			  ,SUBSTRING(A.AUTH, 10, 1) AUTH_USER1
+			  ,SUBSTRING(A.AUTH, 11, 1) AUTH_USER2
+			  ,SUBSTRING(A.AUTH, 12, 1) AUTH_USER3
+			  ,SUBSTRING(A.AUTH, 13, 1) AUTH_USER4
+			  ,SUBSTRING(A.AUTH, 14, 1) AUTH_USER5
+			  ,B.PROG_GROUP
+			  ,B.PROG_LV
+		  FROM SY_POLICY_L A  
+	INNER JOIN SY_PROGRAM B  
+		    ON A.COMP_CD = B.COMP_CD
+	   	   AND A.PROG_CD = B.PROG_CD
+	INNER JOIN SY_POLICY_H C  
+		    ON A.COMP_CD = C.COMP_CD
+		   AND A.POLICY_CD = C.POLICY_CD
+	INNER JOIN SY_SYSTEM D  
+		    ON B.COMP_CD = D.COMP_CD
+		   AND B.SYSTEM_CD = D.SYSTEM_CD
+		 WHERE A.COMP_CD = #{G_COMP_CD}
+		   AND A.POLICY_CD = #{POLICY_CD}
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<insert id="insertAppAuthInfo" parameterType="BMap">
+	/* AppAuth.xml -> insertAppAuthInfo */
+		INSERT INTO SY_POLICY_L
+					(COMP_CD
+					,POLICY_CD
+					,SYSTEM_CD
+					,PROG_CD
+					,AUTH
+					,STATUS
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
+			 VALUES (#{COMP_CD}
+					,#{POLICY_CD}
+					,#{SYSTEM_CD}
+					,#{PROG_CD}
+					,#{AUTH}
+					,#{STATUS}
+					,NOW()
+					,#{LOGIN_USER}
+					,NOW()
+					,#{LOGIN_USER}
+					)
+	</insert>
+	
+	<update id="updateAppAuthInfo" parameterType="BMap">
+	/* AppAuth.xml -> updateAppAuthInfo */
+		UPDATE SY_POLICY_L
+		   SET AUTH = #{AUTH}
+			  ,STATUS = #{STATUS}
+			  ,UPT_DT = NOW()
+			  ,UPT_ID = #{LOGIN_USER}
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND POLICY_CD = #{POLICY_CD}
+		   AND SYSTEM_CD = #{SYSTEM_CD}
+		   AND PROG_CD = #{PROG_CD}
+	</update>
+	
+	<delete id="deleteAppAuthInfo" parameterType="BMap">
+	/* AppAuth.xml -> deleteAppAuthInfo */
+		DELETE SY_POLICY_L
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND POLICY_CD = #{POLICY_CD}
+		   AND SYSTEM_CD = #{SYSTEM_CD}
+		   AND PROG_CD = #{PROG_CD}
+	</delete>
+	
+	<select id="selectAppAuthCnt" parameterType="BMap" resultType="int">
+	/* AppAuth.xml -> selectAppAuthCnt */
+		SELECT COUNT(1)
+		  FROM SY_POLICY_L  
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND POLICY_CD = #{POLICY_CD}
+		   AND SYSTEM_CD = #{SYSTEM_CD}
+		   AND PROG_CD = #{PROG_CD}
+	</select>
+</mapper>

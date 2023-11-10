@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NoticeMapper">
+	<select id="selectNoticeInfo" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+	/* Notice.xml -> selectNoticeInfo */
+		SELECT ROW_NUMBER() OVER(ORDER BY A.NOTICE_NO DESC) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,A.NOTICE_NO
+			  ,A.TITLE
+			  ,A.NOTICE_TP
+			  ,DBO.GetCodeNm('NOTICE_TP', A.NOTICE_TP, #{LANG}) NOTICE_TP_NM
+			  ,A.REG_ID
+			  ,B.NAME_FULL REG_NM
+			  ,DBO.FMTDDATE(A.REG_DT, 'DD.MM.YYYY') REG_DT
+			  ,A.CNT
+			  ,A.CONTENTS
+			  ,DBO.FMTDDATE(A.FROMDATE, 'DD.MM.YYYY') FROMDATE
+			  ,DBO.FMTDDATE(A.TODATE, 'DD.MM.YYYY') TODATE
+			  ,CASE WHEN DATEDIFF(Day,DBO.FMTDDATE(GETDATE(),'YYYYMMDD'), DBO.FMTDDATE(A.FROMDATE,'YYYYMMDD')) <![CDATA[ <= ]]> 0 AND 
+			             DATEDIFF(Day,DBO.FMTDDATE(GETDATE(),'YYYYMMDD'), DBO.FMTDDATE(A.FROMDATE,'YYYYMMDD')) <![CDATA[ >= ]]> -7 THEN 'Y'
+					ELSE 'N' END NEW_YN
+			  ,A.FILE_UID
+		  FROM BC_NOTICE A WITH (NOLOCK) 
+	INNER JOIN BC_USER B WITH (NOLOCK) 
+			ON A.REG_ID = B.USER_ID
+		 WHERE 1 = 1
+		<if test='S_TITLE != null and S_TITLE != ""'>
+		   AND A.TITLE LIKE '%' + dbo.SetParam(#{S_TITLE}) + '%'
+		</if>
+		<if test='S_CONTENT != null and S_CONTENT != ""'>
+		   AND A.CONTENTS LIKE '%' + dbo.SetParam(#{S_CONTENT}) + '%'
+		</if>
+		<if test='S_NOTICE_NO != null and S_NOTICE_NO != ""'>
+		   AND A.NOTICE_NO = #{S_NOTICE_NO}
+		</if>
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<insert id="insertNoticeInfo" parameterType="BMap">
+	/* Notice.xml -> insertNoticeInfo */
+		INSERT INTO BC_NOTICE
+					(TITLE
+					,NOTICE_TP
+					,CONTENTS
+					,CNT
+					,FROMDATE
+					,TODATE
+		<if test='FILE_UID != null and FILE_UID != ""'>
+					,FILE_UID
+		</if>
+					,STATUS
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
+			 VALUES (#{TITLE}
+					,#{NOTICE_TP}
+					,#{CONTENTS}
+					,0
+					,CONVERT(VARCHAR(8), CONVERT(DATETIME, #{FROMDATE}, 103), 112)
+					,CONVERT(VARCHAR(8), CONVERT(DATETIME, #{TODATE}, 103), 112)
+			<if test='FILE_UID != null and FILE_UID != ""'>
+					,#{FILE_UID}
+			</if>
+					,'A'
+					,GETDATE()
+					,#{LOGIN_USER}
+					,GETDATE()
+					,#{LOGIN_USER}
+					)
+	</insert>
+	
+	<update id="updateNoticeInfo" parameterType="BMap">
+	/* Notice.xml -> updateNoticeInfo */
+		UPDATE BC_NOTICE
+		   SET TITLE = #{TITLE}
+		   	  ,NOTICE_TP = #{NOTICE_TP}
+		   	  ,CONTENTS = #{CONTENTS}
+		   	  ,FROMDATE = CONVERT(VARCHAR(8), CONVERT(DATETIME, #{FROMDATE}, 103), 112)
+		   	  ,TODATE = CONVERT(VARCHAR(8), CONVERT(DATETIME, #{TODATE}, 103), 112)
+		   	  ,UPT_DT = GETDATE()
+		   	  ,UPT_ID = #{LOGIN_USER}
+		<if test='FILE_UID != null and FILE_UID != ""'>
+			  ,FILE_UID = #{FILE_UID}
+		</if>
+		 WHERE NOTICE_NO = #{NOTICE_NO}
+	</update>
+	
+	<update id="updateNoticeCnt" parameterType="BMap">
+	/* Notice.xml -> updateNoticeCnt */
+		UPDATE BC_NOTICE
+		   SET CNT = CNT + 1
+		 WHERE NOTICE_NO = #{NOTICE_NO}
+	</update>
+	
+	<select id="selectMainNotice" parameterType="BMap" resultType="BMap">
+	/* Notice.xml -> selectMainNotice */
+	  SELECT * 
+	      FROM (
+				SELECT ROW_NUMBER() OVER(ORDER BY NOTICE_NO DESC) ROWNUM,
+					   dbo.GetCodeNm('NOTICE_TP', NOTICE_TP,'EN') NOTICE_TP, 
+					   TITLE, 
+					   dbo.FmtdDate(FROMDATE, 'DD.MM.YYYY') FROMDATE, 
+					   dbo.FmtdDate(TODATE, 'DD.MM.YYYY') TODATE, 
+					   REG_ID, 
+					   CNT,
+			  		   CASE WHEN DATEDIFF(Day,DBO.FMTDDATE(GETDATE(),'YYYYMMDD'), DBO.FMTDDATE(FROMDATE,'YYYYMMDD')) <![CDATA[ <= ]]> 0 AND 
+			            	     DATEDIFF(Day,DBO.FMTDDATE(GETDATE(),'YYYYMMDD'), DBO.FMTDDATE(FROMDATE,'YYYYMMDD')) <![CDATA[ >= ]]> -7 THEN 'Y'
+							ELSE 'N' END NEW_YN
+				  FROM BC_NOTICE)A
+		  WHERE ROWNUM <![CDATA[ < ]]> 11
+	</select>
+</mapper>

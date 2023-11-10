@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserMapper">
+	<select id="selectUserInfo" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+	/* User.xml -> selectUserInfo */
+		SELECT ROW_NUMBER() OVER(ORDER BY A.USER_ID) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,A.COMP_CD
+			  ,A.USER_ID
+			  ,A.NAME_1ST
+			  ,A.NAME_2ND
+			  ,A.NAME_FULL
+			  ,A.USER_TP
+			  ,B.CODE_NM USER_TP_NM
+			  ,A.USER_GD
+			  ,A.DEPT_CD
+			  ,CASE WHEN #{LANG} = 'FR' THEN D.DEPT_FR
+			        WHEN #{LANG} = 'EN' THEN D.DEPT_EN
+			    	ELSE D.DEPT_NM END AS DEPT_NM
+			  ,A.CUST_CD
+			  ,A.WEB_ID
+			  ,A.TEL_NO
+			  ,CONCAT(A.STR_NM,' ',A.HAUS_NO) AS ADDR
+			  ,A.STR_NM
+			  ,A.HAUS_NO
+			  ,A.ZIP_NO
+			  ,A.ORT_NM
+			  ,A.REGION_CD
+			  ,DBO.GETCODENM('LANG_CD', A.LANG_CD, #{LANG}) AS LAMG_NM
+			  ,A.LAND_CD
+			  ,A.E_MAIL
+			  ,A.PW_CURR
+			  ,A.PW_PAST1
+			  ,A.PW_PAST2
+			  ,A.PW_PAST3
+			  ,A.WRONG_CNT
+			  ,A.LOCK_YN
+			  ,A.AREA_CD
+			  ,A.AUTH_GR
+			  ,A.LANG_CD
+			  ,A.CRE_TP
+			  ,DBO.FMTDDATE(A.START_DT, 'DD.MM.YYYY') START_DT
+			  ,DBO.FMTDDATE(A.STOP_DT, 'DD.MM.YYYY') STOP_DT
+			  ,A.STATUS
+			  ,C.CODE_NM STATUS_NM
+			  ,A.REG_DT
+			  ,A.REG_ID
+			  ,A.UPT_DT
+			  ,A.UPT_ID
+		  FROM BC_USER A WITH (NOLOCK) 
+	INNER JOIN BC_COMM_L B WITH (NOLOCK) 
+			ON A.USER_TP = B.CODE
+		   AND B.HEAD_CD = '100200'
+	INNER JOIN BC_COMM_L C WITH (NOLOCK) 
+			ON A.STATUS = C.CODE
+		   AND C.HEAD_CD = '100300'
+     LEFT JOIN BC_DEPT D WITH (NOLOCK) 
+            ON A.COMP_CD = D.COMP_CD 
+           AND A.DEPT_cD = D.DEPT_CD
+		 WHERE 1 = 1
+		   AND USER_TP != '03' <!-- OM/KAM 외에는 조회안되도록 수정 -->
+		<if test='G_COMP_CD != null and G_COMP_CD != ""'>
+		   AND A.COMP_CD = #{G_COMP_CD}
+		</if>
+		<if test='COMP_CD != null and COMP_CD != ""'>
+		   AND A.COMP_CD = #{COMP_CD}
+		</if>
+		<if test='S_USER_NM != null and S_USER_NM != ""'>
+		   AND A.NAME_FULL LIKE DBO.SETPARAM(#{S_USER_NM})
+		</if>
+		<if test='S_USER_ID != null and S_USER_ID != ""'>
+		   AND A.USER_ID LIKE DBO.SETPARAM(#{S_USER_ID})
+		</if>
+		<if test='USER_ID != null and USER_ID != ""'>
+		   AND A.USER_ID = #{USER_ID}
+		</if>
+		<if test='DEPT_CD != null and DEPT_CD != ""'>
+		   AND A.DEPT_CD = #{DEPT_CD}
+		</if>
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<insert id="insertUserInfo" parameterType="BMap">
+		INSERT INTO BC_USER
+					(COMP_CD
+					,USER_ID
+					,NAME_1ST
+					,NAME_2ND
+					,NAME_FULL
+					,USER_TP
+					,USER_GD
+					,DEPT_CD
+					,CUST_CD
+					,WEB_ID
+					,STR_NM
+					,HAUS_NO
+					,ZIP_NO
+					,ORT_NM
+					,REGION_CD
+					,LAND_CD
+					,E_MAIL
+					,PW_CURR
+					,PW_PAST1
+					,PW_PAST2
+					,PW_PAST3
+					,WRONG_CNT
+					,LOCK_YN
+					,AREA_CD
+					,AUTH_GR
+					,LANG_CD
+					,CRE_TP
+					,START_DT
+					,STOP_DT
+					,STATUS
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
+			 VALUES (#{COMP_CD}
+					,#{USER_ID}
+					,#{NAME_1ST}
+					,#{NAME_2ND}
+					,#{NAME_1ST} + ' ' +  #{NAME_2ND}
+					,#{USER_TP}
+					,#{USER_GD}
+					,#{DEPT_CD}
+					,#{CUST_CD}
+					,#{WEB_ID}
+					,#{STR_NM}
+					,#{HAUS_NO}
+					,#{ZIP_NO}
+					,#{ORT_NM}
+					,#{REGION_CD}
+					,#{LAND_CD}
+					,#{E_MAIL}
+					,#{PW_CURR}
+					,NULL
+					,NULL
+					,NULL
+					,0
+					,'N'
+					,#{AREA_CD}
+					,NULL
+					,#{LANG_CD}
+					,#{CRE_TP}
+					,PARSE(#{START_DT} AS DATE USING 'de-DE')
+					,PARSE(#{STOP_DT} AS DATE USING 'de-DE')
+					,#{STATUS}
+					,GETDATE()
+					,#{LOGIN_USER}
+					,GETDATE()
+					,#{LOGIN_USER}
+					)
+	</insert>
+	
+	<update id="updateUserInfo" parameterType="BMap">
+		UPDATE BC_USER
+		   SET NAME_1ST = #{NAME_1ST}
+			  ,NAME_2ND = #{NAME_2ND}
+			  ,NAME_FULL = #{NAME_1ST} + ' ' +  #{NAME_2ND}
+			  ,USER_TP = #{USER_TP}
+			  ,USER_GD = #{USER_GD}
+			  ,DEPT_CD = #{DEPT_CD}
+			  ,CUST_CD = #{CUST_CD}
+			  ,WEB_ID = #{WEB_ID}
+			  ,STR_NM = #{STR_NM}
+			  ,HAUS_NO = #{HAUS_NO}
+			  ,ZIP_NO = #{ZIP_NO}
+			  ,ORT_NM = #{ORT_NM}
+			  ,REGION_CD = #{REGION_CD}
+			  ,LAND_CD = #{LAND_CD}
+			  ,E_MAIL = #{E_MAIL}
+			  ,AREA_CD = #{AREA_CD}
+			  ,LANG_CD = #{LANG_CD}
+			  ,CRE_TP = #{CRE_TP}
+			  ,START_DT = PARSE(#{START_DT} AS DATE USING 'de-DE')
+			  ,STOP_DT = PARSE(#{STOP_DT} AS DATE USING 'de-DE')
+			  ,STATUS = #{STATUS}
+			  ,UPT_DT = GETDATE()
+			  ,UPT_ID = #{LOGIN_USER}
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND USER_ID = #{USER_ID}
+	</update>
+	
+	<delete id="deleteUserInfo" parameterType="BMap">
+		DELETE BC_USER
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND USER_ID = #{USER_ID}
+	</delete>
+	
+	<select id="selectUserInfoCnt" parameterType="BMap" resultType="int">
+		SELECT COUNT(1)
+		  FROM BC_USER WITH (NOLOCK) 
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND USER_ID = #{USER_ID}
+	</select>
+	
+	<update id="updatePassword" parameterType="BMap">
+		UPDATE BC_USER
+		   SET PW_CURR = #{NEW_PASSWORD}
+			  ,PW_PAST1 = PW_CURR
+			  ,PW_PAST2 = PW_PAST1
+			  ,PW_PAST3 = PW_PAST2
+			  <if test='INIT = "Y"'>
+		 	  ,LOGIN_DT = GETDATE()
+			  </if>
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND USER_ID = #{USER_ID}
+	</update>
+	
+	<select id="selectPastPassword" parameterType="BMap" resultType="int">
+		SELECT COUNT(1)
+		  FROM BC_USER WITH (NOLOCK) 
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND USER_ID = #{USER_ID}
+		   AND (PW_CURR = #{NEW_PASSWORD}
+		    OR PW_PAST1 = #{NEW_PASSWORD}
+			OR PW_PAST2 = #{NEW_PASSWORD}
+			OR PW_PAST3 = #{NEW_PASSWORD})
+	</select>
+	
+	<select id="updateLockyn" parameterType="BMap" resultType="int">
+		UPDATE BC_USER 
+		   SET LOCK_YN = 'N',
+		       WRONG_CNT = 0
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND USER_ID = #{USER_ID}
+	</select>
+</mapper>

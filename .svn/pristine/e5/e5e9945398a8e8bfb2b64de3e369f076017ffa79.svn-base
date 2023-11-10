@@ -1,0 +1,627 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SapIfRecvCustomerMapper">	
+	<insert id="insertSapIfRecvCustomerKNA1" parameterType="HashMap">
+		INSERT INTO IF_GET_CUST_KNA1(
+					 BUKRS     
+					,KUNNR 
+					,KTOKD 
+					,BRSCH 
+					,STCEG 
+					,KUKLA 
+					,BBBNR 
+					,BBSNR 
+					,KATR1 
+					,KATR2 
+					,KATR3 
+					,KATR4 
+					,KATR5 
+					,KATR6 
+					,KATR7 
+					,KATR8 
+					,KATR9 
+					,KATR10
+					,ADRNR 
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{BUKRS}     
+					,#{KUNNR}
+					,#{KTOKD}
+					,#{BRSCH}
+					,#{STCEG}
+					,#{KUKLA}
+					,#{BBBNR}
+					,#{BBSNR}
+					,#{KATR1}
+					,#{KATR2}
+					,#{KATR3}
+					,#{KATR4}
+					,#{KATR5}
+					,#{KATR6}
+					,#{KATR7}
+					,#{KATR8}
+					,#{KATR9}
+					,#{KATR10}
+					,#{ADRNR}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvCustomerKNAS" parameterType="HashMap">
+		INSERT INTO IF_GET_CUST_KNAS(
+					 KUNNR
+					,LAND1
+					,STCEG
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{KUNNR}
+					,#{LAND1}
+					,#{STCEG}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvCustomerARDC" parameterType="HashMap">
+		INSERT INTO IF_GET_CUST_ARDC(
+					 ADDRNUMBER
+					,NATION    
+					,TITLE     
+					,NAME1     
+					,NAME2     
+					,NAME3     
+					,NAME4     
+					,SORT1     
+					,SORT2     
+					,STREET    
+					,STR_SUPPL1
+					,STR_SUPPL2
+					,STR_SUPPL3
+					,LOCATION    
+					,HOUSE_NUM1
+					,POST_CODE1
+					,CITY1     
+					,COUNTRY   
+					,REGION    
+					,TRANSPZONE
+					,LANGU     
+					,TEL_NUMBER
+					,TEL_EXTENS
+					,FAX_NUMBER
+					,FAX_EXTENS
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{ADDRNUMBER}
+					,#{NATION}
+					,#{TITLE}
+					,#{NAME1}
+					,#{NAME2}
+					,#{NAME3}
+					,#{NAME4}
+					,#{SORT1}
+					,#{SORT2}
+					,#{STREET}  
+					,#{STR_SUPPL1}
+					,#{STR_SUPPL2}
+					,#{STR_SUPPL3}
+					,#{LOCATION}
+					,#{HOUSE_NUM1}
+					,#{POST_CODE1}
+					,#{CITY1}
+					,#{COUNTRY}
+					,#{REGION}
+					,#{TRANSPZONE}
+					,#{LANGU}
+					,#{TEL_NUMBER}
+					,#{TEL_EXTENS}
+					,#{FAX_NUMBER}
+					,#{FAX_EXTENS}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvCustomerARD6" parameterType="HashMap">
+		INSERT INTO IF_GET_CUST_ADR6(
+					 ADDRNUMBER
+					,PERSNUMBER
+					,SMTP_ADDR 
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{ADDRNUMBER}
+					,#{PERSNUMBER}
+					,#{SMTP_ADDR}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvCustomerADR12" parameterType="HashMap">
+		INSERT INTO IF_GET_CUST_ADR12(
+					 ADDRNUMBER
+					,PERSNUMBER
+					,URI_ADDR  
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{ADDRNUMBER}
+					,#{PERSNUMBER}
+					,#{URI_ADDR}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvCustomerKNVK" parameterType="HashMap">
+		INSERT INTO IF_GET_CUST_KNVK(
+					 PARNR         
+					,KUNNR         
+					,NAMEV         
+					,NAME1         
+					,ABTNR         
+					,ANRED         
+					,PAFKT         
+					,TITEL_AP      
+					,ZZFAKTURA     
+					,ZZLIEFERSCHEIN
+					,ZZPROFORMA    
+					,ZZQUOTE       
+					,PRSNR         
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{PARNR}
+					,#{KUNNR}
+					,#{NAMEV}
+					,#{NAME1}
+					,#{ABTNR}
+					,#{ANRED}
+					,#{PAFKT}
+					,#{TITEL_AP}
+					,#{ZZFAKTURA}
+					,#{ZZLIEFERSCHEIN}
+					,#{ZZPROFORMA}
+					,#{ZZQUOTE}
+					,#{PRSNR}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvCustomerADR2" parameterType="HashMap">
+		INSERT INTO IF_GET_CUST_ADR2(
+					 ADDRNUMBER
+					,PERSNUMBER
+					,CONSNUMBER
+					,TEL_NUMBER
+					,TEL_EXTENS
+					,R3_USER   
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{ADDRNUMBER}
+					,#{PERSNUMBER}
+					,#{CONSNUMBER}
+					,#{TEL_NUMBER}
+					,#{TEL_EXTENS}
+					,#{R3_USER}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvCustomerADR3" parameterType="HashMap">
+		INSERT INTO IF_GET_CUST_ADR3(
+					 ADDRNUMBER
+					,PERSNUMBER
+					,CONSNUMBER
+					,FAX_NUMBER
+					,FAX_EXTENS
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{ADDRNUMBER}
+					,#{PERSNUMBER}
+					,#{CONSNUMBER}
+					,#{FAX_NUMBER}
+					,#{FAX_EXTENS}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvCustomerKNB1" parameterType="HashMap">
+		INSERT INTO IF_GET_CUST_KNB1(
+					 KUNNR     
+					,BUKRS     
+					,LOEVM     
+					,ZUAWA     
+					,AKONT     
+					,ZWELS     
+					,ZTERM     
+					,VZSKZ     
+					,FDGRV     
+					,VLIBB     
+					,VRSPR     
+					,VRSNR     
+					,VERDT     
+					,XAUSZ     
+					,XZVER     
+					,HBKID     
+					,ALTKN     
+					,INTAD     
+					,ZZINTLIM  
+					,ZZEASY    
+					,ZZCOFACENR
+					,ZZBDATUM  
+					,ZZGBDAT   
+					,ZZTEXT1   
+					,ZZTEXT2   
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{KUNNR}
+					,#{BUKRS}
+					,#{LOEVM}
+					,#{ZUAWA}
+					,#{AKONT}
+					,#{ZWELS}
+					,#{ZTERM}
+					,#{VZSKZ}
+					,#{FDGRV}
+					,#{VLIBB}
+					,#{VRSPR}
+					,#{VRSNR}					
+					,(case when #{VERDT} = '0000-00-00' then null else #{VERDT} end)					
+					,#{XAUSZ}
+					,#{XZVER}
+					,#{HBKID}
+					,#{ALTKN}
+					,#{INTAD}
+					,#{ZZINTLIM}
+					,#{ZZEASY}
+					,#{ZZCOFACENR}
+					,(case when #{ZZBDATUM} = '0000-00-00' then null else #{ZZBDATUM} end)	
+					,(case when #{ZZGBDAT} = '0000-00-00' then null else #{ZZGBDAT} end)	
+					,#{ZZTEXT1}
+					,#{ZZTEXT2}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvCustomerKNB5" parameterType="HashMap">
+		INSERT INTO IF_GET_CUST_KNB5(
+					 KUNNR
+					,BUKRS
+					,MABER
+					,MAHNA
+					,MANSP
+					,MADAT
+					,MAHNS
+					,KNRMA
+					,GMVDT
+					,BUSAB
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{KUNNR}
+					,#{BUKRS}
+					,#{MABER}
+					,#{MAHNA}
+					,#{MANSP}
+					,(case when #{MADAT} = '0000-00-00' then null else #{MADAT} end)
+					,#{MAHNS}
+					,#{KNRMA}
+					,(case when #{GMVDT} = '0000-00-00' then null else #{GMVDT} end)
+					,#{BUSAB}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvCustomerKNVV" parameterType="HashMap">
+		INSERT INTO IF_GET_CUST_KNVV(
+					 KUNNR
+					,VKORG
+					,VTWEG
+					,SPART
+					,LOEVM
+					,VERSG
+					,AUFSD
+					,KALKS
+					,KDGRP
+					,BZIRK
+					,KONDA
+					,PLTYP
+					,INCO1
+					,INCO2
+					,LIFSD
+					,AUTLF
+					,ANTLF
+					,KZTLF
+					,LPRIO
+					,VSBED
+					,FAKSD
+					,WAERS
+					,KTGRD
+					,ZTERM
+					,VWERK
+					,VKGRP
+					,VKBUR
+					,KVGR1
+					,KVGR2
+					,KVGR3
+					,KVGR4
+					,KVGR5
+					,BOKRE
+					,BOIDT
+					,KURST
+					,KLABC
+					,PODKZ
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{KUNNR}
+					,#{VKORG}
+					,#{VTWEG}
+					,#{SPART}
+					,#{LOEVM}
+					,#{VERSG}
+					,#{AUFSD}
+					,#{KALKS}
+					,#{KDGRP}
+					,#{BZIRK}
+					,#{KONDA}
+					,#{PLTYP}
+					,#{INCO1}
+					,#{INCO2}
+					,#{LIFSD}
+					,#{AUTLF}
+					,#{ANTLF}
+					,#{KZTLF}
+					,#{LPRIO}
+					,#{VSBED}
+					,#{FAKSD}
+					,#{WAERS}
+					,#{KTGRD}
+					,#{ZTERM}
+					,#{VWERK}
+					,#{VKGRP}
+					,#{VKBUR}
+					,#{KVGR1}
+					,#{KVGR2}
+					,#{KVGR3}
+					,#{KVGR4}
+					,#{KVGR5}
+					,#{BOKRE}
+					,(case when #{BOIDT} = '0000-00-00' then null else #{BOIDT} end)	
+					,#{KURST}
+					,#{KLABC}
+					,#{PODKZ}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvCustomerKNVP" parameterType="HashMap">
+		INSERT INTO IF_GET_CUST_KNVP(
+					 KUNNR
+					,VKORG
+					,VTWEG
+					,SPART
+					,PARVW
+					,PARZA
+					,KUNN2
+					,LIFNR
+					,PERNR
+					,DEFPA
+					,KNREF
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{KUNNR}
+					,#{VKORG}
+					,#{VTWEG}
+					,#{SPART}
+					,#{PARVW}
+					,#{PARZA}
+					,#{KUNN2}
+					,#{LIFNR}
+					,#{PERNR}
+					,#{DEFPA}
+					,#{KNREF}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	<insert id="insertSapIfRecvCustomerKNVI" parameterType="HashMap">
+		INSERT INTO IF_GET_CUST_KNVI(
+					 KUNNR
+					,ALAND
+					,TATYP
+					,TAXKD
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{KUNNR}
+					,#{ALAND}
+					,#{TATYP}
+					,#{TAXKD}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+	
+	<insert id="insertSapIfRecvCustomerTEXT" parameterType="HashMap">
+		INSERT INTO IF_GET_CUST_TEXT(
+					 MANDT
+					,HEADER_KEY
+					,TIMESTAMPL
+					,KUNNR
+					,TEXT_ID
+					,LANGU
+					,LANGUISO
+					,TDFORMAT
+					,TDLINE
+					,IF_DT
+					,IF_STS
+					) 
+			VALUES (
+					 #{MANDT}
+					,#{HEADER_KEY}
+					,#{TIMESTAMPL}
+					,#{KUNNR}
+					,#{TEXT_ID}
+					,#{LANGU}
+					,#{LANGUISO}
+					,#{TDFORMAT}
+					,#{TDLINE}
+					,getDate()
+					,'R'
+					)
+	</insert>
+	
+
+	
+	
+	
+	
+	
+	<select id="callSpSapIfRecvCustomer" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_ERP_RECV_CUSTOMER(#{COMP_CD}, #{USER_ID}) } 
+	</select>
+	
+	
+	<select id="callSpSapIfRecvCustomerKLABC" statementType="CALLABLE" parameterType="HashMap">
+		{ CALL DBO.SP_IF_ERP_RECV_CUSTOMER_KLABC(#{COMP_CD}, #{USER_ID}) } 
+	</select>
+	
+	<insert id="mergeSapIfRecvCustomer" parameterType="HashMap">
+			MERGE MS_ITEM_Customer AS A
+			USING
+			(
+			   SELECT distinct A.WERKS, substring(A.MATNR,11,8) MATNR
+					, (case when A.STLNR is null then ' ' else A.STLNR end) STLNR
+					, (case when A.STLAN is null then ' ' else A.STLAN end) STLAN
+					, (case when B.STLTY is null then ' ' else B.STLTY end) STLTY
+					, B.DATUV DATUV_H, B.BMENG, B.BMEIN, B.STLST
+					, (case when C.POSNR is null then ' ' else C.POSNR end) POSNR
+					, substring(C.IDNRK,11,8) IDNRK
+					, C.MENGE, (case when C.MEINS = 'ST' then 'PCS' else C.MEINS end) MEINS, C.DATUV, C.LKENZ, C.POSTP
+				 FROM IF_GET_Customer_MAST A	with (nolock)
+				      LEFT OUTER JOIN ( SELECT *
+										  FROM IF_GET_Customer_STKO	with (nolock)
+										 WHERE IF_SEQ IN (SELECT MAX(IF_SEQ)
+															FROM IF_GET_Customer_STKO
+														   WHERE IF_STS = 'R'
+														   GROUP BY STLNR, STLTY
+														  )
+									  ) B
+				     		ON  B.IF_STS = 'R' AND A.STLNR = B.STLNR
+				      LEFT OUTER JOIN ( SELECT *
+										  FROM IF_GET_Customer_STPO	with (nolock)
+										 WHERE IF_SEQ IN (SELECT MAX(IF_SEQ)
+															FROM IF_GET_Customer_STPO
+														   WHERE IF_STS = 'R'
+														   GROUP BY STLNR, POSNR, IDNRK, MEINS
+														  )
+									  ) C
+				     		ON  C.IF_STS = 'R' AND A.STLNR = C.STLNR AND B.STLNR = C.STLNR
+			    WHERE A.IF_STS = 'R'
+			) AS D
+			ON (A.COMP_CD = #{compCd} AND A.MATL_CD = D.MATNR AND A.PLANT_CD = D.WERKS AND 
+				rtrim(A.Customer_NO) = rtrim(D.STLNR) AND A.ITEM_SEQ = D.POSNR AND A.Customer_CD = D.IDNRK
+			)
+			WHEN MATCHED THEN
+			  UPDATE SET A.Customer_USAGE       = D.STLAN
+						,A.Customer_CTG         = D.STLTY
+						,A.BS_QTY		   = D.BMENG
+						,A.BS_UNIT		   = D.BMEIN
+						,A.Customer_STS		   = D.STLST
+						,A.Customer_CD          = D.IDNRK
+						,A.Customer_QTY         = convert(numeric(13,3), D.MENGE)
+						,A.UNIT_CD         = D.MEINS
+						,A.VAL_FR_DT_H     = D.DATUV_H
+						,A.VAL_FR_DT       = D.DATUV
+						,A.DEL_YN          = D.LKENZ
+						,A.ITEM_CTG        = D.POSTP
+						,A.STATUS          = 'A'		/* A(live), S(topped), D(eleted) */
+						,A.UPT_DT          = GETDATE()
+						,A.UPT_ID          = 'oms_if'
+			WHEN NOT MATCHED THEN
+				 INSERT (
+						 COMP_CD    
+						,MATL_CD        /* MATNR */       
+						,PLANT_CD       /* WERKS */
+						,Customer_NO			/* STLNR */
+						,Customer_USAGE      /* STLAN */
+						,ITEM_SEQ		/* POSNR */
+						,Customer_CTG        /* STLTY */
+						,BS_QTY			/* BMENG */
+						,BS_UNIT		/* BMEIN */
+						,Customer_STS		/* STLST */						
+						,Customer_CD       	/* IDNRK */
+						,Customer_QTY        /* MENGE */
+						,UNIT_CD        /* MEINS */
+						,VAL_FR_DT_H    /* DATUV */
+						,VAL_FR_DT      /* DATUV */
+						,DEL_YN         /* LKENZ */
+						,ITEM_CTG       /* POSTP */
+						,STATUS         /* A(live), S(topped), D(eleted) */
+						,REG_DT         /* GETDATE() */
+						,REG_ID         /* 'oms_if'  */
+						,UPT_DT         /* GETDATE() */
+						,UPT_ID         /* 'oms_if'  */
+						) 
+				 VALUES (#{compCd}
+						,D.MATNR  
+						,D.WERKS  
+						,D.STLNR
+						,D.STLAN
+						,D.POSNR
+						,D.STLTY
+						,D.BMENG
+						,D.BMEIN
+						,D.STLST						
+						,D.IDNRK
+						,convert(numeric(13,3), D.MENGE)
+						,D.MEINS  
+						,D.DATUV_H
+						,D.DATUV  
+						,D.LKENZ  
+						,D.POSTP  
+						,'A'
+						,GETDATE()
+						,'oms_if'
+						,GETDATE()
+						,'oms_if'
+						)
+						;
+			UPDATE IF_GET_Customer_MAST SET IF_STS = 'D' WHERE IF_STS = 'R';
+			UPDATE IF_GET_Customer_STKO SET IF_STS = 'D' WHERE IF_STS = 'R';
+			UPDATE IF_GET_Customer_STPO SET IF_STS = 'D' WHERE IF_STS = 'R';
+	</insert>
+
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AuthMapper">
+	<select id="selectAuthInfo" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+	/* Auth.xml -> selectAuthInfo */
+		SELECT ROW_NUMBER() OVER(ORDER BY A.REG_DT) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,A.COMP_CD
+			  ,A.POLICY_CD
+			  ,A.POLICY_NM
+			  ,A.POLICY_DSC
+			  ,A.STATUS
+			  ,GETCODENM('USED_OR_NOT', A.STATUS, #{LANG}) AS STATUS_NM
+		  FROM SY_POLICY_H A 
+	INNER JOIN BC_COMM_L B 
+			ON A.STATUS = B.CODE
+		   AND B.HEAD_CD = '100000'
+		 WHERE A.COMP_CD = #{G_COMP_CD}
+		<if test='USED_OR_NOT != null and USED_OR_NOT != ""'>
+		   AND A.STATUS = #{USED_OR_NOT}
+		</if>
+		<if test='S_POLICY_CD != null and S_POLICY_CD != ""'>
+		   AND A.POLICY_CD LIKE dbo.SetParam(#{S_POLICY_CD})
+		</if>
+		<if test='S_POLICY_NM != null and S_POLICY_NM != ""'>
+		   AND A.POLICY_NM  LIKE dbo.SetParam(#{S_POLICY_NM})
+		</if>
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<insert id="insertAuthInfo" parameterType="BMap">
+	/* Auth.xml -> insertAuthInfo */
+		INSERT INTO SY_POLICY_H
+					(COMP_CD
+					,POLICY_CD
+					,POLICY_NM
+					,POLICY_DSC
+					,STATUS
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
+			 VALUES (#{G_COMP_CD}
+					,#{POLICY_CD}
+					,#{POLICY_NM}
+					,#{POLICY_DSC}
+					,#{STATUS}
+					,NOW()
+					,#{LOGIN_USER}
+					,NOW()
+					,#{LOGIN_USER}
+					)
+	</insert>
+	
+	<update id="updateAuthInfo" parameterType="BMap">
+		/* Auth.xml -> updateAuthInfo */
+		UPDATE SY_POLICY_H
+		   SET POLICY_NM = #{POLICY_NM}
+		      ,POLICY_DSC = #{POLICY_DSC}
+			  ,STATUS = #{STATUS}
+			  ,UPT_DT = NOW()
+			  ,UPT_ID = #{LOGIN_USER}
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND POLICY_CD = #{POLICY_CD}
+	</update>
+		
+	<select id="selectAuthCnt" parameterType="BMap" resultType="int">
+	/* Auth.xml -> selectAuthCnt */
+		SELECT COUNT(1)
+		  FROM SY_POLICY_H 
+		 WHERE COMP_CD = #{G_COMP_CD}
+		   AND POLICY_CD = #{POLICY_CD}
+	</select>
+	
+	<delete id="deleteAuthInfo" parameterType="BMap">
+		/* Auth.xml -> deleteAuthInfo */
+		DELETE FROM SY_POLICY_H
+		   WHERE COMP_CD = #{COMP_CD}
+		   AND POLICY_CD = #{POLICY_CD}
+	</delete>
+</mapper>

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SystemMapper">
+	<select id="selectSystemInfo" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+	/* System.xml -> selectSystemInfo */
+		SELECT ROW_NUMBER() OVER(ORDER BY PRIORITY) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,COMP_CD
+			  ,SYSTEM_CD
+			  ,SYSTEM_NM
+			  ,SYSTEM_EN
+			  ,SYSTEM_FR
+			  ,SYSTEM_4TH
+			  ,PRIORITY
+			  ,STATUS
+		  FROM SY_SYSTEM WITH (NOLOCK)
+		 WHERE COMP_CD = #{G_COMP_CD}
+		<if test='USED_OR_NOT != null and USED_OR_NOT != ""'>
+		   AND STATUS = #{USED_OR_NOT}
+		</if>
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectSystemInfoForMenu" parameterType="BMap" resultType="codeVO">
+	/* System.xml -> selectSystemInfoForMenu */
+		SELECT SYSTEM_CD CODE
+			  ,CASE WHEN #{LANG} = 'FR' THEN SYSTEM_FR
+			        WHEN #{LANG} = 'EN' THEN SYSTEM_EN
+			        ELSE SYSTEM_NM END AS VALUE
+		  FROM SY_SYSTEM WITH (NOLOCK)
+		 WHERE COMP_CD = #{G_COMP_CD}
+		<if test='S_STATUS != null and S_STATUS != ""'>
+		   AND STATUS = #{S_STATUS}
+		</if>
+	  ORDER BY PRIORITY
+	</select>
+	
+	<insert id="insertSystemInfo" parameterType="BMap">
+	/* System.xml -> insertSystemInfo */
+		INSERT INTO SY_SYSTEM
+					(COMP_CD
+					,SYSTEM_CD
+					,SYSTEM_NM
+					,SYSTEM_EN
+					,SYSTEM_FR
+					,SYSTEM_4TH
+					,PRIORITY
+					,STATUS
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
+			 VALUES (#{G_COMP_CD}
+					,#{SYSTEM_CD}
+					,#{SYSTEM_NM}
+					,#{SYSTEM_EN}
+					,#{SYSTEM_FR}
+					,#{SYSTEM_4TH}
+					,#{PRIORITY}
+					,#{STATUS}
+					,GETDATE()
+					,#{LOGIN_USER}
+					,GETDATE()
+					,#{LOGIN_USER}
+					)
+	</insert>
+	
+	<update id="updateSystemInfo" parameterType="BMap">
+	/* System.xml -> updateSystemInfo */
+		UPDATE SY_SYSTEM
+		   SET SYSTEM_NM = #{SYSTEM_NM}
+			  ,SYSTEM_EN = #{SYSTEM_EN}
+			  ,SYSTEM_FR = #{SYSTEM_FR}
+			  ,SYSTEM_4TH = #{SYSTEM_4TH}
+			  ,PRIORITY = #{PRIORITY}
+			  ,STATUS = #{STATUS}
+			  ,UPT_DT = GETDATE()
+			  ,UPT_ID = #{LOGIN_USER}
+		 WHERE COMP_CD = #{G_COMP_CD}
+		   AND SYSTEM_CD = #{SYSTEM_CD}
+	</update>
+	
+	<delete id="deleteSystemMasterInfo" parameterType="BMap">
+	/* System.xml -> deleteSystemMasterInfo */
+		DELETE SY_SYSTEM
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND SYSTEM_CD = #{SYSTEM_CD}
+	</delete>
+
+	<delete id="deleteProgMasterInfo" parameterType="BMap">
+	/* System.xml -> deleteProgMasterInfo */
+		DELETE SY_PROGRAM
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND SYSTEM_CD = #{SYSTEM_CD}
+	</delete>
+
+	<delete id="deleteProgDetailInfo" parameterType="BMap">
+	/* System.xml -> deleteProgDetailInfo */
+		DELETE SY_PROGRAM
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND SYSTEM_CD = #{SYSTEM_CD}
+		   AND PROG_GROUP = #{PROG_GROUP}
+	</delete>
+	
+	<select id="selectSystemCnt" parameterType="BMap" resultType="int">
+	/* System.xml -> selectSystemCnt */
+		SELECT COUNT(1)
+		  FROM SY_SYSTEM
+		 WHERE COMP_CD = #{G_COMP_CD}
+		   AND SYSTEM_CD = #{SYSTEM_CD}
+	</select>
+	
+	<select id="checkSystemCode" parameterType="BMap" resultType="String">
+	/* System.xml -> checkSystemCode */
+		SELECT SYSTEM_CD
+		  FROM SY_SYSTEM WITH (NOLOCK) 
+		 WHERE COMP_CD = #{G_COMP_CD}
+		   AND SYSTEM_CD = #{SYSTEM_CD}
+	</select>
+
+		<!-- 전체 메뉴 : 검색 -->
+	<select id="getMenuList" parameterType="BMap" resultType="BMap">
+	/* System.xml -> getMenuList */
+			    SELECT CASE WHEN #{LANG} = 'FR' THEN SY.SYSTEM_FR
+					        WHEN #{LANG} = 'EN' THEN SY.SYSTEM_EN
+					        ELSE SY.SYSTEM_EN END PROG_NM3
+					 , CASE WHEN #{LANG} = 'FR' THEN PR2.PROG_FR
+						    WHEN #{LANG} = 'EN' THEN PR2.PROG_EN
+						    ELSE PR2.PROG_EN END AS PROG_NM2
+					, CASE WHEN #{LANG} = 'FR' THEN PR1.PROG_FR
+						   WHEN #{LANG} = 'EN' THEN PR1.PROG_EN
+						   ELSE PR1.PROG_EN END AS PROG_NM1
+				    , PR1.PROG_CD
+			      FROM SY_PROGRAM PR1 WITH (NOLOCK)
+			INNER JOIN SY_PROGRAM PR2 WITH (NOLOCK)
+			        ON PR1.COMP_CD = PR2.COMP_cD 
+				   AND PR1.PROG_GROUP = PR2.PROG_CD
+			INNER JOIN SY_SYSTEM SY WITH (NOLOCK)
+			        ON PR2.COMP_CD = SY.COMP_CD
+				   AND PR2.SYSTEM_CD = SY.SYSTEM_CD
+			 WHERE 1 = 1
+			   AND PR1.PROG_URL IS NOT NULL
+		   <if test="S_PROG_CD != null and S_PROG_CD != ''">
+		   	   AND A.PROG_CD = #{S_PROG_CD}
+		   </if>
+		    <if test="S_PROG_GROUP != null and S_PROG_GROUP != ''">
+		   	   AND PR2.PROG_CD = #{S_PROG_GROUP} 
+		   </if>
+		    <if test="S_SYSTEM_CD != null and S_SYSTEM_CD != ''">
+			   AND SY.SYSTEM_CD = #{S_SYSTEM_CD}
+		   </if>
+		  ORDER BY SY.PRIORITY, PR2.PRIORITY, PR1.PRIORITY
+	</select>
+	
+		<!-- 마이 메뉴 : 조회 -->
+	<select id="getMyMenuList" parameterType="BMap" resultType="BMap">
+	/* System.xml -> getMyMenuList */
+		    SELECT CASE WHEN #{LANG} = 'FR' THEN SY.SYSTEM_FR
+			        WHEN #{LANG} = 'EN' THEN SY.SYSTEM_EN
+			        ELSE SY.SYSTEM_EN END PROG_NM3
+			 , CASE WHEN #{LANG} = 'FR' THEN PR2.PROG_FR
+				    WHEN #{LANG} = 'EN' THEN PR2.PROG_EN
+				    ELSE PR2.PROG_EN END AS PROG_NM2
+			, CASE WHEN #{LANG} = 'FR' THEN PR1.PROG_FR
+				   WHEN #{LANG} = 'EN' THEN PR1.PROG_EN
+				   ELSE PR1.PROG_EN END AS PROG_NM1
+				 , NM.PROG_CD AS PROG_CD
+				 , NM.PRIORITY AS PRIORITY
+		      FROM SY_MYMENU NM WITH (NOLOCK)
+		INNER JOIN SY_PROGRAM PR1 WITH (NOLOCK)
+				ON NM.PROG_CD = PR1.PROG_CD
+		INNER JOIN SY_PROGRAM PR2 WITH (NOLOCK)
+		        ON PR1.COMP_CD = PR2.COMP_cD 
+			   AND PR1.PROG_GROUP = PR2.PROG_CD
+		INNER JOIN SY_SYSTEM SY WITH (NOLOCK)
+		        ON PR2.COMP_CD = SY.COMP_CD
+			   AND PR2.SYSTEM_CD = SY.SYSTEM_CD
+			 WHERE NM.USER_ID = #{USER_ID}
+	   	  ORDER BY NM.PRIORITY, SY.PRIORITY, PR2.PRIORITY, PR1.PRIORITY
+	</select>
+	
+	<!-- 마이 메뉴 : 삭제 -->
+	<delete id="delMyMenuList" parameterType="String">
+	/* System.xml -> delMyMenuList */
+		<![CDATA[
+		DELETE FROM SY_MYMENU WHERE USER_ID = #{USER_ID}
+		]]>
+	</delete>
+	
+	<!-- 마이 메뉴 : 저장 -->
+	<insert id="saveMyMenuList" parameterType="BMap">
+	/* System.xml -> saveMyMenuList */
+		INSERT INTO SY_MYMENU (USER_ID, PROG_CD, PRIORITY, REG_DT, REG_ID, 
+			    UPT_DT, UPT_ID)
+		VALUES (#{USER_ID}, #{PROG_CD},ISNULL(#{PRIORITY},0), GETDATE(), #{USER_ID}, 
+				          GETDATE(), #{USER_ID})	
+	</insert>
+	
+	<!-- 마이 메뉴 : 조회 -->
+	<select id="selectMyMenuData" parameterType="BMap" resultType="int">
+	/* System.xml -> selectMyMenuData */
+		SELECT COUNT(1) 
+		  FROM SY_MYMENU WITH (NOLOCK) 
+		 WHERE USER_ID = #{USER_ID}
+		   AND PROG_CD = #{PROG_CD} 
+	</select>
+</mapper>
