@@ -9,13 +9,13 @@
 <c:import url="../import/frameTop.jsp">
 	<c:param name="progcd" value="ContactPerson" />
 </c:import>
-	
+	 
 <!-- dummy -->
 <div class="top_button_h_margin"></div>
 
 <div id="ctu_wrap">
 	<!--  <input type="text"  name="lineAlign"  id="lineAlign" style="visibility:hidden;"/>-->
-	<!-- 검색조건 영역 시작 -->
+	<!-- 검색조건 영역 시작1 -->
 	<form id="frmSearch" action="#">
 		<input type="hidden"  name="CURRENT_PAGE"  id="CURRENT_PAGE" />
 		<input type="hidden"  name="ROWS_PER_PAGE"  id="ROWS_PER_PAGE" />
