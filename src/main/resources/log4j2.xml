@@ -20,7 +20,7 @@
             <DefaultRolloverStrategy max="10" fileIndex="min"/>
         </RollingFile>
     </Appenders> 
-  <!--    실제 Logger    -->
+  <!--    실제 Logger222222    -->
     <Loggers>
         <Root level="INFO" additivity="false">
             <AppenderRef ref="Console_Appender"/>

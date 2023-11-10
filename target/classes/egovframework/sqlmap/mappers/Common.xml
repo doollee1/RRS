@@ -39,12 +39,12 @@
 	<!-- 그리드 컬럼 정보 삭제 -->
 	<delete id="deleteGridColInfo" parameterType="BMap">
 	/* Common.xml -> deleteGridColInfo */
-		DELETE BC_GRIDINFO 
+		DELETE FROM BC_GRIDINFO 
 		 WHERE USER_ID = #{USER_ID} 
 		   AND WINDOW_NAME = #{WINDOWNAME} 
 		   AND GRID_ID = #{GRIDID}
 	</delete>
-	
+	  
 	<!-- 로그인 사용자의 그리드 정보 가져오기 -->
 	<select id="selectGridColInfoAll" parameterType="BMap" resultType="BMap">
 	/* Common.xml -> selectGridColInfoAll */
