@@ -36,10 +36,6 @@
 	        <enabled>false</enabled>
 	    </snapshots>
 	</repository>
-	<repository>
-         <id>mit</id>
-        <url>http://maven.mit.edu/nexus/content/repositories/public</url>
-    </repository>
 	</repositories>
 
 	<dependencies>
@@ -362,11 +358,6 @@
 		    <artifactId>jjwt-impl</artifactId>
 		    <version>0.11.1</version>
 		</dependency>
-		<dependency> 
-			<groupId>com.sap.conn.jco</groupId> 
-			<artifactId>com.sap.conn.jco.sapjco3</artifactId> 
-			<version>3.0.18</version> 
-		</dependency> 
 	</dependencies>
 
 	<build>
@@ -397,21 +388,6 @@
                     <version>3.1</version>
                 </plugin>
                 
-                <plugin>
-		            <groupId>org.apache.maven.plugins</groupId>
-		            <artifactId>maven-jar-plugin</artifactId>
-		            <configuration>
-		                <archive>
-		                    <manifest>
-		                        <addClasspath>true</addClasspath>
-		                    </manifest>
-		                    <manifestEntries>
-		                        <Built-By>Me</Built-By>
-		            			<Class-Path>/server/tomcat/lib/system/sapjco3.jar</Class-Path> 
-		                    </manifestEntries>
-		                </archive>
-		            </configuration>
-		        </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
