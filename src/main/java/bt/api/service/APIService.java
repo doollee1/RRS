@@ -16,9 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import bt.api.dao.APIDao;
-import bt.btframework.sap.SAPConnectorManager;
-import bt.btframework.sap.SAPDataProvider;
-import bt.btframework.sap.SAPTable;
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BRespData;
 import bt.btframework.utils.ResponseStatus;
@@ -46,35 +43,7 @@ public class APIService {
 	}
 		
 	private Map<String, Object> getInvoceList(Map<String, Object> param) throws Exception {
-		
-		// System.out.println(">>>>>>>>" + param);		
-		Map<String, Object> invoiceMap = new HashMap<String, Object>();
-		
-		//List<SAPTable> result = SAPConnectorManager.execute(SAPDataProvider.ERP, "ZZ_IF_FI_EXTOMS", param);
-		List<SAPTable> result = null;
-		if (result != null) {
-			/*for (int i = 0; i < result.size(); i++) {
-				List<Map<String, Object>> list = result.get(i).getRows();
-				logger.debug(result.get(i).getTableName());
-				for (int j = 0; j < list.size(); j++) {
-					logger.debug(list.get(j).toString());
-				}
-			}		*/	
-			// I/F Table에 Insert
-				
-			for(int i = 0; i < result.size(); i++) {
-				SAPTable tempMap = result.get(i);
-				String tblName = tempMap.getTableName();
-				List<Map<String, Object>> list = tempMap.getRows();
-				
-				if (tblName.equals("T_VBRP")) {// table 추출
-					invoiceMap.put("invoicelist", list);					
-				} else {
-					invoiceMap.put(tblName, list.get(0).get(tblName) );
-				} 
-			}
-		}		
-		return invoiceMap;
+		return null;
 	}
 	
 	private String getCustLangCD (String lang) {		
@@ -159,20 +128,21 @@ public class APIService {
 		
 		// System.out.println(">>>>>>>>" + param);
 		
-		List<SAPTable> result = SAPConnectorManager.execute(SAPDataProvider.ERP, "ZZ_RFC_SD_SO_CHANGE", param);
-		if (result != null) {			
-			// oms update
-			Map<String, Object> soParam = new HashMap<String, Object>();	
-			soParam.put("COMP_CD", req.get("COMP_CD"));
-			soParam.put("DOC_NO", req.get("DOC_NO"));
-			soParam.put("DELI_BLOCK_CD", req.get("DLV_BLOCK"));		
-			soParam.put("REASON_REJECT", req.get("REASON_REJECT"));	
-			//externalDao.confirmSalesOrderHead(soParam);
-			
-			return new BRespData(ResponseStatus.OK, result);
-		} else {
-			return new BRespData(ResponseStatus.Bad_Request);
-		}	
+//		List<SAPTable> result = SAPConnectorManager.execute(SAPDataProvider.ERP, "ZZ_RFC_SD_SO_CHANGE", param);
+//		if (result != null) {			
+//			// oms update
+//			Map<String, Object> soParam = new HashMap<String, Object>();	
+//			soParam.put("COMP_CD", req.get("COMP_CD"));
+//			soParam.put("DOC_NO", req.get("DOC_NO"));
+//			soParam.put("DELI_BLOCK_CD", req.get("DLV_BLOCK"));		
+//			soParam.put("REASON_REJECT", req.get("REASON_REJECT"));	
+//			//externalDao.confirmSalesOrderHead(soParam);
+//			
+//			return new BRespData(ResponseStatus.OK, result);
+//		} else {
+//			return new BRespData(ResponseStatus.Bad_Request);
+//		}	
+		return null;
 	}
 	
 	
@@ -206,53 +176,54 @@ public class APIService {
 		param.put("IS_SALES_HEADER_INX", salesHeaderInx);
 		param.put("IV_EXTERNAL_OMS", "X");		
 		
-		List<SAPTable> tableList = new ArrayList<SAPTable>();
-		HashMap<String, Object> row = new HashMap<String, Object>();
-		
-		SAPTable table = new SAPTable("IT_SALES_SCHEDULES_IN");			
-		row = new HashMap<String, Object>();
-		row.put("ITM_NUMBER", req.get("ITM_NUMBER"));
-		row.put("SCHED_LINE", "000" + req.get("SCHED_LINE"));	
-		row.put("REQ_DLV_BL", req.get("REQ_DLV_BL"));
-		// row.put("ITM_NUMBER", "100");
-		// row.put("SCHED_LINE", "0001");	
-		// row.put("REQ_DLV_BL", "Z2");
-		
-		
-		table.addRow(row);	
-		tableList.add(table);
-						
-		table = new SAPTable("IT_SALES_SCHEDULES_INX");		
-		row = new HashMap<String, Object>();
-		row.put("ITM_NUMBER", req.get("ITM_NUMBER"));
-		row.put("SCHED_LINE", "000" + req.get("SCHED_LINE"));
-		// row.put("ITM_NUMBER", "100");
-		// row.put("SCHED_LINE", "0001");		
-		
-		row.put("UPDATEFLAG", "U");
-		table.addRow(row);		
-		tableList.add(table);
-				 		
-		// System.out.println(">>>>>>>>" + tableList);
-		// System.out.println(">>>>>>>>" + param);
-				
-		List<SAPTable> result = SAPConnectorManager.execute(SAPDataProvider.ERP, "ZZ_RFC_SD_SO_CHANGE", param, tableList);
-		
-		if (result != null) {
-				   
-			Map<String, Object> soParam = new HashMap<String, Object>();	
-			soParam.put("COMP_CD", req.get("COMP_CD"));
-			soParam.put("DOC_NO", req.get("DOC_NO"));
-			soParam.put("ITEM_SEQ", req.get("ITM_NUMBER"));
-			soParam.put("DELI_BLOCK_CD", req.get("REQ_DLV_BL"));
-			soParam.put("REASON_REJECT", req.get("REASON_REJECT"));
-			
-			//externalDao.confirmSalesOrderItem(soParam);			
-			
-			return new BRespData(ResponseStatus.OK, result);
-		} else {
-			return new BRespData(ResponseStatus.Bad_Request);
-		}	
+//		List<SAPTable> tableList = new ArrayList<SAPTable>();
+//		HashMap<String, Object> row = new HashMap<String, Object>();
+//		
+//		SAPTable table = new SAPTable("IT_SALES_SCHEDULES_IN");			
+//		row = new HashMap<String, Object>();
+//		row.put("ITM_NUMBER", req.get("ITM_NUMBER"));
+//		row.put("SCHED_LINE", "000" + req.get("SCHED_LINE"));	
+//		row.put("REQ_DLV_BL", req.get("REQ_DLV_BL"));
+//		// row.put("ITM_NUMBER", "100");
+//		// row.put("SCHED_LINE", "0001");	
+//		// row.put("REQ_DLV_BL", "Z2");
+//		
+//		
+//		table.addRow(row);	
+//		tableList.add(table);
+//						
+//		table = new SAPTable("IT_SALES_SCHEDULES_INX");		
+//		row = new HashMap<String, Object>();
+//		row.put("ITM_NUMBER", req.get("ITM_NUMBER"));
+//		row.put("SCHED_LINE", "000" + req.get("SCHED_LINE"));
+//		// row.put("ITM_NUMBER", "100");
+//		// row.put("SCHED_LINE", "0001");		
+//		
+//		row.put("UPDATEFLAG", "U");
+//		table.addRow(row);		
+//		tableList.add(table);
+//				 		
+//		// System.out.println(">>>>>>>>" + tableList);
+//		// System.out.println(">>>>>>>>" + param);
+//				
+//		List<SAPTable> result = SAPConnectorManager.execute(SAPDataProvider.ERP, "ZZ_RFC_SD_SO_CHANGE", param, tableList);
+//		
+//		if (result != null) {
+//				   
+//			Map<String, Object> soParam = new HashMap<String, Object>();	
+//			soParam.put("COMP_CD", req.get("COMP_CD"));
+//			soParam.put("DOC_NO", req.get("DOC_NO"));
+//			soParam.put("ITEM_SEQ", req.get("ITM_NUMBER"));
+//			soParam.put("DELI_BLOCK_CD", req.get("REQ_DLV_BL"));
+//			soParam.put("REASON_REJECT", req.get("REASON_REJECT"));
+//			
+//			//externalDao.confirmSalesOrderItem(soParam);			
+//			
+//			return new BRespData(ResponseStatus.OK, result);
+//		} else {
+//			return new BRespData(ResponseStatus.Bad_Request);
+//		}	
+		return null;
 	}	
 	
 	

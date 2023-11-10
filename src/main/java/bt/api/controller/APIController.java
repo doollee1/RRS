@@ -25,7 +25,7 @@ import bt.api.service.APIService;
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BRespData;
 import bt.btframework.utils.ResponseStatus;
-import bt.common.service.SapIfService;
+
 
 @RestController
 @RequestMapping("/api")
@@ -38,26 +38,26 @@ public class APIController {
 	@Resource
 	private APIService apiService;
 	
-	@Resource
-	private SapIfService sapService;
+//	@Resource
+	//private SapIfService sapService;
 	
-	@RequestMapping(value = "/sales/leads", method = RequestMethod.POST)
-	public BRespData leads(@RequestBody Map<String, Object> req, HttpServletResponse res) throws Exception {
-		// check validation
-		//if (StringUtils.isBlank((String) req.get("appId")) || StringUtils.isBlank((String) req.get("surId")) ||
-		//		StringUtils.isBlank((String) req.get("svyId")) || StringUtils.isBlank((String) req.get("svyVer"))) {
-		if(null != req.get("appId") && !"".equals(req.get("appId")) || null != req.get("surId") && !"".equals(req.get("surId")) ||
-				null != req.get("svyId") && !"".equals(req.get("svyId")) || null != req.get("svyVer") && !"".equals(req.get("svyVer"))){	
-			logger.debug("check mandatory field (appId, surId, svyId, svyVer)");
-			res.sendError(HttpStatus.BAD_REQUEST.value(), "check mandatory field (appId, surId, svyId, svyVer)");
-			return null;
-		}
-		
-		apiService.insertLead(req);
-		BRespData response = new BRespData(ResponseStatus.OK);
-		return response;
-	}
-	
+//	@RequestMapping(value = "/sales/leads", method = RequestMethod.POST)
+//	public BRespData leads(@RequestBody Map<String, Object> req, HttpServletResponse res) throws Exception {
+//		// check validation
+//		//if (StringUtils.isBlank((String) req.get("appId")) || StringUtils.isBlank((String) req.get("surId")) ||
+//		//		StringUtils.isBlank((String) req.get("svyId")) || StringUtils.isBlank((String) req.get("svyVer"))) {
+//		if(null != req.get("appId") && !"".equals(req.get("appId")) || null != req.get("surId") && !"".equals(req.get("surId")) ||
+//				null != req.get("svyId") && !"".equals(req.get("svyId")) || null != req.get("svyVer") && !"".equals(req.get("svyVer"))){	
+//			logger.debug("check mandatory field (appId, surId, svyId, svyVer)");
+//			res.sendError(HttpStatus.BAD_REQUEST.value(), "check mandatory field (appId, surId, svyId, svyVer)");
+//			return null;
+//		}
+//		
+//		apiService.insertLead(req);
+//		BRespData response = new BRespData(ResponseStatus.OK);
+//		return response;
+//	}
+//	
 	@RequestMapping(value = "/sales/orders", method = RequestMethod.POST)
 	public ModelAndView orders(@RequestBody Map<String, Object> req, HttpServletRequest request, HttpServletResponse res) throws Exception {
 		
