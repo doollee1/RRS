@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sap.conn.jco.JCoException;
 
 import bt.btframework.utils.BRespData;
 import bt.btframework.utils.ResponseStatus;
@@ -15,15 +14,6 @@ import bt.btframework.utils.ResponseStatus;
 public class GlobalExceptionHandlerAdvice {
 	private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandlerAdvice.class);
 	
-	@ExceptionHandler(JCoException.class)
-	@ResponseBody
-	public BRespData handleJCoException(JCoException jce) {
-		logger.error(jce.getLocalizedMessage());
-		
-		ResponseStatus status = ResponseStatus.SAP_Communication_Error;
-		status.setDescription(jce.getLocalizedMessage());
-		return new BRespData(status);
-	}
 	
 	@ExceptionHandler(Exception.class)
 	@ResponseBody
