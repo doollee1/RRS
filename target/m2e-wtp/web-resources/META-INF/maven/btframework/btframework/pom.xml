@@ -362,12 +362,11 @@
 		    <artifactId>jjwt-impl</artifactId>
 		    <version>0.11.1</version>
 		</dependency>
-		<dependency>
-		    <groupId>com.sap.conn.jco</groupId>
-		    <artifactId>sapjco3</artifactId>
-		    <version>3.0.8</version>
-		    <scope>test</scope>
-		</dependency>
+		<dependency> 
+			<groupId>com.sap.conn.jco</groupId> 
+			<artifactId>com.sap.conn.jco.sapjco3</artifactId> 
+			<version>3.0.18</version> 
+		</dependency> 
 	</dependencies>
 
 	<build>
