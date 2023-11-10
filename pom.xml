@@ -378,6 +378,13 @@
 			<artifactId>commons-email</artifactId>
 			<version>1.3.2</version>
 		</dependency>
+		<dependency>
+         <groupId>evohtmltopdf</groupId>
+         <artifactId>evohtmltopdf</artifactId>
+         <scope>system</scope>
+         <version>7.4</version>
+         <systemPath>${basedir}\src\main\webapp\WEB-INF\lib\evohtmltopdf-v7.4.jar</systemPath>
+      </dependency>
 	</dependencies>
 
 	<build>
