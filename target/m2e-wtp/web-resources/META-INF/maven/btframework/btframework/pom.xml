@@ -358,6 +358,16 @@
 		    <artifactId>jjwt-impl</artifactId>
 		    <version>0.11.1</version>
 		</dependency>
+		<dependency>
+	        <groupId>org.json</groupId>
+	        <artifactId>json</artifactId>
+	        <version>20090211</version>
+	    </dependency>
+	    <dependency>
+		    <groupId>org.jsoup</groupId>
+		    <artifactId>jsoup</artifactId>
+		    <version>1.15.3</version>
+		</dependency>
 	</dependencies>
 
 	<build>
