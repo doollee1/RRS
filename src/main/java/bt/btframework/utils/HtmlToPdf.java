@@ -1,32 +1,19 @@
 package bt.btframework.utils;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.Properties;
 
-import org.jsoup.nodes.Element;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
-import com.evopdf.HorizontalTextAlign;
 import com.evopdf.HtmlToPdfConverter;
 import com.evopdf.HtmlToPdfElement;
 import com.evopdf.HtmlToPdfVariableElement;
-import com.evopdf.PdfFont;
-import com.evopdf.RgbColor;
-import com.evopdf.TextElement;
 
 import bt.btframework.common.FileManager;
-import bt.btframework.common.fileupload.FileExtFilter;
-import bt.btframework.common.fileupload.FileMaxUploadFilter;
-import bt.btframework.common.fileupload.FileTransferManager;
-import bt.btframework.common.vo.CodeVO;
 
 public class HtmlToPdf {
 	
