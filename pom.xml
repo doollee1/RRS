@@ -390,7 +390,7 @@
 	<build>
         <defaultGoal>install</defaultGoal>
         <directory>${basedir}/target</directory>
-        <finalName>OMS</finalName>
+        <finalName>RRS</finalName>
         <pluginManagement>
             <plugins>
                 <plugin>
