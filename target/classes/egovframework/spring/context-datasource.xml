@@ -9,11 +9,9 @@
 	   <property name="dataSource" ref="dataSource"/>
 	</bean>
 	
-    <!-- hsql  -->
- 	
-	<bean id="dataSourceSpied" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://106.240.164.71:44006/doollee?serverTimezone=UTC" />
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="org.mariadb.jdbc.Driver"/>
+        <property name="url" value="jdbc:mariadb://106.240.164.71:44006/doollee?serverTimezone=UTC" />
         <property name="username" value="doollee"/> 
         <property name="password" value="EnfflEnffl12#$"/>
     </bean>
@@ -33,7 +31,7 @@
 <!-- 	    <property name="password" value="dhdpadptmdnpq1!"/> -->
 <!-- 	</bean>	 -->
     
-       <bean class="net.sf.log4jdbc.Log4jdbcProxyDataSource" id="dataSource">
+       <!--<bean class="net.sf.log4jdbc.Log4jdbcProxyDataSource" id="dataSource">
         <constructor-arg ref="dataSourceSpied"></constructor-arg>
         <property name="logFormatter">
             <bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
@@ -41,5 +39,5 @@
                 <property name="sqlPrefix" value="SQL   :  "></property>
             </bean>
         </property>
-    </bean>
+    </bean>-->
 </beans>
