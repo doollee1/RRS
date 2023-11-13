@@ -231,7 +231,7 @@ function chk_initialpw(){
         <div id="login_content">
 			
     
-                   <form id="loginForm" name="loginForm" action="<c:url value='/home/home.do'/>" method="post">              
+                   <form id="loginForm" name="loginForm" action="<c:url value='/home/home.do'/>" method="post">
                            <table>                      
                                 <tr>
                                     <td align="center"><input type="text" id="USER_ID" name="USER_ID" class="idpwInput" style="width:340px;" placeholder="ID" tabindex="1" onKeyPress="if(event.keyCode == 13) javascript:document.loginForm.passwd.focus();" onBlur="document.loginForm.USER_ID.value = document.loginForm.USER_ID.value.trim();" />
