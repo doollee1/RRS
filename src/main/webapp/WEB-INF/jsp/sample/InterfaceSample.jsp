@@ -164,7 +164,14 @@
 					<label> CRM Conn Test &nbsp;&nbsp;&nbsp;&nbsp;</label>
 					
 					<input type="button" id="btnCRMConnTest" name="btnCRMConnTest" value="btnCRMConnTest" />
-				</li>				
+				</li>			
+				
+				<li class="sech_list">
+					<label> CRM Conn Test &nbsp;&nbsp;&nbsp;&nbsp;</label>
+					
+					<input type="button" id="btnEmail" name="btnEmail" value="btnEmail" />
+				</li>	
+					
 			</ul>
 		</div>
 		
@@ -392,8 +399,8 @@
 		
 		var param = {"param" : { "mail_yn":"Y" } };
 		
-		fn_ajax(url, false, param, function(data, xhr){
-			alert(data.MESSAGE);
+		fn_ajax(url, true, param, function(data, xhr){
+			console.log(data)
 		});			
 	}
 </script>

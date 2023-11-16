@@ -247,10 +247,15 @@
 
         <!-- Logging -->
         <dependency>
+		    <groupId>org.bgee.log4jdbc-log4j2</groupId>
+		    <artifactId>log4jdbc-log4j2-jdbc4</artifactId>
+		    <version>1.16</version>
+		</dependency>
+        <!--<dependency>
 		  <groupId>org.lazyluke</groupId>
 		  <artifactId>log4jdbc-remix</artifactId>
 		  <version>0.2.4</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 		  <groupId>org.slf4j</groupId>
 		  <artifactId>slf4j-log4j12</artifactId>
