@@ -28,14 +28,13 @@ public class MailSendService {
 	 * @exception Exception
 	 */
 	public boolean sendMail(BMap param) throws Exception {
-
-		String sender = param.getString("SENDER"); // 수신자
-		String receiver = param.getString("RECEIVER"); // 수신자
-		String carbonCopy = param.getString("CARBON_COPY"); // 수신자
-		String title = param.getString("EMAIL_TITLE"); // 메일제목
-		String emailContents = param.getString("EMAIL_BODY"); // 메일내용
-		String atchmnFileNm = param.getString("EMAIL_ATACH_FILE"); // 첨부파일이름
-		String atchmnFilePath = param.getString("EMAIL_ATACH_PATH"); // 첨부파일경로		
+//		String sender = param.getString("SENDER"); // 수신자
+//		String receiver = param.getString("RECEIVER"); // 수신자
+//		String carbonCopy = param.getString("CARBON_COPY"); // 수신자
+//		String title = param.getString("EMAIL_TITLE"); // 메일제목
+//		String emailContents = param.getString("EMAIL_BODY"); // 메일내용
+//		String atchmnFileNm = param.getString("EMAIL_ATACH_FILE"); // 첨부파일이름
+//		String atchmnFilePath = param.getString("EMAIL_ATACH_PATH"); // 첨부파일경로		
 
 		try {
 			
@@ -43,16 +42,14 @@ public class MailSendService {
 			email.setHostName(env.getProperty("EMAIL.HOST"));
 			email.setSmtpPort(Integer.parseInt(env.getProperty("EMAIL.PORT")));
 			email.setSslSmtpPort(env.getProperty("EMAIL.PORT"));
-			//email.setAuthenticator(new DefaultAuthenticator("username", "password"));
-			email.setSSLOnConnect(false);
+			email.setAuthenticator(new DefaultAuthenticator(env.getProperty("EMAIL.FROM"), "skEnffl!2#4")); // common.properties 
+			email.setSSLOnConnect(true);
 			
 			email.setFrom(env.getProperty("EMAIL.FROM"));
 			email.setSubject("TestMail");
 			email.setMsg("This is a test mail ...");
-			//email.addTo(env.getProperty("EMAIL.TO"));
-			//email.addCc(env.getProperty("EMAIL.TO"));
 			
-//			email.addTo("H.Cho@q-cells.com");
+			email.addTo("dev@doollee.co.kr");
 			
 //			email.setFrom(sender);
 //			email.addTo(receiver);
@@ -60,15 +57,12 @@ public class MailSendService {
 //			email.setSubject(title);
 //			email.setMsg(emailContents);
 			
-//			email.send();
-	
-			
+			email.send();
 
 		} catch (EmailException  ex) {
 			System.err.println("System Exception ::::: " + ex.getMessage());
 			return false;
 		}
-
 		
 		return true;
 	}
