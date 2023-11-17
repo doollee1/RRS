@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="RrsUserMapper">
+	<select id="selectUserInfo" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+	/* User.xml -> selectUserInfo */
+		SELECT ROW_NUMBER() OVER(ORDER BY USER_ID) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,USER_ID
+			  ,MEM_GBN
+			  ,HAN_NAME
+			  ,ENG_NAME
+			  ,TEL_NO
+			  ,EMAIL
+			  ,PASSWD
+			  ,RET_YN
+			  ,REG_DTM
+			  ,UPD_DTM
+		FROM tb_member
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectMemberUserInfo" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+	/* User.xml -> selectMemberUserInfo */
+		SELECT ROW_NUMBER() OVER(ORDER BY HAN_NAME) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,HAN_NAME
+			  ,ENG_NAME
+			  ,TEL_NO
+			  ,RET_YN
+			  ,REG_DTM
+			  ,UPD_DTM
+		FROM tb_admin_reg_member
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<insert id="insertMemberUserInfo" parameterType="BMap">
+		INSERT INTO tb_admin_reg_member
+					(HAN_NAME
+					,ENG_NAME
+					,TEL_NO
+					,RET_YN
+					,REG_DTM
+					,UPD_DTM
+					)
+			 VALUES (#{HAN_NAME}
+					,#{ENG_NAME}
+					,#{TEL_NO}
+					,'N'
+					,NOW()
+					,NOW()
+					)
+	</insert>
+	
+	<update id="updateMemberUserInfo" parameterType="BMap">
+		UPDATE tb_admin_reg_member
+		   SET HAN_NAME = #{HAN_NAME}
+			  ,ENG_NAME = #{ENG_NAME}
+			  ,TEL_NO = #{TEL_NO}
+			  ,RET_YN = #{RET_YN}
+			  ,UPT_DT = NOW()
+	</update>
+	
+	<delete id="deleteUserInfo" parameterType="BMap">
+		DELETE BC_USER
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND USER_ID = #{USER_ID}
+	</delete>
+	
+	<select id="selectMemberUserInfoCnt" parameterType="BMap" resultType="int">
+		SELECT COUNT(1)
+		  FROM tb_admin_reg_member 
+		 WHERE HAN_NAME = #{HAN_NAME}
+		   AND ENG_NAME = #{ENG_NAME}
+		   AND TEL_NO = #{TEL_NO}
+	</select>
+	
+	<update id="updatePassword" parameterType="BMap">
+		UPDATE BC_USER
+		   SET PW_CURR = #{NEW_PASSWORD}
+			  ,PW_PAST1 = PW_CURR
+			  ,PW_PAST2 = PW_PAST1
+			  ,PW_PAST3 = PW_PAST2
+			  <if test='INIT = "Y"'>
+		 	  ,LOGIN_DT = NOW()
+			  </if>
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND USER_ID = #{USER_ID}
+	</update>
+	
+	<select id="selectPastPassword" parameterType="BMap" resultType="int">
+		SELECT COUNT(1)
+		  FROM BC_USER 
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND USER_ID = #{USER_ID}
+		   AND (PW_CURR = #{NEW_PASSWORD}
+		    OR PW_PAST1 = #{NEW_PASSWORD}
+			OR PW_PAST2 = #{NEW_PASSWORD}
+			OR PW_PAST3 = #{NEW_PASSWORD})
+	</select>
+	
+	<select id="updateLockyn" parameterType="BMap" resultType="int">
+		UPDATE BC_USER 
+		   SET LOCK_YN = 'N',
+		       WRONG_CNT = 0
+		 WHERE COMP_CD = #{COMP_CD}
+		   AND USER_ID = #{USER_ID}
+	</select>
+</mapper>
