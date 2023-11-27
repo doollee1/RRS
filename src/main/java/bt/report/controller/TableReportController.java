@@ -1,9 +1,11 @@
 package bt.report.controller;
 
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +19,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.gembox.spreadsheet.ExcelFile;
+import com.gembox.spreadsheet.ExcelRow;
+import com.gembox.spreadsheet.ExcelWorksheet;
+import com.gembox.spreadsheet.RowColumn;
+import com.gembox.spreadsheet.SpreadsheetInfo;
 
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
@@ -58,45 +66,85 @@ public class TableReportController {
 	@RequestMapping(value = "/retrieveCustomerReportAll.do", method = RequestMethod.POST)
 	public void retrieveCustomerReportAll(@RequestParam Map<String,Object> reqData, HttpServletRequest req, HttpServletResponse resp)  throws Exception {
 		
-		BMap param = new BMap();
-		String colNm = reqData.get("COL_NM").toString();
-		colNm = colNm.replaceAll("%", "");
-		String colNms[] = colNm.split(",");
-		
-		param.put("CUST_CD", reqData.get("CUST_CD"));
-		param.put("CUST_NM", reqData.get("CUST_NM"));
-		param.put("SEARCH_NM1", reqData.get("SEARCH_NM1"));
-		param.put("SEARCH_NM2", reqData.get("SEARCH_NM2"));
-		param.put("SALES_ORG_CD", reqData.get("SALES_ORG_CD"));
-		param.put("DISTRB_CH", reqData.get("DISTRB_CH"));
-		param.put("DIV_CD", reqData.get("DIV_CD"));
-		param.put("GRADE", reqData.get("GRADE"));
-		param.put("SALES_GR", reqData.get("SALES_GR"));
-		param.put("CUST_GR", reqData.get("CUST_GR"));
-		param.put("LANG",  LoginInfo.getLang());
-		
-		// 엑셀 헤더
-		LinkedHashMap<String,Object> headerMap = new LinkedHashMap<String,Object>();
-		//headerMap.put("접수번호", "CCM_NO");
-		for (int i = 0 ; i < colNms.length ; i ++) {
-			String nms[] = colNms[i].split(":");
-			headerMap.put(nms[0], nms[1]);
-		}
-		//브라우저가 IE인지 확인할 플래그
-		boolean MSIE = req.getHeader("user-agent").toUpperCase().indexOf("MSIE") != -1;
-		boolean MSIE11 = req.getHeader("user-agent").toUpperCase().indexOf("RV:11.0") != -1;
-		
-		String title = "Customer List";
-		String UTF8FileName = "";
+		 SpreadsheetInfo.setLicense("FREE-LIMITED-KEY");
 
-		if (MSIE || MSIE11) {
-		    // 공백이 '+'로 인코딩된것을 다시 공백으로 바꿔준다.
-		    UTF8FileName = URLEncoder.encode(title, "UTF-8").replaceAll("\\+", " ");
-		} else {
-		    UTF8FileName = new String(title.getBytes("UTF-8"), "8859_1");
-		}
+	        ExcelFile workbook = ExcelFile.load("C:\\Users\\doollee\\Downloads\\Template.xlsx");
+
+	        int workingDays = 8;
+
+	        LocalDateTime startDate = LocalDateTime.now().plusDays(-workingDays);
+	        LocalDateTime endDate = LocalDateTime.now();
+
+	        ExcelWorksheet worksheet = workbook.getWorksheet(0);
+
+	        // Find cells with placeholder text and set their values.
+	        RowColumn rowColumnPosition;
+	        if ((rowColumnPosition = worksheet.getCells().findText("[Company Name]", true, true)) != null)
+	            worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue("ACME Corp");
+	        if ((rowColumnPosition = worksheet.getCells().findText("[Company Address]", true, true)) != null)
+	            worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue("240 Old Country Road, Springfield, IL");
+	        if ((rowColumnPosition = worksheet.getCells().findText("[Start Date]", true, true)) != null)
+	            worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue(startDate);
+	        if ((rowColumnPosition = worksheet.getCells().findText("[End Date]", true, true)) != null)
+	            worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue(endDate);
+
+	        // Copy template row.
+	        int row = 17;
+	        worksheet.getRows().insertCopy(row + 1, workingDays - 1, worksheet.getRow(row));
+
+	        // Fill inserted rows with sample data.
+	        Random random = new Random();
+	        for (int i = 0; i < workingDays; i++) {
+	            ExcelRow currentRow = worksheet.getRow(row + i);
+	            currentRow.getCell(1).setValue(startDate.plusDays(i));
+	            currentRow.getCell(2).setValue(random.nextInt(11) + 1);
+	        }
+
+	        // Calculate formulas in worksheet.
+	        worksheet.calculate();
+
+	        workbook.save("C:\\Users\\doollee\\Downloads\\Template Use.xlsx");
+	
 		
-		tableReportService.selectCustomerListAll(UTF8FileName, headerMap, resp, param);
+//		BMap param = new BMap();
+//		String colNm = reqData.get("COL_NM").toString();
+//		colNm = colNm.replaceAll("%", "");
+//		String colNms[] = colNm.split(",");
+//		
+//		param.put("CUST_CD", reqData.get("CUST_CD"));
+//		param.put("CUST_NM", reqData.get("CUST_NM"));
+//		param.put("SEARCH_NM1", reqData.get("SEARCH_NM1"));
+//		param.put("SEARCH_NM2", reqData.get("SEARCH_NM2"));
+//		param.put("SALES_ORG_CD", reqData.get("SALES_ORG_CD"));
+//		param.put("DISTRB_CH", reqData.get("DISTRB_CH"));
+//		param.put("DIV_CD", reqData.get("DIV_CD"));
+//		param.put("GRADE", reqData.get("GRADE"));
+//		param.put("SALES_GR", reqData.get("SALES_GR"));
+//		param.put("CUST_GR", reqData.get("CUST_GR"));
+//		param.put("LANG",  LoginInfo.getLang());
+//		
+//		// 엑셀 헤더
+//		LinkedHashMap<String,Object> headerMap = new LinkedHashMap<String,Object>();
+//		//headerMap.put("접수번호", "CCM_NO");
+//		for (int i = 0 ; i < colNms.length ; i ++) {
+//			String nms[] = colNms[i].split(":");
+//			headerMap.put(nms[0], nms[1]);
+//		}
+//		//브라우저가 IE인지 확인할 플래그
+//		boolean MSIE = req.getHeader("user-agent").toUpperCase().indexOf("MSIE") != -1;
+//		boolean MSIE11 = req.getHeader("user-agent").toUpperCase().indexOf("RV:11.0") != -1;
+//		
+//		String title = "Customer List";
+//		String UTF8FileName = "";
+//
+//		if (MSIE || MSIE11) {
+//		    // 공백이 '+'로 인코딩된것을 다시 공백으로 바꿔준다.
+//		    UTF8FileName = URLEncoder.encode(title, "UTF-8").replaceAll("\\+", " ");
+//		} else {
+//		    UTF8FileName = new String(title.getBytes("UTF-8"), "8859_1");
+//		}
+//		
+//		tableReportService.selectCustomerListAll(UTF8FileName, headerMap, resp, param);
 	}
 
 	@RequestMapping(value = "/product.do")

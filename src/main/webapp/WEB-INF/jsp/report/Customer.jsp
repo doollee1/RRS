@@ -12,6 +12,7 @@
 		<input type="hidden"  name="CURRENT_PAGE"  id="CURRENT_PAGE" />
 		<input type="hidden"  name="ROWS_PER_PAGE"  id="ROWS_PER_PAGE" />
 	</form>
+	<button class='cBtnclass cBtnExcel_style' id='cBtnExcel' type='button' onclick='cExcelSample();'>Excel Download</button>
 </div>
 <!-- 검색조건 영역 끝 -->
 
@@ -112,7 +113,7 @@
 			,'<s:message code="customer.CustGrp"/>'			
 			,'<s:message code="customer.CurrencyCd"/>'			
 			,'<s:message code="customer.Currency"/>'		
-			,'<s:message code="customer.CustPricProcCd"/>'			
+// 			,'<s:message code="customer.CustPricProcCd"/>'			
 			,'<s:message code="customer.CustPricProc"/>'		
 			,'<s:message code="customer.AcctAssmtGrpCd"/>'			
 			,'<s:message code="customer.AcctAssmtGrp"/>'	
@@ -173,7 +174,7 @@
 				, {name:'CUST_GR_NM',width:100 ,align:'left',hidden:false}
 				, {name:'CURR_CD',width:100 ,align:'center',hidden:true}
 				, {name:'CURR_NM',width:100 ,align:'left',hidden:false}
-				, {name:'CUST_PRICE_PROC_CD',width:100 ,align:'center',hidden:true}
+// 				, {name:'CUST_PRICE_PROC_CD',width:100 ,align:'center',hidden:true}
 				, {name:'CUST_PRICE_PROC_NM',width:100 ,align:'left',hidden:false}
 				, {name:'ACCT_ASSMT_GR',width:100 ,align:'center',hidden:true}
 				, {name:'ACCT_ASSMT_GR_NM',width:100 ,align:'left',hidden:false}
@@ -219,6 +220,7 @@
 	// Search
 	////////////////////////////////////////////////////////////////////
 	window.cSearch = function() {
+		console.log('search')
 		var param = {};
 		Array.prototype.forEach.call(searchElms, function(elm) {
 			var value = elm.value;
@@ -228,20 +230,23 @@
 				param[column] = value;
 			}
 		});
+		var result = [{'CUST_CD': 'test'}]
+		reloadGrid('customerReportGrid', result);
 		
-		fn_ajax('/report/retrieveCustomerReport.do', true, param, function(data) {
-			if (!data.RESULT) {
-				return;
-			}
+// 		fn_ajax('/report/retrieveCustomerReport.do', true, param, function(data) {
+// 			if (!data.RESULT) {
+// 				return;
+// 			}
 			
-			if (!!data.RESULT && data.RESULT.length === 0) {
-				alert('<s:message code="validator.notfound"/>');
-			}
+// 			if (!!data.RESULT && data.RESULT.length === 0) {
+// 				alert('<s:message code="validator.notfound"/>');
+// 			}
 			
-			var customerInfoList = data.RESULT;
-			reloadGrid('customerReportGrid', data.RESULT);
-			btGrid.gridQueryPaging($('#customerReportGrid'), 'cSearch', data.RESULT);
-		});
+// 			var customerInfoList = data.RESULT;
+// 			data.RESULT
+// 			reloadGrid('customerReportGrid', data.RESULT);
+// 			btGrid.gridQueryPaging($('#customerReportGrid'), 'cSearch', data.RESULT);
+// 		});
 	};
 	
 	window.cPrint = function() {
@@ -252,27 +257,30 @@
 		Util.component.createCombobox(searchElms, true);
 		createcustomerReportGrid();
 		$('[data-searchcolumn]').on('keypress', function(e) { if(e.keyCode === 13) { cSearch() } }); 
+		console.log('123123');
 	}
 	
 	//공통버튼 - 엑셀 다운 클릭
-	function cExcel() {
-		if (confirm("<s:message code='info.excel'/>")  == true) { 
+// 	function cExcelSample() {
+	window.cExcelSample = function() {
+		console.log('excel');
+// 		if (confirm("<s:message code='info.excel'/>")  == true) { 
 			
-			var colNms = excelToMap();
+// 			var colNms = excelToMap();
 			
-			var param = {"CUST_CD": 	$("#CUST_CD").val()
-					    ,"CUST_NM": 	$("#CUST_NM").val()
-					    ,"SEARCH_NM1":  $("#SEARCH_NM1").val()
-					    ,"SEARCH_NM2":  $("#SEARCH_NM2").val()
-					    ,"SALES_ORG_CD":$("#SALES_ORG_CD").val()
-					    ,"DISTRB_CH":   $("#DISTRB_CH").val()
-					    ,'DIV_CD':	   	$("#DIV_CD").val()
-					    ,"GRADE":   	$("#GRADE").val()
-					    ,"SALES_GR":  	$("#SALES_GR").val()
-					    ,"CUST_GR":   	$("#CUST_GR").val()
-					    ,'COL_NM':	   colNms}
-		};
-		fn_formSubmit('/report/retrieveCustomerReportAll.do', param);
+// 			var param = {"CUST_CD": 	$("#CUST_CD").val()
+// 					    ,"CUST_NM": 	$("#CUST_NM").val()
+// 					    ,"SEARCH_NM1":  $("#SEARCH_NM1").val()
+// 					    ,"SEARCH_NM2":  $("#SEARCH_NM2").val()
+// 					    ,"SALES_ORG_CD":$("#SALES_ORG_CD").val()
+// 					    ,"DISTRB_CH":   $("#DISTRB_CH").val()
+// 					    ,'DIV_CD':	   	$("#DIV_CD").val()
+// 					    ,"GRADE":   	$("#GRADE").val()
+// 					    ,"SALES_GR":  	$("#SALES_GR").val()
+// 					    ,"CUST_GR":   	$("#CUST_GR").val()
+// 					    ,'COL_NM':	   colNms}
+// 		};
+		fn_formSubmit('/report/retrieveCustomerReportAll.do', {});
 	}
 	
 	function excelToMap() {
