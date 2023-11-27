@@ -1,7 +1,11 @@
 package bt.rrs;
 
+import java.util.HashMap;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -10,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import bt.btframework.excel.POIExcelRRS;
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
@@ -112,6 +117,33 @@ public class RrsUserController {
 		if(!rrsUserService.saveMemberUserInfo(param)){
 			respData.put("dup", "Y");
 		}
+		
+		return respData;
+	}
+	
+	/**
+	 * 엑셀 샘플 다운로드
+	 * @param reqData
+	 * @param req
+	 * @param resp
+	 * @throws Exception
+	 */
+	//그리드 엑셀 저장
+	@RequestMapping(value = "/rrs/downloadExcelSample.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData saveGridExcel(@RequestBody BReqData reqData, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+		System.out.println("saveGridExcel");
+		
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("colModel", reqData.getParamDataList("COL_NM"));
+		param.put("title", reqData.getParamDataVal("TITLE"));
+		
+		POIExcelRRS excelview = new POIExcelRRS();
+		byte[] binary = excelview.buildExcelXSSF(param, req, resp);
+		String binaryStr = DatatypeConverter.printBase64Binary(binary);
+		
+		BRespData respData = new BRespData();
+		respData.put("exceldata", binaryStr);
 		
 		return respData;
 	}

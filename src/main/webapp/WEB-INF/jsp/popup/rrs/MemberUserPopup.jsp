@@ -7,22 +7,24 @@
  */
 %>
 <div id="memberUserPopup">
-
 	<div class="oms_popup_button">
-		<button class='btn btn-default' id='btn_memberUserAddPopup' type='button''>
+		<button class='btn btn-default' id='btn_download_excel_form' type='button' onclick='downloadExcel();'>
+      		엑셀샘플파일 내려받기
+      	</button>
+		<button class='btn btn-default' id='btn_memberUserAddPopup' type='button'>
       		등록
       	</button>
-      	<button class='btn btn-default' id='btn_search' type='button' onclick='popupSearch();'>
+      	<button class='btn btn-default' id='btn_delete' type='button' onclick=''>
       		삭제
       	</button>
-      	<button class='btn btn-default' id='btn_search' type='button' onclick='popupSearch();'>
-			엑셀업로드
+      	<button class='btn btn-default' id='btn_upload_excel' type='button' onclick=''>
+			엑셀 업로드
       	</button>
 	
 	</div>
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
 		<div class="pop_grid_wrap">	
-			<table id="grid_deptMG"></table>
+			<table id="grid_MemberUser"></table>
 			<div id="pager_deptMG"></div>
 		</div>	
 		<!-- 그리드 끝 -->
@@ -40,8 +42,8 @@ $(function() {
 			'<s:message code='button.confirm'/>': { 
 				text: '<s:message code='button.confirm'/>',
 				click: function() {		
-					var selRows = $('#grid_deptMG').jqGrid('getGridParam', 'selrow');
-					var gridData = [$('#grid_deptMG').getRowData(selRows)];
+					var selRows = $('#grid_MemberUser').jqGrid('getGridParam', 'selrow');
+					var gridData = [$('#grid_MemberUser').getRowData(selRows)];
 					
 					p_rtnData = gridData;
 
@@ -64,13 +66,13 @@ $(function() {
 			
 			$('#S_DEPT_CD').val($(this).data('S_DEPT_CD'));
 			
-			grid_deptMG_Load();
+			grid_MemberUser_Load();
 			popupSearch();
 
 			$('[name="S_DEPT_CD"]').focus();
 			
 			/* 그리드 이벤트 */
-			$('#grid_deptMG').jqGrid('setGridParam', {
+			$('#grid_MemberUser').jqGrid('setGridParam', {
 				ondblClickRow: function(rowid, iRow, iCol, e) {
 					grid1_ondblClickRow(rowid, iRow, iCol, e);
 					// popupClose($('#memberUserPopup').data('pid'));
@@ -111,25 +113,7 @@ $(function() {
 	});
 });
 
-function grid_deptMG_Load() {
-
-	/*
-	var colName = ['<s:message code='system.compcd'/>',
-				   '<s:message code='system.departmentcode'/>',
-				   '<s:message code='system.departmentname'/>',
-			       '<s:message code='system.upperdepartmentcode'/>',
-				   '<s:message code='system.upperdepartmentname'/>',
-				   '<s:message code='system.level'/>'];
-	var colModel = [
-					{name:'COMP_CD',index:'COMP_CD',width:120,hidden:true},
-					{name:'DEPT_CD',index:'DEPT_CD',width:100},
-					{name:'DEPT_NM',index:'DEPT_NM',width:130},
-					{name:'UPPER_CD',index:'UPPER_CD',width:100},
-					{name:'UPPER_NM',index:'UPPER_NM',width:130},
-					{name:'LVL',index:'LVL',width:50}
-	];
-	*/
-	
+function grid_MemberUser_Load() {
 	var colName = [
 		'순번',
 		'이름',
@@ -145,8 +129,6 @@ function grid_deptMG_Load() {
 		{ name: 'TEL_NO', width: 100, align: 'center' },
 		{ name: 'CHK', index: 'CHK', width: 50, align: 'center', formatter: gridCboxFormat, sortable: false }
 	];
-	
-	
 
 	var gSetting = {
 			height: 277,
@@ -160,31 +142,88 @@ function grid_deptMG_Load() {
 			autowidth: true,
 			queryPagingGrid:true // 쿼리 페이징 처리 여부
 		};
-	btGrid.createGrid('grid_deptMG', colName, colModel, gSetting);
+	btGrid.createGrid('grid_MemberUser', colName, colModel, gSetting);
+}
+
+function downloadExcel(){
+	// Get grid column info
+	var title = "MemberSampleExcel";
+	var excelColModel = [];
+	var colModel = $("#grid_MemberUser").jqGrid('getGridParam','colModel');
+	var colName=$("#grid_MemberUser").jqGrid('getGridParam','colNames');
+	for(var i=0; i<colModel.length; i++) {
+		if(colModel[i].hidden===true){continue;}
+		if(colModel[i].colmenu===false){continue;}
+		if(colModel[i].name==='ROWNUM' || colName[i]===''){continue;}
+		var rowdata={};
+		rowdata['label']=colName[i];
+		rowdata['name']=colModel[i].name;
+		rowdata['width']=colModel[i].width;
+		rowdata['align']=fn_empty(colModel[i].align)?'left':colModel[i].align;
+		rowdata['formatter']=fn_empty(colModel[i].formatter)?'':colModel[i].formatter;
+		excelColModel.push(rowdata);
+		if(colModel[i].formatter=='select'){
+			$('#' + gid).jqGrid('setColProp',colModel[i].name,{unformat:gridUnfmt});
+		}
+	}
 	
+ 	var param = { 
+ 		'COL_NM': excelColModel,
+ 		'TITLE': title,
+	};
+ 	
+ 	// ajax
+ 	fn_ajax('/rrs/downloadExcelSample.do', true, param, function(data, xhr) {
+        var exceldata = base64DecToArr(data.exceldata);
+        var filename = title + '.xlsx';
+        var blob = new Blob([exceldata], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
+        if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            window.navigator.msSaveBlob(blob, filename);
+        } else {
+            var URL = window.URL || window.webkitURL;
+            var downloadUrl = URL.createObjectURL(blob);
+            if (filename) {
+                var a = document.createElement('a');
+                if (typeof a.download === 'undefined') {
+                    window.location = downloadUrl;
+                } else {
+                    a.href = downloadUrl;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                }
+            } else {
+                window.location = downloadUrl;
+            }
+            setTimeout(function() {
+                URL.revokeObjectURL(downloadUrl);
+            }, 100);
+        }
+    });
+ 	
 }
 
 // popupSearch
 function popupSearch() {
-	// var v_searchData = formIdToMap('frmDeptMGSearch');
-	// var sendData = {'param':v_searchData};
 	var sendData = {};
 	var url = '/rrs/selectMemberUserInfo.do';
 	
 	fn_ajax(url, false, sendData, function(data, xhr) {
 		var gridData = data.result;
-		$('#grid_deptMG').jqGrid('clearGridData');
-	    $('#grid_deptMG').jqGrid('setGridParam', {data:gridData});
-	    $('#grid_deptMG').trigger('reloadGrid');
+		$('#grid_MemberUser').jqGrid('clearGridData');
+	    $('#grid_MemberUser').jqGrid('setGridParam', {data:gridData});
+	    $('#grid_MemberUser').trigger('reloadGrid');
 	});
 }
 
 function grid1_ondblClickRow(rowid, iRow, iCol, e){
-	var gridData = $("#grid_deptMG").getRowData(rowid);
+	var gridData = $("#grid_MemberUser").getRowData(rowid);
 	var param = {
 		"HAN_NAME" : gridData["HAN_NAME"],
 		"ENG_NAME" : gridData["ENG_NAME"],
-		"TEL_NO" : gridData["TEL_NO"]
+		"TEL_NO" : gridData["TEL_NO"],
 	};
 	console.log('param: ', param)
 	memberUserPopup(param);
@@ -197,12 +236,4 @@ function memberUserPopup(param){
 	popupOpen(url, pid, param);
 }
 
-
-/* function memberUserAddPopup() {
-	console.log("memberUserAddPopup button");
-	var url = "/rrs/MemberUserAddPopup.do";
-	var pid = "p_MemberUserAdd";  //팝업 페이지의 취상위 div ID
-
-	popupOpen(url, pid);
-} */
 </script>
