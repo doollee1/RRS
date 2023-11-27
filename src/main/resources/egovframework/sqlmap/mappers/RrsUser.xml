@@ -58,7 +58,10 @@
 			  ,ENG_NAME = #{ENG_NAME}
 			  ,TEL_NO = #{TEL_NO}
 			  ,RET_YN = #{RET_YN}
-			  ,UPT_DT = NOW()
+			  ,UPD_DTM = NOW()
+		WHERE HAN_NAME = #{Ex_HAN_NAME}
+		  AND ENG_NAME = #{Ex_ENG_NAME}
+		  AND TEL_NO = #{Ex_TEL_NO}
 	</update>
 	
 	<delete id="deleteUserInfo" parameterType="BMap">
@@ -70,9 +73,9 @@
 	<select id="selectMemberUserInfoCnt" parameterType="BMap" resultType="int">
 		SELECT COUNT(1)
 		  FROM tb_admin_reg_member 
-		 WHERE HAN_NAME = #{HAN_NAME}
-		   AND ENG_NAME = #{ENG_NAME}
-		   AND TEL_NO = #{TEL_NO}
+		 WHERE HAN_NAME = #{Ex_HAN_NAME}
+		   AND ENG_NAME = #{Ex_ENG_NAME}
+		   AND TEL_NO = #{Ex_TEL_NO}
 	</select>
 	
 	<update id="updatePassword" parameterType="BMap">

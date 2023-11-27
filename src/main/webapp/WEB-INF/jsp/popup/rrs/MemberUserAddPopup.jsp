@@ -25,6 +25,9 @@
 			      	</tr>
 				</tbody>
 			</table>
+			<input type="hidden" id="Ex_HAN_NAME" name="Ex_HAN_NAME" />
+	      	<input type="hidden" id="Ex_ENG_NAME" name="Ex_ENG_NAME" />
+	      	<input type="hidden" id="Ex_TEL_NO" name="Ex_TEL_NO" />
 		</form>
 	</div>
 </div>
@@ -54,6 +57,9 @@ $(function() {
 			$('#HAN_NAME').val($(this).data('HAN_NAME'));
 			$('#ENG_NAME').val($(this).data('ENG_NAME'));
 			$('#TEL_NO').val($(this).data('TEL_NO'));
+			$('#Ex_HAN_NAME').val($(this).data('HAN_NAME'));
+			$('#Ex_ENG_NAME').val($(this).data('ENG_NAME'));
+			$('#Ex_TEL_NO').val($(this).data('TEL_NO'));
 		},
 		close: function() {
 			popupClose($(this).data('pid'));
@@ -65,6 +71,7 @@ function saveMemberUserInfo(){
 	var formData = formIdAllToMap('frmMemberUserInfo');
 	var param = {"param" : formData};
 	var url = "/rrs/saveMemberUserInfo.do"
+	console.log(param)
 		
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
