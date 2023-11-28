@@ -110,18 +110,7 @@ public class TableReportController {
 
         // Calculate formulas in worksheet.
         worksheet.calculate();
-        
-        String myFolder = System.getProperty("user.home") + "\\" + "Documents";
-        File folder = new File(myFolder);
-        if(!folder.exists()) {
-        	try {
-        		folder.mkdir();
-        	} catch (Exception e) {
-        		e.getStackTrace();
-            }
-        }
-        
-        workbook.save(myFolder + "Template Use.xlsx");
+        workbook.save("Template Use.xlsx");
         
 //        String folderPath = System.getProperty("user.home") + "\\My Documents";
 //        logger.debug("folderPath::::::::::::::" + folderPath);
