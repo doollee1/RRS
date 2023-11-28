@@ -76,6 +76,8 @@ public class TableReportController {
 		
 		SpreadsheetInfo.setLicense("FREE-LIMITED-KEY");
 		
+		/* 서비스 부분 start */
+		
 		ServletContext servletContext = req.getSession().getServletContext();
 	    String realPath = servletContext.getRealPath("/WEB-INF/template/InvoiceTemplate.xlsx");
 
@@ -117,6 +119,9 @@ public class TableReportController {
         workbook.save(out, SaveOptions.getXlsxDefault());
         
         byte[] byteArray = out.toByteArray();
+        
+        /* 서비스 부분 end */
+        
         
         //파일유형설정
 		resp.setContentType("application/octet-stream"); 
