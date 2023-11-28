@@ -27,7 +27,9 @@ import com.gembox.spreadsheet.ExcelFile;
 import com.gembox.spreadsheet.ExcelRow;
 import com.gembox.spreadsheet.ExcelWorksheet;
 import com.gembox.spreadsheet.RowColumn;
+import com.gembox.spreadsheet.SaveOptions;
 import com.gembox.spreadsheet.SpreadsheetInfo;
+import com.gembox.spreadsheet.XlsxSaveOptions;
 
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
@@ -78,7 +80,6 @@ public class TableReportController {
 	    String realPath = servletContext.getRealPath("/WEB-INF/template/InvoiceTemplate.xlsx");
 
 	    ExcelFile workbook = ExcelFile.load(realPath);
-	    
 
         int workingDays = 8;
 
@@ -110,17 +111,23 @@ public class TableReportController {
             currentRow.getCell(2).setValue(random.nextInt(11) + 1);
         }
 
+        
         // Calculate formulas in worksheet.
         worksheet.calculate();
         
-        String folderPath = System.getProperty("user.home") + "\\My Documents";
-        logger.debug("folderPath::::::::::::::" + folderPath);
-        logger.debug("folderPath::::::::::::::" + folderPath);
-        logger.debug("folderPath::::::::::::::" + folderPath);
-        logger.debug("folderPath::::::::::::::" + folderPath);
-        logger.debug("folderPath::::::::::::::" + folderPath);
- 
-        workbook.save(folderPath + "\\Template Use.xlsx");
+     // Stream Excel file to client's browser.
+        workbook.save("Template Use.xlsx");
+        
+        
+//        String folderPath = System.getProperty("user.home") + "\\My Documents";
+//        logger.debug("folderPath::::::::::::::" + folderPath);
+//        logger.debug("folderPath::::::::::::::" + folderPath);
+//        logger.debug("folderPath::::::::::::::" + folderPath);
+//        logger.debug("folderPath::::::::::::::" + folderPath);
+//        logger.debug("folderPath::::::::::::::" + folderPath);
+// 
+//        workbook.save(folderPath + "\\Template Use.xlsx");
+        
 	
 		
 //		BMap param = new BMap();
