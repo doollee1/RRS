@@ -148,5 +148,21 @@ public class RrsUserController {
 		return respData;
 	}
 	
+	/**
+	 * 엑셀 업로드 팝업 호출
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/rrs/MemberUserExcelUploadPopup.do")
+	public String MemberUserExcelUploadPopup(ModelMap model) throws Exception{
+		return "/popup/rrs/MemberUserExcelUploadPopup";
+	}
+	
+	@RequestMapping(value = "/rrs/uploadMemberUserExcel.do")
+	@ResponseBody
+	public BRespData uploadMemberUserExcel(HttpServletRequest req) throws Exception {
+		return rrsUserService.uploadMemberUserExcel(req);		
+	}
 
 }

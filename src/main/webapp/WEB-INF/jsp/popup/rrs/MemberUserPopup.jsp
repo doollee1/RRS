@@ -17,7 +17,7 @@
       	<button class='btn btn-default' id='btn_delete' type='button' onclick=''>
       		삭제
       	</button>
-      	<button class='btn btn-default' id='btn_upload_excel' type='button' onclick=''>
+      	<button class='btn btn-default' id='btn_upload_excel' type='button' onclick='uploadExcel();'>
 			엑셀 업로드
       	</button>
 	
@@ -205,6 +205,13 @@ function downloadExcel(){
  	
 }
 
+function uploadExcel() {
+	var url = "/rrs/MemberUserExcelUploadPopup.do";
+	var pid = "p_MemberUserExcelUploadPopup";  //팝업 페이지의 취상위 div ID
+
+	popupOpen(url, pid);
+}
+
 // popupSearch
 function popupSearch() {
 	var sendData = {};
@@ -225,7 +232,6 @@ function grid1_ondblClickRow(rowid, iRow, iCol, e){
 		"ENG_NAME" : gridData["ENG_NAME"],
 		"TEL_NO" : gridData["TEL_NO"],
 	};
-	console.log('param: ', param)
 	memberUserPopup(param);
 }
 

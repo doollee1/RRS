@@ -1,15 +1,22 @@
 package bt.rrs.service;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import bt.btframework.excel.POIExcelRRS;
 import bt.btframework.utils.BMap;
-import bt.btframework.utils.LoginInfo;
+import bt.btframework.utils.BRespData;
+import bt.btframework.utils.ResponseStatus;
 import bt.rrs.dao.RrsUserDao;
-import egovframework.com.utl.sim.service.EgovFileScrty;
 
 @Service("RrsUserService")
 public class RrsUserService {
@@ -54,5 +61,80 @@ public class RrsUserService {
 			}
 		}
 		return isValid;
+	}
+	
+	/**
+	 * 멤버회원 엑셀 업로드
+	 * @param param
+	 * @throws Exception
+	 */
+	public BRespData uploadMemberUserExcel(HttpServletRequest req) throws Exception {
+		POIExcelRRS upload = new POIExcelRRS();
+		MultipartHttpServletRequest mpRequest = (MultipartHttpServletRequest) req;
+		String[] header = new String[]{"NO", "HAN_NAME", "ENG_NAME", "TEL_NO"};
+		List<MultipartFile> files =  mpRequest.getFiles("fileupload[]");
+		List<BMap> result = new ArrayList<BMap>();
+		
+		System.out.println("uploadMemberUserExcel");
+		for(MultipartFile file : files) {
+			List<BMap> list = upload.excelUpload(file, header);
+			for (BMap bMap : list) {
+				System.out.println(bMap);
+			}
+			/*
+		    SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");//dd/MM/yyyy				   
+		    String cdate = sdfDate.format(new Date());		   	
+			
+			for(int i = 1; i < list.size(); i++) {
+				BMap map = list.get(i);				
+				if (! "".equals(map.get("MATL_CD"))) {
+										
+					map.put("SOLD_CUST_CD", custcd);
+					
+					String matlcd = (String) map.get("MATL_CD");
+					int cddelimit = matlcd.indexOf(".");
+					if (cddelimit > 0) {
+						matlcd = matlcd.substring(0, cddelimit);
+					}
+					map.put("MATL_CD", matlcd);
+					
+					String qpartner = (String) map.get("QPARTNER"); // 4
+					String standard = (String) map.get("STANDARD"); // 5
+					String turned = (String) map.get("TURNED"); // 6
+					
+					double netprice = 0;					
+					if ("".equals(turned)) {
+						// q partner 여부
+						if ("Y".equals("Y")) {
+							netprice = Double.parseDouble(qpartner);		
+						} else {
+							netprice = Double.parseDouble(standard);
+						}						
+					} else {
+						netprice = Double.parseDouble(turned);
+					}
+					map.put("NET_PRICE", String.valueOf(netprice));
+
+					String Amount = (String) map.get("ORD_QTY");
+					double nAmount = Float.parseFloat(Amount) ;
+					map.put("ORD_QTY", Amount);					
+										
+					// ORD_QTY X NET_PRICE
+					double netval = 0;
+					netval = nAmount * netprice;
+					map.put("NET_VAL", String.format("%.2f", netval).replace(",", "."));
+					
+					map.put("VAL_FR_DT", cdate);
+					map.put("T_WGT",  "");
+					map.put("MATL_WGT",  "");
+					map.put("X",  "");
+					
+					result.add(map);
+				}
+			}
+			*/
+		}
+		
+		return new BRespData(ResponseStatus.OK, result);
 	}
 }
