@@ -1,5 +1,6 @@
 package bt.report.controller;
 
+import java.io.File;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -8,6 +9,8 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -63,47 +66,61 @@ public class TableReportController {
 		return res;
 	}
 
+	/**
+	 * 인보이스 계산서 엑셀 샘플 
+	 */
 	@RequestMapping(value = "/retrieveCustomerReportAll.do", method = RequestMethod.POST)
 	public void retrieveCustomerReportAll(@RequestParam Map<String,Object> reqData, HttpServletRequest req, HttpServletResponse resp)  throws Exception {
 		
-		 SpreadsheetInfo.setLicense("FREE-LIMITED-KEY");
+		SpreadsheetInfo.setLicense("FREE-LIMITED-KEY");
 
-	        ExcelFile workbook = ExcelFile.load("C:\\Users\\doollee\\Downloads\\Template.xlsx");
+		ServletContext servletContext = req.getSession().getServletContext();
+	    String realPath = servletContext.getRealPath("/WEB-INF/template/InvoiceTemplate.xlsx");
 
-	        int workingDays = 8;
+	    ExcelFile workbook = ExcelFile.load(realPath);
+	    
 
-	        LocalDateTime startDate = LocalDateTime.now().plusDays(-workingDays);
-	        LocalDateTime endDate = LocalDateTime.now();
+        int workingDays = 8;
 
-	        ExcelWorksheet worksheet = workbook.getWorksheet(0);
+        LocalDateTime startDate = LocalDateTime.now().plusDays(-workingDays);
+        LocalDateTime endDate = LocalDateTime.now();
 
-	        // Find cells with placeholder text and set their values.
-	        RowColumn rowColumnPosition;
-	        if ((rowColumnPosition = worksheet.getCells().findText("[Company Name]", true, true)) != null)
-	            worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue("ACME Corp");
-	        if ((rowColumnPosition = worksheet.getCells().findText("[Company Address]", true, true)) != null)
-	            worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue("240 Old Country Road, Springfield, IL");
-	        if ((rowColumnPosition = worksheet.getCells().findText("[Start Date]", true, true)) != null)
-	            worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue(startDate);
-	        if ((rowColumnPosition = worksheet.getCells().findText("[End Date]", true, true)) != null)
-	            worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue(endDate);
+        ExcelWorksheet worksheet = workbook.getWorksheet(0);
 
-	        // Copy template row.
-	        int row = 17;
-	        worksheet.getRows().insertCopy(row + 1, workingDays - 1, worksheet.getRow(row));
+        // Find cells with placeholder text and set their values.
+        RowColumn rowColumnPosition;
+        if ((rowColumnPosition = worksheet.getCells().findText("[Company Name]", true, true)) != null)
+            worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue("ACME Corp");
+        if ((rowColumnPosition = worksheet.getCells().findText("[Company Address]", true, true)) != null)
+            worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue("240 Old Country Road, Springfield, IL");
+        if ((rowColumnPosition = worksheet.getCells().findText("[Start Date]", true, true)) != null)
+            worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue(startDate);
+        if ((rowColumnPosition = worksheet.getCells().findText("[End Date]", true, true)) != null)
+            worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue(endDate);
 
-	        // Fill inserted rows with sample data.
-	        Random random = new Random();
-	        for (int i = 0; i < workingDays; i++) {
-	            ExcelRow currentRow = worksheet.getRow(row + i);
-	            currentRow.getCell(1).setValue(startDate.plusDays(i));
-	            currentRow.getCell(2).setValue(random.nextInt(11) + 1);
-	        }
+        // Copy template row.
+        int row = 17;
+        worksheet.getRows().insertCopy(row + 1, workingDays - 1, worksheet.getRow(row));
 
-	        // Calculate formulas in worksheet.
-	        worksheet.calculate();
+        // Fill inserted rows with sample data.
+        Random random = new Random();
+        for (int i = 0; i < workingDays; i++) {
+            ExcelRow currentRow = worksheet.getRow(row + i);
+            currentRow.getCell(1).setValue(startDate.plusDays(i));
+            currentRow.getCell(2).setValue(random.nextInt(11) + 1);
+        }
 
-	        workbook.save("C:\\Users\\doollee\\Downloads\\Template Use.xlsx");
+        // Calculate formulas in worksheet.
+        worksheet.calculate();
+        
+        String folderPath = System.getProperty("user.home") + "\\My Documents";
+        logger.debug("folderPath::::::::::::::" + folderPath);
+        logger.debug("folderPath::::::::::::::" + folderPath);
+        logger.debug("folderPath::::::::::::::" + folderPath);
+        logger.debug("folderPath::::::::::::::" + folderPath);
+        logger.debug("folderPath::::::::::::::" + folderPath);
+ 
+        workbook.save(folderPath + "\\Template Use.xlsx");
 	
 		
 //		BMap param = new BMap();
