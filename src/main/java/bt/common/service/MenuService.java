@@ -44,7 +44,8 @@ public class MenuService {
 		String auth = "";
 		String LV = "";
 		List<BMap> menuMap = menuDao.selectButtonList(param);  //여러 권한을 가지고 있는 사용자 처리 위해 리스트 가져옴
-		String menuArr[] = {"N","N","N","N","N","N","N","N","N","N","N","N","N","N"};
+//		String menuArr[] = {"N","N","N","N","N","N","N","N","N","N","N","N","N","N"};
+		String menuArr[] = {"Y","Y","Y","Y","Y","Y","Y","Y","Y","Y","Y","Y","Y","Y"};
 		
 		//여러 권한을 가지고 있을 때 한개의 권한에서 Y가 존재 할시 무조건 Y로 처리
 		for(int i = 0; i < menuMap.size(); i++){
