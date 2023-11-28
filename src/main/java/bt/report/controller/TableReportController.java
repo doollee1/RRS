@@ -1,6 +1,7 @@
 package bt.report.controller;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -13,6 +14,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +28,7 @@ import com.gembox.spreadsheet.ExcelFile;
 import com.gembox.spreadsheet.ExcelRow;
 import com.gembox.spreadsheet.ExcelWorksheet;
 import com.gembox.spreadsheet.RowColumn;
+import com.gembox.spreadsheet.SaveOptions;
 import com.gembox.spreadsheet.SpreadsheetInfo;
 
 import bt.btframework.utils.BMap;
@@ -72,7 +75,7 @@ public class TableReportController {
 	public void retrieveCustomerReportAll(@RequestParam Map<String,Object> reqData, HttpServletRequest req, HttpServletResponse resp)  throws Exception {
 		
 		SpreadsheetInfo.setLicense("FREE-LIMITED-KEY");
-
+		
 		ServletContext servletContext = req.getSession().getServletContext();
 	    String realPath = servletContext.getRealPath("/WEB-INF/template/InvoiceTemplate.xlsx");
 
@@ -108,60 +111,29 @@ public class TableReportController {
             currentRow.getCell(2).setValue(random.nextInt(11) + 1);
         }
 
-        // Calculate formulas in worksheet.
         worksheet.calculate();
-        workbook.save("Template Use.xlsx");
         
-//        String folderPath = System.getProperty("user.home") + "\\My Documents";
-//        logger.debug("folderPath::::::::::::::" + folderPath);
-//        logger.debug("folderPath::::::::::::::" + folderPath);
-//        logger.debug("folderPath::::::::::::::" + folderPath);
-//        logger.debug("folderPath::::::::::::::" + folderPath);
-//        logger.debug("folderPath::::::::::::::" + folderPath);
-// 
-//        workbook.save(folderPath + "\\Template Use.xlsx");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.save(out, SaveOptions.getXlsxDefault());
         
-	
-		
-//		BMap param = new BMap();
-//		String colNm = reqData.get("COL_NM").toString();
-//		colNm = colNm.replaceAll("%", "");
-//		String colNms[] = colNm.split(",");
-//		
-//		param.put("CUST_CD", reqData.get("CUST_CD"));
-//		param.put("CUST_NM", reqData.get("CUST_NM"));
-//		param.put("SEARCH_NM1", reqData.get("SEARCH_NM1"));
-//		param.put("SEARCH_NM2", reqData.get("SEARCH_NM2"));
-//		param.put("SALES_ORG_CD", reqData.get("SALES_ORG_CD"));
-//		param.put("DISTRB_CH", reqData.get("DISTRB_CH"));
-//		param.put("DIV_CD", reqData.get("DIV_CD"));
-//		param.put("GRADE", reqData.get("GRADE"));
-//		param.put("SALES_GR", reqData.get("SALES_GR"));
-//		param.put("CUST_GR", reqData.get("CUST_GR"));
-//		param.put("LANG",  LoginInfo.getLang());
-//		
-//		// 엑셀 헤더
-//		LinkedHashMap<String,Object> headerMap = new LinkedHashMap<String,Object>();
-//		//headerMap.put("접수번호", "CCM_NO");
-//		for (int i = 0 ; i < colNms.length ; i ++) {
-//			String nms[] = colNms[i].split(":");
-//			headerMap.put(nms[0], nms[1]);
-//		}
-//		//브라우저가 IE인지 확인할 플래그
-//		boolean MSIE = req.getHeader("user-agent").toUpperCase().indexOf("MSIE") != -1;
-//		boolean MSIE11 = req.getHeader("user-agent").toUpperCase().indexOf("RV:11.0") != -1;
-//		
-//		String title = "Customer List";
-//		String UTF8FileName = "";
-//
-//		if (MSIE || MSIE11) {
-//		    // 공백이 '+'로 인코딩된것을 다시 공백으로 바꿔준다.
-//		    UTF8FileName = URLEncoder.encode(title, "UTF-8").replaceAll("\\+", " ");
-//		} else {
-//		    UTF8FileName = new String(title.getBytes("UTF-8"), "8859_1");
-//		}
-//		
-//		tableReportService.selectCustomerListAll(UTF8FileName, headerMap, resp, param);
+        byte[] byteArray = out.toByteArray();
+        
+        //파일유형설정
+		resp.setContentType("application/octet-stream"); 
+	      //파일길이설정
+		resp.setContentLength(byteArray.length);
+	      //데이터형식/성향설정 (attachment: 첨부파일)
+		resp.setHeader("Content-Disposition", "attachment; fileName=\"" + URLEncoder.encode("Invoice.xlsx","UTF-8")+"\";");
+	      //내용물 인코딩방식설정
+		resp.setHeader("Content-Transfer-Encoding", "binary");
+	      //버퍼의 출력스트림을 출력
+		resp.getOutputStream().write(byteArray);
+	      
+	      //버퍼에 남아있는 출력스트림을 출력
+		resp.getOutputStream().flush();
+	      //출력스트림을 닫는다
+		resp.getOutputStream().close();
+      
 	}
 
 	@RequestMapping(value = "/product.do")
