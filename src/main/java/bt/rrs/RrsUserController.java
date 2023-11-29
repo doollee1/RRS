@@ -34,24 +34,54 @@ public class RrsUserController {
 	 */
 	@RequestMapping(value = "/rrs/User.do")
 	public String UserManager(ModelMap model) throws Exception{
-		System.out.println("user.do! !");
+		System.out.println("user.do!!");
 		return "/rrs/User";
 	}
 	
 	/**
-	 * 회원 정보 조회
+	 * 회원 정보 리스트 조회
 	 * @param reqData
 	 * @param req
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/rrs/selectRrsUserInfo.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/rrs/selectUserInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData selectUserInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
-		
 		respData.put("result", rrsUserService.selectUserInfo(param));
+		
+		return respData;
+	}
+	
+	/**
+	 * 회원 등록/수정 팝업 호출
+	 * @param model
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/rrs/UserPopup.do")
+	public String UserPopup(ModelMap model,HttpServletRequest request) throws Exception{
+		return "/popup/rrs/UserInfoPopup";
+	}
+	
+	/**
+	 * 회원 정보 저장
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/rrs/saveUserInfo.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData saveUserInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BMap param = reqData.getParamDataMap("param");
+		BRespData respData = new BRespData();
+		if(!rrsUserService.saveUserInfo(param)){
+			respData.put("dup", "Y");
+		}
 		
 		return respData;
 	}
@@ -65,13 +95,11 @@ public class RrsUserController {
 	 */
 	@RequestMapping(value = "/rrs/MemberUserPopup.do")
 	public String MemberUserPopup(ModelMap model,HttpServletRequest request) throws Exception{
-		System.out.println("MemberUserPopup");
-		// model.addAttribute("usertype", commonService.selectCommonCode("USER_TP"));
 		return "/popup/rrs/MemberUserPopup";
 	}
 	
 	/**
-	 * 멤버 회원 정보 조회(팝업)
+	 * 멤버회원 정보 조회(팝업)
 	 * @param model
 	 * @param request
 	 * @return
@@ -82,7 +110,6 @@ public class RrsUserController {
 	public BRespData selectMemberUserInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
-		System.out.println("selectMemberUserInfo");
 		respData.put("result", rrsUserService.selectMemberUserInfo(param));
 		
 		return respData;
@@ -97,12 +124,11 @@ public class RrsUserController {
 	 */
 	@RequestMapping(value = "/rrs/MemberUserAddPopup.do")
 	public String MemberUserAddPopup(ModelMap model,HttpServletRequest request) throws Exception{
-		System.out.println("MemberUserAddPopup");
 		return "/popup/rrs/MemberUserAddPopup";
 	}
 	
 	/**
-	 * 사용자 정보 저장
+	 * 멤버 회원 정보 저장
 	 * @param reqData
 	 * @param req
 	 * @return
@@ -132,8 +158,6 @@ public class RrsUserController {
 	@RequestMapping(value = "/rrs/downloadExcelSample.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData saveGridExcel(@RequestBody BReqData reqData, HttpServletRequest req, HttpServletResponse resp) throws Exception {
-		System.out.println("saveGridExcel");
-		
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("colModel", reqData.getParamDataList("COL_NM"));
 		param.put("title", reqData.getParamDataVal("TITLE"));

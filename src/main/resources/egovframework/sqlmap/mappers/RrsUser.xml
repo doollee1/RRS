@@ -4,7 +4,6 @@
 <mapper namespace="RrsUserMapper">
 	<select id="selectUserInfo" parameterType="BMap" resultType="BMap">
 	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
-	/* User.xml -> selectUserInfo */
 		SELECT ROW_NUMBER() OVER(ORDER BY USER_ID) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
 			  ,USER_ID
 			  ,MEM_GBN
@@ -17,8 +16,55 @@
 			  ,REG_DTM
 			  ,UPD_DTM
 		FROM tb_member
+		<if test='USER_ID != null and USER_ID != ""'>
+		WHERE USER_ID = #{USER_ID}
+		</if>
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
+	
+	<select id="selectUserInfoCnt" parameterType="BMap" resultType="int">
+		SELECT COUNT(1)
+		  FROM TB_MEMBER 
+		 WHERE USER_ID = #{USER_ID}
+	</select>
+	
+	<insert id="insertUserInfo" parameterType="BMap">
+		INSERT INTO TB_MEMBER
+					(USER_ID
+					,MEM_GBN
+					,HAN_NAME
+					,ENG_NAME
+					,TEL_NO
+					,EMAIL
+					,PASSWD
+					,RET_YN
+					,REG_DTM
+					,UPD_DTM
+					)
+			 VALUES (#{USER_ID}
+					,#{MEM_GBN}
+					,#{HAN_NAME}
+					,#{ENG_NAME}
+					,#{TEL_NO}
+					,#{EMAIL}
+					,#{PASSWD}
+					,'N'
+					,NOW()
+					,NOW()
+					)
+	</insert>
+	
+	<update id="updateUserInfo" parameterType="BMap">
+		UPDATE TB_MEMBER
+		   SET HAN_NAME = #{HAN_NAME}
+			  ,ENG_NAME = #{ENG_NAME}
+			  ,TEL_NO = #{TEL_NO}
+			  ,EMAIL = #{EMAIL}
+			  ,PASSWD = #{PASSWD}
+			  ,RET_YN = #{RET_YN}
+			  ,UPD_DTM = NOW()
+		WHERE USER_ID = #{USER_ID}
+	</update>
 	
 	<select id="selectMemberUserInfo" parameterType="BMap" resultType="BMap">
 	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->

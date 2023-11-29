@@ -21,6 +21,34 @@ public class RrsUserDao extends DBAbstractMapper {
 	}
 	
 	/**
+	 * 회원 정보 추가
+	 * @param param
+	 * @throws Exception
+	 */
+	public void insertUserInfo(BMap param) throws Exception{
+		insert("RrsUserMapper.insertUserInfo", param);
+	}
+	
+	/**
+	 * 회원 정보 수정
+	 * @param param
+	 * @throws Exception
+	 */
+	public void updateUserInfo(BMap param) throws Exception{
+		update("RrsUserMapper.updateUserInfo", param);
+	}
+	
+	/**
+	 * 특정 회원 수 카운트
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public int selectUserInfoCnt(BMap param) throws Exception{
+		return (int)selectByPk("RrsUserMapper.selectUserInfoCnt", param);
+	}
+	
+	/**
 	 * 멤버회원 정보 조회
 	 */
 	@SuppressWarnings("unchecked")
