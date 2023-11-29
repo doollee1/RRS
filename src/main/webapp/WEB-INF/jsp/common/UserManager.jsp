@@ -7,7 +7,7 @@
 	 */
 %>
 <c:import url="../import/frameTop.jsp">
-	<c:param name="progcd" value="HO01" />
+	<c:param name="progcd" value="HO02" />
 </c:import>
 
 <!-- dummy -->
