@@ -1,8 +1,6 @@
 package bt.rrs.service;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -79,60 +77,8 @@ public class RrsUserService {
 		for(MultipartFile file : files) {
 			List<BMap> list = upload.excelUpload(file, header);
 			for (BMap bMap : list) {
-				System.out.println(bMap);
+				rrsUserDao.insertMemberUserInfo(bMap);
 			}
-			/*
-		    SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");//dd/MM/yyyy				   
-		    String cdate = sdfDate.format(new Date());		   	
-			
-			for(int i = 1; i < list.size(); i++) {
-				BMap map = list.get(i);				
-				if (! "".equals(map.get("MATL_CD"))) {
-										
-					map.put("SOLD_CUST_CD", custcd);
-					
-					String matlcd = (String) map.get("MATL_CD");
-					int cddelimit = matlcd.indexOf(".");
-					if (cddelimit > 0) {
-						matlcd = matlcd.substring(0, cddelimit);
-					}
-					map.put("MATL_CD", matlcd);
-					
-					String qpartner = (String) map.get("QPARTNER"); // 4
-					String standard = (String) map.get("STANDARD"); // 5
-					String turned = (String) map.get("TURNED"); // 6
-					
-					double netprice = 0;					
-					if ("".equals(turned)) {
-						// q partner 여부
-						if ("Y".equals("Y")) {
-							netprice = Double.parseDouble(qpartner);		
-						} else {
-							netprice = Double.parseDouble(standard);
-						}						
-					} else {
-						netprice = Double.parseDouble(turned);
-					}
-					map.put("NET_PRICE", String.valueOf(netprice));
-
-					String Amount = (String) map.get("ORD_QTY");
-					double nAmount = Float.parseFloat(Amount) ;
-					map.put("ORD_QTY", Amount);					
-										
-					// ORD_QTY X NET_PRICE
-					double netval = 0;
-					netval = nAmount * netprice;
-					map.put("NET_VAL", String.format("%.2f", netval).replace(",", "."));
-					
-					map.put("VAL_FR_DT", cdate);
-					map.put("T_WGT",  "");
-					map.put("MATL_WGT",  "");
-					map.put("X",  "");
-					
-					result.add(map);
-				}
-			}
-			*/
 		}
 		
 		return new BRespData(ResponseStatus.OK, result);
