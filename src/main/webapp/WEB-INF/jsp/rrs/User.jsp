@@ -3,7 +3,7 @@
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
 <%
 	/**
-	 * @Name : UserManager
+	 * @Name : User
 	 */
 %>
 <c:import url="../import/frameTop.jsp">
@@ -73,9 +73,9 @@
 --%>
 	//init
 	$(function() {
-		$('#cBtnAdd').text("<s:message code='notice.btn.new'/>");
-		$('#cBtnAdd').addClass("cls");
-		$('#cBtnAdd').addClass("cBtnWrite_style");
+		setCommBtn("User6", false);	// hide bookmark button
+		$('#cBtnUser1').text("멤버정보등록");
+		$('#cBtnUser1').addClass("cBtnUser1_style");
 		
 		initLayout();
 		createGrid1();
@@ -145,42 +145,6 @@
 			{ name: 'CHK', index: 'CHK', width: 50, align: 'center', formatter: gridCboxFormat, sortable: false }
 		]
 		
-		
-		/*
-		var colName = ['<s:message code='system.compcd'/>',
-				    '<s:message code='system.UserID'/>',
-					'<s:message code='system.name'/>',
-					'<s:message code='system.secondname'/>',
-					'<s:message code='system.fullname'/>',
-					'<s:message code='system.usertypecode'/>',
-					'<s:message code='system.usertype'/>',
-					'<s:message code='system.createtype'/>',
-					'<s:message code='system.usergroup'/>',
-					'<s:message code='system.department'/>',
-					'<s:message code='system.nation'/>',
-					'<s:message code='system.email'/>',
-					'<s:message code='system.lockyn'/>',
-					'<s:message code='common.language'/>',
-					'<s:message code='common.status'/>']
-		var colModel = [
-			{ name: 'COMP_CD', width: 100, align: 'center', hidden: true },
-			{ name: 'USER_ID', width: 150, align: 'left' },
-			{ name: 'NAME_1ST', width: 150, align: 'left' },
-			{ name: 'NAME_2ND', width: 150, align: 'left' },
-			{ name: 'NAME_FULL', width: 200, align: 'left' },
-			{ name: 'USER_TP', width: 70, align: 'center', hidden:true },
-			{ name: 'CRE_TP', width: 70, align: 'center', hidden:true },
-			{ name: 'USER_TP_NM', width: 100, align: 'center' },
-			{ name: 'USER_GD', width: 100, align: 'center' , hidden:true},
-			{ name: 'DEPT_NM', width: 150, align: 'left' },
-			{ name: 'LAND_CD', width: 100, align: 'left', hidden:true },
-			{ name: 'E_MAIL', width: 200, align: 'left' },
-			{ name: 'LOCK_YN', width: 75, align: 'center' },
-			{ name: 'LAMG_NM', width: 75, align: 'center' },
-			{ name: 'STATUS_NM', width: 75, align: 'center'}
-	  	];
-		*/
-		
 		var gSetting = {
 				height:632,
 				pgflg:true,
@@ -212,7 +176,7 @@
 		$('#CURRENT_PAGE').val(vCurrentPage);
 		$('#ROWS_PER_PAGE').val(vRowsPerPage);
 		
-		var url = "/rrs/selectRrsUserInfo.do";
+		var url = "/rrs/selectUserInfo.do";
 		
 		var formData = formIdAllToMap('frmSearch');
 		var param = {"param":formData};
@@ -226,40 +190,30 @@
 	function grid1_ondblClickRow(rowid, iRow, iCol, e){
 		var gridData = $("#grid1").getRowData(rowid);
 		var param = {
-			"COMP_CD" : gridData["COMP_CD"],
 			"USER_ID" : gridData["USER_ID"],
-			"USER_TP" : gridData["USER_TP"],
-			"CRE_TP" : gridData["CRE_TP"],
-			"AUTH" :auth
 		};
 		userPopup(param);
 	}
 	
-	/*
-	function cAdd(){
+	function cAdd() {
 		userPopup();
 	}
-	*/
 	
-	function cAdd() {
-		memberUserPopup();
-	}
-	
-	function memberUserPopup() {
-		var url = "/rrs/MemberUserPopup.do";
-		var pid = "p_MemberUser";  //팝업 페이지의 취상위 div ID
-
-		popupOpen(url, pid);
-	}
-	
-	
-	function userPopup(param){
-		var url = "/common/UserInfoPopup.do";
-		var pid = "p_UserInfo";  //팝업 페이지의 취상위 div ID
+	function userPopup(param) {
+		var url = "/rrs/UserPopup.do";
+		var pid = "p_User";  //팝업 페이지의 취상위 div ID
 
 		popupOpen(url, pid, param, function(data) {
 			cSearch();
 		});
+	}
+	
+	// 멤버정보등록 버튼
+	function cUser1() {
+		var url = "/rrs/MemberUserPopup.do";
+		var pid = "p_MemberUser";  //팝업 페이지의 취상위 div ID
+
+		popupOpen(url, pid);
 	}
 </script>
 
