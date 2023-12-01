@@ -49,6 +49,15 @@ public class RrsUserDao extends DBAbstractMapper {
 	}
 	
 	/**
+	 * 회원 정보 삭제
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deleteUserInfo(BMap param) throws Exception{
+		delete("RrsUserMapper.deleteUserInfo", param);
+	}
+	
+	/**
 	 * 멤버회원 정보 조회
 	 */
 	@SuppressWarnings("unchecked")

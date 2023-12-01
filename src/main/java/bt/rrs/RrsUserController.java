@@ -1,6 +1,7 @@
 package bt.rrs;
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -82,6 +83,24 @@ public class RrsUserController {
 		if(!rrsUserService.saveUserInfo(param)){
 			respData.put("dup", "Y");
 		}
+		
+		return respData;
+	}
+	
+	/**
+	 * 회원 정보 삭제
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/rrs/deleteUserInfo.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData deleteUserInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		List<BMap> paramList = reqData.getParamDataList("gridData");
+		BRespData respData = new BRespData();
+		
+		rrsUserService.deleteUserInfo(paramList);
 		
 		return respData;
 	}

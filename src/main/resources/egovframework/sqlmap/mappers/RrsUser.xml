@@ -66,6 +66,11 @@
 		WHERE USER_ID = #{USER_ID}
 	</update>
 	
+	<delete id="deleteUserInfo" parameterType="BMap">
+		DELETE FROM TB_MEMBER
+		 WHERE USER_ID = #{USER_ID}
+	</delete>
+	
 	<select id="selectMemberUserInfo" parameterType="BMap" resultType="BMap">
 	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
 	/* User.xml -> selectMemberUserInfo */
@@ -110,11 +115,7 @@
 		  AND TEL_NO = #{Ex_TEL_NO}
 	</update>
 	
-	<delete id="deleteUserInfo" parameterType="BMap">
-		DELETE BC_USER
-		 WHERE COMP_CD = #{COMP_CD}
-		   AND USER_ID = #{USER_ID}
-	</delete>
+	
 	
 	<select id="selectMemberUserInfoCnt" parameterType="BMap" resultType="int">
 		SELECT COUNT(1)

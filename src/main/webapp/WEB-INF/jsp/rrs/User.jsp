@@ -215,6 +215,33 @@
 
 		popupOpen(url, pid);
 	}
+	
+	function cDel(){
+		var ids = $("#grid1").jqGrid("getDataIDs");
+		var gridData = [];
+		var cnt = 0;
+		btGrid.gridSaveRow('grid1');
+		for(var i = 0; i < ids.length; i++){
+			if($('#grid1_' + ids[i] + '_CHK').prop('checked')){
+				cnt++;
+				gridData.push($("#grid1").getRowData(ids[i]));
+			}
+		}
+		
+		if(cnt < 1){
+			alert("삭제할 데이타를 선택하십시오.");
+			return;
+		}
+
+		if(confirm("삭제하시겠습니까?")){
+			var url = '/rrs/deleteUserInfo.do';
+			var param = {"gridData" : gridData};
+			fn_ajax(url, false, param, function(data, xhr){
+				alert("삭제하였습니다.");
+				cSearch();
+			});
+		}
+	}
 </script>
 
 <c:import url="../import/frameBottom.jsp" />

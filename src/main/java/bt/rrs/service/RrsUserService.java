@@ -52,6 +52,18 @@ public class RrsUserService {
 	}
 	
 	/**
+	 * 회원 정보 삭제
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deleteUserInfo(List<BMap> paramList) throws Exception{
+		for(int i = 0; i < paramList.size(); i++){
+			BMap param = new BMap(paramList.get(i));
+			rrsUserDao.deleteUserInfo(param);
+		}
+	}
+	
+	/**
 	 * 멤버회원 정보 조회
 	 */
 	public List<BMap> selectMemberUserInfo(BMap param) throws Exception{
