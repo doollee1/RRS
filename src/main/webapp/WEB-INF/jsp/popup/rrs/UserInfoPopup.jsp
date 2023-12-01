@@ -114,8 +114,9 @@ $(function() {
 				selectUserInfo($(this).data("USER_ID"));
 				$("#USER_ID").attr("readonly", true);
 				var reg_dtm = $("#REG_DTM").val();
-				console.log('reg_dtm: ', reg_dtm);
-				$("#REG_DTM").val(new Date(reg_dtm));
+				var upd_dtm = $("#UPD_DTM").val();
+				$("#REG_DTM").val(new Date(Number(reg_dtm)).toLocaleDateString());
+				$("#UPD_DTM").val(new Date(Number(upd_dtm)).toLocaleDateString());
 			}
 		}
 	});
