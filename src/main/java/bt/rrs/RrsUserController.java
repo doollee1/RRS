@@ -35,7 +35,6 @@ public class RrsUserController {
 	 */
 	@RequestMapping(value = "/rrs/User.do")
 	public String UserManager(ModelMap model) throws Exception{
-		System.out.println("user.do!!");
 		return "/rrs/User";
 	}
 	
@@ -206,6 +205,24 @@ public class RrsUserController {
 	@ResponseBody
 	public BRespData uploadMemberUserExcel(HttpServletRequest req) throws Exception {
 		return rrsUserService.uploadMemberUserExcel(req);		
+	}
+	
+	/**
+	 * 멤버회원 정보 삭제
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/rrs/deleteMemberUserInfo.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData deleteMemberUserInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		List<BMap> paramList = reqData.getParamDataList("gridData");
+		BRespData respData = new BRespData();
+		
+		rrsUserService.deleteMemberUserInfo(paramList);
+		
+		return respData;
 	}
 
 }

@@ -103,7 +103,6 @@ public class RrsUserService {
 		List<MultipartFile> files =  mpRequest.getFiles("fileupload[]");
 		List<BMap> result = new ArrayList<BMap>();
 		
-		System.out.println("uploadMemberUserExcel");
 		for(MultipartFile file : files) {
 			List<BMap> list = upload.excelUpload(file, header);
 			for (BMap bMap : list) {
@@ -112,5 +111,17 @@ public class RrsUserService {
 		}
 		
 		return new BRespData(ResponseStatus.OK, result);
+	}
+	
+	/**
+	 * 멤버회원 정보 삭제
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deleteMemberUserInfo(List<BMap> paramList) throws Exception{
+		for(int i = 0; i < paramList.size(); i++){
+			BMap param = new BMap(paramList.get(i));
+			rrsUserDao.deleteMemberUserInfo(param);
+		}
 	}
 }

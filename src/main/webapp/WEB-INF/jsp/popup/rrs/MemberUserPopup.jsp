@@ -14,7 +14,7 @@
 		<button class='btn btn-default' id='btn_memberUserAddPopup' type='button'>
       		등록
       	</button>
-      	<button class='btn btn-default' id='btn_delete' type='button' onclick=''>
+      	<button class='btn btn-default' id='btn_delete' type='button' onclick='deleteMemberUser()'>
       		삭제
       	</button>
       	<button class='btn btn-default' id='btn_upload_excel' type='button' onclick='uploadExcel();'>
@@ -25,7 +25,7 @@
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
 		<div class="pop_grid_wrap">	
 			<table id="grid_MemberUser"></table>
-			<div id="pager_deptMG"></div>
+			<div id="pager_MemberUser"></div>
 		</div>	
 		<!-- 그리드 끝 -->
 	</div>
@@ -105,7 +105,6 @@ $(function() {
 	});
 	
 	$("#btn_memberUserAddPopup").click(function(e) {
-		console.log("memberUserAddPopup button");
 		var url = "/rrs/MemberUserAddPopup.do";
 		var pid = "p_MemberUserAdd";  //팝업 페이지의 취상위 div ID
 
@@ -240,6 +239,33 @@ function memberUserPopup(param){
 	var pid = "p_MemberUserAdd";  //팝업 페이지의 취상위 div ID
 
 	popupOpen(url, pid, param);
+}
+
+function deleteMemberUser() {
+	var ids = $("#grid_MemberUser").jqGrid("getDataIDs");
+	var gridData = [];
+	var cnt = 0;
+	btGrid.gridSaveRow('grid_MemberUser');
+	for(var i = 0; i < ids.length; i++){
+		if($('#grid_MemberUser_' + ids[i] + '_CHK').prop('checked')){
+			cnt++;
+			gridData.push($("#grid_MemberUser").getRowData(ids[i]));
+		}
+	}
+	
+	if(cnt < 1){
+		alert("삭제할 데이타를 선택하십시오.");
+		return;
+	}
+	
+	if(confirm("삭제하시겠습니까?")){
+		var url = '/rrs/deleteMemberUserInfo.do';
+		var param = {"gridData" : gridData};
+		fn_ajax(url, false, param, function(data, xhr){
+			alert("삭제하였습니다.");
+			popupSearch();
+		});
+	}
 }
 
 </script>

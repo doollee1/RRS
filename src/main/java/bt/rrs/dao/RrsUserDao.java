@@ -92,4 +92,13 @@ public class RrsUserDao extends DBAbstractMapper {
 	public int selectMemberUserInfoCnt(BMap param) throws Exception{
 		return (int)selectByPk("RrsUserMapper.selectMemberUserInfoCnt", param);
 	}
+	
+	/**
+	 * 멤버회원 정보 삭제
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deleteMemberUserInfo(BMap param) throws Exception{
+		delete("RrsUserMapper.deleteMemberUserInfo", param);
+	}
 }
