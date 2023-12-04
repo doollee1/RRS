@@ -105,10 +105,7 @@ $(function() {
 	});
 	
 	$("#btn_memberUserAddPopup").click(function(e) {
-		var url = "/rrs/MemberUserAddPopup.do";
-		var pid = "p_MemberUserAdd";  //팝업 페이지의 취상위 div ID
-
-		popupOpen(url, pid);
+		memberUserPopup();
 	});
 });
 
@@ -238,7 +235,9 @@ function memberUserPopup(param){
 	var url = "/rrs/MemberUserAddPopup.do";
 	var pid = "p_MemberUserAdd";  //팝업 페이지의 취상위 div ID
 
-	popupOpen(url, pid, param);
+	popupOpen(url, pid, param, function(data) {
+		popupSearch();
+	});
 }
 
 function deleteMemberUser() {
