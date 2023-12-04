@@ -71,7 +71,6 @@ function saveMemberUserInfo(){
 	var formData = formIdAllToMap('frmMemberUserInfo');
 	var param = {"param" : formData};
 	var url = "/rrs/saveMemberUserInfo.do"
-	console.log(param)
 		
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
