@@ -12,8 +12,8 @@
 <div id="p_reserveRegi">
 	<form id="frmUserInfo" action="#">
 		<div id="pop_ct_form_wrap">
-			<input type="hidden" name="ISNEW" id="ISNEW" value="1" />
-			<input type="hidden" name="AUTH" id="AUTH" value="1" />
+			<input type="hidden" name="PRC_STS"    id="PRC_STS"           value="" />
+			<input type="hidden" name="PRC_STS_NM" id="PRC_STS_NM" value="" />
 			<table class="pop_tblForm">
 				<colgroup>
 					<col width="20%" />
@@ -122,11 +122,11 @@
 				    <td colspan="5">
 					    <div style="display:inline-flex;">
 						    <s:message code='reservation.roundY'/>
-						    <input type="text" id="reserve_personalDetail1" name="reserve_personalDetail1"/>명
+						    <input type="text" id="R_PERSON" name="R_PERSON" style="width:70px;"/>명
 						    <s:message code='reservation.roundN'/>
-						    <input type="text" id="reserve_personalDetail2" name="reserve_personalDetail2"/>명
+						    <input type="text" id="N_PERSON" name="N_PERSON" style="width:70px;"/>명
 						    <s:message code='reservation.infant'/>
-						    <input type="text" id="reserve_personalDetail3" name="reserve_personalDetail3"/>명
+						    <input type="text" id="K_PERSON" name="K_PERSON" style="width:70px;"/>명
 						</div>
 					</td>
 				</tr>	
@@ -139,6 +139,7 @@
 							</c:forEach>
 						</select>
 						<input type="text" id="PER_NUM_CNT" name="PER_NUM_CNT" style="width:70px;">명
+						<input type="hidden" id="PCK_PROD_SEQ" name="PCK_PROD_SEQ">
 						<button type="button" class="pbtn_default" id="insertPickGbn">등록</button>
 					</td>
 				    <th class="agencyFrm"><s:message code='reservation.lateCheckout'/></th>
@@ -150,16 +151,29 @@
 				<tr class="agencyFrm">
 					<th><s:message code='reservation.addSingle'/></th>
 					<td>
-						<input type="text" id="ADD_R_S_PER" name="ADD_R_S_PER" style="width:70px;"/>명
-						<input type="text" id="ADD_R_S_DAY" name="ADD_R_S_DAY" style="width:70px;"/>일
+						<input type="text" id="ADD_R_S_PER" name="ADD_R_S_PER" style="width:60px;"/>명
+						<input type="text" id="ADD_R_S_DAY" name="ADD_R_S_DAY" style="width:60px;"/>일
+						<input type="text" id="ADD_R_S_CNT" name="ADD_R_S_CNT" style="width:60px;"/>개
 					</td>
 					<th><s:message code='reservation.addPremium'/></th>
 					<td>
-						<input type="text" id="ADD_R_P_PER" name="ADD_R_P_PER" style="width:70px;"/>명
-					    <input type="text" id="ADD_R_P_DAY" name="ADD_R_P_DAY" style="width:70px;"/>일
+						<input type="text" id="ADD_R_P_PER" name="ADD_R_P_PER" style="width:60px;"/>명
+					    <input type="text" id="ADD_R_P_DAY" name="ADD_R_P_DAY" style="width:60px;"/>일
+					    <input type="text" id="ADD_R_P_CNT" name="ADD_R_P_CNT" style="width:60px;"/>개
 					</td>
-					
 				</tr>
+				<tr>
+				    <th>트윈/더블</th>
+					<td>
+						<input type="text" id="CNT_D1" name="CNT_D1" style="width:80px;"/>개
+						<input type="text" id="CNT_D2" name="CNT_D2" style="width:80px;"/>개
+					</td>
+					<th>프리미엄 트윈/더블</th>
+					<td>
+						<input type="text" id="CNT_P1" name="CNT_P1" style="width:80px;"/>개
+					    <input type="text" id="CNT_P2" name="CNT_P2" style="width:80px;"/>개
+					</td>
+				</tr>	
 				<tr>
 				    <th><s:message code='reservation.arrPickup'/></th>
 				    <td>
@@ -231,58 +245,6 @@
 $(function() {
 	var seq;
 	var req_dt;
-	
-	$('#REQ_DT').val($.datepicker.formatDate('yy.mm.dd', new Date())).attr("readonly" , true);
-	$('#MEM_GBN').change(function() {
-		if($(this).val() == '04'){ // 교민 03 / 에이전시 04
-		    $(".agencyFrm").hide();
-		}else{
-		    $(".agencyFrm").show();
-		}
-	});
-	
-	$("#insertPickGbn").click(function() {
-	    var url = "/reserve/pickUpGbnPopup.do";
-	    var pid = "p_pickUpGbnPopup";
-	    var param = { "PICK_GBN" : $("#PICK_GBN").val()
-	    		    , "PER_NUM"  : $("#PER_NUM_CNT").val()
-	    		    , "SEQ"      : seq
-			        , "REQ_DT"   : req_dt
-	                };
-	    
-	    console.log(param)
-		popupOpen(url, pid, param, function(data) {
-		});
-	});
-	
-    $("#btn_create").click(function(){
-    	var url = "/reserve/invoicePopup.do";
-	    var pid = "p_invoicePopup";
-	    var param = {"SEQ"    : seq
-		           , "REQ_DT" : req_dt
-		           };
-		popupOpen(url, pid, param, function(data) {
-		});
-	});
-    
-    function fn_dataSet(data){
-    	
-    	//미팅샌딩 셋팅
-    	if(!fn_empty(data.PICK_GBN)){
-	    	if(data.PICK_GBN == "01"){
-	    		$("#PICK_GBN"     ).attr("disabled", false);
-	    		$("#insertPickGbn").text("등록");
-	    		$("#PER_NUM_CNT"  ).val("0");
-	    		$("#PER_NUM_CNT"  ).attr("readonly", false);
-	    	}else{
-	    		$("#PICK_GBN"     ).attr("disabled", true);
-	    		$("#insertPickGbn").text("상세");
-	       		$("#PER_NUM_CNT"  ).val(data.PER_NUM);
-	    		$("#PER_NUM_CNT"  ).attr("readonly", true);
-	    	}
-		}
-    }
-	
 	$('#p_reserveRegi').dialog({
 		title :'<s:message code='reservation.registration'/>',
 		autoOpen : false,
@@ -303,14 +265,22 @@ $(function() {
 					$(this).dialog("close");
 				}
 			},
+			'<s:message code='reservation.chgState'/>' : {
+				text: '<s:message code='reservation.chgState'/>',
+				click: function() {
+					changeStatus();
+				}
+			},
+			
 
 		},
 		close : function() {
 			popupClose($(this).attr('id')); /* 필수로 들어가야함 */
 		},
 		open : function(a) {
-			seq = $(this).data("SEQ");
+			seq    = $(this).data("SEQ");
 			req_dt =  $(this).data("REQ_DT");
+			fn_init();
 		    if(fn_empty(seq || req_dt)){ //신규
 		    }else{ // 상세
 		    	
@@ -322,10 +292,6 @@ $(function() {
 					if(data.MESSAGE != "OK"){
 						alert("ajax 통신 error!");
 					}else{
-						$.each(data.result , function(key , val){
-							if(key == "LATE_CHECK_OUT") $('[name='+ key +'][value='+val+']').prop("checked" , true); 
-							else $('[name='+ key +']').val (val);
-						});
 						fn_dataSet(data.result)
 					}
 				});
@@ -348,6 +314,100 @@ $(function() {
 		
 		}
 	});
+    
+	$('#MEM_GBN').change(function() {
+		if($(this).val() == '04'){ // 교민 03 / 에이전시 04
+		    $(".agencyFrm").hide();
+		}else{
+		    $(".agencyFrm").show();
+		}
+	});
+	
+	function fn_init(){
+		$('#REQ_DT').val($.datepicker.formatDate('yy.mm.dd', new Date())).attr("readonly" , true);
+	}
+	
+	
+	function fn_dataSet(data){
+    	$.each(data, function(key , val){
+    		$('[name='+ key +']').val (val);
+	    });
+    	
+    	//미팅샌딩 셋팅
+    	if(!fn_empty(data.PICK_GBN)){
+	    	if(data.PICK_GBN == "01"){
+	    		$("#PICK_GBN"     ).attr("disabled", false);
+	    		$("#insertPickGbn").text("등록");
+	    		$("#PER_NUM_CNT"  ).val("0");
+	    		$("#PER_NUM_CNT"  ).attr("readonly", false);
+	    	}else{
+	    		$("#PICK_GBN"     ).attr("disabled", true);
+	    		$("#insertPickGbn").text("상세");
+	       		$("#PER_NUM_CNT"  ).val(data.PER_NUM);
+	    		$("#PER_NUM_CNT"  ).attr("readonly", true);
+	    	}
+		}
+    	
+        //LATE 체크아웃 셋팅
+    	if(!fn_empty(data.LATE_CHECK_OUT)){
+    		$('[name=LATE_CHECK_OUT][value='+data.LATE_CHECK_OUT+']').prop("checked", true);
+    	}
+    }
+	
+	function changeStatus(){
+		var url = "/reserve/chgStatusPopup.do";
+	    var pid = "p_changeStatusPopup";
+	    var param = {"SEQ"        : seq
+		           , "REQ_DT"     : req_dt
+		           , "PRC_STS"    : parseInt($("#PRC_STS").val())
+		           , "PRC_STS_NM" : $("#PRC_STS_NM").val()
+		           };
+		popupOpen(url, pid, param, function(data) {
+			
+		});
+	}
+	
+	$("#btn_create").click(function(){
+    	var url = "/reserve/InvoicePopup.do";
+	    var pid = "p_invoicePopup";
+	    var param = {"SEQ"     : seq
+		           , "REQ_DT"  : req_dt
+		           , "MEM_GBN" : $("#MEM_GBN option:selected").val()
+		           };
+		popupOpen(url, pid, param, function(data) {
+			
+		});
+	});
+	
+	$("#insertPickGbn").click(function() {
+	    var url = "/reserve/pickUpGbnPopup.do";
+	    var pid = "p_pickUpGbnPopup";
+	    var param = { "PICK_GBN"     : $("#PICK_GBN").val()
+	    		    , "PER_NUM"      : $("#PER_NUM_CNT").val()
+	    		    , "SEQ"          : seq
+			        , "REQ_DT"       : req_dt
+			        , "PCK_PROD_SEQ" : $("#PCK_PROD_SEQ").val()
+			        , "PRC_STS"      : $("#PRC_STS").val()
+	                };
+	    
+		popupOpen(url, pid, param, function(data) {
+			if(!fn_empty(data)){
+				$("#PER_NUM_CNT").val(data.PER_NUM);
+				$("#PICK_GBN"   ).val(data.PICK_GBN);
+				
+				if(data.PICK_GBN == "01"){
+					$("#PICK_GBN"     ).attr("disabled", false);
+					$("#PER_NUM_CNT"  ).attr("readonly", false);
+					$("#insertPickGbn").text("등록");
+				}else{
+					$("#PICK_GBN"     ).attr("disabled", true);
+					$("#PER_NUM_CNT"  ).attr("readonly", true);
+					$("#insertPickGbn").text("상세");
+				}
+			}
+		});
+	});
+	
 });
 
 
