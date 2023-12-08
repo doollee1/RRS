@@ -236,6 +236,22 @@
 			}
 		});
 	}
+
+	function openCustomerPopUp(custVal) {
+		var url = "/customer/customerSearchPopup.do";
+		var pid = "CustomerSearchPopup"; //팝업 페이지의 취상위 div ID
+		var param = {
+			'CUST_CD' : custVal
+		};
+
+		popupOpen(url, pid, param, function(e, selecedData) {
+			if (!fn_empty(selecedData)) {
+				$("#SOLD_CUST_CD").val(selecedData.CUST_CD);
+				$("#SOLD_CUST_NM").text(selecedData.CUST_NM);
+			}
+		});
+	}
+
 	function cAdd() {
 		reservePopup();
 	}
