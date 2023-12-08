@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%
 /**
  * @Name : ReserveRegiPopup
@@ -18,7 +19,6 @@
 		<div id="divBtn">
 			<button class="btn btn-default" id="btn_preview"><i class="fa fa-cube"></i><s:message code='button.preview'/></button>
 			<button class="btn btn-default" id="btn_send"><i class="fa fa-phone"></i><s:message code='button.send'/></button>
-			<%-- <button class="btn btn-default" id="btn_modify"><i class="fa fa-edit"></i><s:message code='button.modify'/></button> --%>
 			<button class="btn btn-default" id="btn_save"><i class="fa fa-save"></i><s:message code='button.save'/></button>
 			<button class="btn btn-default" id="btn_add"><i class="fa fa-plus-square-o"></i><s:message code='button.add'/></button>
 			<button class="btn btn-default" id="btn_del"><i class="fa fa-trash"></i><s:message code='button.delete'/></button>
@@ -38,6 +38,7 @@
 $(function() {
 	var seq;
 	var req_dt;
+	var mem_gbn;
 	$('#p_invoicePopup').dialog({
 		title :'<s:message code='invoice.invoiceTitle'/>',
 		autoOpen : false,
@@ -51,6 +52,7 @@ $(function() {
 			createGrid();
 			seq    = $(this).data("SEQ");
 			req_dt =  $(this).data("REQ_DT");
+			mem_gbn = $(this).data("MEM_GBN");
 			cSearch();
 			gridColspan();
 		}
@@ -59,22 +61,28 @@ $(function() {
 	function cSearch(currentPage){
 		var url = "/reserve/invoiceSelectList.do";
 		var formData = formIdAllToMap('frmSearch');
-		var param = {"SEQ" : seq
-				   , "REQ_DT" : req_dt
+		var param = {"SEQ"     : seq
+				   , "REQ_DT"  : req_dt
+				   , "MEM_GBN" : mem_gbn
 				   };
 		fn_ajax(url, true, param, function(data, xhr){
 			$.each(data.result , function(i , val){
 				val.TOT_AMT = parseInt(val.TOT_AMT).toLocaleString();
 				val.PER_AMT = parseInt(val.PER_AMT).toLocaleString();
 				val.STATUS_V = "R";
-			})
+			});
 			reloadGrid("invoiceGrid", data.result);
 			
 			var colModel = $("#invoiceGrid").jqGrid('getGridParam', 'colModel'); 
 			for(var i =0; i < data.result.length; i++){
 				jQuery("#invoiceGrid").setCell(i+1);
 			}
-		});
+			var obj = new Object();
+			$.each(data.selectList , function(i , v){
+				obj[v.CODE] = v.CODE;
+			});
+			$("#invoiceGrid").setColProp('ITEM_CD', { editoptions: { value:obj}});
+	    });
 	}
 	
 	function gridColspan(){
@@ -124,9 +132,9 @@ $(function() {
 				               }
 						      }
 						  }
-						, { name: 'ITEM_CD',  width : 150, align: 'center' , editable:true, edittype:"select" ,  editoptions:{value:'${selectList}'}}
+						, { name: 'ITEM_CD',  width : 150, align: 'center', editable:true , edittype:"select"}
 						, { name: 'ITEM_NM',  width : 150, align: 'center' , editable:true, editoptions:{maxlength:100}}
-						, { name: 'AMT_SIGN', width : 50 , align: 'center' , editable:true, edittype:"select" ,  editoptions:{value:{'$':'$','&#8361;':'&#8361;'}}} 
+						, { name: 'AMT_SIGN', width : 50 , align: 'center' , editable:true, edittype:"select" ,  editoptions:{value:{"\\" : "\\" , "$" : "$"}}} 
 						, { name: 'PER_AMT',  width : 70 , align: 'center' , editable:true, editoptions:{    
 				            dataInit: function(element) {
 				                $(element).keyup(function(){
@@ -151,7 +159,7 @@ $(function() {
 				               }
 				              }
                            }
-						, { name: 'UNIT_DAY', width : 50 , align: 'center'  , editable:true, edittype:"select" ,  editoptions:{value:{1:'일',2:'회'}}}
+						, { name: 'UNIT_DAY', width : 50 , align: 'center'  , editable:true, edittype:"select" , editoptions:{value:'${REF_CHR3}'}}
 						, { name: 'USE_NUM'	,  width : 30 , align: 'center' , editable:true, editoptions:{    
 				            dataInit: function(element) {
 				                $(element).keyup(function(){
@@ -164,7 +172,7 @@ $(function() {
 				               }
 				              }
                            }
-						, { name: 'UNIT_NUM', width : 50 , align: 'center' ,  editable:true,edittype:"select" ,  editoptions:{value:{1:'개',2:'명'}}}
+						, { name: 'UNIT_NUM', width : 50 , align: 'center' ,  editable:true,edittype:"select" ,  editoptions:{value:'${REF_CHR4}'}}
 						, { name: 'TOT_AMT',  width : 100, align: 'center' ,  editoptions:{readonly: true}}
 						, { name: 'REG_DTM',  width : 100, align: 'center' ,  editoptions:{readonly: true}}
 						, { name: 'UPD_DTM',  width : 100, align: 'center' ,  editoptions:{readonly: true}}
@@ -231,6 +239,7 @@ $(function() {
     		alert("<s:message code='errors.selectdel' arguments='행(을)' javaScriptEscape='false'/>");
 			return;
 		}
+		var url = '/reserve/deleteInvoiceManager.do';
 		param = { "REQ_DT"  : req_dt
 				, "SEQ"     : seq
 				, "ITEM_CD" : $("#"+rowId+"_ITEM_CD").val()
