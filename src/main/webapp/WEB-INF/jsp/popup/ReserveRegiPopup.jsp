@@ -271,8 +271,6 @@ $(function() {
 					changeStatus();
 				}
 			},
-			
-
 		},
 		close : function() {
 			popupClose($(this).attr('id')); /* 필수로 들어가야함 */

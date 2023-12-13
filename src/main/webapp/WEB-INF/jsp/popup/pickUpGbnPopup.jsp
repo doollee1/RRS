@@ -151,6 +151,7 @@ $(function() {
 			fn_readonly(false);
 			$("#CAR_NUM1").val("1");
 		}
+		
 		$('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').prop("selected" , true)
 		$('#PROD_SEQ1 option[data='+thisVal+']').show();
 		$('#PROD_SEQ1 option').not('[data='+thisVal+']').hide();

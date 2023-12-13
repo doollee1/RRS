@@ -158,7 +158,6 @@
 		    {name : 'STATE_NM'  , width : 100 , align : 'center', ref : 'linkq'}, 
 		    {name : 'PROD_SEQ'  , width : 100 , align : 'center', ref : 'linkq', hidden : true} 
 		    ];
-
 		var gSetting = {
 			pgflg : true,
 			exportflg : true, //엑셀, pdf 출력 버튼 노출여부

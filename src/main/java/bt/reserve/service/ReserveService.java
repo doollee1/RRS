@@ -43,7 +43,6 @@ public class ReserveService {
 	public List<BMap> selectGetCommonCode(BMap param) throws Exception {
 		return reserveDao.selectGetCommonCode(param);
 	}
-	
 
 	/**
 	 * 공통코드 리스트 조회1

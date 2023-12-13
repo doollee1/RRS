@@ -21,6 +21,7 @@ public class ReserveDao extends DBAbstractMapper {
 	public List<BMap> reserveSelectList(BMap param) throws Exception {
 		return list("ReserveMapper.reserveSelectList", param);
 	}
+	
 	/**
 	 * 공통코드 리스트 가져오기
 	 * @param param

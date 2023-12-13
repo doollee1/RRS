@@ -13,6 +13,13 @@ public class ReserveController {
 	@Resource	
 	private ReserveService reserveService;
 	
+	/**
+	 * 예약리스트 화면 호출
+	 * @param model
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/reserve/reserveList.do")
 	public String reserveList(ModelMap model,HttpServletRequest request) throws Exception {
 		BMap param = new BMap();

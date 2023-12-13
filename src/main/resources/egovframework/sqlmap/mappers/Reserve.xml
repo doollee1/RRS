@@ -270,6 +270,7 @@
             ORDER BY T1.ORDER
         <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
+	
 	<select id="InvoiceSelectBoxList" parameterType="BMap" resultType="CodeVO">
 	    SELECT T3.CODE AS VALUE
 	         , T3.CODE AS CODE	
