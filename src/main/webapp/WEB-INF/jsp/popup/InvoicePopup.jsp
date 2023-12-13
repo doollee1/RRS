@@ -50,8 +50,8 @@ $(function() {
 		},
 		open : function() {
 			createGrid();
-			seq    = $(this).data("SEQ");
-			req_dt =  $(this).data("REQ_DT");
+			seq     = $(this).data("SEQ");
+			req_dt  = $(this).data("REQ_DT");
 			mem_gbn = $(this).data("MEM_GBN");
 			cSearch();
 			gridColspan();
@@ -159,7 +159,7 @@ $(function() {
 				               }
 				              }
                            }
-						, { name: 'UNIT_DAY', width : 50 , align: 'center'  , editable:true, edittype:"select" , editoptions:{value:'${REF_CHR3}'}}
+						, { name: 'STR_UNIT_DAY', width : 50 , align: 'center'  , editable:true, edittype:"select" , editoptions:{value:'${REF_CHR3}'}}
 						, { name: 'USE_NUM'	,  width : 30 , align: 'center' , editable:true, editoptions:{    
 				            dataInit: function(element) {
 				                $(element).keyup(function(){
@@ -172,7 +172,7 @@ $(function() {
 				               }
 				              }
                            }
-						, { name: 'UNIT_NUM', width : 50 , align: 'center' ,  editable:true,edittype:"select" ,  editoptions:{value:'${REF_CHR4}'}}
+						, { name: 'STR_UNIT_NUM', width : 50 , align: 'center' ,  editable:true,edittype:"select" ,  editoptions:{value:'${REF_CHR4}'}}
 						, { name: 'TOT_AMT',  width : 100, align: 'center' ,  editoptions:{readonly: true}}
 						, { name: 'REG_DTM',  width : 100, align: 'center' ,  editoptions:{readonly: true}}
 						, { name: 'UPD_DTM',  width : 100, align: 'center' ,  editoptions:{readonly: true}}
@@ -233,7 +233,7 @@ $(function() {
 	});
 	
 	$("#btn_del").on("click" , function(){
-		var rowId = $('#invoiceGrid').jqGrid('getGridParam', 'selrow');
+		var rowId   = $('#invoiceGrid').jqGrid('getGridParam', 'selrow');
 		var rowData = $("#invoiceGrid").getRowData(rowId);
 		if(rowId == "" || rowId == null){
     		alert("<s:message code='errors.selectdel' arguments='행(을)' javaScriptEscape='false'/>");

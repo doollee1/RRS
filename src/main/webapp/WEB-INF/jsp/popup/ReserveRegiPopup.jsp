@@ -12,7 +12,7 @@
 <div id="p_reserveRegi">
 	<form id="frmUserInfo" action="#">
 		<div id="pop_ct_form_wrap">
-			<input type="hidden" name="PRC_STS"    id="PRC_STS"           value="" />
+			<input type="hidden" name="PRC_STS"    id="PRC_STS"    value="" />
 			<input type="hidden" name="PRC_STS_NM" id="PRC_STS_NM" value="" />
 			<table class="pop_tblForm">
 				<colgroup>
@@ -230,7 +230,7 @@
 				    <th><s:message code='reservation.weekChRound'/></th>
 				    <td colspan="2">
 				    <div style="display:inline-flex;" >
-						<input type="radio"  name="RND_CHG_YN" value="Y" checked>토요일 오전
+						<input type="radio"  name="RND_CHG_YN" value="Y">토요일 오전
 						<input type="radio"  name="RND_CHG_YN" value="N">일요일 오전
 						※ 미체크시 기본은 오후임.
 					</div>

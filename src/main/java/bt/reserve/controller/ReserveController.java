@@ -1,15 +1,10 @@
 package bt.reserve.controller;
-import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 import bt.btframework.utils.BMap;
-import bt.common.service.CommonService;
 import bt.reserve.service.ReserveService;
 
 @Controller
@@ -17,7 +12,6 @@ public class ReserveController {
 
 	@Resource	
 	private ReserveService reserveService;
-	
 	
 	@RequestMapping(value = "/reserve/reserveList.do")
 	public String reserveList(ModelMap model,HttpServletRequest request) throws Exception {
@@ -136,7 +130,4 @@ public class ReserveController {
 	public String chgStatusPopup(ModelMap model,HttpServletRequest request) throws Exception{
 		return "/popup/chgStatusPopup";
 	}
-	
-	
-	
 }

@@ -26,11 +26,6 @@ public class ReserveRestController {
 	@Resource
 	private ReserveService reserveService;
 	
-	/*@RequestMapping(value = "/reserveList.do")
-	public ModelAndView reserveList() throws Exception {
-		return new ModelAndView("/reserve/Reserve");
-	}*/
-	
 	/**
 	 * 예약 현황 리스트 조회
 	 * @param reqData
@@ -90,7 +85,6 @@ public class ReserveRestController {
 		param.put("REF_CHR1"  , (String)reqData.get("MEM_GBN"));
 		param.put("ORDER_GBN" , 1);
 		
-		
 		respData.put("selectList"   , reserveService.selectGetCommonCode(param));
 		return respData;
 	}
@@ -117,7 +111,6 @@ public class ReserveRestController {
 		if(!reserveService.saveInvoiceManager(paramData , detail)){
 			respData.put("dup", "Y");
 		};
-		
 		return respData;
 	}
 	
@@ -142,7 +135,6 @@ public class ReserveRestController {
 		if(!reserveService.deleteInvoiceManager(paramData)){
 			respData.put("resultCd", "-1");
 		};
-		
 		return respData;
 	}
 	
@@ -162,7 +154,7 @@ public class ReserveRestController {
 		paramData.put("BAS_YY"     , String.valueOf( reqData.get("BAS_YY")));
 		paramData.put("SSN_GBN"    , (String) reqData.get("SSN_GBN"));
 		paramData.put("BAS_YY_SEQ" , Integer.parseInt(String.valueOf(reqData.get("BAS_YY_SEQ"))));
-		respData.put("result", reserveService.selectPrdInfo(paramData));
+		respData.put("result"      , reserveService.selectPrdInfo(paramData));
 		return respData;
 	}
 	
@@ -233,7 +225,6 @@ public class ReserveRestController {
 		if(!reserveService.updateReserveStatus(paramData)){
 			respData.put("dup", "Y");
 		};
-		
 		return respData;
 	}
 	

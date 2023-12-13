@@ -11,7 +11,6 @@
 	<%-- <c:param name="progcd" value="SalesReport" /> --%>
 	<c:param name="progcd" value="Reserve" />
 </c:import>
-
 <div id="ctu_wrap">	
 	<div id="ctm_mg_wrap">
 		<div class="ct_grid_top_wrap">
@@ -144,62 +143,21 @@
 				'<s:message code="reservation.totAmount"/>',
 				'<s:message code="reservation.flight"/>',
 				'<s:message code="reservation.state"/>', '상품순번"/>' ];
-		var colModel = [ {
-			name : 'SEQ',
-			width : 70,
-			align : 'center'
-		}, {
-			name : 'MEM_NM',
-			width : 70,
-			align : 'center'
-		}, {
-			name : 'REQ_DT',
-			width : 100,
-			align : 'center'
-		}, {
-			name : 'REQ_HAN_NM',
-			width : 70,
-			align : 'center'
-		}, {
-			name : 'CONTENTS',
-			width : 70,
-			align : 'center'
-		}, {
-			name : 'CHK_IN_DT',
-			width : 70,
-			align : 'center'
-		}, {
-			name : 'CHK_OUT_DT',
-			width : 150,
-			align : 'center'
-		}, {
-			name : 'TOT_PERSON',
-			width : 150,
-			align : 'center'
-		}, {
-			name : 'DEP_AMT',
-			width : 70,
-			align : 'center'
-		}, {
-			name : 'TOT_AMT',
-			width : 100,
-			align : 'center'
-		}, {
-			name : 'FLIGHT_OUT',
-			width : 100,
-			align : 'center'
-		}, {
-			name : 'STATE_NM',
-			width : 100,
-			align : 'center',
-			ref : 'linkq'
-		}, {
-			name : 'PROD_SEQ',
-			width : 100,
-			align : 'center',
-			ref : 'linkq',
-			hidden : true
-		} ];
+		var colModel = [ 
+		    {name : 'SEQ'       , width : 70  , align : 'center'}, 
+		    {name : 'MEM_NM'    , width : 70  , align : 'center'}, 
+		    {name : 'REQ_DT'    , width : 100 , align : 'center'}, 
+		    {name : 'REQ_HAN_NM', width : 70  , align : 'center'}, 
+		    {name : 'CONTENTS'  , width : 70  , align : 'center'}, 
+		    {name : 'CHK_IN_DT' , width : 70  , align : 'center'}, 
+		    {name : 'CHK_OUT_DT', width : 150 , align : 'center'}, 
+		    {name : 'TOT_PERSON', width : 150 , align : 'center'}, 
+		    {name : 'DEP_AMT'   , width : 70  , align : 'center'}, 
+		    {name : 'TOT_AMT'   , width : 100 , align : 'center'}, 
+		    {name : 'FLIGHT_OUT', width : 100 , align : 'center'}, 
+		    {name : 'STATE_NM'  , width : 100 , align : 'center', ref : 'linkq'}, 
+		    {name : 'PROD_SEQ'  , width : 100 , align : 'center', ref : 'linkq', hidden : true} 
+		    ];
 
 		var gSetting = {
 			pgflg : true,
@@ -255,7 +213,6 @@
 	function cAdd() {
 		reservePopup();
 	}
-
 	function reservePopup(param) {
 		var url = "/reserve/reserveRegi.do";
 		var pid = "p_reserveRegi"; //팝업 페이지의 취상위 div ID
