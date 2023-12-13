@@ -268,9 +268,10 @@
 			
 // 			var colNms = excelToMap();
 			
-// 			var param = {"CUST_CD": 	$("#CUST_CD").val()
-// 					    ,"CUST_NM": 	$("#CUST_NM").val()
-// 					    ,"SEARCH_NM1":  $("#SEARCH_NM1").val()
+ 			var param = {"SEQ": 	"6"
+ 					    ,"REQ_DT": 	"20231116"
+ 					    ,"WK_GBN":  "R"
+ 					    }
 // 					    ,"SEARCH_NM2":  $("#SEARCH_NM2").val()
 // 					    ,"SALES_ORG_CD":$("#SALES_ORG_CD").val()
 // 					    ,"DISTRB_CH":   $("#DISTRB_CH").val()
@@ -280,7 +281,7 @@
 // 					    ,"CUST_GR":   	$("#CUST_GR").val()
 // 					    ,'COL_NM':	   colNms}
 // 		};
-		fn_formSubmit('/report/retrieveCustomerReportAll.do', {});
+		fn_formSubmit('/report/retrieveCustomerReportAll.do', param);
 	}
 	
 	function excelToMap() {

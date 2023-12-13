@@ -37,20 +37,38 @@ public class MailSendService {
 //		String atchmnFilePath = param.getString("EMAIL_ATACH_PATH"); // 첨부파일경로		
 
 		try {
-			
-			Email email = new SimpleEmail();
-			email.setHostName(env.getProperty("EMAIL.HOST"));
-			email.setSmtpPort(Integer.parseInt(env.getProperty("EMAIL.PORT")));
-			email.setSslSmtpPort(env.getProperty("EMAIL.PORT"));
-			email.setAuthenticator(new DefaultAuthenticator(env.getProperty("EMAIL.FROM"), "skEnffl!2#4")); // common.properties 
-			email.setSSLOnConnect(true);
-			
-			email.setFrom(env.getProperty("EMAIL.FROM"));
-			email.setSubject("TestMail");
-			email.setMsg("This is a test mail ...");
-			
-			email.addTo("dev@doollee.co.kr");
-			
+		    String fileNm = (String) param.get("FILE_NM");
+		    String fileFullNm = (String) param.get("FILE_FULL_NM");
+		    String toEmail = (String) param.get("TO_EMAIL");
+		    
+		    EmailAttachment attachment = new EmailAttachment();
+		    attachment.setPath(fileFullNm);
+		    attachment.setDisposition(EmailAttachment.ATTACHMENT);
+		    attachment.setDescription("첨부 관련 TEST입니다");
+		    attachment.setName(fileNm); // 
+
+		    // 기본 메일 정보를 생성합니다
+		    MultiPartEmail email = new MultiPartEmail();
+		    email.setCharset("euc-kr");// 한글 인코딩
+		    email.setHostName(env.getProperty("EMAIL.HOST"));
+            email.setSmtpPort(Integer.parseInt(env.getProperty("EMAIL.PORT")));
+            email.setSslSmtpPort(env.getProperty("EMAIL.PORT"));
+            email.setAuthenticator(new DefaultAuthenticator(env.getProperty("EMAIL.FROM"), "skEnffl!2#4")); // common.properties 
+            email.setSSLOnConnect(true);
+            
+		    email.addTo(toEmail);
+		    email.setFrom(env.getProperty("EMAIL.FROM"));
+		    
+		    email.setSubject("인보이스 첨부 파일 TEST입니다");
+		    email.setMsg("인보이스 첨부...");
+		    //email.setContent(aObject, aContentType);
+
+		    // 생성한 attachment를 추가합니다
+		    email.attach(attachment);
+
+		    // 메일을 전송합니다
+		    email.send();
+
 //			email.setFrom(sender);
 //			email.addTo(receiver);
 //			email.addCc(carbonCopy);
