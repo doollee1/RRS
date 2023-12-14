@@ -44,21 +44,29 @@ public class ReserveController {
 	public String ReserveRegiPopup(ModelMap model,HttpServletRequest request) throws Exception{
 		BMap param = new BMap();
 		param.put("HEAD_CD", 500030);
+
 		BMap param2 = new BMap();
 		param2.put("HEAD_CD" , 500050);
+		
 		BMap param3 = new BMap();
 		param3.put("HEAD_CD" , 500070);
+		
 		BMap param4 = new BMap();
 		param4.put("HEAD_CD" , 500120);
+		
 		BMap param5 = new BMap();
 		param5.put("HEAD_CD" , 500000);
 		param5.put("REF_CHR1", 01);
+		
+		BMap param6 = new BMap();
+		param6.put("HEAD_CD" , 500110);
 
 		model.addAttribute("mgn_gbn"  , reserveService.selectGetCommonCode(param));
 		model.addAttribute("region"   , reserveService.selectGetCommonCode(param2));
 		model.addAttribute("roomtype" , reserveService.selectGetCommonCode(param3));
 		model.addAttribute("agency"   , reserveService.selectGetCommonCode(param4));
 		model.addAttribute("prod_cd"  , reserveService.selectGetCommonCode(param5));
+		model.addAttribute("cartype"  , reserveService.selectGetCommonCode(param6));
 			
 		return "/popup/ReserveRegiPopup";
 	}

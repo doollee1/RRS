@@ -14,6 +14,7 @@
 		<div id="pop_ct_form_wrap">
 			<input type="hidden" name="PRC_STS"    id="PRC_STS"    value="" />
 			<input type="hidden" name="PRC_STS_NM" id="PRC_STS_NM" value="" />
+			<input type="hidden" name="EMAIL"      id="EMAIL"      value="" />
 			<table class="pop_tblForm">
 				<colgroup>
 					<col width="20%" />
@@ -178,11 +179,19 @@
 				    <th><s:message code='reservation.arrPickup'/></th>
 				    <td>
 						<select id="PICK_IN" name="PICK_IN" class="cmc_combo" style="width:62%;">
+						    <option value="">--<s:message code='system.select'/>--</option>
+						    <c:forEach var="i" items="${cartype}">
+								<option value="${i.CODE}">${i.CODE_NM}</option>
+							</c:forEach>
 						</select>
 					</td>
 					<th><s:message code='reservation.depPickup'/></th>
 				    <td>
 						<select id="PICK_OUT" name="PICK_OUT" class="cmc_combo" style="width:62%;">
+						    <option value="">--<s:message code='system.select'/>--</option>
+						    <c:forEach var="i" items="${cartype}">
+								<option value="${i.CODE}">${i.CODE_NM}</option>
+							</c:forEach>
 						</select>
 					</td>
 				</tr>
@@ -371,6 +380,7 @@ $(function() {
 	    var param = {"SEQ"     : seq
 		           , "REQ_DT"  : req_dt
 		           , "MEM_GBN" : $("#MEM_GBN option:selected").val()
+		           , "EMAIL"   : $("#EMAIL").val()
 		           };
 		popupOpen(url, pid, param, function(data) {
 			

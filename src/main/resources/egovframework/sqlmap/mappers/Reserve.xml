@@ -225,7 +225,9 @@
 	         , NVL(T3.PAY_AMT,0)                      AS PAY_AMT           /* 입금금액               */
 	         , NVL(T3.TOT_AMT,0)                      AS TOT_AMT           /* 총액                   */
 	        -->
-	      FROM TB_REQ_BOOKING_M T1 LEFT JOIN TB_REQ_PICKUP T2
+	         , T4.EMAIL                               AS EMAIL             /* USR EMAIL              */
+	      FROM TB_REQ_BOOKING_M T1 
+	 LEFT JOIN TB_REQ_PICKUP T2
 	        <!--  , TB_REQ_FEE T3  -->
 	        ON T2.REQ_DT  = T1.REQ_DT
 	       AND T2.REQ_SEQ = T1.SEQ
@@ -233,6 +235,8 @@
 	       AND T3.REQ_DT  = T1.REQ_DT
 	       AND T3.REQ_SEQ = T1.SEQ
 	       -->
+	 LEFT JOIN TB_MEMBER T4
+            ON T4.USER_ID = T1.USER_ID
 	       ) T3
 	 WHERE 1 = 1
 	   AND T3.SEQ    = #{SEQ}

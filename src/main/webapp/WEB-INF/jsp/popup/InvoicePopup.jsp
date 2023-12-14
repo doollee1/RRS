@@ -17,8 +17,8 @@
 			<span id="title1"></span><span id="title2"></span><span id="title3"></span>
 		</div>
 		<div id="divBtn">
-			<button class="btn btn-default" id="btn_preview"><i class="fa fa-cube"></i><s:message code='button.preview'/></button>
-			<button class="btn btn-default" id="btn_send"><i class="fa fa-phone"></i><s:message code='button.send'/></button>
+			<button class="btn btn-default" id="btn_preview" onclick='cExcelSample(this);'><i class="fa fa-cube"></i><s:message code='button.preview'/></button>
+			<button class="btn btn-default" id="btn_send"    onclick='cExcelSample(this);'><i class="fa fa-phone"></i><s:message code='button.send'/></button>
 			<button class="btn btn-default" id="btn_save"><i class="fa fa-save"></i><s:message code='button.save'/></button>
 			<button class="btn btn-default" id="btn_add"><i class="fa fa-plus-square-o"></i><s:message code='button.add'/></button>
 			<button class="btn btn-default" id="btn_del"><i class="fa fa-trash"></i><s:message code='button.delete'/></button>
@@ -39,6 +39,8 @@ $(function() {
 	var seq;
 	var req_dt;
 	var mem_gbn;
+	var email;
+	
 	$('#p_invoicePopup').dialog({
 		title :'<s:message code='invoice.invoiceTitle'/>',
 		autoOpen : false,
@@ -53,6 +55,7 @@ $(function() {
 			seq     = $(this).data("SEQ");
 			req_dt  = $(this).data("REQ_DT");
 			mem_gbn = $(this).data("MEM_GBN");
+			email   = $(this).data("EMAIL");
 			cSearch();
 			gridColspan();
 		}
@@ -255,6 +258,17 @@ $(function() {
 			});
 		}
 	});
+	
+	//공통버튼 - 엑셀 다운 클릭
+	window.cExcelSample = function(data) {
+		var param = { "REQ_DT"  : req_dt
+				    , "SEQ"     : seq
+				    , "EMAIL"   : email
+				    , "MEM_GBN" : mem_gbn
+		}
+		if(data.id == "btn_preview") param.WK_GBN = "R";
+		fn_formSubmit('/report/retrieveCustomerReportAll.do', param);
+	}
 	
 	$("#invoiceGrid").bind("change , keyup" , function(){
 		var changeRowId = $('#invoiceGrid').jqGrid('getGridParam', 'selrow');
