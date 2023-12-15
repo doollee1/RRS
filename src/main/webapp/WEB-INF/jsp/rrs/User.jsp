@@ -242,6 +242,11 @@
 			});
 		}
 	}
+	
+	//grid checkbox event
+	function grid_cbox_onclick(gid, rowid, colkey) {
+		
+	}
 </script>
 
 <c:import url="../import/frameBottom.jsp" />
