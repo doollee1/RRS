@@ -104,6 +104,10 @@ $(function() {
 		$('#invoiceGrid').jqGrid("setLabel", "UNIT_NUM", "", "", {style: "display: none"});
 	}
 	
+	function chgEvnt(data){
+		console.log(data);
+	}
+	
 	function createGrid(){
 		var colName = [
 						  '<s:message code="invoice.seq"/>'
@@ -120,6 +124,9 @@ $(function() {
 						, '<s:message code="invoice.reg_dtm"/>'
 						, '<s:message code="invoice.upd_dtm"/>'
 						, 'STATUS_V'
+						, 'PREV_ITEM_CD'
+						,'UNIT_DAY'
+						,'UNIT_NUM'
 					];
 
 		var colModel = [
@@ -162,7 +169,7 @@ $(function() {
 				               }
 				              }
                            }
-						, { name: 'STR_UNIT_DAY', width : 50 , align: 'center'  , editable:true, edittype:"select" , editoptions:{value:'${REF_CHR3}'}}
+						, { name: 'STR_UNIT_DAY', width : 50 , align: 'center' , editable:true, edittype:"select" , editoptions:{value:'${REF_CHR3}'}}
 						, { name: 'USE_NUM'	,  width : 30 , align: 'center' , editable:true, editoptions:{    
 				            dataInit: function(element) {
 				                $(element).keyup(function(){
@@ -175,12 +182,15 @@ $(function() {
 				               }
 				              }
                            }
-						, { name: 'STR_UNIT_NUM', width : 50 , align: 'center' ,  editable:true,edittype:"select" ,  editoptions:{value:'${REF_CHR4}'}}
+						, { name: 'STR_UNIT_NUM', width : 50 , align: 'center' , editable:true,edittype:"select" ,  editoptions:{value:'${REF_CHR4}' , dataEvents :[{ type: 'change' , fn : function(e){var rowId = e.target.parentElement.parentElement.rowIndex; $("#invoiceGrid").jqGrid('setCell' , rowId , 'UNIT_NUM' , e.target.value);}}]}}
 						, { name: 'TOT_AMT',  width : 100, align: 'center' ,  editoptions:{readonly: true}}
 						, { name: 'REG_DTM',  width : 100, align: 'center' ,  editoptions:{readonly: true}}
 						, { name: 'UPD_DTM',  width : 100, align: 'center' ,  editoptions:{readonly: true}}
 						, { name: 'STATUS_V',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
-					];
+						, { name: 'PREV_ITEM_CD',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
+						, { name: 'UNIT_DAY',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
+						, { name: 'UNIT_NUM',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
+					 ];
 		
 		var gSetting = {
 		        pgflg:true,
@@ -246,6 +256,7 @@ $(function() {
 		param = { "REQ_DT"  : req_dt
 				, "SEQ"     : seq
 				, "ITEM_CD" : $("#"+rowId+"_ITEM_CD").val()
+				, "TOT_AMT" : parseInt($("#invoiceGrid").getCell(rowId , "TOT_AMT").replaceAll("," , ""))
 		        }
 		if(confirm("<s:message code='confirm.delete'/>")){
 			fn_ajax(url, false, param, function(data, xhr){

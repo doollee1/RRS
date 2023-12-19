@@ -46,7 +46,7 @@ public class ReserveController {
 		param.put("HEAD_CD", 500030);
 
 		BMap param2 = new BMap();
-		param2.put("HEAD_CD" , 500050);
+		param2.put("HEAD_CD" , 500210);
 		
 		BMap param3 = new BMap();
 		param3.put("HEAD_CD" , 500070);
@@ -61,12 +61,20 @@ public class ReserveController {
 		BMap param6 = new BMap();
 		param6.put("HEAD_CD" , 500110);
 
-		model.addAttribute("mgn_gbn"  , reserveService.selectGetCommonCode(param));
-		model.addAttribute("region"   , reserveService.selectGetCommonCode(param2));
-		model.addAttribute("roomtype" , reserveService.selectGetCommonCode(param3));
-		model.addAttribute("agency"   , reserveService.selectGetCommonCode(param4));
-		model.addAttribute("prod_cd"  , reserveService.selectGetCommonCode(param5));
-		model.addAttribute("cartype"  , reserveService.selectGetCommonCode(param6));
+		BMap param7 = new BMap();
+		param7.put("HEAD_CD" , 500180);
+
+		BMap param8 = new BMap();
+		param8.put("HEAD_CD" , 500190);
+
+		model.addAttribute("mgn_gbn"    , reserveService.selectGetCommonCode(param));
+		model.addAttribute("region"     , reserveService.selectGetCommonCode(param2));
+		model.addAttribute("roomtype"   , reserveService.selectGetCommonCode(param3));
+		model.addAttribute("agency"     , reserveService.selectGetCommonCode(param4));
+		model.addAttribute("prod_cd"    , reserveService.selectGetCommonCode(param5));
+		model.addAttribute("cartype"    , reserveService.selectGetCommonCode(param6));
+		model.addAttribute("flight_in"  , reserveService.selectGetCommonCode(param7));
+		model.addAttribute("flight_out" , reserveService.selectGetCommonCode(param8));
 			
 		return "/popup/ReserveRegiPopup";
 	}
@@ -85,7 +93,7 @@ public class ReserveController {
 		param.put("REF_CHR1", 03);
 		
 		BMap param2 = new BMap();
-		param2.put("HEAD_CD" , 500050);
+		param2.put("HEAD_CD" , 500210);
 		
 		BMap param3 = new BMap();
 		param3.put("HEAD_CD" , 500170);
@@ -144,5 +152,17 @@ public class ReserveController {
 	@RequestMapping(value = "/reserve/chgStatusPopup.do")
 	public String chgStatusPopup(ModelMap model,HttpServletRequest request) throws Exception{
 		return "/popup/chgStatusPopup";
+	}
+	
+	/**
+	 * 이미지 팝업 호출
+	 * @param model
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/reserve/arrImg.do")
+	public String arrImgPopup(ModelMap model,HttpServletRequest request) throws Exception{
+		return "/popup/arrImgPopup";
 	}
 }

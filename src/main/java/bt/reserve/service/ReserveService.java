@@ -1,4 +1,5 @@
 package bt.reserve.service;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import javax.annotation.Resource;
@@ -123,15 +124,19 @@ public class ReserveService {
 	 */
 	public Boolean saveInvoiceManager(BMap param, List<BMap> detail) throws Exception{
 		Boolean isValid = true;
+		int sum_tot = 0;
+		int feeCnt  = 0;
 		
-		for(int i = 0; i < detail.size(); i++){
-			BMap detailMap = new BMap(detail.get(i));
+		try {
 			
-			detailMap.put("SEQ"       , (String) param.get("SEQ"));
-			detailMap.put("REQ_DT"    , (String) param.get("REQ_DT"));
-			detailMap.put("LOGIN_USER", LoginInfo.getUserId());
-			
-			try {
+			for(int i = 0; i < detail.size(); i++){
+				BMap detailMap = new BMap(detail.get(i));
+				detailMap.put("SEQ"       , (String) param.get("SEQ"));
+				detailMap.put("REQ_DT"    , (String) param.get("REQ_DT"));
+				detailMap.put("LOGIN_USER", LoginInfo.getUserId());
+				feeCnt = reserveDao.selectFeeListCnt(detailMap);
+				sum_tot += detailMap.getInt("TOT_AMT");
+				
 				if(detailMap.getString("STATUS_V").equals("I")){
 					reserveDao.insertInvoiceDetailInfo(detailMap);
 					reserveDao.addInvoiceDetailHis(detailMap);
@@ -139,12 +144,26 @@ public class ReserveService {
 					reserveDao.updateInvoiceDetailInfo(detailMap);
 					reserveDao.addInvoiceDetailHis(detailMap);
 				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-				isValid = false;
 			}
+			
+			BMap paramMap = new BMap();
+			paramMap.put("SEQ"       , (String) param.get("SEQ"));      
+			
+			paramMap.put("REQ_DT"    , (String) param.get("REQ_DT"));   
+			paramMap.put("LOGIN_USER", LoginInfo.getUserId());          
+			paramMap.put("TOT_AMT"   , sum_tot);
+			
+			if(feeCnt == 0){ //fee table insert
+				reserveDao.insertFeeInfo(paramMap);
+			}else if(feeCnt == 1 && sum_tot != reserveDao.selectFeeTOT_AMT(paramMap)){ //fee table update
+				reserveDao.updateFeeInfo(paramMap);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			isValid = false;
 		}
+		
 		return isValid;
 	}
 	
@@ -161,6 +180,7 @@ public class ReserveService {
         	param.put("STATUS_V" , "D");
         	reserveDao.delInvoiceDetailHis(param);
 		    reserveDao.deleteInvoiceManager(param);
+		    reserveDao.deleteFeeInfo(param);
 		} catch (Exception e) {
 		    // TODO: handle exception
 			e.printStackTrace();
@@ -256,4 +276,15 @@ public class ReserveService {
 		}
 		return isValid;
 	}
+	
+	/**
+	 * 여행사 이미지 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap selectAirlineImg(BMap param) throws Exception {
+		return reserveDao.selectAirlineImg(param);
+	}
+	
 }
