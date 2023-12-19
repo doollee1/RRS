@@ -287,4 +287,25 @@ public class ReserveService {
 		return reserveDao.selectAirlineImg(param);
 	}
 	
+	/**
+	 * 인보이스 등록일자 변경
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public Boolean updateInvRegDt(BMap param ) throws Exception{
+		Boolean isValid = true;
+
+        try {
+		    reserveDao.updateInvRegDt(param);
+		} catch (Exception e) {
+		    // TODO: handle exception
+			e.printStackTrace();
+			isValid = false;
+		}
+		return isValid;
+	}
+	
+	
+	
 }

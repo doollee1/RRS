@@ -276,9 +276,33 @@ $(function() {
 				    , "SEQ"     : seq
 				    , "EMAIL"   : email
 				    , "MEM_GBN" : mem_gbn
+				    , "WK_GBN" : ""
 		}
 		if(data.id == "btn_preview") param.WK_GBN = "R";
+		if(fn_empty(email)){
+			alert("email null값입니다.");
+			return false;
+		}
 		fn_formSubmit('/report/retrieveCustomerReportAll.do', param);
+		if(data.id == "btn_send"){
+			//전송 버튼 클릭시 하단 로직 수행
+		    var url = "/report/retrieveCustomerReportSend.do";
+		
+			loadingStart();
+			
+			setTimeout(function() { 
+				fn_ajax(url, false, param, function(data, xhr){
+				    if(data.resultCd == "-1"){
+						alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
+					}else{
+						alert("<s:message code='success.sendemail'/>");
+						//cSearch();
+					}
+				});
+			}, 2000); 
+			 
+			 loadingEnd();
+		}
 	}
 	
 	$("#invoiceGrid").bind("change , keyup" , function(){
