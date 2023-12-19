@@ -12,10 +12,9 @@
 </style>
 <div id="p_arrImgPopup">
 	<div id="pop_ct_form_wrap">
-		<div class="a"><h1>header</h1></div>
-	    <div class="b">
-	      <!-- <img src="" alt="" id="arr_img"> -->
-	      <img src="/upload/2023/12/20231214154537929.jpg">
+		<div><h1>항공권 이미지</h1></div>
+	    <div>
+	        <img src="" alt="이미지" id="arr_img">
 	    </div>
 	</div>
 </div>
@@ -26,7 +25,7 @@ $(function() {
 	var seq;
 	
 	$('#p_arrImgPopup').dialog({
-		title :'<s:message code='reservation.stateTitle'/>',
+		title :'<s:message code='reservation.arrImg'/>',
 		autoOpen : false,
 		height: 'auto',
 		width: 1076.4,
@@ -57,8 +56,11 @@ $(function() {
 			if(data.MESSAGE != "OK"){
 				alert("ajax 통신 error!");
 			}else{
-				$("#arr_img").attr("src", data.ADD_FILE_PATH + data.ADD_FILE_PATH2 + data.ADD_FILE_NM);
-				console.log(data);
+				if(!fn_empty(data.result)){
+				    $("#arr_img").attr("src", "/upload/" + data.result.ADD_FILE_PATH2 + data.result.ADD_FILE_NM);
+				}else{
+					
+				}
 			}
 		});
 	}

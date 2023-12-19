@@ -55,6 +55,7 @@ public class ReserveRestController {
 		BRespData respData = new BRespData();
 		respData.put("result", resultDeptDetail);
 		
+		respData.put("image", reserveService.selectAirlineImg(paramData));
 		return respData;
 	}
 	

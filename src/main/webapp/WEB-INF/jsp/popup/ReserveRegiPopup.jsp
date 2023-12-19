@@ -82,8 +82,8 @@
 							</c:forEach>
 						</select>
 					</td>
-					<th><s:message code='reservation.arrImg'/></th>
-					<td>
+					<th class="image"><s:message code='reservation.arrImg'/></th>
+					<td class="image">
 						<button type="button" class="pbtn_default" id="ARR_IMG">이미지보기</button>
 					</td>
 				</tr>
@@ -369,8 +369,17 @@ $(function() {
 				alert("ajax 통신 error!");
 			}else{
 				fn_dataSet(data.result)
+				fn_imageSet(data.image);
 			}
 		});
+	}
+	
+	function fn_imageSet(data){
+		if(!fn_empty(data)){
+			$(".image").show();
+		}else{
+			$(".image").hide();
+		}
 	}
 	
 	function changeStatus(){
