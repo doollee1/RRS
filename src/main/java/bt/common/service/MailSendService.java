@@ -74,8 +74,6 @@ public class MailSendService {
 //			email.addCc(carbonCopy);
 //			email.setSubject(title);
 //			email.setMsg(emailContents);
-			
-			email.send();
 
 		} catch (EmailException  ex) {
 			System.err.println("System Exception ::::: " + ex.getMessage());
