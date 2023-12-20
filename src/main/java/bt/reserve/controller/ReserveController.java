@@ -189,7 +189,7 @@ public class ReserveController {
 		System.out.println("reserveReportInfo param: " + param);
 		
 		return respData;
-
+	}
   /**
 	 * 이미지 팝업 호출
 	 * @param model

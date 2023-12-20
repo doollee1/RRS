@@ -218,7 +218,8 @@ public class ReserveDao extends DBAbstractMapper {
 	@SuppressWarnings("unchecked")
 	public List<BMap> reserveReportInfoList(BMap param) throws Exception {
 		return list("ReserveMapper.reserveReportInfoList", param);
-  /**
+	}
+	/**
 	 * 금액테이블 카운트 조회(인보이스)
 	 * @param param
 	 * @return
