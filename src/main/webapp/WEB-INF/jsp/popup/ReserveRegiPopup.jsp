@@ -82,19 +82,29 @@
 							</c:forEach>
 						</select>
 					</td>
-					<th><s:message code='reservation.arrImg'/></th>
-					<td>
-						<input type="text" class="cmc_txt" id="ARR_IMG" name="ARR_IMG" style="width:51.5%;"/>
+					<th class="image"><s:message code='reservation.arrImg'/></th>
+					<td class="image">
+						<button type="button" class="pbtn_default" id="ARR_IMG">이미지보기</button>
 					</td>
 				</tr>
 				<tr class="agencyFrm">
 				    <th><s:message code='reservation.arrFlight'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="FLIGHT_IN" name="FLIGHT_IN"/>
+						<select id="FLIGHT_IN" name="FLIGHT_IN" class="cmc_combo" style="width:62%;">
+						    <option value="">--<s:message code='system.select'/>--</option>
+						    <c:forEach var="i" items="${flight_in}">
+								<option value="${i.CODE}">${i.CODE_NM}</option>
+							</c:forEach>
+						</select>
 					</td>
 				    <th><s:message code='reservation.depFlight'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="FLIGHT_OUT" name="FLIGHT_OUT"/>
+					    <select id="FLIGHT_OUT" name="FLIGHT_OUT" class="cmc_combo" style="width:62%;">
+						    <option value="">--<s:message code='system.select'/>--</option>
+						    <c:forEach var="i" items="${flight_in}">
+								<option value="${i.CODE}">${i.CODE_NM}</option>
+							</c:forEach>
+						</select>
 					</td>
 				</tr>
 				<tr>
@@ -203,18 +213,18 @@
 				    </td>
 				    <th><s:message code='reservation.totalPrice'/></th>
 				    <td>
-				        <input type="text" id="TOT_PRICE" name="TOT_PRICE"/>원
+				        <input type="text" id="TOT_AMT" name="TOT_AMT"/>원
 				    </td>
 				</tr>
 				<tr>
 				    <th><s:message code='reservation.disctPrice'/></th>
 				    <td>
-				    	<input type="text" id="DISCT_PRICE" name="DISCT_PRICE"/>원
+				    	<input type="text" id="DCT_AMT" name="DCT_AMT"/>원
 				    </td>
 				    <th><s:message code='reservation.balancePrice'/></th>
 				    <td>
 				        <div style="display:inline-flex;" >
-					        <input type="text" id="BALANCE_PRICE" name="BALANCE_PRICE"/>원
+					        <input type="text" id="BAL_AMT" name="BAL_AMT"/>원
 				            <button type="button"  class="pbtn_default">입금완료</button>
 			            </div>
 			        </td>
@@ -222,11 +232,11 @@
 				<tr>
 				    <th><s:message code='reservation.depositDate'/></th>
 				    <td>
-				    <input type="text" id="DEPOSITE_DT" name="DEPOSITE_DT"/>
+				    <input type="text" id="DEP_IN_DT" name="DEP_IN_DT"/>
 				    </td>
 				    <th><s:message code='reservation.deposit'/></th>
 				    <td>
-				    <input type="text" id="DEPOSITE" name="DEPOSITE"/>원
+				    <input type="text" id="DEP_AMT" name="DEP_AMT"/>원
 				    </td>
 				</tr>
 				<tr>
@@ -285,25 +295,11 @@ $(function() {
 			popupClose($(this).attr('id')); /* 필수로 들어가야함 */
 		},
 		open : function(a) {
-			seq    = $(this).data("SEQ");
-			req_dt =  $(this).data("REQ_DT");
-			fn_init();
+			fn_init($(this).data());
+			
 		    if(fn_empty(seq || req_dt)){ //신규
 		    }else{ // 상세
-		    	
-		    	var url = "/reserve/reserveSelectDetail.do";
-				var param = {"SEQ"    : seq
-				           , "REQ_DT" : req_dt
-				           };
-				fn_ajax(url, true, param, function(data, xhr){
-					if(data.MESSAGE != "OK"){
-						alert("ajax 통신 error!");
-					}else{
-						fn_dataSet(data.result)
-					}
-				});
-		    	
-		    	
+		    	initSelect();
 		    }
 			
 		    $('#CHK_OUT_DT').datepicker({
@@ -330,8 +326,10 @@ $(function() {
 		}
 	});
 	
-	function fn_init(){
+	function fn_init(receivedData){
 		$('#REQ_DT').val($.datepicker.formatDate('yy.mm.dd', new Date())).attr("readonly" , true);
+		seq    = receivedData.SEQ;
+		req_dt = receivedData.REQ_DT;
 	}
 	
 	
@@ -361,6 +359,29 @@ $(function() {
     	}
     }
 	
+	function initSelect(){
+		var url = "/reserve/reserveSelectDetail.do";
+		var param = {"SEQ"    : seq
+		           , "REQ_DT" : req_dt
+		           };
+		fn_ajax(url, true, param, function(data, xhr){
+			if(data.MESSAGE != "OK"){
+				alert("ajax 통신 error!");
+			}else{
+				fn_dataSet(data.result)
+				fn_imageSet(data.image);
+			}
+		});
+	}
+	
+	function fn_imageSet(data){
+		if(!fn_empty(data)){
+			$(".image").show();
+		}else{
+			$(".image").hide();
+		}
+	}
+	
 	function changeStatus(){
 		var url = "/reserve/chgStatusPopup.do";
 	    var pid = "p_changeStatusPopup";
@@ -369,10 +390,12 @@ $(function() {
 		           , "PRC_STS"    : parseInt($("#PRC_STS").val())
 		           , "PRC_STS_NM" : $("#PRC_STS_NM").val()
 		           };
+	    console.log(param);
 		popupOpen(url, pid, param, function(data) {
 			
 		});
 	}
+	
 	
 	$("#btn_create").click(function(){
     	var url = "/reserve/InvoicePopup.do";
@@ -383,7 +406,7 @@ $(function() {
 		           , "EMAIL"   : $("#EMAIL").val()
 		           };
 		popupOpen(url, pid, param, function(data) {
-			
+			initSelect();
 		});
 	});
 	
@@ -415,6 +438,18 @@ $(function() {
 			}
 		});
 	});
+	
+	$("#ARR_IMG").on("click" , function(){
+		var url = "/reserve/arrImg.do";
+	    var pid = "p_arrImgPopup";
+	    var param = { "SEQ"          : seq
+			        , "REQ_DT"       : req_dt
+	                };
+	    
+		popupOpen(url, pid, param, function(data) {
+			
+		});
+	});	
 	
 });
 

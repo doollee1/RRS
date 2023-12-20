@@ -218,6 +218,71 @@ public class ReserveDao extends DBAbstractMapper {
 	@SuppressWarnings("unchecked")
 	public List<BMap> reserveReportInfoList(BMap param) throws Exception {
 		return list("ReserveMapper.reserveReportInfoList", param);
+  /**
+	 * 금액테이블 카운트 조회(인보이스)
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public int selectFeeListCnt(BMap param) throws Exception{
+		return(int)selectByPk("ReserveMapper.selectFeeListCnt", param);
+	}
+	
+	/**
+	 * 금액테이블 총액 조회(TB_REQ_FEE)
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public int selectFeeTOT_AMT(BMap param) throws Exception{
+		return(int)selectByPk("ReserveMapper.selectFeeTOT_AMT", param);
+	}
+	
+	/**
+	 * fee table insert
+	 * @param param
+	 * @throws Exception
+	 */
+	public void insertFeeInfo(BMap param) throws Exception{
+		insert("ReserveMapper.insertFeeInfo", param);
+	}
+
+	/**
+	 * fee table update
+	 * @param param
+	 * @throws Exception
+	 */
+	public void updateFeeInfo(BMap param) throws Exception{
+		update("ReserveMapper.updateFeeInfo", param);
+	}
+	
+	/**
+	 * fee table update(DELETE)
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deleteFeeInfo(BMap param) throws Exception{
+		update("ReserveMapper.deleteFeeInfo", param);
+	}
+	
+	/**
+	 * invoice regDt update
+	 * @param param
+	 * @throws Exception
+	 */
+	public void updateInvRegDt(BMap param) throws Exception{
+		update("ReserveMapper.updateInvRegDt", param);
+	}
+	
+	/**
+	 * 여행사 이미지 가져오기
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	
+	public BMap selectAirlineImg(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.selectAirlineImg", param);
 	}
 	
 }

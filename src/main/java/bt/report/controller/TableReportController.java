@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -35,11 +36,14 @@ import com.gembox.spreadsheet.RowColumn;
 import com.gembox.spreadsheet.SaveOptions;
 import com.gembox.spreadsheet.SpreadsheetInfo;
 
+import bt.btframework.common.vo.CodeVO;
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
 import bt.btframework.utils.LoginInfo;
 import bt.btframework.utils.ResponseStatus;
+import bt.common.service.CommonCodeService;
+import bt.common.service.CommonService;
 import bt.common.service.MailSendService;
 import bt.report.service.TableReportService;
 import bt.reserve.service.ReserveService;
@@ -54,6 +58,13 @@ public class TableReportController {
 	
 	@Resource
     private ReserveService reserveService;
+	
+	@Resource
+    private CommonCodeService codeService;
+	
+	@Resource
+    private CommonService commonService;
+	
 	
 	@Resource
     private MailSendService mailSendService;
@@ -81,38 +92,36 @@ public class TableReportController {
 	}
 
 	/**
-	 * 인보이스 계산서 엑셀 샘플 
+	 * 인보이스 계산서 엑셀 미리보기
 	 */
 	@RequestMapping(value = "/retrieveCustomerReportAll.do", method = RequestMethod.POST)
 	public void retrieveCustomerReportAll(@RequestParam Map<String,Object> reqData, HttpServletRequest req, HttpServletResponse resp)  throws Exception {
 	    
 	   SpreadsheetInfo.setLicense("FREE-LIMITED-KEY");
-		
+	   
+	   BRespData respData = new BRespData(ResponseStatus.OK, "");
+	   
 		/* 서비스 부분 start */
 		
 		ServletContext servletContext = req.getSession().getServletContext();
-	    String realPath = servletContext.getRealPath("/WEB-INF/template/일반_INVOICE.xlsx");
+	    String realPath = servletContext.getRealPath("/WEB-INF/template");
 
-	    ExcelFile workbook = ExcelFile.load(realPath);
+	    ExcelFile workbook = ExcelFile.load(realPath+"/일반_INVOICE.xlsx");
 	    
 	    BMap param = new BMap();
-        param.put("HEAD_CD"   , 500200);
         param.put("REF_CHR1"  ,  "H");
-        param.put("REF_CHR2"  ,  reqData.get("MEM_GBN"));
        
-        List<BMap> HList = reserveService.selectGetCommonCode(param);
+        List<CodeVO> HList = commonService.selectCommonCode("500200", param);
         
-        param.put("HEAD_CD"   , 500200);
         param.put("REF_CHR1"  ,  "D");
         param.put("REF_CHR2"  ,  reqData.get("MEM_GBN"));
         
-        List<BMap> DList = reserveService.selectGetCommonCode(param);
+        List<CodeVO> DList = commonService.selectCommonCode("500200", param);
         
-        param.put("HEAD_CD"   , 500200);
         param.put("REF_CHR1"  ,  "T");
         param.put("REF_CHR2"  ,  reqData.get("MEM_GBN"));
         
-        List<BMap> TList = reserveService.selectGetCommonCode(param);
+        List<CodeVO> TList = commonService.selectCommonCode("500200", param);
       
         //LocalDateTime startDate = LocalDateTime.now().plusDays(-workingDays);
 
@@ -129,30 +138,30 @@ public class TableReportController {
         
         for(int i = 0; i < HList.size(); i++)
         {
-            if(HList.get(i).get("CODE").equals("FROM"))
+            if(HList.get(i).getCode().equals("FROM"))
             {
                 //From
                 if ((rowColumnPosition = worksheet.getCells().findText("[FROM]", true, true)) != null)
-                    worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue(HList.get(i).get("CODE_NM"));
+                    worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue(HList.get(i).getValue());
             } 
-            else if(HList.get(i).get("CODE").equals("PROD_NM"))
+            else if(HList.get(i).getCode().equals("PROD_NM"))
             {     
                 //상품명
                 if ((rowColumnPosition = worksheet.getCells().findText("[PROD_NM]", true, true)) != null)
-                    worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue(HList.get(i).get("CODE_NM"));
+                    worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue(HList.get(i).getValue());
             }
-            else if(HList.get(i).get("CODE").equals("HOTEL"))
+            else if(HList.get(i).getCode().equals("HOTEL"))
             {   
               //호텔
                 if ((rowColumnPosition = worksheet.getCells().findText("[HOTEL]", true, true)) != null)
-                    worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue(HList.get(i).get("CODE_NM"));
+                    worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue(HList.get(i).getValue());
                 
             }
-            else if(HList.get(i).get("CODE").equals("GOLF_CLUB"))
+            else if(HList.get(i).getCode().equals("GOLF_CLUB"))
             {   
                 //골프장
                 if ((rowColumnPosition = worksheet.getCells().findText("[GOLF_CLUB]", true, true)) != null)
-                    worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue(HList.get(i).get("CODE_NM"));
+                    worksheet.getCell(rowColumnPosition.getRow(), rowColumnPosition.getColumn()).setValue(HList.get(i).getValue());
             
             }
         }
@@ -160,6 +169,7 @@ public class TableReportController {
         BMap paramData = new BMap();
         paramData.put("SEQ"   , (String) reqData.get("SEQ"));
         paramData.put("REQ_DT", (String) reqData.get("REQ_DT"));
+ 
         BMap resultDeptDetail = reserveService.reserveSelectDetail(paramData);
         
         //To.
@@ -185,6 +195,7 @@ public class TableReportController {
         paramData.put("LOGIN_USER", LoginInfo.getUserId());
         
         List<BMap> invoiceList = reserveService.invoiceSelectList(paramData);
+
         // Copy template row.
         int row = 14;
         
@@ -195,12 +206,12 @@ public class TableReportController {
         for(int i = 0; i < invoiceList.size(); i++)
         {
             ExcelRow currentRow = worksheet.getRow(row);
-
+            
             currentRow.getCell(2).setValue(i+1+". "+ invoiceList.get(i).get("ITEM_NM"));
             currentRow.getCell(3).setValue(invoiceList.get(i).get("AMT_SIGN"));
             currentRow.getCell(4).setValue(numFormatter.format(invoiceList.get(i).get("PER_AMT")));
-            currentRow.getCell(6).setValue(invoiceList.get(i).get("USE_DAY").toString() + invoiceList.get(i).get("STR_DAY").toString());
-            currentRow.getCell(8).setValue(invoiceList.get(i).get("USE_DAY").toString() + invoiceList.get(i).get("STR_UNIT").toString());
+            currentRow.getCell(6).setValue(invoiceList.get(i).get("USE_DAY").toString());
+            currentRow.getCell(8).setValue(invoiceList.get(i).get("USE_NUM").toString());
             currentRow.getCell(10).setValue(numFormatter.format(invoiceList.get(i).get("TOT_AMT")));
             
             row++;
@@ -208,7 +219,7 @@ public class TableReportController {
 
         //worksheet.calculate();
         int row2 = row+4 ; //5칸 = 합계 + 하나은행
-        
+        worksheet.getRow(row).getCell(4).setValue(numFormatter.format(resultDeptDetail.get("TOT_AMT")));
         worksheet.getRows().insertCopy(row2+1, DList.size()+1, worksheet.getRow(row2));
         
        // 금액 및 잔액 안내사항
@@ -216,83 +227,121 @@ public class TableReportController {
         {  
             ExcelRow currentRow = worksheet.getRow(row2);
             
-            if(DList.get(i).get("CODE").equals("D00")) // 입금계좌
+            if(DList.get(i).getCode().equals("D00")) // 입금계좌
             {
-                currentRow = worksheet.getRow(row2);
-                currentRow.getCell(1).setValue(DList.get(i).get("CODE_NM"));
+                currentRow = worksheet.getRow(row2-1);
+                currentRow.getCell(1).setValue(DList.get(i).getValue());
             } 
             else 
             {
-                String codeNm = DList.get(i).get("CODE_NM").toString();
-                
-                if(DList.get(i).get("CODE").equals("D04"))
+                String codeNm = DList.get(i).getValue();
+
+                if(DList.get(i).getCode().equals("D04"))
                 {
-                    codeNm = codeNm.replace("[0]", "3,000,000" ); //총액
-                    codeNm = codeNm.replace("[1]", "500,000" );  //예약금
+                    codeNm = codeNm.replace("[0]", numFormatter.format(resultDeptDetail.get("TOT_AMT"))); //총액
+                    codeNm = codeNm.replace("[1]", numFormatter.format(resultDeptDetail.get("DEP_AMT")));  //예약금
                 }
-                else if(DList.get(i).get("CODE").equals("D05"))
+                else if(DList.get(i).getCode().equals("D05"))
                 {
-                    codeNm = codeNm.replace("[0]", "3,000,000" ); //잔금
+                    codeNm = codeNm.replace("[0]", numFormatter.format(resultDeptDetail.get("BAL_AMT")) ); //잔금
                 }           
                 currentRow.getCell(1).setValue(codeNm);
             }
             row2++;
         }
+        
+        worksheet.getRow(row2).getCell(1).setValue("");
+        
         int row3 = row2;
         
-        worksheet.getRows().insertCopy(row3+1, TList.size()+1, worksheet.getRow(row3));
+        worksheet.getRows().insertCopy(row3+1, TList.size()+2, worksheet.getRow(row3));
         
         //특이사항
         for(int i = 0; i < TList.size(); i++)
         { 
-            ExcelRow currentRow = worksheet.getRow(row3 + i);
-            currentRow.getCell(1).setValue(TList.get(i).get("CODE_NM"));
+            ExcelRow currentRow = worksheet.getRow((row3+1) + i);
+            currentRow.getCell(1).setValue(TList.get(i).getValue());
         }
         worksheet.calculate();
         
         String wkGbn = (String) reqData.get("WK_GBN"); 
+       
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.save(out, SaveOptions.getXlsxDefault());
         
-        if(wkGbn.equals("R"))
+        byte[] byteArray = out.toByteArray();
+        
+        String filenm = resultDeptDetail.get("REQ_HAN_NM")+"_"+resultDeptDetail.get("REQ_DT")+".xlsx";
+        
+        /* 서비스 부분 end */
+        //파일유형설정
+		resp.setContentType("application/octet-stream"); 
+	      //파일길이설정
+		resp.setContentLength(byteArray.length);
+	      //데이터형식/성향설정 (attachment: 첨부파일)
+		resp.setHeader("Content-Disposition", "attachment; fileName=\"" + URLEncoder.encode(filenm,"UTF-8")+"\";");
+	      //내용물 인코딩방식설정
+		resp.setHeader("Content-Transfer-Encoding", "binary");
+	      //버퍼의 출력스트림을 출력
+		resp.getOutputStream().write(byteArray);
+	      
+	      //버퍼에 남아있는 출력스트림을 출력
+		resp.getOutputStream().flush();
+	      //출력스트림을 닫는다
+		resp.getOutputStream().close();
+		
+    	if(wkGbn.equals(""))
         {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            workbook.save(out, SaveOptions.getXlsxDefault());
+    	    BMap paramPath = new BMap();
+    	    paramPath.put("REF_CHR1"        ,  "PATH");
+    	    
+            List<CodeVO> pathList = commonService.selectCommonCode("500200", paramPath);
             
-            byte[] byteArray = out.toByteArray();
+            String path = pathList.get(0).getValue();
             
-            /* 서비스 부분 end */
-            
-            
-            //파일유형설정
-    		resp.setContentType("application/octet-stream"); 
-    	      //파일길이설정
-    		resp.setContentLength(byteArray.length);
-    	      //데이터형식/성향설정 (attachment: 첨부파일)
-    		resp.setHeader("Content-Disposition", "attachment; fileName=\"" + URLEncoder.encode("Invoice.xlsx","UTF-8")+"\";");
-    	      //내용물 인코딩방식설정
-    		resp.setHeader("Content-Transfer-Encoding", "binary");
-    	      //버퍼의 출력스트림을 출력
-    		resp.getOutputStream().write(byteArray);
-    	      
-    	      //버퍼에 남아있는 출력스트림을 출력
-    		resp.getOutputStream().flush();
-    	      //출력스트림을 닫는다
-    		resp.getOutputStream().close();
+    	    File f = new File(path);
+    	    
+    	    if(!f.exists())
+    	    {
+    	        f.mkdir();
+    	    }
+    	    path = path.replace("\\\\","/");
+            System.out.println("================1:"+path);
+            workbook.save(path + "/" + filenm);
         }
-        else
-        {
-            System.out.println("================1");
-            workbook.save("C:/excelTest/abc.xlsx");
-            System.out.println("================2");
-            BMap sendEmailparam = new BMap();
-            sendEmailparam.put("FILE_FULL_NM"   , "C:/excelTest/abc.xlsx");
-            sendEmailparam.put("FILE_NM"     , "abc.xlsx");
-            sendEmailparam.put("TO_EMAIL"   , "noha85@naver.com");
-            System.out.println("================3");
-            mailSendService.sendMail(sendEmailparam);
-            System.out.println("================4");
-        }
-      
 	}
+	
+	@RequestMapping(value = "/retrieveCustomerReportSend.do", method = RequestMethod.POST)
+    public BRespData emailSend(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+	    BMap param = new BMap();
+        param.put("SEQ"   , (String) reqData.get("SEQ"));
+        param.put("REQ_DT", (String) reqData.get("REQ_DT"));
+        
+        BMap resultDeptDetail = reserveService.reserveSelectDetail(param);
+        
+        BMap paramPath = new BMap();
+        paramPath.put("REF_CHR1"        ,  "PATH");
+
+        List<CodeVO> pathList = commonService.selectCommonCode("500200", paramPath);
+        
+        String path = pathList.get(0).getValue().replace("\\\\","/");
+        
+        String filenm = resultDeptDetail.get("REQ_HAN_NM")+"_"+resultDeptDetail.get("REQ_DT")+".xlsx";
+        
+        BMap sendEmailparam = new BMap();
+        sendEmailparam.put("FILE_FULL_NM"   , path + "/" +  filenm);
+        sendEmailparam.put("FILE_NM"     , filenm);
+        sendEmailparam.put("TO_EMAIL"   , resultDeptDetail.get("EMAIL"));
+
+        boolean res = mailSendService.sendMail(sendEmailparam);
+        System.out.println("================"+param.get("EMAIL")+"==========");
+        System.out.println("================"+res);
+        
+        BRespData respData = new BRespData();
+        respData.put("resultCd", res);
+        
+       return respData;
+    }
 
 	@RequestMapping(value = "/product.do")
 	public ModelAndView product() throws Exception {

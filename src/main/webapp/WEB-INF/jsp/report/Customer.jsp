@@ -233,20 +233,20 @@
 		var result = [{'CUST_CD': 'test'}]
 		reloadGrid('customerReportGrid', result);
 		
-// 		fn_ajax('/report/retrieveCustomerReport.do', true, param, function(data) {
-// 			if (!data.RESULT) {
-// 				return;
-// 			}
+ 		fn_ajax('/report/retrieveCustomerReport.do', true, param, function(data) {
+ 			if (!data.RESULT) {
+				return;
+ 			}
 			
-// 			if (!!data.RESULT && data.RESULT.length === 0) {
-// 				alert('<s:message code="validator.notfound"/>');
-// 			}
+ 			if (!!data.RESULT && data.RESULT.length === 0) {
+ 				alert('<s:message code="validator.notfound"/>');
+ 			}
 			
-// 			var customerInfoList = data.RESULT;
-// 			data.RESULT
-// 			reloadGrid('customerReportGrid', data.RESULT);
-// 			btGrid.gridQueryPaging($('#customerReportGrid'), 'cSearch', data.RESULT);
-// 		});
+ 			var customerInfoList = data.RESULT;
+ 			data.RESULT
+ 			reloadGrid('customerReportGrid', data.RESULT);
+ 			btGrid.gridQueryPaging($('#customerReportGrid'), 'cSearch', data.RESULT);
+ 		});
 	};
 	
 	window.cPrint = function() {
@@ -270,7 +270,8 @@
 			
  			var param = {"SEQ": 	"6"
  					    ,"REQ_DT": 	"20231116"
- 					    ,"WK_GBN":  "R"
+ 					    ,"MEM_GBN": "02"
+ 					    ,"WK_GBN":  ""
  					    }
 // 					    ,"SEARCH_NM2":  $("#SEARCH_NM2").val()
 // 					    ,"SALES_ORG_CD":$("#SALES_ORG_CD").val()
@@ -281,7 +282,26 @@
 // 					    ,"CUST_GR":   	$("#CUST_GR").val()
 // 					    ,'COL_NM':	   colNms}
 // 		};
+
 		fn_formSubmit('/report/retrieveCustomerReportAll.do', param);
+		//전송 버튼 클릭시 하단 로직 수행
+		var url = "/report/retrieveCustomerReportSend.do";
+		
+		loadingStart();
+		
+		setTimeout(function() { 
+    		fn_ajax(url, false, param, function(data, xhr){
+    		    if(data.resultCd == "-1"){
+    				alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
+    			}else{
+    				alert("<s:message code='success.sendemail'/>");
+    				//cSearch();
+    			}
+    		});
+		}, 2000); 
+		 
+		 loadingEnd();
+ 			
 	}
 	
 	function excelToMap() {

@@ -323,7 +323,7 @@
                 AND L.STATUS = 'Y'
      		  WHERE H.HEAD_ID = #{S_HEAD_ID}
      		  <if test="RefCode != null and RefCode != ''">
-     		  	AND CODE LIKE '%' + #{RefCode} + '%'
+     		  	AND CODE LIKE CONCAT('%', #{RefCode} , '%')
      		  </if>
      		  <if test='S_CODE != null and S_CODE != ""'>
 	            AND (L.CODE LIKE setParam(#{S_CODE})

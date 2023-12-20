@@ -49,7 +49,9 @@
 <!-- 			<bean class="bt.api.aop.APIAuthenticationInterceptor" /> -->
 <!-- 		</mvc:interceptor>  -->
 	</mvc:interceptors>
-	
+
+	<mvc:resources mapping="/upload/**" location="file:/web/rrs_webapps/upload/"/>
+
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
 		<property name="alwaysUseFullPath" value="true" />
 	</bean>

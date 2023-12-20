@@ -217,25 +217,22 @@
 	         , T2.PER_NUM                             AS PER_NUM           /* 인원수                 */
 	         , NVL(T2.CAR_NUM,0)                      AS CAR_NUM           /* 차량대수               */
 	         , NVL(T2.USE_AMT,0)                      AS USE_AMT           /* 이용금액               */
-	        <!--
 	         , T3.DEP_IN_DT                           AS DEP_IN_DT         /* 예약금입금일자         */
+	         , T3.EXP_DT                              AS EXP_DT            /* 예약 기한              */
 	         , NVL(T3.DEP_AMT,0)                      AS DEP_AMT           /* 예약금액               */
 	         , NVL(T3.BAL_AMT,0)                      AS BAL_AMT           /* 잔금                   */
 	         , NVL(T3.DCT_AMT,0)                      AS DCT_AMT           /* 할인금액               */
 	         , NVL(T3.PAY_AMT,0)                      AS PAY_AMT           /* 입금금액               */
 	         , NVL(T3.TOT_AMT,0)                      AS TOT_AMT           /* 총액                   */
-	        -->
 	         , T4.EMAIL                               AS EMAIL             /* USR EMAIL              */
 	      FROM TB_REQ_BOOKING_M T1 
-	 LEFT JOIN TB_REQ_PICKUP T2
-	        <!--  , TB_REQ_FEE T3  -->
+	LEFT OUTER JOIN TB_REQ_PICKUP T2
 	        ON T2.REQ_DT  = T1.REQ_DT
 	       AND T2.REQ_SEQ = T1.SEQ
-	       <!--
-	       AND T3.REQ_DT  = T1.REQ_DT
+	LEFT OUTER JOIN TB_REQ_FEE T3 
+	        ON T3.REQ_DT  = T1.REQ_DT
 	       AND T3.REQ_SEQ = T1.SEQ
-	       -->
-	 LEFT JOIN TB_MEMBER T4
+	LEFT JOIN TB_MEMBER T4
             ON T4.USER_ID = T1.USER_ID
 	       ) T3
 	 WHERE 1 = 1
@@ -258,7 +255,7 @@
                 , T1.USE_NUM    /*  이용수량     */
                 , T1.UNIT_NUM   /*  수량단위     */
                 , CASE WHEN T1.UNIT_NUM = 'P' THEN '인' WHEN T1.UNIT_NUM = 'R'THEN '개' ELSE NULL END AS STR_UNIT_NUM  /* 일일 횟수 또는 일 */
-                , CASE WHEN T1.UNIT_DAY = 'D' THEN '일' WHEN T1.UNIT_NUM = 'C'THEN '회' ELSE NULL END AS STR_UNIT_DAY  /* 일일 횟수 또는 일 */
+                , CASE WHEN T1.UNIT_DAY = 'D' THEN '일' WHEN T1.UNIT_DAY = 'C'THEN '회' ELSE NULL END AS STR_UNIT_DAY  /* 일일 횟수 또는 일 */
                 , T1.TOT_AMT    /*  총금액       */
                 , T1.ORDER      /*  표시순서     */
                 , T1.REF1       /*  참조1        */
@@ -267,6 +264,7 @@
                 , T1.REG_ID     /*  등록자ID     */
                 , DATE_FORMAT(T1.UPD_DTM, "%Y%m%d") AS UPD_DTM /* 수정일시 */
                 , T1.UPD_ID     /*  수정자ID     */
+                , T1.ITEM_CD AS PREV_ITEM_CD     /* 이전 항목코드*/
              FROM TB_REQ_INVOICE T1
             WHERE 1 = 1
               AND T1.REQ_DT = #{REQ_DT}
@@ -324,9 +322,9 @@
                     , #{AMT_SIGN}
                     , #{PER_AMT }
                     , #{USE_DAY }
-                    , #{UNIT_DAY}
+                    , CASE WHEN #{STR_UNIT_DAY} = '일' THEN 'D' WHEN #{STR_UNIT_DAY} = '회' THEN 'C' ELSE NULL END
                     , #{USE_NUM }
-                    , #{UNIT_NUM}
+                    , CASE WHEN #{STR_UNIT_NUM} = '인' THEN 'P' WHEN #{STR_UNIT_NUM} = '개' THEN 'R' ELSE NULL END
                     , #{TOT_AMT }
                     , #{ORDER   }
                     , NULL
@@ -452,7 +450,7 @@
              , UPD_ID   = #{LOGIN_USER}
          WHERE REQ_DT  = #{REQ_DT}
            AND SEQ     = #{SEQ}
-           AND ITEM_CD = #{ITEM_CD}
+           AND ITEM_CD = #{PREV_ITEM_CD}
 	</update>
 	
 	<select id="firstInvoiceSelectList" parameterType="BMap" resultType="BMap">
@@ -703,5 +701,96 @@
 			ON T1.BAS_YY = T3.BAS_YY AND T1.PROD_SEQ = T3.PROD_SEQ
 			WHERE DATE_FORMAT(T1.REQ_DT,'%Y%m') = #{SEARCH_DT}
     	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+  </select>
+
+	<select id="selectFeeListCnt" parameterType="BMap" resultType="int">
+		SELECT COUNT(1) AS CNT
+		  FROM TB_REQ_FEE T1
+		 WHERE 1 = 1
+		   AND REQ_DT   = #{REQ_DT}
+		   AND REQ_SEQ  = #{SEQ}
+	</select>
+	
+	<select id="selectFeeTOT_AMT" parameterType="BMap" resultType="int">
+		SELECT NVL(TOT_AMT,0) AS TOT_AMT
+		  FROM TB_REQ_FEE T1
+		 WHERE 1 = 1
+		   AND REQ_DT   = #{REQ_DT}
+		   AND REQ_SEQ  = #{SEQ}
+	</select>
+	
+	<insert id="insertFeeInfo" parameterType="BMap">
+   INSERT INTO TB_REQ_FEE
+             ( REQ_DT     /* 예약일자       */
+             , REQ_SEQ	  /* 순번           */
+             , DEP_IN_DT  /* 예약금입금일자 */
+             , DEP_AMT	  /* 예약금액       */
+             , BAL_AMT	  /* 잔금           */
+             , DCT_AMT	  /* 할인금액       */
+             , PAY_AMT	  /* 입금금액       */
+             , TOT_AMT	  /* 총액           */
+             , REG_DTM	  /* 등록일시       */
+             , REG_ID	  /* 등록자ID       */
+             , UPD_DTM	  /* 수정일시       */
+             , UPD_ID	  /* 수정자ID       */
+             )
+      VALUES ( #{REQ_DT  }
+             , #{SEQ     }
+             , NULL
+             , 0
+             , #{TOT_AMT}
+             , 0
+             , 0
+             , #{TOT_AMT}
+             , NOW()
+             , #{LOGIN_USER}
+             , NOW()
+             , #{LOGIN_USER}
+             )
+	</insert>
+	
+	<update id="updateFeeInfo" parameterType="BMap">
+	    UPDATE TB_REQ_FEE
+           SET TOT_AMT = #{TOT_AMT}
+             , BAL_AMT = #{TOT_AMT} - NVL(DEP_AMT,0)
+             , UPD_DTM  = NOW()
+             , UPD_ID   = #{LOGIN_USER}
+         WHERE REQ_DT   = #{REQ_DT}
+           AND REQ_SEQ  = #{SEQ}
+	</update>
+	
+	<update id="deleteFeeInfo" parameterType="BMap">
+	    UPDATE TB_REQ_FEE
+           SET BAL_AMT = BAL_AMT - #{TOT_AMT}
+             , TOT_AMT = TOT_AMT - #{TOT_AMT}
+             , UPD_DTM  = NOW()
+             , UPD_ID   = #{LOGIN_USER}
+         WHERE REQ_DT   = #{REQ_DT}
+           AND REQ_SEQ  = #{SEQ}
+	</update>
+	
+	<update id="updateInvRegDt" parameterType="BMap">
+	    UPDATE TB_REQ_BOOKING_M
+           SET INV_REG_DT = NOW()
+             , UPD_DTM  = NOW()
+             , UPD_ID   = #{LOGIN_USER}
+         WHERE REQ_DT   = #{REQ_DT}
+           AND SEQ  = #{SEQ}
+	</update>
+	
+	<select id="selectAirlineImg" parameterType="BMap" resultType="BMap">
+		SELECT REQ_DT
+		     , REQ_SEQ
+		     , ADD_FILE_SEQ
+		     , ADD_FILE_NM
+		     , ADD_FILE_REAL_NM
+		     , ADD_FILE_PATH
+		     , ADD_FILE_PATH2
+		     , REG_DTM
+		     , REG_ID
+		  FROM TB_REQ_ADD_FILE
+		 WHERE 1 = 1
+		   AND REQ_DT   = #{REQ_DT}
+		   AND REQ_SEQ  = #{SEQ}
 	</select>
 </mapper>

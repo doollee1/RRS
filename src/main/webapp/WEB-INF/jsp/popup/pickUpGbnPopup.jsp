@@ -141,7 +141,7 @@ $(function() {
 	});
 	
 	$("#PICK_GBN_1").change(function(){
-	    var thisVal = $(this).val();
+	    var thisVal  = $(this).val();
 	    selec_init(thisVal);
 		if(thisVal == "01"){ // 미신청
 			fn_readonly(true);
@@ -241,9 +241,9 @@ $(function() {
 				alert("ajax 통신 error!");
 			}else{
 				var vhtml;
-				vhtml += '<option value="" data = "01" >--<s:message code="system.select"/>--</option>'
+				vhtml = '<option value="" data = "01" >--<s:message code="system.select"/>--</option>'
 				$.each(data.result , function ( i , v){
-					if(v.HDNG_GBN == "22") {
+					if(v.HDNG_GBN == "18") {
 						vhtml += '<option value = '+v.PROD_COND+' data="02" prod_seq = '+v.PROD_SEQ+' com_amt = '+v.COM_AMT+'>'+v.COM_CNTN+'</option>';
 					}else{
 						vhtml += '<option value = '+v.PROD_COND+' data="03" prod_seq = '+v.PROD_SEQ+' com_amt = '+v.COM_AMT+'>'+v.COM_CNTN+'</option>';

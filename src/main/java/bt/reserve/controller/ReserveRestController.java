@@ -54,6 +54,8 @@ public class ReserveRestController {
 
 		BRespData respData = new BRespData();
 		respData.put("result", resultDeptDetail);
+		
+		respData.put("image", reserveService.selectAirlineImg(paramData));
 		return respData;
 	}
 	
@@ -127,6 +129,7 @@ public class ReserveRestController {
 		paramData.put("SEQ"        , (String) reqData.get("SEQ"));
 		paramData.put("REQ_DT"     , (String) reqData.get("REQ_DT"));
 		paramData.put("ITEM_CD"    , (String) reqData.get("ITEM_CD"));
+		paramData.put("TOT_AMT"    , reqData.get("TOT_AMT"));
 		paramData.put("LOGIN_USER" , LoginInfo.getUserId());
 		
 		if(!reserveService.deleteInvoiceManager(paramData)){
@@ -147,7 +150,7 @@ public class ReserveRestController {
 	public BRespData selectPrdInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
 		BRespData respData = new BRespData();
 		BMap paramData = new BMap();
-		paramData.put("HEAD_CD"    , 500050);
+		paramData.put("HEAD_CD"    , 500210);
 		paramData.put("BAS_YY"     , String.valueOf( reqData.get("BAS_YY")));
 		paramData.put("SSN_GBN"    , (String) reqData.get("SSN_GBN"));
 		paramData.put("BAS_YY_SEQ" , Integer.parseInt(String.valueOf(reqData.get("BAS_YY_SEQ"))));
@@ -222,6 +225,26 @@ public class ReserveRestController {
 		if(!reserveService.updateReserveStatus(paramData)){
 			respData.put("dup", "Y");
 		};
+		return respData;
+	}
+	
+	/**
+	 * 여행사 이미지 불러오기
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/selectAirlineImg.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData selectAirlineImg(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BRespData respData = new BRespData();
+		
+		BMap paramData = new BMap();
+		paramData.put("SEQ"          , reqData.get("SEQ"));
+		paramData.put("REQ_DT"       , (String)reqData.get("REQ_DT"));
+		
+		respData.put("result", reserveService.selectAirlineImg(paramData));
 		return respData;
 	}
 	

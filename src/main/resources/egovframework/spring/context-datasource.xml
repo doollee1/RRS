@@ -14,6 +14,12 @@
         <property name="url" value="jdbc:log4jdbc:mariadb://106.240.164.71:44006/doollee?serverTimezone=UTC" />
         <property name="username" value="doollee"/> 
         <property name="password" value="EnfflEnffl12#$"/>
+        <!-- validationQuery:유효 검사용 쿼리( 1개 이상의 row를 반환하는 쿼리를 넣어주면 된다. ) -->
+        <property name="validationQuery" value="select 1"/>
+        <!-- testWhileIdle:컨넥션이 놀고 있을때 -_-; validationQuery 를 이용해서 유효성 검사를 할지 여부. -->
+        <property name="testWhileIdle" value="true"/>
+        <!-- timeBetweenEvictionRunsMillis:해당 밀리초마다 validationQuery 를 이용하여 유효성 검사 진행 -->
+        <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
     </bean>
     
 <!-- 	<bean id="dataSourceSpied" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"> -->
