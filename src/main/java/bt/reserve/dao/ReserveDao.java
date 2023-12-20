@@ -209,4 +209,15 @@ public class ReserveDao extends DBAbstractMapper {
         update("ReserveMapper.updateReserveStatus", param);
 	}
 	
+	/**
+	 * 예약현황 리스트 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> reserveReportInfoList(BMap param) throws Exception {
+		return list("ReserveMapper.reserveReportInfoList", param);
+	}
+	
 }
