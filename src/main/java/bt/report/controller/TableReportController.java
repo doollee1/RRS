@@ -104,9 +104,9 @@ public class TableReportController {
 		/* 서비스 부분 start */
 		
 		ServletContext servletContext = req.getSession().getServletContext();
-	    String realPath = servletContext.getRealPath("/WEB-INF/template/일반_INVOICE.xlsx");
+	    String realPath = servletContext.getRealPath("/WEB-INF/template");
 
-	    ExcelFile workbook = ExcelFile.load(realPath);
+	    ExcelFile workbook = ExcelFile.load(realPath+"/일반_INVOICE.xlsx");
 	    
 	    BMap param = new BMap();
         param.put("REF_CHR1"  ,  "H");
