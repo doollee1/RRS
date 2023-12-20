@@ -278,6 +278,16 @@ public class ReserveService {
 	}
 	
 	/**
+	 * 예약현황 리스트 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> reserveReportInfoList(BMap param) throws Exception {
+		return reserveDao.reserveReportInfoList(param);
+	}
+	
+  /**
 	 * 여행사 이미지 조회
 	 * @param param
 	 * @return
@@ -307,5 +317,5 @@ public class ReserveService {
 	}
 	
 	
-	
+
 }
