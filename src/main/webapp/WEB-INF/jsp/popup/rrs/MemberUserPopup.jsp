@@ -200,11 +200,13 @@ function downloadExcel(){
  	
 }
 
-function uploadExcel() {
+function uploadExcelFunc(param) {
 	var url = "/rrs/MemberUserExcelUploadPopup.do";
 	var pid = "p_MemberUserExcelUploadPopup";  //팝업 페이지의 취상위 div ID
 
-	popupOpen(url, pid);
+	popupOpen(url, pid, param, function(data) {
+		popupSearch();
+	});
 }
 
 // popupSearch
