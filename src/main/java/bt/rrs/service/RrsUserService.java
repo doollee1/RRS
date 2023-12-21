@@ -102,11 +102,12 @@ public class RrsUserService {
 		String[] header = new String[]{"NO", "HAN_NAME", "ENG_NAME", "TEL_NO"};
 		List<MultipartFile> files =  mpRequest.getFiles("fileupload[]");
 		List<BMap> result = new ArrayList<BMap>();
-		
 		for(MultipartFile file : files) {
 			List<BMap> list = upload.excelUpload(file, header);
 			for (BMap bMap : list) {
-				rrsUserDao.insertMemberUserInfo(bMap);
+				if(bMap.size() >= 3) { 
+					rrsUserDao.insertMemberUserInfo(bMap);
+				}
 			}
 		}
 		

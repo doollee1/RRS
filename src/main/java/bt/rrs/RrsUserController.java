@@ -197,14 +197,22 @@ public class RrsUserController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/rrs/MemberUserExcelUploadPopup.do")
-	public String MemberUserExcelUploadPopup(ModelMap model) throws Exception{
+	public String MemberUserExcelUploadPopup(ModelMap model,HttpServletRequest request) throws Exception{
 		return "/popup/rrs/MemberUserExcelUploadPopup";
 	}
 	
 	@RequestMapping(value = "/rrs/uploadMemberUserExcel.do")
 	@ResponseBody
 	public BRespData uploadMemberUserExcel(HttpServletRequest req) throws Exception {
-		return rrsUserService.uploadMemberUserExcel(req);		
+		BRespData respData = new BRespData();
+		try {
+			respData.put("result", rrsUserService.uploadMemberUserExcel(req));
+			respData.put("success", true);
+		} catch(Exception e) {
+			respData.put("success", false);
+			respData.put("message", e.getMessage());
+		}
+		return respData;
 	}
 	
 	/**
