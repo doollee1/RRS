@@ -80,7 +80,7 @@ public class RrsUserController {
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
 		if(!rrsUserService.saveUserInfo(param)){
-			respData.put("dup", "Y");
+			respData.put("isExistMember", "N");
 		}
 		
 		return respData;

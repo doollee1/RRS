@@ -92,6 +92,14 @@
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
 	
+	<select id="selectMemberUserCnt" parameterType="BMap" resultType="int">
+		SELECT COUNT(1)
+		  FROM tb_admin_reg_member 
+		 WHERE HAN_NAME = #{HAN_NAME}
+		   AND ENG_NAME = #{ENG_NAME}
+		   AND TEL_NO = #{TEL_NO}
+	</select>
+	
 	<select id="selectMemberUserInfoCnt" parameterType="BMap" resultType="int">
 		SELECT COUNT(1)
 		  FROM tb_admin_reg_member 

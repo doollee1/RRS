@@ -141,14 +141,13 @@ function saveUserInfo(){
 	var url = "/rrs/saveUserInfo.do"
 		
 	if(confirm("<s:message code='confirm.save'/>")){
-		console.log('param: ', param);
 		fn_ajax(url, false, param, function(data, xhr){
-			if(data.dup == 'Y'){
-				alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
+			if(data.isExistMember == 'N'){
+				alert("멤버회원이 등록되어 있지 않습니다."); 
 			}else{
 				alert("<s:message code='info.save'/>");
-				popupClose($('#p_UserInfo').data('pid'));			
 			}
+			popupClose($('#p_UserInfo').data('pid'));			
 		});
 	}
 }
