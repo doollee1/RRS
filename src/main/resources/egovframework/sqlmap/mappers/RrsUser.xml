@@ -15,7 +15,14 @@
 			  ,RET_YN
 			  ,REG_DTM
 			  ,UPD_DTM
-		FROM tb_member
+			  ,(
+					SELECT CODE_NM
+					FROM BC_COMM_L
+					WHERE 1=1
+					AND HEAD_CD = '500030'
+					AND CODE = T1.MEM_GBN
+				) AS MEM_NM
+		FROM tb_member as T1
 		<if test='USER_ID != null and USER_ID != ""'>
 		WHERE USER_ID = #{USER_ID}
 		</if>

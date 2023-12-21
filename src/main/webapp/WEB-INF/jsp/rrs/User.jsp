@@ -111,7 +111,7 @@
 		]
 		var colModel = [
 			{ name: 'ROWNUM', width: 100, align: 'center' },
-			{ name: 'MEM_GBN', width: 100, align: 'center' },
+			{ name: 'MEM_NM', width: 100, align: 'center' },
 			{ name: 'HAN_NAME', width: 100, align: 'center' },
 			{ name: 'ENG_NAME', width: 100, align: 'center' },
 			{ name: 'TEL_NO', width: 100, align: 'center' },
