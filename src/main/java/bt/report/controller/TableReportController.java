@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
@@ -17,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,17 +24,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.gembox.spreadsheet.CellStyle;
+import com.gembox.spreadsheet.ColorName;
 import com.gembox.spreadsheet.ExcelFile;
+import com.gembox.spreadsheet.ExcelFillPattern;
+
 import com.gembox.spreadsheet.ExcelRow;
 import com.gembox.spreadsheet.ExcelWorksheet;
 import com.gembox.spreadsheet.RowColumn;
 import com.gembox.spreadsheet.SaveOptions;
+import com.gembox.spreadsheet.SpreadsheetColor;
 import com.gembox.spreadsheet.SpreadsheetInfo;
+import com.gembox.spreadsheet.FillPatternStyle;
 
 import bt.btframework.common.vo.CodeVO;
 import bt.btframework.utils.BMap;
@@ -107,7 +112,7 @@ public class TableReportController {
 	    String realPath = servletContext.getRealPath("/WEB-INF/template");
 
 	    ExcelFile workbook = ExcelFile.load(realPath+"/일반_INVOICE.xlsx");
-	    
+	  
 	    BMap param = new BMap();
         param.put("REF_CHR1"  ,  "H");
        
@@ -226,6 +231,10 @@ public class TableReportController {
         for(int i = 0; i < DList.size(); i++)
         {  
             ExcelRow currentRow = worksheet.getRow(row2);
+            //스타일 설정
+            CellStyle sBgColor =new CellStyle();
+           
+            ExcelFillPattern fillPatter = currentRow.getStyle().getFillPattern();
             
             if(DList.get(i).getCode().equals("D00")) // 입금계좌
             {
@@ -236,16 +245,42 @@ public class TableReportController {
             {
                 String codeNm = DList.get(i).getValue();
 
-                if(DList.get(i).getCode().equals("D04"))
+                if(DList.get(i).getCode().equals("D04") || DList.get(i).getCode().equals("D32"))
                 {
                     codeNm = codeNm.replace("[0]", numFormatter.format(resultDeptDetail.get("TOT_AMT"))); //총액
                     codeNm = codeNm.replace("[1]", numFormatter.format(resultDeptDetail.get("DEP_AMT")));  //예약금
                 }
-                else if(DList.get(i).getCode().equals("D05"))
+                else if(DList.get(i).getCode().equals("D05") || DList.get(i).getCode().equals("D33"))
                 {
                     codeNm = codeNm.replace("[0]", numFormatter.format(resultDeptDetail.get("BAL_AMT")) ); //잔금
                 }           
                 currentRow.getCell(1).setValue(codeNm);
+            }
+            
+            if(DList.get(i).getRefChr3().length() > 0)
+            {
+                if(DList.get(i).getRefChr3().equals("skyblue"))
+                {
+                    currentRow.getCell(1).zzeInternal().setColor(SpreadsheetColor.fromName(ColorName.LIGHT_BLUE));
+                }
+                else  if(DList.get(i).getRefChr3().equals("red"))
+                {
+                    currentRow.getCell(1).zzeInternal().setColor(SpreadsheetColor.fromName(ColorName.RED));
+                }
+            }
+
+            if(DList.get(i).getRefChr4().length() > 0)
+            {
+                if(DList.get(i).getRefChr4().equals("yellow"))
+                {
+                    fillPatter.setPattern(FillPatternStyle.SOLID, SpreadsheetColor.fromName(ColorName.LIGHT_BLUE), SpreadsheetColor.fromName(ColorName.YELLOW));
+                }
+                else  if(DList.get(i).getRefChr4().equals("red"))
+                {
+                    fillPatter.setPattern(FillPatternStyle.SOLID, SpreadsheetColor.fromName(ColorName.LIGHT_BLUE), SpreadsheetColor.fromName(ColorName.RED));
+                }
+                sBgColor.setFillPattern(fillPatter);    //채우기 적용
+                currentRow.getCell(1).setStyle(sBgColor);
             }
             row2++;
         }
@@ -255,12 +290,46 @@ public class TableReportController {
         int row3 = row2;
         
         worksheet.getRows().insertCopy(row3+1, TList.size()+2, worksheet.getRow(row3));
-        
+       
         //특이사항
         for(int i = 0; i < TList.size(); i++)
         { 
             ExcelRow currentRow = worksheet.getRow((row3+1) + i);
+           
             currentRow.getCell(1).setValue(TList.get(i).getValue());
+            
+            if(TList.get(i).getRefChr3().length() > 0)
+            {
+                if(TList.get(i).getRefChr3().equals("skyblue"))
+                {
+                    currentRow.getCell(1).zzeInternal().setColor(SpreadsheetColor.fromName(ColorName.LIGHT_BLUE));//폰트
+                }
+                else  if(TList.get(i).getRefChr3().equals("yellow"))
+                {
+                    currentRow.getCell(1).zzeInternal().setColor(SpreadsheetColor.fromName(ColorName.YELLOW));//폰트
+                }
+                else  if(TList.get(i).getRefChr3().equals("red"))
+                {
+                    currentRow.getCell(1).zzeInternal().setColor(SpreadsheetColor.fromName(ColorName.RED));//폰트
+                }
+            }
+
+            if(TList.get(i).getRefChr4().length() > 0)
+            {
+                if(TList.get(i).getRefChr3().equals("skyblue"))
+                {
+                    currentRow.getCell(1).getStyle().getFillPattern().setSolid(SpreadsheetColor.fromName(ColorName.LIGHT_BLUE)); //배경색
+                }
+                else if(TList.get(i).getRefChr4().equals("yellow"))
+                {
+                     currentRow.getCell(1).getStyle().getFillPattern().setSolid(SpreadsheetColor.fromName(ColorName.YELLOW)); //배경색
+                }
+                else  if(TList.get(i).getRefChr4().equals("red"))
+                {
+                    currentRow.getCell(1).getStyle().getFillPattern().setSolid(SpreadsheetColor.fromName(ColorName.RED)); //배경색
+                }
+            }
+            
         }
         worksheet.calculate();
         
@@ -316,6 +385,7 @@ public class TableReportController {
 	    BMap param = new BMap();
         param.put("SEQ"   , (String) reqData.get("SEQ"));
         param.put("REQ_DT", (String) reqData.get("REQ_DT"));
+        param.put("LOGIN_USER", LoginInfo.getUserId());
         
         BMap resultDeptDetail = reserveService.reserveSelectDetail(param);
         
@@ -334,9 +404,13 @@ public class TableReportController {
         sendEmailparam.put("TO_EMAIL"   , resultDeptDetail.get("EMAIL"));
 
         boolean res = mailSendService.sendMail(sendEmailparam);
-        System.out.println("================"+param.get("EMAIL")+"==========");
-        System.out.println("================"+res);
         
+        System.out.println("================"+res);
+        if(res)
+        {
+            //인보이스 발행일자 수정
+            reserveService.updateInvRegDt(param);
+        }
         BRespData respData = new BRespData();
         respData.put("resultCd", res);
         
