@@ -3,19 +3,19 @@
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
 <%
 /**
- * @JSP Name : MemberExcelUploadPopup.jsp 
+ * @JSP Name : MemberUserExcelUploadPopup.jsp 
  * @Description : 멤버 엑셀업로드 팝업
  */
 %>
 
-<div id="excelupload">
+<div id=MemberUserExcelUploadPopup>
 	<div id="form_wrap">
 		<div id="ATTACHFILE"></div>
 	</div>
 </div>
 <script type="text/javascript">
 $(function() {
-	$('#excelupload').dialog({
+	$('#MemberUserExcelUploadPopup').dialog({
 		title: 'Upload Excel',
 		autoOpen: false,
 		height: 250,
@@ -35,12 +35,12 @@ $(function() {
 				}
 			}
 		},
-		close : function() {
-			popupClose($(this).attr('id')); /* 필수로 들어가야함 */
-		},
 		open : function() {
 			$("#ATTACHFILE").mkFileUpload("EXCEL", "/rrs/uploadMemberUserExcel.do", "xls|xlsx");
 			ajaxUpload();
+		},
+		close : function() {
+			popupClose($(this).data('pid')); /* 필수로 들어가야함 */
 		}
 	});
 });
@@ -62,7 +62,12 @@ function ajaxUpload() {
 		},
 		//submit이후의 처리
 		success: function(data, statusText){
-			popupClose($('#excelupload').data('pid'), data);
+			if(!data.success) {
+				alert('upload fail: '+ data.message)
+			} else {
+				alert('upload success')
+			}
+			popupClose($('#MemberUserExcelUploadPopup').data('pid'));
 		},
         //ajax error
        	error: function(e){
