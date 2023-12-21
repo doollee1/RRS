@@ -28,10 +28,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.gembox.spreadsheet.CellStyle;
+
 import com.gembox.spreadsheet.ColorName;
 import com.gembox.spreadsheet.ExcelFile;
-import com.gembox.spreadsheet.ExcelFillPattern;
+
 
 import com.gembox.spreadsheet.ExcelRow;
 import com.gembox.spreadsheet.ExcelWorksheet;
@@ -39,7 +39,6 @@ import com.gembox.spreadsheet.RowColumn;
 import com.gembox.spreadsheet.SaveOptions;
 import com.gembox.spreadsheet.SpreadsheetColor;
 import com.gembox.spreadsheet.SpreadsheetInfo;
-import com.gembox.spreadsheet.FillPatternStyle;
 
 import bt.btframework.common.vo.CodeVO;
 import bt.btframework.utils.BMap;
@@ -103,9 +102,7 @@ public class TableReportController {
 	public void retrieveCustomerReportAll(@RequestParam Map<String,Object> reqData, HttpServletRequest req, HttpServletResponse resp)  throws Exception {
 	    
 	   SpreadsheetInfo.setLicense("FREE-LIMITED-KEY");
-	   
-	   BRespData respData = new BRespData(ResponseStatus.OK, "");
-	   
+
 		/* 서비스 부분 start */
 		
 		ServletContext servletContext = req.getSession().getServletContext();
@@ -231,11 +228,7 @@ public class TableReportController {
         for(int i = 0; i < DList.size(); i++)
         {  
             ExcelRow currentRow = worksheet.getRow(row2);
-            //스타일 설정
-            CellStyle sBgColor =new CellStyle();
-           
-            ExcelFillPattern fillPatter = currentRow.getStyle().getFillPattern();
-            
+          
             if(DList.get(i).getCode().equals("D00")) // 입금계좌
             {
                 currentRow = worksheet.getRow(row2-1);
@@ -263,6 +256,10 @@ public class TableReportController {
                 {
                     currentRow.getCell(1).zzeInternal().setColor(SpreadsheetColor.fromName(ColorName.LIGHT_BLUE));
                 }
+                else  if(DList.get(i).getRefChr3().equals("yellow"))
+                {
+                    currentRow.getCell(1).zzeInternal().setColor(SpreadsheetColor.fromName(ColorName.YELLOW));
+                }
                 else  if(DList.get(i).getRefChr3().equals("red"))
                 {
                     currentRow.getCell(1).zzeInternal().setColor(SpreadsheetColor.fromName(ColorName.RED));
@@ -271,16 +268,19 @@ public class TableReportController {
 
             if(DList.get(i).getRefChr4().length() > 0)
             {
-                if(DList.get(i).getRefChr4().equals("yellow"))
+                if(TList.get(i).getRefChr3().equals("skyblue"))
                 {
-                    fillPatter.setPattern(FillPatternStyle.SOLID, SpreadsheetColor.fromName(ColorName.LIGHT_BLUE), SpreadsheetColor.fromName(ColorName.YELLOW));
+                    currentRow.getCell(1).getStyle().getFillPattern().setSolid(SpreadsheetColor.fromName(ColorName.LIGHT_BLUE)); //배경색
+                }
+                else if(DList.get(i).getRefChr4().equals("yellow"))
+                {
+                    currentRow.getCell(1).getStyle().getFillPattern().setSolid(SpreadsheetColor.fromName(ColorName.YELLOW)); //배경색
                 }
                 else  if(DList.get(i).getRefChr4().equals("red"))
                 {
-                    fillPatter.setPattern(FillPatternStyle.SOLID, SpreadsheetColor.fromName(ColorName.LIGHT_BLUE), SpreadsheetColor.fromName(ColorName.RED));
+                    currentRow.getCell(1).getStyle().getFillPattern().setSolid(SpreadsheetColor.fromName(ColorName.RED)); //배경색
                 }
-                sBgColor.setFillPattern(fillPatter);    //채우기 적용
-                currentRow.getCell(1).setStyle(sBgColor);
+               
             }
             row2++;
         }
