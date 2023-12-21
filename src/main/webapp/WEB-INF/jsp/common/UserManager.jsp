@@ -27,10 +27,10 @@
 						<td class="medium_td"><input type="text" id="S_USER_ID" name="S_USER_ID" class="cmc_txt" /></td>
 						<td class="small_td"><p><s:message code='system.Username'/></p></td>
 						<td class="medium_td"><input type="text" id="S_USER_NM" name="S_USER_NM" class="cmc_txt" /></td>
-						<td class="small_td"><p><s:message code='system.department'/></p></td>
+						<%-- <td class="small_td"><p><s:message code='system.department'/></p></td>
 						<td><input type="text" id="DEPT_CD" name="DEPT_CD" class="cmc_txt" disabled="" readonly="readonly"/ style="float:left;">
 						<button class='grid_popupbtn' id='btn_department' type='button'></button>
-						<p name="DEPT_NM" id="DEPT_NM"></p></td>
+						<p name="DEPT_NM" id="DEPT_NM"></p></td> --%>
 					</tr>
 				</tbody>
 			</table>
@@ -99,7 +99,7 @@
 				cSearch(null)
 			}
 		});
-		
+		/*
 		$('#DEPT_CD').on('keyup', function (e) {
 			if (e.which  == 8 || e.which  == 46){
 				if(fn_empty($("#DEPT_CD").val())){
@@ -120,7 +120,7 @@
 				}
 			});
 		})
-		
+		*/
 	});
 
 	function createGrid1(){
