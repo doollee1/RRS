@@ -7,7 +7,7 @@
 	<form id="frmSearch" action="#">
 		<input type="hidden" name="ST_DT1_COPY" id="ST_DT1_COPY" />
 		<input type="hidden" name="branch" id="branch" />
-	</form>
+	</form> 
 </div>
 
 <div id="productCopyPopUp">
