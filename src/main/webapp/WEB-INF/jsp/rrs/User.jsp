@@ -27,10 +27,6 @@
 						<td class="medium_td"><input type="text" id="S_USER_ID" name="S_USER_ID" class="cmc_txt" /></td>
 						<td class="small_td"><p><s:message code='system.Username'/></p></td>
 						<td class="medium_td"><input type="text" id="S_USER_NM" name="S_USER_NM" class="cmc_txt" /></td>
-						<td class="small_td"><p><s:message code='system.department'/></p></td>
-						<td><input type="text" id="DEPT_CD" name="DEPT_CD" class="cmc_txt" disabled="" readonly="readonly"/ style="float:left;">
-						<button class='grid_popupbtn' id='btn_department' type='button'></button>
-						<p name="DEPT_NM" id="DEPT_NM"></p></td>
 					</tr>
 				</tbody>
 			</table>
@@ -100,27 +96,6 @@
 			}
 		});
 		
-		$('#DEPT_CD').on('keyup', function (e) {
-			if (e.which  == 8 || e.which  == 46){
-				if(fn_empty($("#DEPT_CD").val())){
-					$("#DEPT_NM").text("");
-				}
-			}
-		});
-		$("#btn_department").click(function(e){
-
-			var url = "/common/DeptPopup.do";
-			var pid = "deptPopup"
-			var param = {"S_DEPT_CD" : $("#DEPT_CD").val()};
-			
-			popupOpen(url, pid, param, function(data){
-				if(!fn_empty(data)){
-					$("#DEPT_CD").val(data[0].DEPT_CD);
-					$("#DEPT_NM").text(data[0].DEPT_NM);
-				}
-			});
-		})
-		
 	});
 
 	function createGrid1(){
@@ -136,7 +111,7 @@
 		]
 		var colModel = [
 			{ name: 'ROWNUM', width: 100, align: 'center' },
-			{ name: 'MEM_GBN', width: 100, align: 'center' },
+			{ name: 'MEM_NM', width: 100, align: 'center' },
 			{ name: 'HAN_NAME', width: 100, align: 'center' },
 			{ name: 'ENG_NAME', width: 100, align: 'center' },
 			{ name: 'TEL_NO', width: 100, align: 'center' },

@@ -84,6 +84,16 @@ public class RrsUserDao extends DBAbstractMapper {
 	}
 	
 	/**
+	 * 특정 멤버회원 카운트
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public int selectMemberUserCnt(BMap param) throws Exception{
+		return (int)selectByPk("RrsUserMapper.selectMemberUserCnt", param);
+	}
+	
+	/**
 	 * 특정 멤버회원 수 카운트
 	 * @param param
 	 * @return

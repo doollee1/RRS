@@ -17,10 +17,9 @@
       	<button class='btn btn-default' id='btn_delete' type='button' onclick='deleteMemberUser()'>
       		삭제
       	</button>
-      	<button class='btn btn-default' id='btn_upload_excel' type='button' onclick='uploadExcel();'>
+		<button class='btn btn-default' id='btn_upload_excel_popup' type='button' onclick="uploadExcelFunc()">
 			엑셀 업로드
       	</button>
-	
 	</div>
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
 		<div class="pop_grid_wrap">	
@@ -201,11 +200,13 @@ function downloadExcel(){
  	
 }
 
-function uploadExcel() {
+function uploadExcelFunc(param) {
 	var url = "/rrs/MemberUserExcelUploadPopup.do";
 	var pid = "p_MemberUserExcelUploadPopup";  //팝업 페이지의 취상위 div ID
 
-	popupOpen(url, pid);
+	popupOpen(url, pid, param, function(data) {
+		popupSearch();
+	});
 }
 
 // popupSearch

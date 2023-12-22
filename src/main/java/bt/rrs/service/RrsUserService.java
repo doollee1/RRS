@@ -37,18 +37,18 @@ public class RrsUserService {
 	 * @throws Exception
 	 */
 	public Boolean saveUserInfo(BMap param) throws Exception{
-		Boolean isValid = true;
-		int cnt = rrsUserDao.selectUserInfoCnt(param); //현 ID가 등록된 ID인지 카운트 
-		if(cnt == 0){
-			rrsUserDao.insertUserInfo(param); //등록되지 않았을 때 등록
-		}else{
-			if(param.getString("ISNEW").equals("0")){
-				isValid = false;
-			}else{
-				rrsUserDao.updateUserInfo(param); //등록된 사용자 정보 수정
+		String MEM_GBN = param.getString("MEM_GBN");
+		if(MEM_GBN.equals("01")) {
+			int memberUserCnt = rrsUserDao.selectMemberUserCnt(param);
+			if(memberUserCnt == 0) {
+				return false;
 			}
 		}
-		return isValid;
+		
+		int cnt = rrsUserDao.selectUserInfoCnt(param); //현 ID가 등록된 ID인지 카운트 
+		if(cnt == 0) rrsUserDao.insertUserInfo(param); //등록되지 않았을 때 등록
+		else rrsUserDao.updateUserInfo(param); //등록된 사용자 정보 수정
+		return true;
 	}
 	
 	/**
@@ -102,11 +102,12 @@ public class RrsUserService {
 		String[] header = new String[]{"NO", "HAN_NAME", "ENG_NAME", "TEL_NO"};
 		List<MultipartFile> files =  mpRequest.getFiles("fileupload[]");
 		List<BMap> result = new ArrayList<BMap>();
-		
 		for(MultipartFile file : files) {
 			List<BMap> list = upload.excelUpload(file, header);
 			for (BMap bMap : list) {
-				rrsUserDao.insertMemberUserInfo(bMap);
+				if(bMap.size() >= 3) { 
+					rrsUserDao.insertMemberUserInfo(bMap);
+				}
 			}
 		}
 		

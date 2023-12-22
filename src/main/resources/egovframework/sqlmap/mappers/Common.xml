@@ -81,6 +81,11 @@
 	/* Common.xml -> selectCommonCodeRef */
 		SELECT CODE CODE
 			  ,CODE_NM VALUE
+              ,REF_CHR1
+              ,REF_CHR2
+              ,REF_CHR3
+              ,REF_CHR4
+              ,REF_CHR5
 		  FROM BC_COMM_L  
 		 WHERE HEAD_CD = #{HEAD_CD}
 		   AND STATUS = 'Y'
