@@ -76,6 +76,7 @@
 		initLayout();
 		createGrid1();
 		cSearch();
+		setTelNoHypen(); // 연락처 하이픈 처리
 		
 		/* grid1 Event */
 		$('#grid1').jqGrid('setGridParam', {
@@ -168,6 +169,14 @@
 			"USER_ID" : gridData["USER_ID"],
 		};
 		userPopup(param);
+	}
+	
+	function setTelNoHypen() {
+		var rowDataList = $("#grid1").getRowData();
+		for(var i=0; i<rowDataList.length; i++) {
+			var convert_TEL_NO = rowDataList[i].TEL_NO.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
+			$("#grid1").jqGrid('setCell', i+1, 'TEL_NO', convert_TEL_NO);
+		}
 	}
 	
 	function cAdd() {

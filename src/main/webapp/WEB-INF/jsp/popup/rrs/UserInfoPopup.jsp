@@ -42,7 +42,7 @@
 				<tr>
 					<th>전화번호</th>
 					<td>
-						<input type="text" id="TEL_NO" name="TEL_NO" class="cmc_txt" style="width:150px;" maxlength="30"/>
+						<input type="text" id="TEL_NO" name="TEL_NO" class="cmc_txt" style="width:150px;" maxlength="13" oninput="autoHyphen(this)"/>
 					</td>
 					<th>회원 ID</th>
 					<td>
@@ -54,10 +54,6 @@
 					</td>
 				</tr>
 				<tr>
-					<th>비밀번호</th>
-					<td>
-						<input type="text" id="PASSWD" name="PASSWD" class="cmc_txt" style="width:150px;" maxlength="30"/>
-					</td>
 					<th>탈퇴여부</th>
 					<td>
 						<select id="RET_YN" name="RET_YN" class="cmc_combo" style="width:150px;">
@@ -69,8 +65,6 @@
 					<td>
 						<input type="text" id="REG_DTM" name="REG_DTM" class="cmc_txt" style="width:150px;" readonly maxlength="50"/>
 					</td>
-				</tr>
-				<tr>
 					<th>수정일시</th>
 					<td>
 						<input type="text" id="UPD_DTM" name="UPD_DTM" class="cmc_txt" style="width:150px;" readonly maxlength="50"/>
@@ -117,6 +111,10 @@ $(function() {
 				var upd_dtm = $("#UPD_DTM").val();
 				$("#REG_DTM").val(new Date(Number(reg_dtm)).toLocaleDateString());
 				$("#UPD_DTM").val(new Date(Number(upd_dtm)).toLocaleDateString());
+				
+				var tel_no = $("#TEL_NO").val();
+				var convert_tel_no = tel_no.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
+				$("#TEL_NO").val(convert_tel_no);
 			}
 		}
 	});
@@ -150,6 +148,13 @@ function saveUserInfo(){
 			popupClose($('#p_UserInfo').data('pid'));			
 		});
 	}
+}
+
+function autoHyphen(target) {
+	target.value = target.value
+		.replace(/[^0-9]/g, '')
+	  	.replace(/^(\d{0,3})(\d{0,4})(\d{0,4})$/g, "$1-$2-$3").replace(/(\-{1,2})$/g, "");
+	return target
 }
 
 </script>
