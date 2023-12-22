@@ -126,10 +126,9 @@
 				reservePopup(param);              
 			}
 		}); 
-		
 		cSearch();
-		
 	}
+	
 	function createQuotationGrid() {
 		var colName = [ '<s:message code="reservation.seq"/>',
 				'<s:message code="reservation.mem_gbn"/>',

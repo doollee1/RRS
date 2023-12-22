@@ -58,8 +58,6 @@ $(function() {
 			}else{
 				if(!fn_empty(data.result)){
 				    $("#arr_img").attr("src", "/upload/" + data.result.ADD_FILE_PATH2 + data.result.ADD_FILE_NM);
-				}else{
-					
 				}
 			}
 		});

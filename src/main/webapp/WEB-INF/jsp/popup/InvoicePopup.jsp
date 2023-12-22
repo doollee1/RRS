@@ -295,7 +295,6 @@ $(function() {
 					}
 				});
 			}, 2000); 
-			 
 			 loadingEnd();
 		}
 	}

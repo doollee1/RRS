@@ -73,6 +73,7 @@ $(function() {
 		}
 	});
 	
+	
 	function cSearch(receivcedData){
 		var url = "/reserve/selectReserveStatus.do";
 		var param = {"CODE"   : prc_sts
@@ -117,7 +118,6 @@ $(function() {
 					p_rtnData = {};
 					popupClose($('#p_changeStatusPopup').data('pid'));
 				}
-				
 			});
 		}
 	}

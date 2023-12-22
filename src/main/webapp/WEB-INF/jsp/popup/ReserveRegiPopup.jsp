@@ -434,7 +434,6 @@ $(function() {
 		           , "PRC_STS_NM" : $("#PRC_STS_NM").val()
 		           };
 		popupOpen(url, pid, param, function(data) {
-			
 		});
 	}
 	
