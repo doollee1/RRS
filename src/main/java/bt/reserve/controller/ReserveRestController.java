@@ -159,6 +159,23 @@ public class ReserveRestController {
 	}
 	
 	/**
+	 * 미팅샌딩 리스트 조회
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/selectPickupList.do", method = RequestMethod.POST)
+	public BRespData selectPickupList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BRespData respData = new BRespData();
+		BMap paramData = new BMap();
+		paramData.put("REQ_SEQ", reqData.get("REQ_SEQ"));
+		paramData.put("REQ_DT" , (String)reqData.get("REQ_DT"));
+		respData.put("result"  , reserveService.selectPickupList(paramData));
+		return respData;
+	}
+	
+	/**
 	 * 미팅샌딩 데이터 저장 및 업데이트 
 	 * @param reqData
 	 * @param req
@@ -168,15 +185,17 @@ public class ReserveRestController {
 	@RequestMapping(value = "/pickupManager.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData pickupManager(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		List<BMap> detail = reqData.getParamDataList("detail");
 		BRespData respData = new BRespData();
 		
 		BMap paramData = new BMap();
 		paramData.put("REQ_SEQ"   , reqData.get("REQ_SEQ"));
 		paramData.put("REQ_DT"    , (String)reqData.get("REQ_DT"));
+		paramData.put("PICK_GBN"  , (String)reqData.get("PICK_GBN"));
 		paramData.put("PROD_SEQ"  , reqData.get("PROD_SEQ"));
 		paramData.put("LOGIN_USER", LoginInfo.getUserId());
 		
-		if(!reserveService.pickupManager(paramData , reqData)){
+		if(!reserveService.pickupManager(paramData , detail)){
 			respData.put("dup", "Y");
 		};
 		
@@ -245,6 +264,28 @@ public class ReserveRestController {
 		paramData.put("REQ_DT"       , (String)reqData.get("REQ_DT"));
 		
 		respData.put("result", reserveService.selectAirlineImg(paramData));
+		return respData;
+	}
+	
+	/**
+	 * 예약 데이터 저장 및 업데이트 
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/ReserveManager.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData ReserveManager(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BRespData respData = new BRespData();
+		BMap reserveInfo = reqData.getParamDataMap("reserveInfo");
+		reserveInfo.put("V_FLAG"    , (String)reqData.get("V_FLAG"));
+		reserveInfo.put("LOGIN_USER", LoginInfo.getUserId());
+		
+		if(!reserveService.ReserveManager(reserveInfo)){
+			respData.put("dup", "Y");
+		};
+		
 		return respData;
 	}
 	

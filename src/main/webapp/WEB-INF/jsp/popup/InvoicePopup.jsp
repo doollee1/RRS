@@ -104,10 +104,6 @@ $(function() {
 		$('#invoiceGrid').jqGrid("setLabel", "UNIT_NUM", "", "", {style: "display: none"});
 	}
 	
-	function chgEvnt(data){
-		console.log(data);
-	}
-	
 	function createGrid(){
 		var colName = [
 						  '<s:message code="invoice.seq"/>'
@@ -227,7 +223,6 @@ $(function() {
 				}
 			});
 		});
-		
 		var url = '/reserve/saveInvoiceManager.do';
 		var param = {"detail"   : gridData
 				   , "SEQ"      : seq 

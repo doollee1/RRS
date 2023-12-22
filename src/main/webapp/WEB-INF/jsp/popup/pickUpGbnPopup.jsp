@@ -27,7 +27,8 @@
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
-						<input type="hidden" id="HD_PROD_SEQ" name="HD_PROD_SEQ">
+						<input type="hidden" id="HD_PROD_SEQ1" name="HD_PROD_SEQ1">
+						<input type="hidden" id="HD_PROD_SEQ2" name="HD_PROD_SEQ2">
 					</td>
 					<th><s:message code='meetSanding.prdCnt'/></th>
 					<td>
@@ -48,11 +49,11 @@
 				<tr>
 				    <th><s:message code='meetSanding.personCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="PER_NUM1" value="0" name="PER_NUM1"/>명
+						<input type="text" class="cmc_txt" id="PER_NUM1" value="0" style="width:51.5%;" name="PER_NUM1"/>명
 					</td>
 					<th><s:message code='meetSanding.carCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="CAR_NUM1" value="1"  name="CAR_NUM1"/>대
+						<input type="text" class="cmc_txt" id="CAR_NUM1" value="0" style="width:51.5%;" name="CAR_NUM1"/>대
 					</td>
 				</tr>
 				<tr>
@@ -75,11 +76,11 @@
 				<tr class="doubleCnt">
 				    <th><s:message code='meetSanding.personCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="PER_NUM2" value="0"  name="PER_NUM2"/>명
+						<input type="text" class="cmc_txt" id="PER_NUM2" value="0" style="width:51.5%;" name="PER_NUM2"/>명
 					</td>
 					<th><s:message code='meetSanding.carCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="CAR_NUM2" value="1"  name="CAR_NUM2"/>대
+						<input type="text" class="cmc_txt" id="CAR_NUM2" value="0" style="width:51.5%;" name="CAR_NUM2"/>대
 					</td>
 				</tr>
 				<tr class="doubleCnt">
@@ -128,6 +129,7 @@ $(function() {
 			popupClose($(this).attr('id')); /* 필수로 들어가야함 */
 		},
 		open : function() {
+			mkSelect();
 			fn_init($(this).data());
 		}
 	});
@@ -152,23 +154,26 @@ $(function() {
 			$("#CAR_NUM1").val("1");
 		}
 		
-		$('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').prop("selected" , true)
+		$('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').prop("selected" , true);
 		$('#PROD_SEQ1 option[data='+thisVal+']').show();
 		$('#PROD_SEQ1 option').not('[data='+thisVal+']').hide();
 		
-		$('#PROD_SEQ2 option[data='+thisVal+']:eq(0)').prop("selected" , true)
+		$('#PROD_SEQ2 option[data='+thisVal+']:eq(0)').prop("selected" , true);
 		$('#PROD_SEQ2 option[data='+thisVal+']').show();
 		$('#PROD_SEQ2 option').not('[data='+thisVal+']').hide();
 		
+		$("#USE_AMT1").val($('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').attr("com_amt"));
+		$("#USE_AMT2").val($('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').attr("com_amt"));
+		
 	});
-	
+	/* 
     $("#PER_NUM1").on("keyup , change" , function(){
 		var pfee1;
 		var prod_seq1 = $("#PROD_SEQ1").val();
-		var per_num1 = $("#PER_NUM1").val();   //인원수
+		//var per_num1 = $("#PER_NUM1").val();   //인원수
 		var com_amt1 = parseInt($("#PROD_SEQ1 option:selected").attr("com_amt"));
 		if(!fn_empty(prod_seq1)){
-			pfee1 = per_num1 * com_amt1;
+			pfee1 = com_amt1;
 		}else{
 			pfee1 = 0;
 		}
@@ -178,16 +183,16 @@ $(function() {
 	$("#PER_NUM2").on("keyup , change" , function(){
 		var pfee2;
 		var prod_seq2 = $("#PROD_SEQ2").val();
-		var per_num2  = $("#PER_NUM2").val();
+		//var per_num2  = $("#PER_NUM2").val();
 		var com_amt2 = parseInt($("#PROD_SEQ2 option:selected").attr("com_amt"));
 		
 		if(!fn_empty(prod_seq2)){
-			pfee2 = per_num2 * com_amt2;
+			pfee2 = com_amt2;
 		}else{
 			pfee2 = 0;
 		}
 		$("#USE_AMT2").val(pfee2);
-	});
+	}); */
 	
 	$("#PROD_SEQ1").on("change" , function(){
 		var prd_val = $(this).val();
@@ -195,12 +200,11 @@ $(function() {
 		var v_com_amt1 = parseInt($("#PROD_SEQ1 option:selected").attr("com_amt"));
 		
 		if(!fn_empty(prd_val)){
-			vfee = $("#PER_NUM1").val() * v_com_amt1;
+			vfee =  v_com_amt1;
 		}else{
 			vfee = 0;
 		}
 		$("#USE_AMT1").val(vfee);
-		$("#PROD_SEQ2").val(prd_val);
 	});
 	
 	$("#PROD_SEQ2").on("change" , function(){
@@ -208,7 +212,7 @@ $(function() {
 		var vfee2;
 		var v_com_amt2 = parseInt($("#PROD_SEQ2 option:selected").attr("com_amt"));
 		if(!fn_empty(prd_val)){
-			vfee2 = $("#PER_NUM2").val() * v_com_amt2;
+			vfee2 = v_com_amt2;
 		}else{
 			vfee2 = 0;
 		}
@@ -218,17 +222,17 @@ $(function() {
 	function fn_readonly (temp){
 		$("#PRD_CNT"  ).attr("disabled" , temp);
 		$("#PROD_SEQ1").attr("disabled" , temp);
-		$("#PROD_SEQ2").attr("disabled" , true);
+		$("#PROD_SEQ2").attr("disabled" , temp);
 		$("#PER_NUM1" ).attr("readonly" , temp);
-		$("#CAR_NUM1" ).attr("readonly" , true);
+		$("#CAR_NUM1" ).attr("readonly" , temp);
 		$("#PROD_SEQ2").attr("readonly" , temp);
 		$("#PER_NUM2" ).attr("readonly" , temp);
-		$("#CAR_NUM2" ).attr("readonly" , true);
+		$("#CAR_NUM2" ).attr("readonly" , temp);
 		$("#ADD_AMT1" ).attr("readonly" , temp);
 		$("#ADD_AMT2" ).attr("readonly" , temp);
 	}
 	
-	function fn_init(recevicedData) {
+	function mkSelect(){
 		var now  = new Date();	// 현재 날짜 및 시간
 		var year = now.getFullYear();	
 		var url = "/reserve/selectPrdInfo.do";
@@ -241,34 +245,71 @@ $(function() {
 				alert("ajax 통신 error!");
 			}else{
 				var vhtml;
-				vhtml = '<option value="" data = "01" >--<s:message code="system.select"/>--</option>'
+				vhtml = '<option value="" data = "01" dataDetail = "01" com_amt = 0>--<s:message code="system.select"/>--</option>'
 				$.each(data.result , function ( i , v){
 					if(v.HDNG_GBN == "18") {
-						vhtml += '<option value = '+v.PROD_COND+' data="02" prod_seq = '+v.PROD_SEQ+' com_amt = '+v.COM_AMT+'>'+v.COM_CNTN+'</option>';
+						vhtml += '<option value = '+v.PROD_COND+' data="02" dataDetail = '+'0'+(i+2)+' prod_seq = '+v.PROD_SEQ+' com_amt = '+v.COM_AMT+'>'+v.COM_CNTN+'</option>';
 					}else{
-						vhtml += '<option value = '+v.PROD_COND+' data="03" prod_seq = '+v.PROD_SEQ+' com_amt = '+v.COM_AMT+'>'+v.COM_CNTN+'</option>';
+						vhtml += '<option value = '+v.PROD_COND+' data="03" dataDetail = '+'0'+(i+2)+' prod_seq = '+v.PROD_SEQ+' com_amt = '+v.COM_AMT+'>'+v.COM_CNTN+'</option>';
 					}
 				});
 				$("#PROD_SEQ1").append(vhtml);
 				$("#PROD_SEQ2").append(vhtml);
 			}
-			gv_req_dt = recevicedData.REQ_DT;
-			gv_seq    = recevicedData.SEQ;
-			if(!fn_empty(recevicedData.PICK_GBN))     $("#PICK_GBN_1" ).val(recevicedData.PICK_GBN).trigger("change");
-			if(!fn_empty(recevicedData.PER_NUM))      $("#PER_NUM1"   ).val(recevicedData.PER_NUM).trigger("change");
-			if(!fn_empty(recevicedData.PCK_PROD_SEQ)){
-				$('#PROD_SEQ1 option[prod_seq='+recevicedData.PCK_PROD_SEQ+']').prop("selected", true); 
-				$('#PROD_SEQ2 option[prod_seq='+recevicedData.PCK_PROD_SEQ+']').prop("selected", true); 
-				$("#HD_PROD_SEQ").val(recevicedData.PCK_PROD_SEQ);
-			}
-			if(!fn_empty(recevicedData.PRC_STS)){
-				if(recevicedData.PRC_STS == "05" || recevicedData.PRC_STS == "06" ||recevicedData.PRC_STS == "07"){
-					$(".ui-dialog-buttonset > button#save").hide();
-				}	
-			}
-			
 		});
-		$(".doubleCnt").hide();
+	}
+	
+	function fn_init(recevicedData) {
+		gv_req_dt = recevicedData.REQ_DT;
+		gv_seq    = recevicedData.SEQ;
+		
+		if(!fn_empty(recevicedData.PRC_STS)){
+			if(recevicedData.PRC_STS == "05" || recevicedData.PRC_STS == "06" ||recevicedData.PRC_STS == "07"){
+				$(".ui-dialog-buttonset > button#save").hide();
+			}	
+		}
+		
+		var url = "/reserve/selectPickupList.do";
+     	var param = {"REQ_DT"     : gv_req_dt 
+	               , "REQ_SEQ"    : parseInt(gv_seq)
+	                };
+     	fn_ajax(url, true, param, function(data, xhr){
+			if(data.MESSAGE != "OK"){
+				alert("ajax 통신 error!");
+			}else{
+				if(!fn_empty(data.result)){
+					$("#PRD_CNT").val(data.result.length).trigger("change");
+					for (var i = 0; i < data.result.length; i++) {
+						$.each(data.result[i], function(k , v){
+							if(k == "PICK_GBN"){
+								if(v == "04" || v == "05"){
+									$("#PICK_GBN_1").val("03");
+									$('#PROD_SEQ1 option[data=03]').show();
+									$('#PROD_SEQ1 option').not('[data=03]').hide();
+									$('#PROD_SEQ2 option[data=03]').show();
+									$('#PROD_SEQ2 option').not('[data=03]').hide();
+								}else{
+									$("#PICK_GBN_1").val(v);
+									$('#PROD_SEQ1 option[data='+v+']').show();
+									$('#PROD_SEQ1 option').not('[data='+v+']').hide();
+									$('#PROD_SEQ2 option[data='+v+']').show();
+									$('#PROD_SEQ2 option').not('[data='+v+']').hide();
+								}
+								$("#PROD_SEQ" + parseInt(i+1) + ' option[dataDetail = '+ v +']').prop("selected", true);
+							}else if(k == "PROD_SEQ"){
+								$("#HD_"+k+parseInt(i+1)).val(v); 
+							}else{
+								$("#"+k+parseInt(i+1)).val(v);
+							}
+								
+						});
+					}
+					$(".ui-dialog-buttonset > button#save").text("수정");
+				}else{
+					$("#PICK_GBN_1").val("01").trigger("change");
+				}
+			}
+		});
 	}
 	
 	function selec_init(data){ // 초기화
@@ -277,6 +318,7 @@ $(function() {
 		$("#ADD_AMT1" ).val("0");
 		$("#USE_AMT1" ).val("0");
 		$("#PER_NUM2" ).val("0");
+		$("#CAR_NUM2" ).val("0");
 		$("#ADD_AMT2" ).val("0");
 		$("#USE_AMT2" ).val("0");
 		$(".doubleCnt").hide();
@@ -286,23 +328,31 @@ $(function() {
 	
 	function savePickInfo(){
 		var formData = formIdAllToMap('frmPickupFrm');
-		var param = {};
-		if(formData.PRD_CNT == "1") { //차량 1대
-			param.ADD_AMT  = parseInt(formData.ADD_AMT1);
-		    param.CAR_NUM  = 1;
-		    param.PER_NUM  = parseInt(formData.PER_NUM1);
-		    param.USE_AMT  = parseInt(formData.USE_AMT1) / parseInt(formData.PER_NUM1);
-		}else { // 차량2대
-			param.ADD_AMT = parseInt(formData.ADD_AMT1) + parseInt(formData.ADD_AMT2);
-			param.CAR_NUM = 2;
-		    param.PER_NUM = parseInt(formData.PER_NUM1) + parseInt(formData.PER_NUM2);
-		    param.USE_AMT = (parseInt(formData.USE_AMT1) + parseInt(formData.USE_AMT2)) / (parseInt(formData.PER_NUM1) + parseInt(formData.PER_NUM2));
+		var array = new Array();
+		for (var i = 1; i < parseInt(formData.PRD_CNT) + 1	; i++) {
+			var obj = new Object();
+			obj.ADD_AMT     = parseInt($("#ADD_AMT"+i).val());
+			obj.CAR_NUM     = parseInt($("#CAR_NUM"+i).val());
+			obj.PER_NUM     = parseInt($("#PER_NUM"+i).val());
+			obj.USE_AMT     = parseInt($("#USE_AMT"+i).val());
+			obj.PROD_SEQ    = parseInt($('#PROD_SEQ'+i+' option:selected').attr("prod_seq"))
+			obj.PICK_GBN    = $('#PROD_SEQ'+i+' option:selected').attr("data");
+			obj.HD_PROD_SEQ = parseInt($('#HD_PROD_SEQ'+i).val());
+			array.push(obj);
 		}
-		param.PROD_SEQ = parseInt($("#PROD_SEQ1 option:selected").attr("prod_seq"));
-		param.REQ_DT   = gv_req_dt;
-		param.REQ_SEQ  = parseInt(gv_seq);
-		param.PICK_GBN = $("#PROD_SEQ1 option:selected").attr("data");
-		param.HD_PROD_SEQ = parseInt($("#HD_PROD_SEQ").val());
+		
+		if(parseInt(formData.PRD_CNT) == 2){
+			if(array[0].PROD_SEQ == array[1].PROD_SEQ){
+				alert("같은상품은 선택할수 없습니다.");
+				return false;	
+			}
+		}
+		
+		var param = {"detail"   : array
+				   , "REQ_SEQ"  : parseInt(gv_seq)
+				   , "REQ_DT"   : gv_req_dt
+				   , "PICK_GBN" : $("#PICK_GBN_1").val()
+				   };
 		if(confirm("<s:message code='confirm.save'/>")){
 			var url = '/reserve/pickupManager.do';
 			fn_ajax(url, false, param, function(data, xhr){
@@ -310,7 +360,7 @@ $(function() {
 					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
 				}else{
 					alert("<s:message code='info.save'/>");
-					p_rtnData = {"PER_NUM"  : param.PER_NUM
+					p_rtnData = {"PER_NUM"  : parseInt($("#PER_NUM1").val()) + parseInt($("#PER_NUM2").val())
 							   , "PICK_GBN" : param.PICK_GBN};
 					popupClose($('#p_pickUpGbnPopup').data('pid'));
 				}

@@ -71,9 +71,8 @@ public class ReserveDao extends DBAbstractMapper {
 	 * @return
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
-	public List<BMap> firstInvoiceSelectList(BMap param) throws Exception {
-		return list("ReserveMapper.firstInvoiceSelectList", param);
+	public void firstInvoiceSelectList(BMap param) throws Exception {
+		insert("ReserveMapper.firstInvoiceSelectList", param);
 	}
 	/**
 	 * 멤버별 인보이스 셀렉트박스 리스트 조회
@@ -164,6 +163,17 @@ public class ReserveDao extends DBAbstractMapper {
 		return(int)selectByPk("ReserveMapper.selectPickListCnt", param);
 	}
 	
+	/**
+	 * 미팅샌딩 리스트 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> selectPickupList(BMap param) throws Exception {
+		return list("ReserveMapper.selectPickupList", param);
+	}
+
 	/**
 	 * 미팅샌딩 등록
 	 * @param param
@@ -274,6 +284,25 @@ public class ReserveDao extends DBAbstractMapper {
 	
 	public BMap selectAirlineImg(BMap param) throws Exception {
 		return (BMap) selectByPk("ReserveMapper.selectAirlineImg", param);
+	}
+	
+	
+	/**
+	 * 예약데이터 등록
+	 * @param param
+	 * @throws Exception
+	 */
+	public int insertReserveInfo(BMap param) throws Exception{
+		return insert("ReserveMapper.insertReserveInfo", param);
+	}
+	
+	/**
+	 * 예약데이터 수정
+	 * @param param
+	 * @throws Exception
+	 */
+	public void updateReserveInfo(BMap param) throws Exception{
+		update("ReserveMapper.updateReserveInfo", param);
 	}
 	
 }
