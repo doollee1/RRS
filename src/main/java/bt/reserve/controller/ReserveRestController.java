@@ -285,7 +285,6 @@ public class ReserveRestController {
 		if(!reserveService.ReserveManager(reserveInfo)){
 			respData.put("dup", "Y");
 		};
-		
 		return respData;
 	}
 	
