@@ -165,4 +165,5 @@ public class ReserveController {
 	public String arrImgPopup(ModelMap model,HttpServletRequest request) throws Exception{
 		return "/popup/arrImgPopup";
 	}
+	
 }
