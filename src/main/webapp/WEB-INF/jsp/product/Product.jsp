@@ -7,265 +7,75 @@
 	 * @Description : 메인 화면
 	 */
 %>
+
 <c:import url="../import/frameTop.jsp">
 	<c:param name="progcd" value="Product" />
 </c:import>
 
 <!-- dummy -->
 <div class="top_button_h_margin"></div>
-
-
-	<!--- 검색버튼 ---->
-	<!---------->
-
-	<div id="ctu_no_resize">
-		<form id="frmSearch" action="#">
-			<input type="hidden" name="descGrid_CURRENT_PAGE" id="descGrid_CURRENT_PAGE" />
-			<input type="hidden" name="descGrid_ROWS_PER_PAGE" id="descGrid_ROWS_PER_PAGE" />
-			<input type="hidden" name="unitGrid_CURRENT_PAGE" id="unitGrid_CURRENT_PAGE" />
-			<input type="hidden" name="unitGrid_ROWS_PER_PAGE" id="unitGrid_ROWS_PER_PAGE" />
-			<input type="hidden" name="basicGrid_CURRENT_PAGE" id="basicGrid_CURRENT_PAGE" />
-			<input type="hidden" name="basicGrid_ROWS_PER_PAGE" id="basicGrid_ROWS_PER_PAGE" />
-		</form>
-	</div>
-
+<div id="ctu_no_resize">
+	<form id="frmSearch" action="#">
+		<input type="hidden" name="BAS_YY" id="BAS_YY" />
+		<input type="hidden" name="BAS_YY_SEQ" id="BAS_YY_SEQ" />
+		<input type="hidden" name="PROD_SEQ" id="PROD_SEQ" />
+		<input type="hidden"  name="CURRENT_PAGE"  id="CURRENT_PAGE" />
+		<input type="hidden"  name="ROWS_PER_PAGE"  id="ROWS_PER_PAGE" />
+	</form>
+</div>
 
 <div id="ctu_wrap">	
 	<!-- <input type="text"  name="lineAlign"  id="lineAlign" style="visibility:hidden;"/> -->
 	<form id="frmDetail" action="#">
-	
-	<div class="tab_top_search">
-	<table width="60%">
-		<tbody>
-			<tr>
-				<td class="small_td"><p><s:message code="material.materialCode"/></p></td>
-				<td>
-					<input type="text" name="S-MATL_CD" id="S-MATL_CD" maxlength="10" onKeyPress="fn_onlyNum(this)" style="float:left; margin-right:10px; ime-mode:disabled;" ess="ess">
-					<p class="data_side_text" name="S-MATL_NM" id="S-MATL_NM"></p>
-				</td>
-				<td class="small_td"><p><s:message code="report.quotation.materialdec"/></p></td>
-				<td colspan="3">
-					<input type="text" style="width:300px !important;"name="S-MATL_DESC" id="S-MATL_DESC" style="float:left; margin-right:10px; ime-mode:disabled;" ess="ess">
-				</td>
-			</tr>
-			<tr>
-				<td class="small_td"><p><s:message code="material.materialType"/></p></td>
-				<td><select id="S-MATL_TP" name="S-MATL_TP" class=""></select></td>
-				<td class="small_td"><p><s:message code="material.plant"/></p></td>
-				<td class="medium_td"><select id="S-PLANT_CD" name="S-PLANT_CD" class=""></select></td>
-				<td></td>
-			</tr>
-		</tbody>
-	</table>
-	</div>
-	
-	<!-- ----------------- -->
-
-	<!--  tab start -->
-	<div id="tabs">
-		<ul>
-			<li class="matrix_tab"><a href="#general_tab"><s:message code="material.generalData"/></a></li>
-			<li class="matrix_tab"><a href="#addttional_tab"><s:message code="material.additionalData"/></a></li>
-		</ul>
-		<div id="general_tab">
-			<div class="ct_grid_top_wrap">
-				<div class="ct_grid_top_left">
-					<h4><s:message code="material.generalData"/></h4>
-				</div>
-			</div>	
-			<table class="table_line" width="100%">
-				<tbody>
-					<tr>
-						<td class="td_text_right"><p><s:message code="material.basicUnit"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_BASIC_UNIT" id="MS02_BASIC_UNIT" disabled="disabled" readonly="readonly"  > 
-							<p class="data_side_text"  name="MS02_BASIC_UNIT_NM" id="MS02_BASIC_UNIT_NM"></p></td>
-						<td class="td_text_right"><p><s:message code="material.materialGroup"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_MATL_GR_CD" id="MS02_MATL_GR_CD" disabled="disabled" readonly="readonly"  >
-							<p class="data_side_text"  name="MS02_MATL_GR_NM" id="MS02_MATL_GR_NM"></p></td>
-						<td class="td_text_right"><p><s:message code="material.genItemCatGrp"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_GEN_ITEM_CTG_GR_CD" id="MS02_GEN_ITEM_CTG_GR_CD" disabled="disabled" readonly="readonly"  >
-							<p class="data_side_text"  name="MS02_GEN_ITEM_CTG_GR_NM" id="MS02_GEN_ITEM_CTG_GR_NM"></p></td>
-					</tr>
-					<tr>
-						<td class="td_text_right"><p><s:message code="material.xPlantStatus"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_X_P_STATUS_CD" id="MS02_X_P_STATUS_CD" disabled="disabled" readonly="readonly" >
-							<p class="data_side_text"  name="MS02_X_P_STATUS_NM" id="MS02_X_P_STATUS_NM"></p></td>
-						<td class="td_text_right"><p><s:message code="material.validFrom"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_VAL_FR_DATE" id="MS02_VAL_FR_DATE" disabled="disabled" readonly="readonly" ></td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-					</tr>
-				</tbody>
-			</table>
-			<div class="ct_grid_top_wrap">
-				<div class="ct_grid_top_left">
-					<h4><s:message code="material.productClassfication"/></h4>
-				</div>
-			</div>			
-			<table class="table_line" width="100%">
-				<tbody>
-					<tr>
-						<td class="td_text_right"><p><s:message code="material.productClass"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_PROD_CL_CD" id="MS02_PROD_CL_CD" disabled="disabled" readonly="readonly"  >
-							<p class="data_side_text"  name="MS02_PROD_CL_NM" id="MS02_PROD_CL_NM"></p></td>
-						<td class="td_text_right"><p><s:message code="material.cellType"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_CELL_TP" id="MS02_CELL_TP" disabled="disabled" readonly="readonly"  >
-							<p class="data_side_text"  name="MS02_CELL_TP_NM" id="MS02_CELL_TP_NM"></p></td>
-						<td class="td_text_right"><p><s:message code="material.append"/></p></td>
-						<td><input type="text" style="width:180px !important;"class="side_front_Sinput"  name="MS02_APPEND_TXT" id="MS02_APPEND_TXT" disabled="disabled" readonly="readonly"  ></td>
-					</tr>
-					<tr>
-						<td class="td_text_right"><p><s:message code="material.output"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_WP_OUT_CD" id="MS02_WP_OUT_CD" disabled="disabled" readonly="readonly"  >
-							<p class="data_side_text"  name="MS02_WP_OUT_NM" id="MS02_WP_OUT_NM"></p></td>
-						<td><p>&nbsp;</p></td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-					</tr>
-				</tbody>
-			</table>
-			<div class="ct_grid_top_wrap">
-				<div class="ct_grid_top_left">
-					<h4><s:message code="material.dimensionAmpPackingMaterialData"/></h4>
-				</div>
-			</div>			
-			<table class="table_line" width="100%">
-				<tbody>
-					<tr>
-						<td class="td_text_right"><p><s:message code="material.grossWeight"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_GRS_WT" id="MS02_GRS_WT" disabled="disabled" readonly="readonly"  >
-							<p class="data_side_text"  name="MS02_GRS_WT_NM" id="MS02_GRS_WT_NM"></p></td>
-						<td class="td_text_right"><p><s:message code="material.netWeight"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_NET_WT" id="MS02_NET_WT" disabled="disabled" readonly="readonly"  >
-							<p class="data_side_text"  name="MS02_NET_NM" id="MS02_NET_NM"></p></td>
-						<td class="td_text_right"><p><s:message code="material.volume"/></p></td>
-							<td><input type="text" class="side_front_Sinput"  name="MS02_VOL_QTY" id="MS02_VOL_QTY" disabled="disabled" readonly="readonly"  >
-							<p class="data_side_text"  name="MS02_VOL_NM" id="MS02_VOL_NM"></p></td>
-					</tr>
-				</tbody>
-			</table>
-			<div class="ct_grid_top_wrap">
-				<div class="ct_grid_top_left">
-					<h4><s:message code="material.salesOrg"/> <s:message code="common.data"/></h4>
-				</div>
-			</div>	
-			<table class="table_line" width="100%">
-				<tbody>
-					<tr>
-						<td class="td_text_right"><p><s:message code="material.salesOrg"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_SALES_ORG_CD" id="MS02_SALES_ORG_CD" disabled="disabled" readonly="readonly"  >
-							<p class="data_side_text"  name="MS02_SALES_ORG_NM" id="MS02_SALES_ORG_NM"></p></td>
-						<td class="td_text_right"><p><s:message code="material.distrChl"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_DISTRB_CH" id="MS02_DISTRB_CH" disabled="disabled" readonly="readonly"  >
-							<p class="data_side_text"  name="MS02_DISTRB_CH_NM" id="MS02_DISTRB_CH_NM"></p></td>
-						<td class="td_text_right"><p><s:message code="material.division"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_DIV_CD" id="MS02_DIV_CD" disabled="disabled" readonly="readonly"  >
-							<p class="data_side_text"  name="MS02_DIV_NM" id="MS02_DIV_NM"></p></td>
-					</tr>
-					<tr>
-					<td class="td_text_right"><p><s:message code="material.cashDiscount"/></p></td>
-					<td><label class="checkbox"><input type="checkbox" name="MS02_CASH_DC_YN" id="MS02_CASH_DC_YN" disabled="disabled" readonly="readonly"  ><i style="background-color:#efefef; border:1px solid #ccc;"></i>&nbsp;</label></td>
-					</tr>
-				</tbody>
-			</table>
-			<div class="ct_grid_top_wrap">
-				<div class="ct_grid_top_left">
-					<h4><s:message code="material.plant"/> <s:message code="common.data"/></h4>
-				</div>
-			</div>			
-			<table class="table_line" width="100%">
-				<tbody>
-					<tr>
-						<td class="td_text_right"><p><s:message code="material.plantSpMatlStatus"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_PLANT_SP_STS" id="MS02_PLANT_SP_STS" disabled="disabled" readonly="readonly"  ></td>
-						<td class="td_text_right"><p><s:message code="material.deliveringPlant"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_DELI_PLANT_CD" id="MS02_DELI_PLANT_CD" disabled="disabled" readonly="readonly"  >
-							<p class="data_side_text"  name="MS02_DELI_PLANT_NM" id="MS02_DELI_PLANT_NM"></p></td>
-						<td class="td_text_right"><p><s:message code="material.availablityCheck"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_AVAIL_CHK_CD" id="MS02_AVAIL_CHK_CD" disabled="disabled" readonly="readonly"  >
-							<p class="data_side_text"  name="MS02_AVAIL_CHK_NM" id="MS02_AVAIL_CHK_NM"></p></td>
-					</tr>
-					<tr>
-						<td class="td_text_right"><p><s:message code="material.batchManagement"/></p></td>
-						<td><label class="checkbox"><input type="checkbox" name="MS02_BATCH_MNG" id="MS02_BATCH_MNG" disabled="disabled" readonly="readonly"  ><i style="background-color:#efefef; border:1px solid #ccc;"></i>&nbsp;</label></td>
-						<td class="td_text_right"><p><s:message code="material.countryOfOrgin"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_MADE_IN" id=MS02_MADE_IN disabled="disabled" readonly="readonly"  ></td>
-					</tr>
-				</tbody>
-			</table>
-			<div class="ct_grid_top_wrap">
-				<div class="ct_grid_top_left">
-					<h4><s:message code="material.generalPlantParameters"/></h4>
-				</div>
-			</div>	
-			<table class="table_line" width="100%">
-				<tbody>
-					<tr>
-						<td class="td_text_right"><p><s:message code="material.serialNoProfile"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_SNO_PROFILE" id="MS02_SNO_PROFILE" disabled="disabled" readonly="readonly"  >
-							<p  class="data_side_text" id="MS02_SNO_PROFILE_NM"></p></td>
-						<td class="td_text_right"><p><s:message code="material.profitCenter"/></p></td>
-						<td><input type="text" class="side_front_Sinput"  name="MS02_PROFIT_C_CD" id="MS02_PROFIT_C_CD" disabled="disabled" readonly="readonly"  ></td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-					</tr>
-				</tbody>
-			</table>
-			<!-- Hidden Field -->
-			<input type="hidden"  name="MS02_COMP_CD"  id="MS02_COMP_CD" />
-			<input type="hidden"  name="MS02_MATL_CD"  id="MS02_MATL_CD" />
-			<input type="hidden"  name="MS02_MATL_NM"  id="MS02_MATL_NM" />
-			<input type="hidden"  name="S-SALES_ORG_CD"  id="S-SALES_ORG_CD" />
-			<input type="hidden"  name="S-DISTRB_CH"  id="S-DISTRB_CH" />
-			<input type="hidden"  name="S-DIV_CD"  id="S-DIV_CD" />
-		</div>
+		<div class="ct_grid_top_left">
+			<h4>조회조건</h4>
+		</div>	
+		<div class="tab_top_search">
+		<table>
+			<colgroup>
+				<col width="100px" />
+		        <col width="200px" />
+		        <col width="100px" />
+	        	<col width="200px" />
+		    </colgroup>
+		    
+			<tbody>
+				<tr>
+					<td class="small_td"><p><s:message code="product.baseyear"/></p></td>
+					<td>
+						<select id="ST_DT1" name="ST_DT1" class="cmc_combo" style=width:80%;>
+							<c:forEach var="i" items="${basyy}">
+								<option value="${i.BAS_YY}">${i.BAS_YY}</option>
+							</c:forEach>
+						</select>
+					</td>
+					<td class="small_td"><p><s:message code="product.season"/></p></td>
+					<td class="medium_td">
+						<select id="SSN_GBN" name="SSN_GBN" class="" style=width:80%;>
+							<c:forEach var="i" items="${season}">
+								<option value="${i.CODE}">${i.CODE_NM}</option>
+							</c:forEach>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		</div> 
 		
-		<!-- ------- tab2----- -->
-		<div id="addttional_tab">
-		
-			<div id="ctm_wrap">
-				<!-- 그리드 시작 -->
-				<div id="ctm_mg_wrap">
-						<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
-							<div class="ct_grid_top_wrap">
-								<div class="ct_grid_top_left">
-									<h4><s:message code="common.descriptions"/></h4>
-								</div>
-							</div>		
-							<table id="descGrid"></table>
-							<div id="descGrid_pager"></div>
-						</div>
-						
-						<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
-							<div class="ct_grid_top_wrap">
-								<div class="ct_grid_top_left">
-									<h4><s:message code="material.unitOfMeasure"/></h4>
-								</div>
-							</div>		
-							<table id="unitGrid"></table>
-							<div id="unitGrid_pager"></div>
-						</div>
-						
-						<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
-							<div class="ct_grid_top_wrap">
-								<div class="ct_grid_top_left">
-									<h4><s:message code="material.basicDataText"/></h4>
-								</div>
-							</div>		
-							<table id="basicGrid"></table>
-							<div id="basicGrid_pager"></div>
-						</div>
-						<p>&nbsp;</p>
+		<!-- grid start -->
+		<div id="ctm_mg_wrap">
+			<div class="ct_grid_top_wrap">
+				<div class="ct_grid_top_left">
+					<h4>조회내역</h4>
+				</div>	
+				<div class="ct_grid_top_right">
+					<button class='cBtnclass cBtnCopy_style' id='cBtnCopy' type='button' onclick='cCopy()' disabled='disabled'>복사등록</button>
 				</div>
-				<!-- 그리드 끝 -->
 			</div>
-		
+			<table id="grid1"></table>
+			<div id="grid1_pager"></div>
 		</div>
-	</div>
-	<!--  tab end -->
-	<!-------------->
-	
+		<!-- grid end -->
 	</form>
 </div>
 <script type="text/javascript">
@@ -286,95 +96,84 @@
   * 버튼 표시/숨김 : setCommBtn('ret', true) : Search,Add,Del,Save,Print,Upload,Excel,Pdf,Cancel,User1,2,3,4,5
   * ===============================
 --%>
-	//초기 로드
-	$(function() {
-		createDescGrid();
-		createUnitGrid();
-		createBasicGrid();
-		resizeGrid();
-		var codeBoxArray = [ 'S-PLANT_CD'
-							, 'S-MATL_TP'
-							];
-			
-		createCodeBoxByArr(codeBoxArray, true);
+//초기 로드
+$(function() {
 		
-		$("#cBtnSearch").click(function(e){
-			if(this.value != ""){
-				(chkMatlCd()) ? cSearch() : openProductPop();
-			}else{
-				openProductPop();
-			}
-		})
-		
-		$('#S-MATL_CD, #S-MATL_DESC').on('keypress', function (e) {
-			if(e.which == 13){
-				if(this.value != ""){
-					(chkMatlCd()) ? cSearch() : openProductPop();
-				}else{
-					openProductPop();
-				}
-			}
-		});
-
-		
-		$("#tabs a").click(function(e) {
-			setTimeout(function() {
-				btGrid.gridResizing('descGrid');
-				btGrid.gridResizing('unitGrid');
-				btGrid.gridResizing('basicGrid');
-			});
-		});
-		
-		$('#MS02_BATCH_MNG, #MS02_CASH_DC_YN').on('click', function (e) {
-			$(this).attr('checked', false);
-		});
-		
+	//미리보기, 기준년도관리, 조회, 등록, 닫기 버튼
+	$("#divBtn").append("<button class='cBtnclass cBtnPut_style' id='cBtnPut' type='button' onclick=''>미리보기</button>");
+	$("#divBtn").append("<button class='cBtnclass cBtnEdit_style' id='cBtnPeriod' type='button' onclick='cPeriod()'>기준년도관리</button>");
+    $("#divBtn").append("<button class='cBtnclass cBtnSearch_style' id='cBtnSearch' type='button' onclick='cSearch();'>조회</button>");
+    $("#divBtn").append("<button class='cBtnclass cBtnAdd_style' id='cBtnAdd' type='button' onclick='cAdd();'>등록</button>");
+    $("#divBtn").append("<button class='cBtnclass cBtnCancel_style' id='cBtnCancel' type='button' onclick='cCancel();'>닫기</button>");
+	    
+    //즐겨찾기 숨기기
+    $("#cBtnUser6").hide();
+    
+    //초기 진입시 시작 (그리드그리기와 조회)
+	createGrid();
+	cSearch();
+	
+	/* grid1 Event */
+	$('#grid1').jqGrid('setGridParam', {
+		ondblClickRow: function(rowid, iRow, iCol, e) {
+			grid1_ondblClickRow(rowid, iRow, iCol, e);
+		}
 	});
 	
-	function createDescGrid(){
-		var colName = [
-					  '<s:message code="common.language"/>'
-					, '<s:message code="material.grid.desc"/>'
-			];
-		var colModel = [
-			  { name: 'LANG_CD', width: 200, align: 'center'}
-			, { name: 'MATL_DESC', width: 1100, align: 'left'}
-			];
-		
-		var gSetting = {
-			height:137,
-			pgflg:true,
-			exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
-			colsetting : true,  // 컬럼 설정 버튼 노출여부
-			searchInit : false,  // 데이터 검색 버튼 노출여부
-			resizeing : true,
-			rownumbers:false,
-			shrinkToFit: true,
-			autowidth: true,
-			queryPagingGrid:true // 쿼리 페이징 처리 여부
-		};
-		// 그리드 생성 및 초기화
-		btGrid.createGrid('descGrid', colName, colModel, gSetting);
-	}
+	//조회조건 변경 시 복사등록 비활성화 처리
+	$("#ST_DT1, #SSN_GBN").change(function(){
+		$("#cBtnCopy").attr("disabled", true);
+	})
+});
 
-	function createUnitGrid(){
-		var colName = [
-				  'X'
-				, 'AUn' //'<s:message code="material.grid.aun"/>'
-				, 'Y'
-				, 'BUn'
-				, '<s:message code="material.grid.measuremtUnitText"/>'
-				];
-		var colModel = [
-			  { name: 'UNIT_DIV', width: 200, align: 'center', }
-			, { name: 'ALT_UNIT_CD', width: 200, align: 'center' }
-			, { name: 'BS_UOM', width: 200, align: 'center', }
-            , { name: 'BASIC_UNIT', width: 200, align: 'center' }
-            , { name: 'UNIT_DESC', width: 1000, align: 'left', hidden:true } 
-			];
-		
-		var gSetting = {
-			height:139,
+//그리드 그리기
+function createGrid(){
+	var colName = ['<s:message code='product.season'/>',
+				'<s:message code='product.item'/>',
+				'<s:message code='product.condition'/>',
+				'<s:message code='product.stdt1'/>',
+				'<s:message code='product.eddt1'/>',
+				'<s:message code='product.stdt2'/>',
+				'<s:message code='product.eddt2'/>',
+				'<s:message code='product.stdt3'/>',
+				'<s:message code='product.eddt3'/>',
+				'<s:message code='product.amount'/>',
+				'<s:message code='product.etc'/>',
+				'<s:message code='product.amount'/>',
+				'<s:message code='product.etc'/>',
+				'BAS_YY',
+				'BAS_YY_SEQ',
+				'PROD_SEQ',
+				'COM_BAS_PER',
+				'COM_BAS_DAY',
+				'AGN_BAS_PER',
+				'AGN_BAS_DAY',
+				]
+	var colModel = [
+		{ name: 'SSN_GBN', width: 5, align: 'center'},
+		{ name: 'HDNG_GBN', width: 5, align: 'center'},
+		{ name: 'PROD_COND', width: 5, align: 'center'},
+		{ name: 'ST_DT1', width: 7, align: 'right'},
+		{ name: 'ED_DT1', width: 7, align: 'right'},
+		{ name: 'ST_DT2', width: 7, align: 'right'},
+		{ name: 'ED_DT2', width: 7, align: 'right'},
+		{ name: 'ST_DT3', width: 7, align: 'right'},
+		{ name: 'ED_DT3', width: 7, align: 'right'},
+		{ name: 'COM_AMT', width: 7, align: 'right'},
+		{ name: 'COM_CNTN', width: 7, align: 'right'},
+		{ name: 'AGN_AMT', width: 7, align: 'right'},
+		{ name: 'AGN_CNTN', width: 7, align: 'right'},
+		{ name: 'BAS_YY', hidden:true},
+		{ name: 'BAS_YY_SEQ', hidden:true},
+		{ name: 'PROD_SEQ', hidden:true},
+		{ name: 'COM_BAS_PER', hidden:true},
+		{ name: 'COM_BAS_DAY', hidden:true},
+		{ name: 'AGN_BAS_PER', hidden:true},
+		{ name: 'AGN_BAS_DAY', hidden:true},
+  	];
+	
+	var gSetting = {
+			height:600,
 			pgflg:true,
 			exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
 			colsetting : true,  // 컬럼 설정 버튼 노출여부
@@ -383,243 +182,127 @@
 			rownumbers:false,
 			shrinkToFit: true,
 			autowidth: true,
-			queryPagingGrid:true // 쿼리 페이징 처리 여부
-		};
-		// 그리드 생성 및 초기화
-		btGrid.createGrid('unitGrid', colName, colModel, gSetting);
+			queryPagingGrid:true, // 쿼리 페이징 처리 여부	
+	};
+	btGrid.createGrid('grid1', colName, colModel, gSetting);
+	
+	$('#grid1').jqGrid('setGroupHeaders', {
+		useColSpanStyle: true, 
+		groupHeaders:[
+			{startColumnName: 'ST_DT1', numberOfColumns: 2, titleText: '기간1'},
+			{startColumnName: 'ST_DT2', numberOfColumns: 2, titleText: '기간2'},
+			{startColumnName: 'ST_DT3', numberOfColumns: 2, titleText: '기간3'},
+			{startColumnName: 'COM_AMT', numberOfColumns: 2, titleText: '일반'},
+			{startColumnName: 'AGN_AMT', numberOfColumns: 2, titleText: '에이전시'},
+			]
+	});
+	
+	btGrid.gridResizing('grid1');
+	
+}
+	
+//조회
+function cSearch(currentPage){
+	var vCurrentPage = 1;
+	var vRowsPerPage;
+	if(!fn_empty(currentPage)){
+		vCurrentPage = currentPage;
+	} else if(!fn_empty($('#CURRENT_PAGE').val())) {
+		vCurrentPage = $('#CURRENT_PAGE').val();
+	} else {
+		vCurrentPage = 1;
+	}
+	vRowsPerPage = btGrid.getGridRowSel('grid1_pager');
+	$('#CURRENT_PAGE').val(vCurrentPage);
+	$('#ROWS_PER_PAGE').val(vRowsPerPage);
+	
+	var url = "/common/selectProductInfo.do";
+	
+	var formData = formIdAllToMap('frmDetail');
+	var param = {"ST_DT1" :formData.ST_DT1
+				,"SSN_GBN":formData.SSN_GBN};
+	
+	fn_ajax(url, false, param, function(data, xhr){
+		reloadGrid("grid1", data.result);
+		btGrid.gridQueryPaging($('#grid1'), 'cSearch', data.result);
+	});
+	
+	//복사등록 비활성화 여부 설정
+	var cBtnCopy = document.getElementById("cBtnCopy");
+	if(param.SSN_GBN == 3) {
+		cBtnCopy.disabled = false;
+	} else {
+		cBtnCopy.disabled = true;
+	}
+	vRowsPerPage = btGrid.getGridRowSel('grid1_pager');
+	btGrid.gridResizing('grid1');
+}
+
+//그리드 더블클릭 - 상세조회
+function grid1_ondblClickRow(rowid, iRow, iCol, e){
+	var gridData = $("#grid1").getRowData(rowid);
+	var formData = formIdAllToMap('frmDetail');
+	var param = {
+		"modify" : true,
+		"ST_DT1" : formData.ST_DT1,					// 기준년도
+		"SSN_GBN" : gridData["SSN_GBN"],			// 시즌구분
+		"HDNG_GBN" : gridData["HDNG_GBN"],			// 항목구분
+		"PROD_COND" : gridData["PROD_COND"],		// 조건
+		//기간선택 추가
+		"COM_AMT" : gridData["COM_AMT"],			// 일반 금액
+		"COM_BAS_PER" : gridData["COM_BAS_PER"],	// 일반 기준인원수
+		"COM_BAS_DAY" : gridData["COM_BAS_DAY"],	// 일반 기준일수
+		"COM_CNTN" : gridData["COM_CNTN"],			// 일반 기타내용
+		"AGN_AMT" : gridData["AGN_AMT"],			// 에이전시 금액
+		"AGN_BAS_PER" : gridData["AGN_BAS_PER"],	// 에이전시 기준인원수
+		"AGN_BAS_DAY" : gridData["AGN_BAS_DAY"],	// 에이전시 기준일수
+		"AGN_CNTN" : gridData["AGN_CNTN"],			// 에이전시 기타내용
+		
+		"BAS_YY" : gridData["BAS_YY"],				// 기준년도
+		"BAS_YY_SEQ" : gridData["BAS_YY_SEQ"],		// 기간년도순번
+		"PROD_SEQ" : gridData["PROD_SEQ"]			// 상품순번
+	};
+	productDetailPopUp(param);
+}
+
+//등록 버튼
+function cAdd(){
+	productDetailPopUp();
+}
+	
+//상세조회 및 등록 팝업
+function productDetailPopUp(param){
+	var url = "/popup/ProductDetailPopUp.do";
+	var pid = "productDetailPopUp";  //팝업 페이지의 최상위 div ID
+	
+	popupOpen(url, pid, param, function(data) {
+		cSearch();
+	});
+}
+
+//기준년도 관리 팝업
+function cPeriod(param){
+	var url = "/popup/ProductPeriodPopUp.do";
+	var pid = "productPeriodPopUp";	//팝업 페이지의 최상위 div ID
+	
+	popupOpen(url, pid, param, function(data){
+	});
+}
+
+//복사등록 팝업
+function cCopy(param){
+	var url = "/popup/ProductCopyPopUp.do";
+	var pid = "productCopyPopUp";	//팝업 페이지의 최상위 div ID
+	var formData = formIdAllToMap('frmDetail');
+	var param = { 
+			"ST_DT1" : formData.ST_DT1,
+			"branch" : "normal"
 	}
 	
-	function createBasicGrid(){
-		var colName = [
-				  'COMP_CD'
-				, '<s:message code="material.materialCode"/>'
-				, '<s:message code="common.language"/>'
-				, '<s:message code="common.descriptions"/>'
-				];
-		var colModel = [
-			  { name: 'COMP_CD', width: 50, align: 'center', hidden:true}
-			, { name: 'MATL_CD', width: 50, align: 'center', hidden:true}
-			, { name: 'LANG_CD', width: 200, align: 'center', }
-			, { name: 'LONG_TEXT', width: 1100, align: 'left' }
-			];
-		
-		var gSetting = {
-			height:139,
-			pgflg:true,
-			exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
-			colsetting : true,  // 컬럼 설정 버튼 노출여부
-			searchInit : false,  // 데이터 검색 버튼 노출여부
-			resizeing : true,
-			rownumbers:false,
-			shrinkToFit: true,
-			autowidth: true,
-			queryPagingGrid:true // 쿼리 페이징 처리 여부
-		};
-		// 그리드 생성 및 초기화
-		btGrid.createGrid('basicGrid', colName, colModel, gSetting);
-	}
+	popupOpen(url, pid, param, function(data){
+	});
+}
 	
-	function openProductPop(){
-		var url = "/popup/productPopUp.do";
-		var pid = "productPopUp";  //팝업 페이지의 취상위 div ID
-		var param = { 'MATL_CD':$("#S-MATL_CD").val()
-					, 'MATL_TP':$("#S-MATL_TP").val()
-					, 'PLANT_CD':$("#S-PLANT_CD").val()
-					, 'MATL_DESC':$("#S-MATL_DESC").val()
-		};
-		
-		popupOpen(url, pid, param, function(data){
-			if(!fn_empty(data)){
-				for(var i = 0; i < data.length; i++){
-					$("#S-MATL_CD").val(data[i]["MATL_CD"]);
-					$("#S-PLANT_CD").val(data[i]["PLANT_CD"]);
-					$("#S-SALES_ORG_CD").val(data[i]["SALES_ORG_CD"]);
-					$("#S-DISTRB_CH").val(data[i]["DISTRB_CH"]);
-					$("#S-DIV_CD").val(data[i]["DIV_CD"]);
-					$("#S-MATL_TP").val(data[i]["MATL_TP"]);
-					$("#S-MATL_DESC").val(data[i]["MATL_DESC"]);
-					cSearch();
-				}
-			}
-		});
-	}
-	
-	function cSearch(){
-		
-		if($("#S-MATL_CD").val() == "" && $("#S-MATL_DESC").val() == ""){
-			return;
-		}
-		
-		var url = "/product/selectProductInfo.do";
-		var param = { "param" : {
-				  "MATL_CD"  : $("#S-MATL_CD").val()
-				, "MATL_TP"  : $("#S-MATL_TP option:selected").val()
-				, "PLANT_CD" : $("#S-PLANT_CD option:selected").val()
-				, "MATL_DESC" : $("#S-MATL_DESC").val()
-				, "SALES_ORG_CD" : $("#S-SALES_ORG_CD").val()
-				, "DISTRB_CH" : $("#S-DISTRB_CH").val()
-				, "DIV_CD" : $("#S-DIV_CD").val()
-			}
-		};
-		
-		fn_ajax(url, false, param, function(data, xhr){
-			if(data.resultProductInfo != null){
-				clearText();
-				fn_dataBind('frmDetail', data.resultProductInfo);
-				
-				$("#S-MATL_NM").text($("#MS02_MATL_NM").val());
-				
-				//Addttional Data 조회
-				selectDescList(null);
-				selectUOMList(null);
-				selectBasicList(null);
-			}else{
-				alert('<s:message code="info.nodata.msg"/>');
-				clearText();
-				clearForm($('#frmDetail'));
-				$("#descGrid").jqGrid("clearGridData", true);
-				$("#unitGrid").jqGrid("clearGridData", true);
-				$("#basicGrid").jqGrid("clearGridData", true);
-			}
-		});
-	}
-	
-	function selectDescList(currentPage){
-		
-		var vCurrentPage = 1;
-		var vRowsPerPage;
-		if(!fn_empty(currentPage)){
-			vCurrentPage = currentPage;
-		} else if(!fn_empty($('#descGrid_CURRENT_PAGE').val())) {
-			vCurrentPage = $('#descGrid_CURRENT_PAGE').val();
-		} else {
-			vCurrentPage = 1;
-		}
-		
-		vRowsPerPage = btGrid.getGridRowSel('descGrid_pager'); //현재 선택된 페이지 번호 설정
-		
-		$('#descGrid_CURRENT_PAGE').val(vCurrentPage);
-		$('#descGrid_ROWS_PER_PAGE').val(vRowsPerPage);
-		
-		var url = "/product/selectDescList.do";
-		
-		var param = { "param" : {
-			  "MATL_CD"  : $("#S-MATL_CD").val()
-			, "COMP_CD"  : $("#MS02_COMP_CD").val()
-			}
-		};
-		
-		fn_ajax(url, false, param, function(data, xhr){
-			reloadGrid("descGrid", data.result);   // 그리드 조회 데이터 출력
-			btGrid.gridQueryPaging($('#descGrid'), 'selectDescList', data.result);  // 그리드 페이징 설정
-		});
-	}
-	
-	function selectUOMList(currentPage){
-		
-		var vCurrentPage = 1;
-		var vRowsPerPage;
-		if(!fn_empty(currentPage)){
-			vCurrentPage = currentPage;
-		} else if(!fn_empty($('#unitGrid_CURRENT_PAGE').val())) {
-			vCurrentPage = $('#unitGrid_CURRENT_PAGE').val();
-		} else {
-			vCurrentPage = 1;
-		}
-		
-		vRowsPerPage = btGrid.getGridRowSel('unitGrid_pager'); //현재 선택된 페이지 번호 설정
-		
-		$('#unitGrid_CURRENT_PAGE').val(vCurrentPage);
-		$('#unitGrid_ROWS_PER_PAGE').val(vRowsPerPage);
-		
-		var url = "/product/selectUOMList.do";
-		
-		var param = { "param" : {
-			  "MATL_CD"  : $("#S-MATL_CD").val()
-			, "COMP_CD"  : $("#MS02_COMP_CD").val()
-			}
-		};
-		
-		fn_ajax(url, false, param, function(data, xhr){
-			reloadGrid("unitGrid", data.result);   // 그리드 조회 데이터 출력
-			btGrid.gridQueryPaging($('#unitGrid'), 'selectUOMList', data.result);  // 그리드 페이징 설정
-			$("table.ui-jqgrid-htable", $("#unitGrid")).css ("height", 30);
-		});
-	}
-	
-	function selectBasicList(currentPage){
-		
-		var vCurrentPage = 1;
-		var vRowsPerPage;
-		if(!fn_empty(currentPage)){
-			vCurrentPage = currentPage;
-		} else if(!fn_empty($('#basicGrid_CURRENT_PAGE').val())) {
-			vCurrentPage = $('#basicGrid_CURRENT_PAGE').val();
-		} else {
-			vCurrentPage = 1;
-		}
-		
-		vRowsPerPage = btGrid.getGridRowSel('basicGrid_pager'); //현재 선택된 페이지 번호 설정
-		
-		$('#basicGrid_CURRENT_PAGE').val(vCurrentPage);
-		$('#basicGrid_ROWS_PER_PAGE').val(vRowsPerPage);
-		
-		var url = "/product/selectBasicList.do";
-		
-		var param = { "param" : {
-			  "MATL_CD"  : $("#S-MATL_CD").val()
-			, "COMP_CD"  : $("#MS02_COMP_CD").val()
-			, "SALES_ORG_CD" : $("#MS02_SALES_ORG_CD").val()
-			, "DISTRB_CH" : $("#MS02_DISTRB_CH").val()
-			}
-		};
-		
-		fn_ajax(url, false, param, function(data, xhr){
-			reloadGrid("basicGrid", data.result);   // 그리드 조회 데이터 출력
-			btGrid.gridQueryPaging($('#basicGrid'), 'selectBasicList', data.result);  // 그리드 페이징 설정
-		});
-	}
-	
-	function chkMatlCd(){
-		var rtnFlg = true;
-		
-		var url = "/product/chkMatlCd.do";
-		
-		var formData = formIdAllToMap('frmDetail');
-		var param = {"param":formData};
-		
-		fn_ajax(url, false, param, function(data, xhr){
-			(data.isOk == 'Y') ? rtnFlg = true : rtnFlg = false;
-		});
-		
-		return rtnFlg;
-	}
-	
-	function resizeGrid() {
-        var $grid = $("#basicGrid"),
-        newWidth = $grid.closest(".ui-jqgrid").parent().width();
-        $grid.jqGrid("setGridWidth", newWidth, true);
-	}
-	
-	function clearText() {
-		$("#MS02_BASIC_UNIT_NM").text('');
-		$("#MS02_MATL_GR_NM").text('');
-		$("#MS02_GEN_ITEM_CTG_GR_NM").text('');
-		$("#MS02_X_P_STATUS_NM").text('');
-		$("#MS02_PROD_CL_NM").text('');
-		$("#MS02_CELL_TP_NM").text('');
-		$("#MS02_WP_OUT_NM").text('');
-		$("#MS02_GRS_WT_NM").text('');
-		$("#MS02_NET_NM").text('');
-		$("#MS02_VOL_NM").text('');
-		$("#MS02_SALES_ORG_NM").text('');
-		$("#MS02_DISTRB_CH_NM").text('');
-		$("#MS02_DIV_NM").text('');
-		$("#MS02_DELI_PLANT_NM").text('');
-		$("#MS02_AVAIL_CHK_NM").text('');
-		$("#MS02_SNO_PROFILE_NM").text('');
-		
-	}
 </script>
 
 <c:import url="../import/frameBottom.jsp" />

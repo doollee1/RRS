@@ -3,294 +3,251 @@
 
 <mapper namespace="ProductMapper">
 	<select id="selectProductInfo" parameterType="BMap" resultType="BMap">
-		/* Product.xml -> selectProductInfo */
-		SELECT TOP 1 MST.COMP_CD														 AS MS02_COMP_CD
-			 , CASE WHEN #{LANG} = 'EN' THEN MST.MATL_EN
-			 		WHEN #{LANG} = 'DE' THEN MST.MATL_NM
-			 		ELSE MST.MATL_NM END										 AS MS02_MATL_NM
-			 , MST.MATL_CD														 AS MS02_MATL_CD
-			 , MST.BASIC_UNIT													 AS MS02_BASIC_UNIT
-			 , DBO.GETCODENM('BASIC_UNIT', MST.BASIC_UNIT, #{LANG})				 AS MS02_BASIC_UNIT_NM
-			 , MST.MATL_GR														 AS MS02_MATL_GR_CD
-			 , DBO.GETCODENM('MATL_GR', MST.MATL_GR, #{LANG})					 AS MS02_MATL_GR_NM
-			 , MST.DIV_CD														 AS MS02_DIV_CD
-			 , DBO.GETCODENM('DIV_CD', MST.DIV_CD, #{LANG})						 AS MS02_DIV_NM
-			 , MST.X_P_STS														 AS MS02_X_P_STATUS_CD
-			 , DBO.GETCODENM('X_P_STS', MST.X_P_STS, #{LANG})					 AS MS02_X_P_STATUS_NM
-			 , DBO.FMTVDATE(MST.VAL_FR_DATE, 'DD.MM.YYYY')						 AS MS02_VAL_FR_DATE
-			 , MST.GEN_ITEM_CTG_GR												 AS MS02_GEN_ITEM_CTG_GR_CD
-			 , DBO.GETCODENM('GICG', MST.GEN_ITEM_CTG_GR, #{LANG})				 AS MS02_GEN_ITEM_CTG_GR_NM
-			 , MST.PROD_CL														 AS MS02_PROD_CL_CD
-			 , DBO.GETCODENM('PROD_CL', MST.PROD_CL, #{LANG})					 AS MS02_PROD_CL_NM
-			 , MST.CELL_TP														 AS MS02_CELL_TP
-			 , DBO.GETCODENM('CELL_TP', MST.CELL_TP, #{LANG})					 AS MS02_CELL_TP_NM
-			 , MST.APPEND_TXT													 AS MS02_APPEND_TXT
-			 , MST.WP_OUT														 AS MS02_WP_OUT_CD
-			 , DBO.GETCODENM('WP_OUT_CD ', MST.WP_OUT, #{LANG})					 AS MS02_WP_OUT_NM 
-			 , MST.GROSS_WT														 AS MS02_GRS_WT
-			 , MST.WT_UNIT														 AS MS02_GRS_WT_NM
-			 , MST.NET_WT														 AS MS02_NET_WT
-			 , MST.WT_UNIT														 AS MS02_NET_NM
-			 , MST.VOL_QTY														 AS MS02_VOL_QTY
-			 , MST.VOL_UNIT														 AS MS02_VOL_NM
-			 , I_ORG.SALES_ORG_CD												 AS MS02_SALES_ORG_CD
-			 , DBO.GETCODENM('SALES_ORG_CD', I_ORG.SALES_ORG_CD, #{LANG})		 AS MS02_SALES_ORG_NM
-			 , I_ORG.DISTRB_CH													 AS MS02_DISTRB_CH
-			 , DBO.GETCODENM('DISTRB_CH', I_ORG.DISTRB_CH, #{LANG})	 			 AS MS02_DISTRB_CH_NM
-			 , I_PLT.PLANT_SP_STS												 AS MS02_PLANT_SP_STS
-			 , I_ORG.DELI_PLANT_CD												 AS MS02_DELI_PLANT_CD
-			 , DBO.GETCODENM('DELI_PLANT_CD', I_ORG.DELI_PLANT_CD, #{LANG})		 AS MS02_DELI_PLANT_NM
-			 , MST.AVAIL_CHK_CD													 AS MS02_AVAIL_CHK_CD
-			 , DBO.GETCODENM('AVAILABLITY_CHECK', MST.AVAIL_CHK_CD, #{LANG})	 AS MS02_AVAIL_CHK_NM
-			 , I_PLT.BATCH_MNG													 AS MS02_BATCH_MNG
-			 , I_ORG.CASH_DC_YN													 AS MS02_CASH_DC_YN
-			 , I_PLT.MADE_IN													 AS MS02_MADE_IN
-			 , I_PLT.SNO_PROFILE												 AS MS02_SNO_PROFILE
-			 , DBO.GETCODENM('PLANT_CD', I_PLT.SNO_PROFILE, #{LANG})			 AS MS02_SNO_PROFILE_NM
-			 , I_PLT.PROFIT_C_CD												 AS MS02_PROFIT_C_CD
-			 FROM MS_ITEM MST
-		LEFT JOIN MS_ITEM_ORG I_ORG WITH(NOLOCK)
-			ON MST.COMP_CD = I_ORG.COMP_CD
-			AND MST.MATL_CD = I_ORG.MATL_CD
-		LEFT JOIN MS_ITEM_PLANT I_PLT WITH(NOLOCK)
-			ON MST.COMP_CD = I_PLT.COMP_CD
-			AND MST.MATL_CD = I_PLT.MATL_CD
-		LEFT JOIN MS_ITEM_UNIT I_WT_UNIT WITH(NOLOCK)
-			ON MST.COMP_CD = I_WT_UNIT.COMP_CD
-			AND MST.MATL_CD = I_WT_UNIT.MATL_CD
-			AND MST.WT_UNIT = I_WT_UNIT.ALT_UNIT_CD
-		LEFT JOIN MS_ITEM_UNIT I_VOL_UNIT WITH(NOLOCK)
-			ON MST.COMP_CD = I_VOL_UNIT.COMP_CD
-			AND MST.MATL_CD = I_VOL_UNIT.MATL_CD 
-			AND MST.VOL_UNIT = I_VOL_UNIT.ALT_UNIT_CD
-		LEFT JOIN MS_ITEM_DESC I_DESC WITH(NOLOCK)
-			ON MST.COMP_CD = I_DESC.COMP_CD
-			AND MST.MATL_CD = I_DESC.MATL_CD
-			AND LANG_CD = #{LANG}
-		WHERE 1 = 1
-		<if test='MATL_CD != null and MATL_CD != ""'>
-			AND MST.MATL_CD = #{MATL_CD}
-		</if>
-		<if test='MATL_TP != null and MATL_TP != ""'>
-			AND MST.MATL_TP = #{MATL_TP}
-		</if>
-		<if test='PLANT_CD != null and PLANT_CD != ""'>
-			AND I_PLT.PLANT_CD = #{PLANT_CD}
-		</if>
-		<if test='DIV_CD != null and DIV_CD != ""'>
-			AND MST.DIV_CD = #{DIV_CD}
-		</if>
-		<if test='SALES_ORG_CD != null and SALES_ORG_CD != ""'>
-			AND I_ORG.SALES_ORG_CD = #{SALES_ORG_CD}
-		</if>
-		<if test='DISTRB_CH != null and DISTRB_CH != ""'>
-			AND I_ORG.DISTRB_CH = #{DISTRB_CH}
-		</if>
-		<if test='MATL_DESC != null and MATL_DESC != ""'>
-			AND I_DESC.MATL_DESC LIKE DBO.SETPARAM(#{MATL_DESC})
-		</if>
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+	/* Product.xml -> selectProductInfo */
+		SELECT ROW_NUMBER() OVER(ORDER BY B.PROD_SEQ) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			 , B.BAS_YY						<!-- 기준년도 -->
+		     , B.BAS_YY_SEQ					<!-- 기간년도순번 -->
+		     , B.PROD_SEQ					<!-- 상품순번 -->
+		     , B.SSN_GBN					<!-- 시즌구분 -->
+		     , B.HDNG_GBN					<!-- 항목구분 -->
+		     , B.PROD_COND					<!-- 조건 -->
+		     , A.ST_DT1						<!-- 시작일1 -->
+		     , A.ED_DT1						<!-- 종료일1 -->
+			 , A.ST_DT2						<!-- 시작일2 -->
+		     , A.ED_DT2						<!-- 종료일2 -->
+			 , A.ST_DT3						<!-- 시작일3 -->
+		     , A.ED_DT3						<!-- 종료일3 -->
+			 , B.COM_AMT					<!-- 일반금액 -->
+			 , B.COM_BAS_PER				<!-- 일반 기준인원수 -->
+			 , B.COM_BAS_DAY				<!-- 일반 기준일수 -->
+			 , B.COM_CNTN					<!-- 일반 기타내용 -->
+      		 , B.AGN_AMT					<!-- 에이전시금액 -->
+			 , B.AGN_BAS_PER				<!-- 에이전시 기준인원수 -->
+      		 , B.AGN_BAS_DAY				<!-- 에이전시 기준일수 -->
+      		 , B.AGN_CNTN					<!-- 에이전시 기타내용 -->
+		  FROM TB_BAS_YY_INFO A
+	INNER JOIN TB_PROD_INFO B
+		    ON A.BAS_YY_SEQ = B.BAS_YY_SEQ
+		   AND A.BAS_YY = B.BAS_YY
+		 WHERE 1 = 1
+		 <if test='SSN_GBN != "3"'>
+		   AND A.SSN_GBN = #{SSN_GBN}
+		 </if> 
+		   AND substr(A.ST_DT1, 1, 4) = #{ST_DT1}
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
 	
-	<select id="selectDescList" parameterType="BMap" resultType="BMap">
-		/* Product.xml -> selectDescList */
-		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
-			SELECT ROW_NUMBER() OVER(ORDER BY I_DESC.REG_DT DESC) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
-				 , I_DESC.COMP_CD					  AS COMP_CD
-				 , I_DESC.MATL_CD					  AS MATL_CD
-				 , I_DESC.LANG_CD					  AS LANG_CD
-				 , CONVERT(VARCHAR, I_DESC.MATL_DESC) AS MATL_DESC
-			FROM MS_ITEM_DESC I_DESC WITH(NOLOCK)
-			WHERE 1 = 1
-			AND I_DESC.MATL_CD = #{MATL_CD}
-			AND I_DESC.COMP_CD = #{COMP_CD}
-		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	<select id="selectBasYY" parameterType="Bmap" resultType="Bmap">
+	/* Product.xml -> selectBasYY */
+       SELECT DISTINCT BAS_YY
+         FROM TB_BAS_YY_INFO 
+     ORDER BY BAS_YY desc
 	</select>
 	
-	<select id="selectUOMList" parameterType="BMap" resultType="BMap">
-		/* Product.xml -> selectUOMList */
-		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
-			SELECT ROW_NUMBER() OVER(ORDER BY A.REG_DT DESC) ROWNUM , <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
-			       A.COMP_CD		AS COMP_CD,
-			       A.MATL_CD		AS MATL_CD,
-			       A.UNIT_DIV		AS UNIT_DIV,
-			       A.ALT_UNIT_CD	AS ALT_UNIT_CD,
-			       A.BS_UOM 		AS BS_UOM,
-			       B.BASIC_UNIT		AS BASIC_UNIT,
-			       A.UNIT_DESC		AS UNIT_DESC
-			  FROM MS_ITEM_UNIT A WITH(NOLOCK)
-			  JOIN MS_ITEM      B WITH(NOLOCK)
-			    ON B.COMP_CD = A.COMP_CD
-			   AND B.MATL_CD = A.MATL_CD
-			 WHERE 1 = 1
-				AND A.MATL_CD = #{MATL_CD}
-				AND A.COMP_CD = #{COMP_CD}	
-		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	<select id="selectSeason" parameterType="Bmap" resultType="Bmap">
+	/* Product.xml -> selectSeason */
+		SELECT CODE, CODE_NM
+		  FROM bc_comm_l
+		 WHERE HEAD_CD = 500090
+	  ORDER BY FIELD(CODE, 3, 1, 2)
 	</select>
 	
-	<select id="selectBasicList" parameterType="BMap" resultType="BMap">
-		/* Product.xml -> selectBasicList */
-		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
-			SELECT ROW_NUMBER() OVER(ORDER BY REG_DT DESC) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
-				 , COMP_CD						AS COMP_CD
-				 , MATL_CD						AS MATL_CD
-				 , LANG_CD						AS LANG_CD
-				 , CONVERT(VARCHAR, LONG_TEXT)	AS LONG_TEXT
-			FROM MS_ITEM_LONGTEXT WITH(NOLOCK)
-			WHERE 1 = 1
-			AND MATL_CD = #{MATL_CD}
-			AND COMP_CD = #{COMP_CD}
-			AND SALES_ORG_CD = #{SALES_ORG_CD}
-			AND DISTRB_CH = #{DISTRB_CH}
-		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	<select id="selectHdng" parameterType="Bmap" resultType="Bmap">
+	/* Product.xml -> selectSeason */
+		SELECT CODE, CODE_NM
+		  FROM bc_comm_l
+		 WHERE HEAD_CD = 500000
 	</select>
 	
-	<select id="selectMatlPopList" parameterType="BMap" resultType="BMap">
-		/* Product.xml -> selectMatlPopList */
-		<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
-			SELECT ROW_NUMBER() OVER(ORDER BY MST.MATL_CD ASC) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
-				, MST.MATL_CD							AS MATL_CD
-				, MTL_DESC.MATL_DESC					AS MATL_DESC
-				, CONVERT(VARCHAR, MTL_LONG.LONG_TEXT)	AS LONG_TEXT
-				, MST_PLANT.PLANT_CD					AS PLANT_CD
-				, MTL_ORG.SALES_ORG_CD					AS SALES_ORG_CD
-				, MTL_ORG.DISTRB_CH						AS DISTRB_CH
-				, MST.DIV_CD							AS DIV_CD
-				, MST.X_P_STS							AS X_P_STATUS
-				, MTL_UNIT.ALT_UNIT_CD					AS BUM
-				, MST.WP_OUT							AS WP_OUT
-				, MST.MATL_GR							AS MATL_GR
-				, MST.COMP_CD							AS COMP_CD
-				, MST.BASIC_UNIT						AS BASIC_UNIT
-				, MST.GROSS_WT							AS GROSS_WT
-				, MST.NET_WT							AS NET_WT
-				, MST.WT_UNIT							AS WT_UNIT
-				, MST.VOL_QTY							AS VOL_QTY
-				, MST.VOL_UNIT							AS VOL_UNIT
-				, MST.MATL_TP							AS MATL_TP
-				, (SELECT COUNT(*) FROM MS_ITEM_UNIT A WHERE A.MATL_CD = MST.MATL_CD AND A.ALT_UNIT_CD IN ('WP','KW','MWP')) AS UOM_CNT
-			FROM MS_ITEM MST WITH(NOLOCK)
-			LEFT OUTER JOIN MS_ITEM_ORG MTL_ORG WITH(NOLOCK)
-				ON MST.COMP_CD = MTL_ORG.COMP_CD AND MST.MATL_CD = MTL_ORG.MATL_CD
-			LEFT OUTER JOIN MS_ITEM_DESC MTL_DESC WITH(NOLOCK)
-				ON MST.COMP_CD = MTL_DESC.COMP_CD AND MST.MATL_CD = MTL_DESC.MATL_CD AND MTL_DESC.LANG_CD = #{LANG}
-			LEFT OUTER JOIN MS_ITEM_LONGTEXT MTL_LONG WITH(NOLOCK)
-				ON MST.COMP_CD = MTL_LONG.COMP_CD AND MST.MATL_CD = MTL_LONG.MATL_CD AND MTL_LONG.LANG_CD = #{LANG}
-					AND MTL_LONG.DISTRB_CH = MTL_ORG.DISTRB_CH
-			LEFT OUTER JOIN MS_ITEM_UNIT MTL_UNIT WITH(NOLOCK)
-				ON MST.COMP_CD = MTL_UNIT.COMP_CD AND MST.MATL_CD = MTL_UNIT.MATL_CD AND MST.BASIC_UNIT = MTL_UNIT.ALT_UNIT_CD
-			LEFT OUTER JOIN MS_ITEM_PLANT MST_PLANT WITH(NOLOCK)
-				ON MST.COMP_CD = MST_PLANT.COMP_CD AND MST.MATL_CD = MST_PLANT.MATL_CD
-			WHERE 1 = 1
-			<if test='(MATL_CD_ST != null and MATL_CD_ST != "") and (MATL_CD_END == null or MATL_CD_END == "")'>
-				AND CONVERT(NUMERIC, MST.MATL_CD) LIKE DBO.SETPARAM(CONVERT(NUMERIC, #{MATL_CD_ST}))
-			</if>
-			<if test='(MATL_CD_END != null and MATL_CD_END != "") and (MATL_CD_ST == null or MATL_CD_ST == "")'>
-				AND CONVERT(NUMERIC, MST.MATL_CD) LIKE DBO.SETPARAM(CONVERT(NUMERIC, #{MATL_CD_END}))
-			</if>
-			<if test='(MATL_CD_ST != null and MATL_CD_ST != "") and (MATL_CD_END != null and MATL_CD_END != "")'>
-				AND CONVERT(NUMERIC, MST.MATL_CD) <![CDATA[ >= ]]> CONVERT(NUMERIC, #{MATL_CD_ST})
-				AND CONVERT(NUMERIC, MST.MATL_CD) <![CDATA[ <= ]]> CONVERT(NUMERIC, #{MATL_CD_END})
-			</if>
-			<if test='MATL_TP != null and MATL_TP != ""'>
-				AND MST.MATL_TP = #{MATL_TP}
-			</if>
-			<if test='PLANT_CD != null and PLANT_CD != ""'>
-				AND MST_PLANT.PLANT_CD = #{PLANT_CD}
-			</if>
-			<if test='SALES_ORG_CD != null and SALES_ORG_CD != ""'>
-				AND MTL_ORG.SALES_ORG_CD = #{SALES_ORG_CD}
-			</if>
-			<if test='DISTRB_CH != null and DISTRB_CH != ""'>
-				AND MTL_ORG.DISTRB_CH = #{DISTRB_CH}
-			</if>
-			<if test='DIV_CD != null and DIV_CD != ""'>
-				AND MST.DIV_CD = #{DIV_CD}
-			</if>
-			<if test='MATL_GR_ST != null and MATL_GR_ST != ""'>
-				AND MST.MATL_GR <![CDATA[ >= ]]> #{MATL_GR_ST}
-			</if>
-			<if test='MATL_GR_END != null and MATL_GR_END != ""'>
-				AND MST.MATL_GR <![CDATA[ <= ]]> #{MATL_GR_END}
-			</if>
-			<if test='MATL_DESC != null and MATL_DESC != ""'>
-				AND (CONVERT(VARCHAR, MTL_LONG.LONG_TEXT) LIKE DBO.SETPARAM(#{MATL_DESC})
-					OR MTL_DESC.MATL_DESC LIKE DBO.SETPARAM(#{MATL_DESC})
+	<insert id="insertProductInfo" parameterType="BMAP">
+	/* Product.xml -> insertProductInfo */
+		INSERT INTO TB_PROD_INFO
+				    ( BAS_YY					<!-- 기준년도 -->
+	                , BAS_YY_SEQ				<!-- 기간년도순번 -->
+	                , PROD_SEQ					<!-- 상품순번 -->				    
+	                , SSN_GBN					<!-- 시즌구분 -->
+	                , HDNG_GBN					<!-- 항목구분 -->
+	                , PROD_COND					<!-- 조건 -->
+				    , COM_AMT 	 				<!-- 일반금액 -->
+					, COM_BAS_PER 	 			<!-- 일반 기준인원수 -->
+					, COM_BAS_DAY 	 			<!-- 일반 기준일수 -->
+					, AGN_AMT 					<!-- 에이전시금액 -->
+					, AGN_BAS_PER 				<!-- 에이전시 기준인원수 -->
+					, AGN_BAS_DAY 				<!-- 에이전시 기준일수 -->
+					, REG_DTM					<!-- 작성일 -->
+					, REG_ID					<!-- 작성자 -->
+					, UPD_DTM					<!-- 수정일 -->
+					, UPD_ID					<!-- 수정자 -->
 					)
-			</if>
-			<if test='WP_OUT != null and WP_OUT != ""'>
-				AND MST.WP_OUT = #{WP_OUT}
-			</if>
-			<if test='EXC_PL != null and EXC_PL != ""'>
-				/* AND MST.WP_OUT = ${EXC_PL} */
-			</if>
-			AND MST.STATUS <![CDATA[ <> ]]> 'D'
-			GROUP BY MST.MATL_CD, MTL_DESC.MATL_DESC, CONVERT(VARCHAR, MTL_LONG.LONG_TEXT), MST_PLANT.PLANT_CD, MTL_ORG.SALES_ORG_CD, MTL_ORG.DISTRB_CH
-				, MST.DIV_CD, MST.X_P_STS, MTL_UNIT.ALT_UNIT_CD, MST.WP_OUT, MST.MATL_GR, MST.COMP_CD, MST.BASIC_UNIT, MST.GROSS_WT
-				, MST.NET_WT, MST.WT_UNIT, MST.VOL_QTY, MST.VOL_UNIT, MST.MATL_TP
-			
-		<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->		
+	         VALUES ( #{BAS_YY}
+	         		, (SELECT IFNULL(MAX(B.BAS_YY_SEQ) + 1, 1) 
+	         		     FROM TB_PROD_INFO B
+	         		    WHERE BAS_YY = #{BAS_YY})
+					, (SELECT IFNULL(MAX(B.PROD_SEQ) + 1, 1) 
+						 FROM TB_PROD_INFO B)
+					, #{SSN_GBN}
+					, #{HDNG_GBN}
+					, #{PROD_COND}
+					, #{COM_AMT}
+					, #{COM_BAS_PER}
+					, #{COM_BAS_DAY}
+					, #{AGN_AMT}
+					, #{AGN_BAS_PER}
+					, #{AGN_BAS_DAY}
+					, current_date()
+            		, #{LOGIN_USER}
+            		, current_date()
+            		, #{LOGIN_USER}
+	                )
+	</insert>
+	
+	<update id="updateProductInfo" parameterType="BMap">
+	/* Product.xml -> updateProductInfo */
+		UPDATE TB_PROD_INFO
+		   SET PROD_COND = #{PROD_COND}				<!-- 조건 -->
+  			 , COM_AMT 		= #{COM_AMT}			<!-- 일반금액 -->
+			 , COM_BAS_PER 	= #{COM_BAS_PER}		<!-- 일반 기준인원수 -->
+			 , COM_BAS_DAY 	= #{COM_BAS_DAY}		<!-- 일반 기준일수 -->
+      		 , AGN_AMT 		= #{AGN_AMT}			<!-- 에이전시금액 -->
+			 , AGN_BAS_PER 	= #{AGN_BAS_PER}		<!-- 에이전시 기준인원수 -->
+      		 , AGN_BAS_DAY 	= #{AGN_BAS_DAY}		<!-- 에이전시 기준일수 -->
+		 	 , UPD_DTM		= current_date()		<!-- 수정일 -->
+			 , UPD_ID		= #{LOGIN_USER}			<!-- 수정자 -->
+		 WHERE BAS_YY 		= #{BAS_YY}				<!-- 기준년도 -->
+		   AND BAS_YY_SEQ 	= #{BAS_YY_SEQ}			<!-- 기간년도순번 -->
+		   AND PROD_SEQ 	= #{PROD_SEQ}			<!-- 상품순번 -->
+	</update>
+
+	<delete id="deleteProductInfo" parameterType="BMap">
+	/* Product.xml -> deleteProductInfo */
+		DELETE FROM TB_PROD_INFO
+ 	  	 WHERE BAS_YY 		= #{BAS_YY}
+		   AND BAS_YY_SEQ 	= #{BAS_YY_SEQ}
+		   AND PROD_SEQ 	= #{PROD_SEQ}
+	</delete>
+	
+	
+	<select id="selectPeriodInfo" parameterType="BMap" resultType="BMap">
+	/* Product.xml -> selectPeriodInfo */
+		SELECT BAS_YY					<!-- 기준년도 -->
+			 , BAS_YY_SEQ				<!-- 기준년도 순번 -->
+			 , SSN_GBN					<!-- 시즌구분 -->
+		     , ST_DT1					<!-- 시작일1 -->
+		     , ED_DT1					<!-- 종료일1 -->
+			 , ST_DT2					<!-- 시작일2 -->
+		     , ED_DT2					<!-- 종료일2 -->
+			 , ST_DT3					<!-- 시작일3 -->
+		     , ED_DT3					<!-- 종료일3 -->
+		  FROM TB_BAS_YY_INFO
+		 WHERE 1 = 1
+		   AND substr(ST_DT1, 1, 4) = #{ST_DT1}
 	</select>
 	
-	<select id="chkMatlCd" parameterType="BMap" resultType="String">
-		SELECT TOP 1 MST.MATL_CD
-			 FROM MS_ITEM MST
-			 LEFT OUTER JOIN MS_ITEM_DESC MTL_DESC WITH(NOLOCK)
-				ON MST.COMP_CD = MTL_DESC.COMP_CD AND MST.MATL_CD = MTL_DESC.MATL_CD AND MTL_DESC.LANG_CD = #{LANG}
-		WHERE 1 = 1
-		<if test='MATL_CD != null and MATL_CD != ""'>
-		AND MST.MATL_CD = #{MATL_CD}
-		</if>
-		<if test='MATL_DESC != null and MATL_DESC != ""'>
-		AND MTL_DESC.MATL_DESC LIKE DBO.SETPARAM(#{MATL_DESC})
-		</if>
-	</select>
+	<insert id="insertPeriodInfo" parameterType="BMAP">
+	/* Product.xml -> insertPeriodInfo */
+		INSERT INTO TB_BAS_YY_INFO
+					( BAS_YY					<!-- 기준년도 -->
+					, BAS_YY_SEQ				<!-- 기간년도순번 -->    
+					, SSN_GBN					<!-- 시즌구분 -->
+					, ST_DT1					<!-- 시작일1 -->
+					, ED_DT1					<!-- 종료일1 -->
+					, ST_DT2					<!-- 시작일2 -->
+					, ED_DT2					<!-- 종료일2 -->
+					, ST_DT3					<!-- 시작일3 -->
+					, ED_DT3					<!-- 종료일3 -->
+					, REG_DTM					<!-- 작성일 -->
+					, REG_ID					<!-- 작성자 -->
+					, UPD_DTM					<!-- 수정일 -->
+					, UPD_ID					<!-- 수정자 -->
+					)
+			 VALUES ( #{BAS_YY}
+					, (SELECT IFNULL(MAX(B.BAS_YY_SEQ) + 1, 1) 
+						 FROM TB_PROD_INFO B
+						WHERE BAS_YY = #{BAS_YY})
+					, #{SSN_GBN}
+					, #{ST_DT1}
+					, #{ED_DT1}
+					, #{ST_DT2}
+					, #{ED_DT2}
+					, #{ST_DT3}
+					, #{ED_DT3}
+					, current_date()
+					, #{LOGIN_USER}
+					, current_date()
+					, #{LOGIN_USER}
+					)
+	</insert>
 	
-	<select id="getMatlData" parameterType="BMap" resultType="BMap">
-		/* Product.xml -> getMatlData */
-			SELECT TOP 1 MST.MATL_CD					AS MATL_CD
-				 , MTL_DESC.MATL_DESC					AS MATL_DESC
-				 , CONVERT(VARCHAR, MTL_LONG.LONG_TEXT)	AS LONG_TEXT
-				 , MST_PLANT.PLANT_CD					AS PLANT_CD
-				 , MTL_ORG.SALES_ORG_CD					AS SALES_ORG_CD
-				 , MTL_ORG.DISTRB_CH					AS DISTRB_CH
-				 , MST.DIV_CD							AS DIV_CD
-				 , MST.X_P_STS							AS X_P_STATUS
-				 , MTL_UNIT.ALT_UNIT_CD					AS BUM
-				 , MST.WP_OUT							AS WP_OUT
-				 , MST.MATL_GR							AS MATL_GR
-				 , MST.COMP_CD							AS COMP_CD
-				 , MST.BASIC_UNIT						AS BASIC_UNIT
-				 , MST.GROSS_WT							AS GROSS_WT
-				 , MST.NET_WT							AS NET_WT
-				 , MST.WT_UNIT							AS WT_UNIT
-				 , MST.VOL_QTY							AS VOL_QTY
-				 , MST.VOL_UNIT							AS VOL_UNIT
-				 , MST.MATL_TP							AS MATL_TP
-				 , (SELECT dbo.GetItemCtg2(#{G_COMP_CD}, #{DOC_TP}, MST.MATL_CD, #{MATL_CD}, #{SALES_ORG_CD}, #{DISTRB_CH}, '0'))
-				 										AS MATL_ITEM_CTG
-			FROM MS_ITEM MST WITH(NOLOCK)
-			LEFT OUTER JOIN MS_ITEM_ORG MTL_ORG WITH(NOLOCK)
-				ON MST.COMP_CD = MTL_ORG.COMP_CD AND MST.MATL_CD = MTL_ORG.MATL_CD
-			LEFT OUTER JOIN MS_ITEM_DESC MTL_DESC WITH(NOLOCK)
-				ON MST.COMP_CD = MTL_DESC.COMP_CD AND MST.MATL_CD = MTL_DESC.MATL_CD AND MTL_DESC.LANG_CD = #{LANG}
-			LEFT OUTER JOIN MS_ITEM_LONGTEXT MTL_LONG WITH(NOLOCK)
-				ON MST.COMP_CD = MTL_LONG.COMP_CD AND MST.MATL_CD = MTL_LONG.MATL_CD AND MTL_LONG.LANG_CD = #{LANG}
-					AND ISNULL(MTL_LONG.SALES_ORG_CD, '') <![CDATA[ <> ]]> '' AND ISNULL(MTL_LONG.DISTRB_CH, '') <![CDATA[ <> ]]> ''
-			LEFT OUTER JOIN MS_ITEM_UNIT MTL_UNIT WITH(NOLOCK)
-				ON MST.COMP_CD = MTL_UNIT.COMP_CD AND MST.MATL_CD = MTL_UNIT.MATL_CD AND MST.BASIC_UNIT = MTL_UNIT.ALT_UNIT_CD
-			LEFT OUTER JOIN MS_ITEM_PLANT MST_PLANT WITH(NOLOCK)
-				ON MST.COMP_CD = MST_PLANT.COMP_CD AND MST.MATL_CD = MST_PLANT.MATL_CD
-			WHERE 1 = 1
-			AND MST.MATL_CD = #{MATL_CD}
-			AND MTL_ORG.SALES_ORG_CD = #{SALES_ORG_CD}
-			AND MTL_ORG.DISTRB_CH = #{DISTRB_CH}
-			<if test='DIV_CD != null and DIV_CD != ""'>
-			AND MST.DIV_CD = #{DIV_CD}
-			</if>
-			AND MST.STATUS <![CDATA[ <> ]]> 'D'
-			GROUP BY MST.MATL_CD, MTL_DESC.MATL_DESC, CONVERT(VARCHAR, MTL_LONG.LONG_TEXT), MST_PLANT.PLANT_CD, MTL_ORG.SALES_ORG_CD, MTL_ORG.DISTRB_CH
-				, MST.DIV_CD, MST.X_P_STS, MTL_UNIT.ALT_UNIT_CD, MST.WP_OUT, MST.MATL_GR, MST.COMP_CD, MST.BASIC_UNIT, MST.GROSS_WT
-				, MST.NET_WT, MST.WT_UNIT, MST.VOL_QTY, MST.VOL_UNIT, MST.MATL_TP
-			ORDER BY CONVERT(VARCHAR, MTL_LONG.LONG_TEXT) DESC
-	</select>
+	<update id="updatePeriodInfo" parameterType="BMap">
+	/* Product.xml -> updatePeriodInfo */
+		UPDATE TB_BAS_YY_INFO
+		   SET SSN_GBN 		= #{SSN_GBN}			<!-- 시즌구분 -->
+			 , ST_DT1 		= #{ST_DT1}				<!-- 시작일1 -->
+			 , ED_DT1 		= #{ED_DT1}				<!-- 종료일1 -->
+			 , ST_DT2 		= #{ST_DT2}				<!-- 시작일2 -->
+			 , ED_DT1 		= #{ED_DT1}				<!-- 종료일2 -->
+			 , ST_DT3 		= #{ST_DT3}				<!-- 시작일3 -->
+			 , ED_DT1 		= #{ED_DT1}				<!-- 종료일3 -->
+			 , UPD_DTM		= current_date()		<!-- 수정일 -->
+			 , UPD_ID		= #{LOGIN_USER}			<!-- 수정자 -->
+		 WHERE 1 = 1
+		   AND BAS_YY 		= #{BAS_YY}				<!-- 기준년도 -->
+		   AND BAS_YY_SEQ 	= #{BAS_YY_SEQ}			<!-- 기간년도순번 -->
+	</update>
+	
+	<delete id="deletePeriodInfo" parameterType="BMap">
+	/* Product.xml -> deletePeriodInfo */
+		DELETE FROM TB_BAS_YY_INFO
+ 	  	 WHERE BAS_YY 		= #{BAS_YY}
+		   AND BAS_YY_SEQ 	= #{BAS_YY_SEQ}
+	</delete>
+	
+	
+	<insert id="insertPeriodCopyInfo" parameterType="BMAP">
+	/* Product.xml -> insertPeriodCopyInfo */
+		INSERT INTO TB_BAS_YY_INFO
+		SELECT #{BAS_YY_PASTE}
+			 , BAS_YY_SEQ
+			 , SSN_GBN
+			 , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ST_DT1, 5)))
+			 , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ED_DT1, 5)))
+			 , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ST_DT2, 5))) 
+		     , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ED_DT2, 5))) 
+		     , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ST_DT3, 5))) 
+		     , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ED_DT3, 5))) 
+			 , current_date()
+			 , #{LOGIN_USER}
+			 , current_date()
+			 , #{LOGIN_USER}
+		  FROM TB_BAS_YY_INFO
+		 WHERE 1 = 1
+		   AND BAS_YY = #{BAS_YY_COPY}
+	</insert>
+	
+	<insert id="insertProductCopyInfo" parameterType="BMAP">
+	/* Product.xml -> insertProductCopyInfo */
+		INSERT INTO TB_PROD_INFO
+		SELECT #{BAS_YY_PASTE}				
+			 , PROD_SEQ						
+			 , HDNG_GBN				
+			 , PROD_COND	
+			 , SSN_GBN	
+			 , BAS_YY_SEQ		
+			 , COM_AMT				
+			 , COM_BAS_PER			
+			 , COM_BAS_DAY				
+			 , COM_CNTN				
+			 , AGN_AMT				
+			 , AGN_BAS_PER			
+			 , AGN_BAS_DAY			
+			 , AGN_CNTN		
+		     , current_date()
+		     , #{LOGIN_USER}
+		     , current_date()
+		     , #{LOGIN_USER}
+		  FROM TB_PROD_INFO
+	     WHERE 1 = 1
+	       AND BAS_YY = #{BAS_YY_COPY}
+     </insert>
 </mapper>
