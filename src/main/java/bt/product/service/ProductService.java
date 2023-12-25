@@ -1,33 +1,13 @@
 package bt.product.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.util.Streams;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import bt.btframework.common.FileManager;
-import bt.btframework.common.fileupload.FileExtFilter;
-import bt.btframework.common.fileupload.FileMaxUploadFilter;
-import bt.btframework.common.fileupload.FileTransferManager;
 import bt.btframework.utils.BMap;
-import bt.btframework.utils.Constants;
 import bt.btframework.utils.LoginInfo;
-import bt.btframework.utils.StringUtils;
 import bt.product.dao.ProductDao;
 
 @Service("ProductService")
@@ -36,54 +16,126 @@ public class ProductService {
 	private ProductDao productDao;
 	
 	/**
-	 * Product Info 조회.
+	 * Product Info 조회
 	 * @param param
 	 * @return
 	 * @throws Exception
 	 */
-	public BMap selectProductInfo(BMap param) throws Exception{
+	public List<BMap> selectProductInfo(BMap param) throws Exception{
 		return productDao.selectProductInfo(param);
 	}
-	
+	   
 	/**
-	 * Product Desc List 조회.
+    * 기준년도 셀렉트 항목 가져오기
+    * @param param
+    * @return
+    * @throws Exception
+    */
+   public List<BMap> selectBasYY(BMap param) throws Exception {
+      return productDao.selectBasYY(param);
+   }
+   
+	/**
+    * 시즌구분 셀렉트 항목 가져오기
+    * @param param
+    * @return
+    * @throws Exception
+    */
+   public List<BMap> selectSeason(BMap param) throws Exception {
+      return productDao.selectSeason(param);
+   }
+   
+	/**
+    * 항목구분 셀렉트 항목 가져오기
+    * @param param
+    * @return
+    * @throws Exception
+    */
+   public List<BMap> selectHdng(BMap param) throws Exception {
+      return productDao.selectHdng(param);
+   }
+   
+	/**
+	 * Product Info 저장
+	 * @param param
+	 * @return 
+	 * @throws Exception
 	 */
-	public List<BMap> selectDescList(BMap param) throws Exception{
-		return productDao.selectDescList(param);
+	public Boolean saveProductInfo(BMap param) throws Exception{
+		Boolean isValid = true;
+		param.put("LOGIN_USER", LoginInfo.getUserId());
+		if(param.getString("modify").equals("1")){
+			productDao.updateProductInfo(param); // 상품 수정
+		} else {
+			productDao.insertProductInfo(param); //상품 등록
+		}
+		return isValid;
 	}
 	
 	/**
-	 * Product Unit of Measure List 조회.
+	 * Product Info 삭제
+	 * @param param
+	 * @return 
+	 * @throws Exception
 	 */
-	public List<BMap> selectUOMList(BMap param) throws Exception{
-		return productDao.selectUOMList(param);
+	public void deleteProductInfo(BMap param) throws Exception{
+		productDao.deleteProductInfo(param); // 상품 수정;
+	}
+	
+	
+	/**
+	 * Period Info 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> selectPeriodInfo(BMap param) throws Exception{
+		return productDao.selectPeriodInfo(param);
 	}
 	
 	/**
-	 * Product Basic Data Text List 조회.
+	 * Period Info 저장
+	 * @param param
+	 * @return 
+	 * @throws Exception
 	 */
-	public List<BMap> selectBasicList(BMap param) throws Exception{
-		return productDao.selectBasicList(param);
+	public Boolean savePeriodInfo(BMap param) throws Exception{
+		Boolean isValid = true;
+		param.put("LOGIN_USER", LoginInfo.getUserId());
+		if(param.getString("modify").equals("1")){
+			productDao.updatePeriodInfo(param); // 상품 수정
+		} else {
+			productDao.insertPeriodInfo(param); //상품 등록
+		}
+		return isValid;
 	}
 	
 	/**
-	 * Product PopUp List 조회.
+	 * Period Info 삭제
+	 * @param param
+	 * @return 
+	 * @throws Exception
 	 */
-	public List<BMap> selectMatlPopList(BMap param) throws Exception{
-		return productDao.selectMatlPopList(param);
+	public void deletePeriodInfo(BMap param) throws Exception{
+		productDao.deletePeriodInfo(param); // 상품 수정;
 	}
 	
 	/**
-	 * Product Code Check
+	 * Copy 등록
+	 * @param param
+	 * @return 
+	 * @throws Exception
 	 */
-	public String chkMatlCd(BMap param) throws Exception{
-		return productDao.chkMatlCd(param);
+	public Boolean saveCopyInfo(BMap param) throws Exception{
+		Boolean isValid = true;
+		param.put("LOGIN_USER", LoginInfo.getUserId());
+		if(param.getString("branch").equals("period")){
+			productDao.insertPeriodCopyInfo(param); //기간 복사
+		} else if(param.getString("branch").equals("normal")) {
+			productDao.insertProductCopyInfo(param); //상품 복사
+		}
+		
+		return isValid;
 	}
 	
-	/**
-	 * Product Data 조회.
-	 */
-	public BMap getMatlData(BMap param) throws Exception{
-		return productDao.getMatlData(param);
-	}
 }

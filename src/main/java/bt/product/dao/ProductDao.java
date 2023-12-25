@@ -9,61 +9,134 @@ import bt.btframework.utils.BMap;
 
 @Repository("ProductDao")
 public class ProductDao extends DBAbstractMapper {
+	
 	/**
-	 * Product 리스트 조회.
+	 * Product Info 조회
 	 * @param param
 	 * @return
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public BMap selectProductInfo(BMap param) throws Exception{
-		return (BMap) selectByPk("ProductMapper.selectProductInfo", param);
+	public List<BMap> selectProductInfo(BMap param )throws Exception{
+		return list("ProductMapper.selectProductInfo", param);
+	}
+
+	/**
+    * 기준년도 셀렉트 항목 가져오기
+    * @param param
+    * @return
+    * @throws Exception
+    */
+   @SuppressWarnings("unchecked")
+   public List<BMap> selectBasYY(BMap param) throws Exception{
+      return list("ProductMapper.selectBasYY", param);
+   }
+   
+	/**
+    * 시즌구분 셀렉트 항목 가져오기
+    * @param param
+    * @return
+    * @throws Exception
+    */
+   @SuppressWarnings("unchecked")
+   public List<BMap> selectSeason(BMap param) throws Exception{
+      return list("ProductMapper.selectSeason", param);
+   }
+   
+	/**
+    * 항목구분 셀렉트 항목 가져오기
+    * @param param
+    * @return
+    * @throws Exception
+    */
+   @SuppressWarnings("unchecked")
+   public List<BMap> selectHdng(BMap param) throws Exception{
+      return list("ProductMapper.selectHdng", param);
+   }
+   
+	/**
+	 * Product Info 등록
+	 * @param param
+	 * @throws Exception
+	 */
+	public void insertProductInfo(BMap param )throws Exception{
+		insert("ProductMapper.insertProductInfo", param);
 	}
 	
 	/**
-	 * Product Desc 리스트 조회.
+	 * Product Info 수정
+	 * @param param
+	 * @throws Exception
+	 */
+	public void updateProductInfo(BMap param )throws Exception{
+		update("ProductMapper.updateProductInfo", param);
+	}
+	
+	/**
+	 * Product Info 삭제
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deleteProductInfo(BMap param )throws Exception{
+		delete("ProductMapper.deleteProductInfo", param);
+	}
+	
+	
+	/**
+	 * Period Info 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public List<BMap> selectDescList(BMap param)throws Exception{
-		return list("ProductMapper.selectDescList", param);
+	public List<BMap> selectPeriodInfo(BMap param )throws Exception{
+		return list("ProductMapper.selectPeriodInfo", param);
 	}
 	
 	/**
-	 * Product Unit of Measeur 리스트 조회.
+	 * Period Info 등록
+	 * @param param
+	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
-	public List<BMap> selectUOMList(BMap param)throws Exception{
-		return list("ProductMapper.selectUOMList", param);
+	public void insertPeriodInfo(BMap param )throws Exception{
+		insert("ProductMapper.insertPeriodInfo", param);
 	}
 	
 	/**
-	 * Product Basic Data Text 리스트 조회.
+	 * Period Info 수정
+	 * @param param
+	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
-	public List<BMap> selectBasicList(BMap param)throws Exception{
-		return list("ProductMapper.selectBasicList", param);
+	public void updatePeriodInfo(BMap param )throws Exception{
+		update("ProductMapper.updatePeriodInfo", param);
 	}
 	
 	/**
-	 * Product PopUp List 조회.
+	 * Product Info 삭제
+	 * @param param
+	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
-	public List<BMap> selectMatlPopList(BMap param)throws Exception{
-		return list("ProductMapper.selectMatlPopList", param);
+	public void deletePeriodInfo(BMap param )throws Exception{
+		delete("ProductMapper.deletePeriodInfo", param);
+	}
+	
+	
+	/**
+	 * Period Copy 등록
+	 * @param param
+	 * @throws Exception
+	 */
+	public void insertPeriodCopyInfo(BMap param )throws Exception{
+		insert("ProductMapper.insertPeriodCopyInfo", param);
 	}
 	
 	/**
-	 * Product Code Check
+	 * Product Copy 등록
+	 * @param param
+	 * @throws Exception
 	 */
-	public String chkMatlCd(BMap param)throws Exception{
-		return (String)selectByPk("ProductMapper.chkMatlCd", param);
+	public void insertProductCopyInfo(BMap param )throws Exception{
+		insert("ProductMapper.insertProductCopyInfo", param);
 	}
 	
-	/**
-	 * Product Data 조회.
-	 */
-	@SuppressWarnings("unchecked")
-	public BMap getMatlData(BMap param)throws Exception{
-		return (BMap) selectByPk("ProductMapper.getMatlData", param);
-	}
 }
