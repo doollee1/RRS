@@ -31,9 +31,9 @@
                             </select>
                         </td>
 						<td class="medium_td">
-						    <input type="text" name="RESERVE_STDT" id="RESERVE_STDT" data-type="date" style="width:90px; float:left;"/>
+						    <input type="text" name="RESERVE_STDT" id="RESERVE_STDT" data-type="date" style="width:90px; float:left; text-align: center;"/>
 						    <p style="float:left;">-</p>
-						    <input type="text" name="RESERVE_EDDT" id="RESERVE_EDDT" data-type="date" style="width:90px;float:left;"/>
+						    <input type="text" name="RESERVE_EDDT" id="RESERVE_EDDT" data-type="date" style="width:90px;float:left; text-align: center;"/>
 					    </td>
 						<td class="small_td"><p><s:message code="reservation.state"/></p></td>
 						<td class="medium_td">
@@ -130,21 +130,26 @@
 	}
 	
 	function createQuotationGrid() {
-		var colName = [ '<s:message code="reservation.seq"/>',
-				'<s:message code="reservation.mem_gbn"/>',
-				'<s:message code="reservation.date"/>',
-				'<s:message code="reservation.member"/>',
-				'<s:message code="reservation.product_gbn"/>',
-				'<s:message code="reservation.checkIn"/>',
-				'<s:message code="reservation.checkOut"/>',
-				'<s:message code="reservation.totalCnt"/>',
-				'<s:message code="reservation.amount"/>',
-				'<s:message code="reservation.totAmount"/>',
-				'<s:message code="reservation.flight"/>',
-				'<s:message code="reservation.state"/>', '상품순번"/>' ];
+		var colName = [ 
+            '<s:message code="reservation.seq"/>',
+	        '<s:message code="reservation.mem_gbn"/>',
+		    '<s:message code="reservation.reserveSeq"/>',
+	        '<s:message code="reservation.date"/>',
+	        '<s:message code="reservation.member"/>',
+	        '<s:message code="reservation.product_gbn"/>',
+	        '<s:message code="reservation.checkIn"/>',
+	        '<s:message code="reservation.checkOut"/>',
+	        '<s:message code="reservation.totalCnt"/>',
+	        '<s:message code="reservation.amount"/>',
+	        '<s:message code="reservation.totAmount"/>',
+	        '<s:message code="reservation.flight"/>',
+	        '<s:message code="reservation.state"/>', 
+	        '<s:message code="reservation.prodCnt"/>',
+		];
 		var colModel = [ 
-		    {name : 'SEQ'       , width : 70  , align : 'center'}, 
+		    {name : 'ROWNUM'       , width : 70  , align : 'center'}, 
 		    {name : 'MEM_NM'    , width : 70  , align : 'center'}, 
+		    {name : 'SEQ'       , width : 70  , align : 'center'}, 
 		    {name : 'REQ_DT'    , width : 100 , align : 'center'}, 
 		    {name : 'REQ_HAN_NM', width : 70  , align : 'center'}, 
 		    {name : 'PROD_NM'   , width : 200, align : 'center'}, 

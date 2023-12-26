@@ -23,9 +23,9 @@
 			        <col width="30%" />
 			    </colgroup>
 			    <tr class="idTest">
-		   	     	<th>usrId</th>
+		   	     	<th>ID</th>
 					<td class="medium_td">
-						<input type="text" id="usrId" name="usrId"/>
+						<input type="text" id="USER_ID" name="USER_ID"/>
 					</td>
 				</tr>
 		   		<tr>
@@ -94,20 +94,20 @@
 					</td>
 				</tr>
 				<tr>
-				    <th><s:message code='reservation.depFlight'/></th>
-					<td>
-					    <select id="FLIGHT_OUT" name="FLIGHT_OUT" class="cmc_combo" style="width:62%;">
-						    <option value="">--<s:message code='system.select'/>--</option>
-						    <c:forEach var="i" items="${flight_out}">
-								<option value="${i.CODE}">${i.CODE_NM}</option>
-							</c:forEach>
-						</select>
-					</td>
 				    <th><s:message code='reservation.arrFlight'/></th>
 					<td>
 						<select id="FLIGHT_IN" name="FLIGHT_IN" class="cmc_combo" style="width:62%;">
 						    <option value="">--<s:message code='system.select'/>--</option>
 						    <c:forEach var="i" items="${flight_in}">
+								<option value="${i.CODE}">${i.CODE_NM}</option>
+							</c:forEach>
+						</select>
+					</td>
+				    <th><s:message code='reservation.depFlight'/></th>
+					<td>
+					    <select id="FLIGHT_OUT" name="FLIGHT_OUT" class="cmc_combo" style="width:62%;">
+						    <option value="">--<s:message code='system.select'/>--</option>
+						    <c:forEach var="i" items="${flight_out}">
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
@@ -127,7 +127,7 @@
 				<tr>
 				    <th><s:message code='reservation.totalCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="TOT_PERSON" name="TOT_PERSON" value="0"/>명
+						<input type="text" class="cmc_txt" id="TOT_PERSON" name="TOT_PERSON" value="0" style="width:60px; text-align: right;"/>명
 					</td>	
 				    <th><s:message code='reservation.resortNum'/></th>
 					<td>
@@ -139,11 +139,11 @@
 				    <td colspan="5">
 					    <div style="display:inline-flex;">
 						    <s:message code='reservation.roundY'/>
-						    <input type="text" id="R_PERSON" name="R_PERSON" style="width:70px;" value="0"/>명
+						    <input type="text" id="R_PERSON" name="R_PERSON" style="width:60px; text-align: right;" value="0"/>명
 						    <s:message code='reservation.roundN'/>
-						    <input type="text" id="N_PERSON" name="N_PERSON" style="width:70px;" value="0"/>명
+						    <input type="text" id="N_PERSON" name="N_PERSON" style="width:60px; text-align: right;" value="0"/>명
 						    <s:message code='reservation.infant'/>
-						    <input type="text" id="K_PERSON" name="K_PERSON" style="width:70px;" value="0"/>명
+						    <input type="text" id="K_PERSON" name="K_PERSON" style="width:60px; text-align: right;" value="0"/>명
 						</div>
 					</td>
 				</tr>	
@@ -155,7 +155,7 @@
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
-						<input type="text" id="PER_NUM_CNT" name="PER_NUM_CNT" style="width:70px;" value="0">명
+						<input type="text" id="PER_NUM_CNT" name="PER_NUM_CNT" style="width:60px; text-align: right;" value="0">명
 						<input type="hidden" id="PCK_PROD_SEQ" name="PCK_PROD_SEQ">
 						<button type="button" class="pbtn_default" id="insertPickGbn">등록</button>
 					</td>
@@ -168,28 +168,28 @@
 				<tr>
 					<th><s:message code='reservation.addSingle'/></th>
 					<td>
-						<input type="text" id="ADD_R_S_PER" name="ADD_R_S_PER" style="width:60px;" value="0"/>명
-						<input type="text" id="ADD_R_S_DAY" name="ADD_R_S_DAY" style="width:60px;" value="0"/>일
-						<input type="text" id="ADD_R_S_CNT" name="ADD_R_S_CNT" style="width:60px;" value="0"/>개
+						<input type="text" id="ADD_R_S_PER" name="ADD_R_S_PER"  value="0" style="width:60px; text-align: right";"/>명
+						<input type="text" id="ADD_R_S_DAY" name="ADD_R_S_DAY"  value="0" style="width:60px; text-align: right";"/>일
+						<input type="text" id="ADD_R_S_CNT" name="ADD_R_S_CNT"  value="0" style="width:60px; text-align: right";"/>개
 					</td>
 					<th><s:message code='reservation.addPremium'/></th>
 					<td>
-						<input type="text" id="ADD_R_P_PER" name="ADD_R_P_PER" style="width:60px;" value="0"/>명
-					    <input type="text" id="ADD_R_P_DAY" name="ADD_R_P_DAY" style="width:60px;" value="0"/>일
-					    <input type="text" id="ADD_R_P_CNT" name="ADD_R_P_CNT" style="width:60px;" value="0"/>개
+						<input type="text" id="ADD_R_P_PER" name="ADD_R_P_PER" value="0" style="width:60px; text-align: right";/>명
+					    <input type="text" id="ADD_R_P_DAY" name="ADD_R_P_DAY" value="0" style="width:60px; text-align: right";/>일
+					    <input type="text" id="ADD_R_P_CNT" name="ADD_R_P_CNT" value="0" style="width:60px; text-align: right";/>개
 					</td>
 				</tr>
 				<tr>
 				    <th>트윈/더블</th>
 					<td>
-						<input type="text" id="CNT_D1" name="CNT_D1" style="width:80px;" value="0"/>개
-						<input type="text" id="CNT_D2" name="CNT_D2" style="width:80px;" value="0"/>개
-					</td>
+						<input type="text" id="CNT_D1" name="CNT_D1" style="width:60px; text-align: right";" value="0"/>개
+						<input type="text" id="CNT_D2" name="CNT_D2" style="width:60px; text-align: right";" value="0"/>개
+					</td>                                                               
 					<th>프리미엄 트윈/더블</th>
 					<td>
-						<input type="text" id="CNT_P1" name="CNT_P1" style="width:80px;" value="0"/>개
-					    <input type="text" id="CNT_P2" name="CNT_P2" style="width:80px;" value="0"/>개
-					</td>
+						<input type="text" id="CNT_P1" name="CNT_P1" style="width:60px; text-align: right";" value="0"/>개
+					    <input type="text" id="CNT_P2" name="CNT_P2" style="width:60px; text-align: right";" value="0"/>개
+					</td>                                                               
 				</tr>	
 				<tr>
 				    <th><s:message code='reservation.arrPickup'/></th>
@@ -244,7 +244,7 @@
 				<tr>
 				    <th><s:message code='reservation.depositDate'/></th>
 				    <td>
-				    <input type="text" id="DEP_IN_DT" name="DEP_IN_DT"/>
+				    <input type="text" class="cmc_txt"  id="DEP_IN_DT" name="DEP_IN_DT" data-type="date"/>
 				    </td>
 				    <th><s:message code='reservation.deposit'/></th>
 				    <td>
@@ -254,7 +254,7 @@
 				<tr>
 				    <th><s:message code='reservation.balindt'/></th>
 				    <td>
-				    <input type="text" id="BAL_IN_DT" name="BAL_IN_DT"/>
+				    <input type="text" class="cmc_txt"  id="BAL_IN_DT" name="BAL_IN_DT" data-type="date"/>
 				    </td>
 				    <th><s:message code='reservation.expdt'/></th>
 				    <td>
@@ -288,7 +288,8 @@ $(function() {
 	var req_dt;
 	var vflag;
 	$('#p_reserveRegi').dialog({
-		title :'<s:message code='reservation.registration'/>',
+		
+		/* title :'<s:message code='reservation.registration'/>', */
 		autoOpen : false,
 		//height: 400,
 		width: 940,
@@ -320,45 +321,51 @@ $(function() {
 		},
 		open : function(a) {
 			fn_init($(this).data());
-			
-		    if(fn_empty(seq || req_dt)){ //신규
-		    	$(".image").hide();
-		        $("#changeStatus").hide();
-		        vflag = "new";
-		    }else{ // 상세
-		    	initSelect();
-		        $(".idTest").hide();
-		        vflag = "detail";
-		    }
-			
-		    $('#CHK_OUT_DT').datepicker({
-		    	dateFormat : 'yy.mm.dd',
-		    	showOn : 'both'
-		    }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
-		    	function(e) {
-		    });
-		    $('#CHK_IN_DT').datepicker({
-		    	dateFormat : 'yy.mm.dd',
-		    	showOn : 'both'
-		    }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
-		    	function(e) {
-		    });
-		
 		}
 	});
     
 	$('#MEM_GBN').change(function() {
-		if($(this).val() == '03' || $(this).val() == '04'){ // 교민 03 / 에이전시 04
-		    isDisabled(true);
+		if($(this).val() != '04'){
+			if($(this).val() == '03'){
+				isDisabled(true);
+			}else{
+				isDisabled(false);
+			}
+			$("#AGN_CD").attr("disabled", true);
 		}else{
-			isDisabled(false);
+			isDisabled(true);
+			$("#AGN_CD").attr("disabled", false);
 		}
 	});
 	
 	function fn_init(receivedData){
+		var day = new Date();
+		var today = String(day.getFullYear()) + String((day.getMonth() + 1)) + String(day.getDate()); 
 		$('#REQ_DT').val($.datepicker.formatDate('yy.mm.dd', new Date())).attr("readonly" , true);
 		seq    = receivedData.SEQ;
 		req_dt = receivedData.REQ_DT;
+		 if(fn_empty(seq || req_dt)){ //신규
+		     $(".ui-dialog-title").text('<s:message code='reservation.registration'/>');
+			 $("#CHK_IN_DT"      ).val(Util.converter.dateFormat1(today));
+			 $("#CHK_OUT_DT"     ).val(Util.converter.dateFormat1(today));
+		     $(".image"          ).hide();
+		     $("#changeStatus"   ).hide();
+		     vflag = "new";
+		 }else{ // 상세
+			 $("#USER_ID , #MEM_GBN").attr("disabled", true);
+		     $(".ui-dialog-title").text('<s:message code='reservation.detail'/>');
+		     initSelect();
+		     vflag = "detail";
+		 }
+		 
+		 $('#CHK_OUT_DT, #CHK_IN_DT, #DEP_IN_DT, #BAL_IN_DT').datepicker({
+		     dateFormat : 'yy.mm.dd',
+		     showOn : 'both'
+		 }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
+		     function(e) {
+		 });
+		 $('#datepicker').datepicker('setDate', 'today'); 
+	
 	}
 	
 	
@@ -400,6 +407,15 @@ $(function() {
     	if(!fn_empty(data.LATE_CHECK_OUT)){
     		$('[name=LATE_CHECK_OUT][value='+data.LATE_CHECK_OUT+']').prop("checked", true);
     	}
+        
+    	//멤버구분 disabled 셋팅
+    	if(!fn_empty(data.MEM_GBN)){
+    		if(data.MEM_GBN == "03" || data.MEM_GBN == "04"){
+    			isDisabled(true);
+    		}else{
+    			isDisabled(false);
+    		}
+    	}
     }
 	
 	function initSelect(){
@@ -432,7 +448,9 @@ $(function() {
 		           , "REQ_DT"     : req_dt
 		           , "PRC_STS"    : parseInt($("#PRC_STS").val())
 		           , "PRC_STS_NM" : $("#PRC_STS_NM").val()
-		           };
+		           , "MEM_GBN"    : $("#MEM_GBN").val()
+ 		           };
+	    console.log(param);
 		popupOpen(url, pid, param, function(data) {
 		});
 	}
@@ -456,8 +474,6 @@ $(function() {
 	function isDisabled(temp){
 	    $("[name='LATE_CHECK_OUT']").attr("disabled",temp);
 		$("#AGN_CD"     ).attr("disabled",temp);
-	    $("#CHK_IN_DT"  ).attr("disabled",temp);
-	    $("#CHK_OUT_DT" ).attr("disabled",temp);
 	    $("#ROOM_TYPE"  ).attr("disabled",temp);
 	    $("#FLIGHT_IN"  ).attr("disabled",temp);
 	    $("#FLIGHT_OUT" ).attr("disabled",temp);
@@ -586,10 +602,12 @@ $(function() {
 	
 	
 	function isValidation(){ 
-		var usrId = $("#usrId").val();
-		if(fn_empty(usrId)){
-			alert("id를 입력해주세요.");
-			return false;
+		if(vflag == "new"){
+			var usrId = $("#usrId").val();
+			if(fn_empty(usrId)){
+				alert("id를 입력해주세요.");
+				return false;
+			}
 		}
 		
 		var req_tel_no = $("#REQ_TEL_NO").val();
@@ -616,26 +634,27 @@ $(function() {
 			return false;
 		}
 		
-		if(mem_gbn == "01" || mem_gbn == "02"){
-			
+		if(mem_gbn == "04"){
 			var agn_cd = $("#AGN_CD").val(); 
 			if(fn_empty(agn_cd)){
 				alert("에이전시를 선택해주세요.");
 				return false;
 			}
-			
-			var chk_in_dt = $("#CHK_IN_DT").val();
-			if(fn_empty(chk_in_dt)){
-				alert("체크인 날짜를 선택해주세요.");
-				return false;
-			}
-			
-			var chk_out_dt = $("#CHK_OUT_DT").val();
-			if(fn_empty(chk_out_dt)){
-				alert("체크아웃 날짜를 선택해주세요.");
-				return false;
-			}
-			
+		}
+		
+		var chk_in_dt = $("#CHK_IN_DT").val();
+		if(fn_empty(chk_in_dt)){
+			alert("체크인 날짜를 선택해주세요.");
+			return false;
+		}
+		
+		var chk_out_dt = $("#CHK_OUT_DT").val();
+		if(fn_empty(chk_out_dt)){
+			alert("체크아웃 날짜를 선택해주세요.");
+			return false;
+		}
+		
+		if(mem_gbn == "01" || mem_gbn == "02"){
 			var roomtype = $("#ROOM_TYPE").val();
 			if(fn_empty(roomtype)){
 				alert("객실타입을 선택해주세요.");
@@ -782,6 +801,18 @@ $(function() {
 			
 		});
 	});	
+	
+	$("#usrId").on("click", function(){
+		var url = "/reserve/searchId.do";
+	    var pid = "p_searchIdPopup";
+	    var param = { "SEQ"          : seq
+			        , "REQ_DT"       : req_dt
+	                };
+	    
+		popupOpen(url, pid, param, function(data) {
+			
+		});
+	});
 	
 });
 

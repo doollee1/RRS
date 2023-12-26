@@ -42,6 +42,7 @@ $(function() {
 	var seq;
 	var prc_sts;
 	var prc_sts_nm;
+	var mem_gbn;
 	
 	$('#p_changeStatusPopup').dialog({
 		title :'<s:message code='reservation.stateTitle'/>',
@@ -85,7 +86,23 @@ $(function() {
 				var vhtml;
 				vhtml += '<option value="" >--<s:message code="system.select"/>--</option>'
 				$.each(data.result , function ( i , v){
-					vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
+					if(mem_gbn == "01"){ // 멤버 
+                        if((parseInt(v.CODE) <= 10) && v.CODE != "02"){
+                        	vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
+                        }
+					}else if(mem_gbn == "02"){ // 일반
+						if((parseInt(v.CODE) <= 10) && v.CODE != "02"){	
+                        	vhtml += '<option value = '+ v.CODE+'>'+v.CODE_NM+'</option>';
+                        }
+					}else if(mem_gbn == "03"){ //교민
+						if(((10 < parseInt(v.CODE)) && (parseInt(v.CODE) <= 20)) || v.CODE == "96"){
+							vhtml += '<option value = '+ v.CODE +'>'+v.CODE_NM+'</option>';
+						}
+					}else if(mem_gbn == "04"){ //에이전시
+						if(((20 < parseInt(v.CODE)) && (parseInt(v.CODE) <= 30)) || v.CODE == "96" ){
+							vhtml += '<option value = '+ v.CODE +'>'+v.CODE_NM+'</option>';
+						}
+					}
 				});
 				$("#CHG_PRC_STS").append(vhtml);
 			}
@@ -97,6 +114,7 @@ $(function() {
 		prc_sts_nm = receivedData.PRC_STS_NM;
 		req_dt     = receivedData.REQ_DT;
 		seq        = receivedData.SEQ;
+		mem_gbn    = receivedData.MEM_GBN;
 		
 		$("#P_PRC_STS"   ).val(prc_sts);
 		$("#P_PRC_STS_NM").val(prc_sts_nm);
