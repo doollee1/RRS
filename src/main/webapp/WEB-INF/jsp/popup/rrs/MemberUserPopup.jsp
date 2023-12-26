@@ -227,6 +227,7 @@ function memberUserPopup(param){
 
 	popupOpen(url, pid, param, function(data) {
 		popupSearch();
+		setTelNoHypen();
 	});
 }
 
