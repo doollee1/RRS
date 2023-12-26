@@ -257,7 +257,7 @@
 	
 	<select id="invoiceSelectList" parameterType="BMap" resultType="BMap">
         <include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
-            SELECT ROW_NUMBER() OVER(ORDER BY T1.SEQ DESC) AS ROWNUM
+            SELECT ROW_NUMBER() OVER(ORDER BY T1.ORDER DESC) AS ROWNUM
                 , T1.REQ_DT     /*  예약일자     */
                 , T1.SEQ        /*  일련번호     */
                 , T1.ITEM_CD    /*  항목코드     */
@@ -274,11 +274,12 @@
                 , T1.ORDER      /*  표시순서     */
                 , T1.REF1       /*  참조1        */
                 , T1.REF2       /*  참조2        */
-                , DATE_FORMAT(T1.REG_DTM, "%Y%m%d") AS REG_DTM /* 등록일시 */
+                , DATE_FORMAT(T1.REG_DTM, "%Y-%m-%d %H:%i:%s") AS REG_DTM /* 등록일시 */
                 , T1.REG_ID     /*  등록자ID     */
-                , DATE_FORMAT(T1.UPD_DTM, "%Y%m%d") AS UPD_DTM /* 수정일시 */
+                , DATE_FORMAT(T1.UPD_DTM, "%Y-%m-%d %H:%i:%s") AS UPD_DTM /* 수정일시 */
                 , T1.UPD_ID     /*  수정자ID     */
                 , T1.ITEM_CD AS PREV_ITEM_CD     /* 이전 항목코드*/
+                , T1.ORDER   AS PREV_ORDER     /* 이전 정렬순서*/
              FROM TB_REQ_INVOICE T1
             WHERE 1 = 1
               AND T1.REQ_DT = #{REQ_DT}
@@ -313,6 +314,7 @@
                     ( REQ_DT
                     , SEQ
                     , ITEM_CD
+                    , TB_REQ_INVOICE.ORDER
                     , ITEM_NM
                     , AMT_SIGN
                     , PER_AMT
@@ -321,7 +323,6 @@
                     , USE_NUM
                     , UNIT_NUM
                     , TOT_AMT
-                    , TB_REQ_INVOICE.ORDER
                     , REF1
                     , REF2
                     , REG_DTM
@@ -332,6 +333,7 @@
              VALUES ( #{REQ_DT  }
                     , #{SEQ     }
                     , #{ITEM_CD }
+                    , #{ORDER   }
                     , #{ITEM_NM }
                     , #{AMT_SIGN}
                     , #{PER_AMT }
@@ -340,7 +342,6 @@
                     , #{USE_NUM }
                     , CASE WHEN #{STR_UNIT_NUM} = '인' THEN 'P' WHEN #{STR_UNIT_NUM} = '개' THEN 'R' ELSE NULL END
                     , #{TOT_AMT }
-                    , #{ORDER   }
                     , NULL
                     , NULL
                     , NOW()
@@ -400,9 +401,10 @@
         INSERT INTO TB_REQ_INVOICE_HIS
                     ( REQ_DT
                     , SEQ
+                    , ITEM_CD
+                    , TB_REQ_INVOICE_HIS.ORDER
                     , HIS_SEQ
                     , UPD_GBN
-                    , ITEM_CD
                     , ITEM_NM
                     , AMT_SIGN
                     , PER_AMT
@@ -411,7 +413,6 @@
                     , USE_NUM
                     , UNIT_NUM
                     , TOT_AMT
-                    , TB_REQ_INVOICE_HIS.ORDER
                     , REF1
                     , REF2
                     , REG_DTM
@@ -421,9 +422,10 @@
                     )
                SELECT T1.REQ_DT
                     , T1.SEQ
-                    , (SELECT NVL(MAX(HIS_SEQ),0) AS SEQ FROM TB_REQ_INVOICE_HIS T2) + 1
-                    , #{STATUS_V}
                     , T1.ITEM_CD
+                    , T1.ORDER
+                    , (SELECT NVL(MAX(HIS_SEQ),0) AS SEQ FROM TB_REQ_INVOICE_HIS T2 WHERE REQ_DT = #{REQ_DT} AND SEQ = #{SEQ} AND ITEM_CD = #{ITEM_CD} ) + 1
+                    , #{STATUS_V}
                     , T1.ITEM_NM
                     , T1.AMT_SIGN
                     , T1.PER_AMT
@@ -432,7 +434,6 @@
                     , T1.USE_NUM
                     , T1.UNIT_NUM
                     , T1.TOT_AMT
-                    , T1.ORDER
                     , NULL
                     , NULL
                     , NOW()
@@ -465,6 +466,7 @@
          WHERE REQ_DT  = #{REQ_DT}
            AND SEQ     = #{SEQ}
            AND ITEM_CD = #{PREV_ITEM_CD}
+           AND TB_REQ_INVOICE.ORDER = #{PREV_ORDER}
 	</update>
 	
 	<insert id="firstInvoiceSelectList" parameterType="BMap">
@@ -473,6 +475,7 @@
         SELECT X.REQ_DT
                ,X.SEQ
                ,X.ITEM_CD
+               ,X.SORT  
                ,X.ITEM_NM
                ,X.AMT_SIGN
                ,X.PER_AMT
@@ -481,7 +484,6 @@
                ,X.USE_NUM
                ,X.UNIT_NUM
                ,(X.PER_AMT * USE_DAY * USE_NUM) AS TOT_AMT
-               ,X.SORT  
                ,'' AS REF1
                ,'' AS REF2
                ,NOW() AS REG_DTM
@@ -518,10 +520,12 @@
 		                WHEN A.CODE = CONCAT('LATECHECKOUT',B.MEM_GBN)      AND B.LATE_CHECK_OUT = '1'  AND C.HDNG_GBN = '16' THEN C.COM_AMT 
 		                WHEN A.CODE = CONCAT('LATECHECKOUT',B.MEM_GBN)      AND B.LATE_CHECK_OUT = '2'  AND C.HDNG_GBN = '17' THEN C.COM_AMT 
 		                WHEN A.CODE = CONCAT('ROOMUP',B.MEM_GBN)            AND B.ADD_R_P_DAY <> 0      AND C.HDNG_GBN = '15' THEN C.COM_AMT 
-		                WHEN A.CODE = CONCAT('SURCHARGE',B.MEM_GBN) AND (SELECT COUNT(*) CNT FROM BC_COMM_L X WHERE HEAD_CD = '500160' AND CODE IN (B.FLIGHT_IN ,  B.FLIGHT_OUT) > 0 )
-		                    AND  B.TOT_PERSON < 4 AND C.PROD_COND = 'PD4' AND HDNG_GBN = '21' THEN C.COM_AMT 
+                        WHEN A.CODE = CONCAT('SURCHARGE',B.MEM_GBN) AND (SELECT COUNT(*) CNT FROM BC_COMM_L X WHERE HEAD_CD = '500160' AND CODE IN (B.FLIGHT_IN ,  B.FLIGHT_OUT) > 0 )
+		                    AND  EXISTS (SELECT * FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ)
+                            AND  B.TOT_PERSON < 4 AND C.PROD_COND = 'PD4' AND HDNG_GBN = '21' THEN C.COM_AMT 
 		                WHEN A.CODE = CONCAT('SURCHARGE',B.MEM_GBN)  AND (SELECT COUNT(*) CNT FROM BC_COMM_L X WHERE HEAD_CD = '500160' AND CODE IN (B.FLIGHT_IN ,  B.FLIGHT_OUT) > 0 )
-		                    AND  B.TOT_PERSON >= 4 AND C.PROD_COND =  'PU4' AND HDNG_GBN = '21' THEN C.COM_AMT
+		                    AND   EXISTS (SELECT * FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ)
+                            AND  B.TOT_PERSON >= 4 AND C.PROD_COND =  'PU4' AND HDNG_GBN = '21' THEN C.COM_AMT
 		          WHEN A.CODE = CONCAT('SENDING',B.MEM_GBN)  AND   EXISTS (SELECT * FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ) THEN  (SELECT SUM(USE_AMT) FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ) 
 		         ELSE 0 END PER_AMT
 		      FROM  bc_comm_l A
