@@ -802,6 +802,10 @@ $(function() {
 		});
 	});	
 	
+	
+	
+	
+	
 	$("#USER_ID").on("click", function(){
 		var url = "/reserve/searchId.do";
 	    var pid = "p_searchIdPopup";
