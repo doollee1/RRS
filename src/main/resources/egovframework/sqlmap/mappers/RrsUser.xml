@@ -4,7 +4,7 @@
 <mapper namespace="RrsUserMapper">
 	<select id="selectUserInfo" parameterType="BMap" resultType="BMap">
 	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
-		SELECT ROW_NUMBER() OVER(ORDER BY UPD_DTM desc) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+		SELECT ROW_NUMBER() OVER(ORDER BY HAN_NAME asc) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
 			  ,USER_ID
 			  ,MEM_GBN
 			  ,HAN_NAME
@@ -81,7 +81,7 @@
 	<select id="selectMemberUserInfo" parameterType="BMap" resultType="BMap">
 	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
 	/* User.xml -> selectMemberUserInfo */
-		SELECT ROW_NUMBER() OVER(ORDER BY UPD_DTM desc) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+		SELECT ROW_NUMBER() OVER(ORDER BY HAN_NAME asc) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
 			  ,HAN_NAME
 			  ,ENG_NAME
 			  ,TEL_NO

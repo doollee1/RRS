@@ -39,7 +39,8 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/common/UserManager.do")
 	public String UserManager(ModelMap model) throws Exception{
-		return "/common/UserManager";
+		// return "/common/UserManager";
+		return "/rrs/Manager";
 	}
 	
 	/**
@@ -70,7 +71,8 @@ public class UserController {
 	@RequestMapping(value = "/common/UserInfoPopup.do")
 	public String UserInfoPopup(ModelMap model,HttpServletRequest request) throws Exception{
 		model.addAttribute("usertype", commonService.selectCommonCode("USER_TP"));
-		return "/popup/UserInfoPopup";
+		//return "/popup/UserInfoPopup";
+		return "/popup/rrs/ManagerInfoPopup";
 	}
 	
 	/**

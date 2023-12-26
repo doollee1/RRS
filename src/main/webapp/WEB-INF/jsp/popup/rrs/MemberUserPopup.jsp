@@ -46,11 +46,7 @@ $(function() {
 					
 					p_rtnData = gridData;
 
-					parent.$('#DEPT_CD').val(p_rtnData[0].DEPT_CD);
-					parent.$('#DEPT_NM').val(p_rtnData[0].DEPT_NM);						
-
 					popupClose($('#memberUserPopup').data('pid'));
-					
 				}
 			},
 			'<s:message code='button.close'/>': {
@@ -63,31 +59,16 @@ $(function() {
 		open: function(e, ui) {
 			$('#memberUserPopup .pop_grid_wrap').height($(this).height() - $('#memberUserPopup.popup_search').outerHeight(true) - 70);
 			
-			$('#S_DEPT_CD').val($(this).data('S_DEPT_CD'));
-			
 			grid_MemberUser_Load();
 			popupSearch();
+			setTelNoHypen(); // 연락처 하이픈 처리
 
-			$('[name="S_DEPT_CD"]').focus();
-			
 			/* 그리드 이벤트 */
 			$('#grid_MemberUser').jqGrid('setGridParam', {
 				ondblClickRow: function(rowid, iRow, iCol, e) {
 					grid1_ondblClickRow(rowid, iRow, iCol, e);
 					// popupClose($('#memberUserPopup').data('pid'));
 		    	}
-			});
-			
-			$("#S_DEPT_CD").keyup(function(event){
-			    if(event.keyCode == 13){
-			        popupSearch();
-			    }
-			});
-			
-			$("#S_DEPT_NM").keyup(function(event){
-			    if(event.keyCode == 13){
-			        popupSearch();
-			    }
 			});
 			
 			gridData = $(this).data('gridData');
@@ -220,6 +201,14 @@ function popupSearch() {
 	    $('#grid_MemberUser').jqGrid('setGridParam', {data:gridData});
 	    $('#grid_MemberUser').trigger('reloadGrid');
 	});
+}
+
+function setTelNoHypen() {
+	var rowDataList = $("#grid_MemberUser").getRowData();
+	for(var i=0; i<rowDataList.length; i++) {
+		var convert_TEL_NO = rowDataList[i].TEL_NO.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
+		$("#grid_MemberUser").jqGrid('setCell', i+1, 'TEL_NO', convert_TEL_NO);
+	}
 }
 
 function grid1_ondblClickRow(rowid, iRow, iCol, e){

@@ -3,11 +3,11 @@
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
 <%
 	/**
-	 * @Name : User
+	 * @Name : Manager
 	 */
 %>
 <c:import url="../import/frameTop.jsp">
-	<c:param name="progcd" value="HO01" />
+	<c:param name="progcd" value="HO02" />
 </c:import>
 
 <!-- dummy -->
@@ -69,14 +69,13 @@
 --%>
 	//init
 	$(function() {
-		setCommBtn("User6", false);	// hide bookmark button
-		$('#cBtnUser1').text("멤버정보등록");
-		$('#cBtnUser1').addClass("cBtnUser1_style");
+		$('#cBtnAdd').text("<s:message code='notice.btn.new'/>");
+		$('#cBtnAdd').addClass("cls");
+		$('#cBtnAdd').addClass("cBtnWrite_style");
 		
 		initLayout();
 		createGrid1();
 		cSearch();
-		setTelNoHypen(); // 연락처 하이픈 처리
 		
 		/* grid1 Event */
 		$('#grid1').jqGrid('setGridParam', {
@@ -96,30 +95,19 @@
 				cSearch(null)
 			}
 		});
-		
 	});
 
 	function createGrid1(){
-		var colName = [
-			'순번',
-			'회원타입',
-			'이름',
-			'영문이름',
-			'전화번호',
-			'ID',
-			'Email',
-			''
-		]
+		var colName = ['<s:message code='system.UserID'/>',
+					'<s:message code='system.fullname'/>',
+					'텔레그램ID',
+					'<s:message code='system.compcd'/>']
 		var colModel = [
-			{ name: 'ROWNUM', width: 100, align: 'center' },
-			{ name: 'MEM_NM', width: 100, align: 'center' },
-			{ name: 'HAN_NAME', width: 100, align: 'center' },
-			{ name: 'ENG_NAME', width: 100, align: 'center' },
-			{ name: 'TEL_NO', width: 100, align: 'center' },
-			{ name: 'USER_ID', width: 100, align: 'center' },
-			{ name: 'EMAIL', width: 100, align: 'center' },
-			{ name: 'CHK', index: 'CHK', width: 50, align: 'center', formatter: gridCboxFormat, sortable: false }
-		]
+			{ name: 'USER_ID', width: 150, align: 'center' },
+			{ name: 'NAME_1ST', width: 200, align: 'center' },
+			{ name: 'CHAT_ID', width: 150, align: 'center'},
+			{ name: 'COMP_CD', width: 100, align: 'center', hidden: true },
+	  	];
 		
 		var gSetting = {
 				height:632,
@@ -152,7 +140,7 @@
 		$('#CURRENT_PAGE').val(vCurrentPage);
 		$('#ROWS_PER_PAGE').val(vRowsPerPage);
 		
-		var url = "/rrs/selectUserInfo.do";
+		var url = "/common/selectUserInfo.do";
 		
 		var formData = formIdAllToMap('frmSearch');
 		var param = {"param":formData};
@@ -166,70 +154,26 @@
 	function grid1_ondblClickRow(rowid, iRow, iCol, e){
 		var gridData = $("#grid1").getRowData(rowid);
 		var param = {
+			"COMP_CD" : gridData["COMP_CD"],
 			"USER_ID" : gridData["USER_ID"],
+			"USER_TP" : gridData["USER_TP"],
+			"CRE_TP" : gridData["CRE_TP"],
+			"AUTH" :auth
 		};
 		userPopup(param);
 	}
 	
-	function setTelNoHypen() {
-		var rowDataList = $("#grid1").getRowData();
-		for(var i=0; i<rowDataList.length; i++) {
-			var convert_TEL_NO = rowDataList[i].TEL_NO.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
-			$("#grid1").jqGrid('setCell', i+1, 'TEL_NO', convert_TEL_NO);
-		}
-	}
-	
-	function cAdd() {
+	function cAdd(){
 		userPopup();
 	}
 	
-	function userPopup(param) {
-		var url = "/rrs/UserPopup.do";
-		var pid = "p_User";  //팝업 페이지의 취상위 div ID
+	function userPopup(param){
+		var url = "/common/UserInfoPopup.do";
+		var pid = "p_UserInfo";  //팝업 페이지의 취상위 div ID
 
 		popupOpen(url, pid, param, function(data) {
 			cSearch();
 		});
-	}
-	
-	// 멤버정보등록 버튼
-	function cUser1() {
-		var url = "/rrs/MemberUserPopup.do";
-		var pid = "p_MemberUser";  //팝업 페이지의 취상위 div ID
-
-		popupOpen(url, pid);
-	}
-	
-	function cDel(){
-		var ids = $("#grid1").jqGrid("getDataIDs");
-		var gridData = [];
-		var cnt = 0;
-		btGrid.gridSaveRow('grid1');
-		for(var i = 0; i < ids.length; i++){
-			if($('#grid1_' + ids[i] + '_CHK').prop('checked')){
-				cnt++;
-				gridData.push($("#grid1").getRowData(ids[i]));
-			}
-		}
-		
-		if(cnt < 1){
-			alert("삭제할 데이타를 선택하십시오.");
-			return;
-		}
-
-		if(confirm("삭제하시겠습니까?")){
-			var url = '/rrs/deleteUserInfo.do';
-			var param = {"gridData" : gridData};
-			fn_ajax(url, false, param, function(data, xhr){
-				alert("삭제하였습니다.");
-				cSearch();
-			});
-		}
-	}
-	
-	//grid checkbox event
-	function grid_cbox_onclick(gid, rowid, colkey) {
-		
 	}
 </script>
 

@@ -48,6 +48,7 @@
 			  ,A.REG_ID
 			  ,A.UPT_DT
 			  ,A.UPT_ID
+			  ,A.CHAT_ID
 		  FROM BC_USER A 
 	INNER JOIN BC_COMM_L B 
 			ON A.USER_TP = B.CODE
@@ -59,7 +60,7 @@
             ON A.COMP_CD = D.COMP_CD 
            AND A.DEPT_cD = D.DEPT_CD
 		 WHERE 1 = 1
-		   AND USER_TP != '03' <!-- OM/KAM 외에는 조회안되도록 수정 -->
+		   <!-- AND USER_TP != '03' --> <!-- OM/KAM 외에는 조회안되도록 수정 -->
 		<if test='G_COMP_CD != null and G_COMP_CD != ""'>
 		   AND A.COMP_CD = #{G_COMP_CD}
 		</if>
@@ -81,6 +82,85 @@
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
 	
+	<insert id="insertUserInfo" parameterType="BMap">
+		INSERT INTO BC_USER
+					(COMP_CD
+					,USER_ID
+					,NAME_1ST
+					,NAME_2ND
+					,NAME_FULL
+					,USER_TP
+					,USER_GD
+					,DEPT_CD
+					,CUST_CD
+					,WEB_ID
+					,STR_NM
+					,HAUS_NO
+					,ZIP_NO
+					,ORT_NM
+					,REGION_CD
+					,LAND_CD
+					,TEL_NO
+					,E_MAIL
+					,PW_CURR
+					,PW_PAST1
+					,PW_PAST2
+					,PW_PAST3
+					,WRONG_CNT
+					,LOCK_YN
+					,AREA_CD
+					,AUTH_GR
+					,LANG_CD
+					,CRE_TP
+					,START_DT
+					,STOP_DT
+					,STATUS
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					,CHAT_ID
+					)
+			 VALUES (#{COMP_CD}
+					,#{USER_ID}
+					,#{NAME_1ST}
+					,#{NAME_2ND}
+					,CONCAT(#{NAME_1ST}, #{NAME_2ND})
+					,#{USER_TP}
+					,#{USER_GD}
+					,#{DEPT_CD}
+					,#{CUST_CD}
+					,#{WEB_ID}
+					,#{STR_NM}
+					,#{HAUS_NO}
+					,#{ZIP_NO}
+					,#{ORT_NM}
+					,#{REGION_CD}
+					,#{LAND_CD}
+					,#{TEL_NO}
+					,#{E_MAIL}
+					,#{PW_CURR}
+					,NULL
+					,NULL
+					,NULL
+					,0
+					,'N'
+					,#{AREA_CD}
+					,NULL
+					,#{LANG_CD}
+					,#{CRE_TP}
+					,DATE_FORMAT(#{START_DT}, '%Y-%m-%d')
+					,DATE_FORMAT(#{STOP_DT}, '%Y-%m-%d')
+					,#{STATUS}
+					,NOW()
+					,#{LOGIN_USER}
+					,NOW()
+					,#{LOGIN_USER}
+					,#{CHAT_ID}
+					)
+	</insert>
+	
+	<!-- 
 	<insert id="insertUserInfo" parameterType="BMap">
 		INSERT INTO BC_USER
 					(COMP_CD
@@ -156,12 +236,13 @@
 					,#{LOGIN_USER}
 					)
 	</insert>
-	
+	 -->
+	 
 	<update id="updateUserInfo" parameterType="BMap">
 		UPDATE BC_USER
 		   SET NAME_1ST = #{NAME_1ST}
 			  ,NAME_2ND = #{NAME_2ND}
-			  ,NAME_FULL = #{NAME_1ST} + ' ' +  #{NAME_2ND}
+			  ,NAME_FULL = CONCAT(#{NAME_1ST}, #{NAME_2ND})
 			  ,USER_TP = #{USER_TP}
 			  ,USER_GD = #{USER_GD}
 			  ,DEPT_CD = #{DEPT_CD}
@@ -178,11 +259,12 @@
 			  ,AREA_CD = #{AREA_CD}
 			  ,LANG_CD = #{LANG_CD}
 			  ,CRE_TP = #{CRE_TP}
-			  ,START_DT = PARSE(#{START_DT} AS DATE USING 'de-DE')
-			  ,STOP_DT = PARSE(#{STOP_DT} AS DATE USING 'de-DE')
+			  <!-- ,START_DT = DATE_FORMAT(#{START_DT}, '%Y-%m-%d')
+			  ,STOP_DT = DATE_FORMAT(#{STOP_DT}, '%Y-%m-%d') -->
 			  ,STATUS = #{STATUS}
 			  ,UPT_DT = NOW()
 			  ,UPT_ID = #{LOGIN_USER}
+			  ,CHAT_ID = #{CHAT_ID}
 		 WHERE COMP_CD = #{COMP_CD}
 		   AND USER_ID = #{USER_ID}
 	</update>
