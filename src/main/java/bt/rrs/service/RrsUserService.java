@@ -46,8 +46,12 @@ public class RrsUserService {
 		}
 		
 		int cnt = rrsUserDao.selectUserInfoCnt(param); //현 ID가 등록된 ID인지 카운트 
-		if(cnt == 0) rrsUserDao.insertUserInfo(param); //등록되지 않았을 때 등록
-		else rrsUserDao.updateUserInfo(param); //등록된 사용자 정보 수정
+		if(cnt == 0) {
+			param.put("PASSWD", "1234");
+			rrsUserDao.insertUserInfo(param); //등록되지 않았을 때 등록
+		} else {
+			rrsUserDao.updateUserInfo(param); //등록된 사용자 정보 수정
+		}
 		return true;
 	}
 	

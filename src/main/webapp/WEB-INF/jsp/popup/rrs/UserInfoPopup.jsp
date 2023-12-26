@@ -20,6 +20,7 @@
 			        <col width="200px" />
 			    </colgroup>
 		   		<tr>
+		   			<input type="hidden" name="PASSWD" id="PASSWD" />
 					<th>회원타입</th>
 					<td>
 						<select id="MEM_GBN" name="MEM_GBN" class="cmc_combo" style="width:150px;">
@@ -57,8 +58,8 @@
 					<th>탈퇴여부</th>
 					<td>
 						<select id="RET_YN" name="RET_YN" class="cmc_combo" style="width:150px;">
-							<option value="N">X</option>
-							<option value="Y">O</option>
+							<option value="N">N</option>
+							<option value="Y">Y</option>
 						</select>
 					</td>
 					<th>등록일시</th>
