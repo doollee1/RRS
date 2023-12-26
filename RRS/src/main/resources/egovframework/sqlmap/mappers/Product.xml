@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ProductMapper">
+	<select id="selectProductInfo" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+	/* Product.xml -> selectProductInfo */
+		SELECT ROW_NUMBER() OVER(ORDER BY B.PROD_SEQ) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			 , A.BAS_YY						<!-- 기준년도 -->
+		     , A.BAS_YY_SEQ					<!-- 기간년도순번 -->
+		     , B.PROD_SEQ					<!-- 상품순번 -->
+		     , A.SSN_GBN					<!-- 시즌구분 -->
+		     , B.HDNG_GBN					<!-- 항목구분 -->
+		     , B.PROD_COND					<!-- 조건 -->
+		     , A.ST_DT1						<!-- 시작일1 -->
+		     , A.ED_DT1						<!-- 종료일1 -->
+			 , A.ST_DT2						<!-- 시작일2 -->
+		     , A.ED_DT2						<!-- 종료일2 -->
+			 , A.ST_DT3						<!-- 시작일3 -->
+		     , A.ED_DT3						<!-- 종료일3 -->
+			 , B.COM_AMT					<!-- 일반금액 -->
+			 , B.COM_BAS_PER				<!-- 일반 기준인원수 -->
+			 , B.COM_BAS_DAY				<!-- 일반 기준일수 -->
+			 , B.COM_CNTN					<!-- 일반 기타내용 -->
+      		 , B.AGN_AMT					<!-- 에이전시금액 -->
+			 , B.AGN_BAS_PER				<!-- 에이전시 기준인원수 -->
+      		 , B.AGN_BAS_DAY				<!-- 에이전시 기준일수 -->
+      		 , B.AGN_CNTN					<!-- 에이전시 기타내용 -->
+		  FROM TB_BAS_YY_INFO A
+	LEFT JOIN TB_PROD_INFO B
+		    ON A.BAS_YY_SEQ = B.BAS_YY_SEQ
+		   AND A.BAS_YY = B.BAS_YY
+		 WHERE 1 = 1
+		 <if test='SSN_GBN != "3"'>
+		   AND A.SSN_GBN = #{SSN_GBN}
+		 </if> 
+		   AND A.BAS_YY = #{BAS_YY}
+	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+	<select id="selectBasYY" parameterType="Bmap" resultType="Bmap">
+	/* Product.xml -> selectBasYY */
+       SELECT DISTINCT BAS_YY
+         FROM TB_BAS_YY_INFO 
+     ORDER BY BAS_YY desc
+	</select>
+	
+	<select id="selectSeason" parameterType="Bmap" resultType="Bmap">
+	/* Product.xml -> selectSeason */
+		SELECT CODE, CODE_NM
+		  FROM bc_comm_l
+		 WHERE HEAD_CD = 500090
+	  ORDER BY FIELD(CODE, 3, 1, 2)
+	</select>
+	
+	<select id="selectHdng" parameterType="Bmap" resultType="Bmap">
+	/* Product.xml -> selectSeason */
+		SELECT CODE, CODE_NM
+		  FROM bc_comm_l
+		 WHERE HEAD_CD = 500000
+	</select>
+	
+	<insert id="insertProductInfo" parameterType="BMAP">
+	/* Product.xml -> insertProductInfo */
+		INSERT INTO TB_PROD_INFO
+				    ( BAS_YY					<!-- 기준년도 -->
+	                , BAS_YY_SEQ				<!-- 기간년도순번 -->
+	                , PROD_SEQ					<!-- 상품순번 -->				    
+	                , SSN_GBN					<!-- 시즌구분 -->
+	                , HDNG_GBN					<!-- 항목구분 -->
+	                , PROD_COND					<!-- 조건 -->
+				    , COM_AMT 	 				<!-- 일반금액 -->
+					, COM_BAS_PER 	 			<!-- 일반 기준인원수 -->
+					, COM_BAS_DAY 	 			<!-- 일반 기준일수 -->
+					, AGN_AMT 					<!-- 에이전시금액 -->
+					, AGN_BAS_PER 				<!-- 에이전시 기준인원수 -->
+					, AGN_BAS_DAY 				<!-- 에이전시 기준일수 -->
+					, REG_DTM					<!-- 작성일 -->
+					, REG_ID					<!-- 작성자 -->
+					, UPD_DTM					<!-- 수정일 -->
+					, UPD_ID					<!-- 수정자 -->
+					)
+	         VALUES ( #{BAS_YY}
+	         		, #{BAS_YY_SEQ}
+					, (SELECT IFNULL(MAX(B.PROD_SEQ) + 1, 1) 
+						 FROM TB_PROD_INFO B)
+					, #{SSN_GBN}
+					, #{HDNG_GBN}
+					, #{PROD_COND}
+					, #{COM_AMT}
+					, #{COM_BAS_PER}
+					, #{COM_BAS_DAY}
+					, #{AGN_AMT}
+					, #{AGN_BAS_PER}
+					, #{AGN_BAS_DAY}
+					, current_date()
+            		, #{LOGIN_USER}
+            		, current_date()
+            		, #{LOGIN_USER}
+	                )
+	</insert>
+	
+	<update id="updateProductInfo" parameterType="BMap">
+	/* Product.xml -> updateProductInfo */
+		UPDATE TB_PROD_INFO
+		   SET PROD_COND = #{PROD_COND}				<!-- 조건 -->
+  			 , COM_AMT 		= #{COM_AMT}			<!-- 일반금액 -->
+			 , COM_BAS_PER 	= #{COM_BAS_PER}		<!-- 일반 기준인원수 -->
+			 , COM_BAS_DAY 	= #{COM_BAS_DAY}		<!-- 일반 기준일수 -->
+      		 , AGN_AMT 		= #{AGN_AMT}			<!-- 에이전시금액 -->
+			 , AGN_BAS_PER 	= #{AGN_BAS_PER}		<!-- 에이전시 기준인원수 -->
+      		 , AGN_BAS_DAY 	= #{AGN_BAS_DAY}		<!-- 에이전시 기준일수 -->
+		 	 , UPD_DTM		= current_date()		<!-- 수정일 -->
+			 , UPD_ID		= #{LOGIN_USER}			<!-- 수정자 -->
+		 WHERE BAS_YY 		= #{BAS_YY}				<!-- 기준년도 -->
+		   AND BAS_YY_SEQ 	= #{BAS_YY_SEQ}			<!-- 기간년도순번 -->
+		   AND PROD_SEQ 	= #{PROD_SEQ}			<!-- 상품순번 -->
+	</update>
+
+	<delete id="deleteProductInfo" parameterType="BMap">
+	/* Product.xml -> deleteProductInfo */
+		DELETE FROM TB_PROD_INFO
+ 	  	 WHERE BAS_YY 		= #{BAS_YY}
+		   AND BAS_YY_SEQ 	= #{BAS_YY_SEQ}
+		   AND PROD_SEQ 	= #{PROD_SEQ}
+	</delete>
+	
+	<select id="selectPeriodInfo" parameterType="BMap" resultType="BMap">
+	/* Product.xml -> selectPeriodInfo */
+		SELECT BAS_YY					<!-- 기준년도 -->
+			 , BAS_YY_SEQ				<!-- 기준년도 순번 -->
+			 , SSN_GBN					<!-- 시즌구분 -->
+		     , ST_DT1					<!-- 시작일1 -->
+		     , ED_DT1					<!-- 종료일1 -->
+			 , ST_DT2					<!-- 시작일2 -->
+		     , ED_DT2					<!-- 종료일2 -->
+			 , ST_DT3					<!-- 시작일3 -->
+		     , ED_DT3					<!-- 종료일3 -->
+		  FROM TB_BAS_YY_INFO
+		 WHERE 1 = 1
+		   AND BAS_YY = #{BAS_YY}
+	</select>
+	
+	<insert id="insertPeriodInfo" parameterType="BMAP">
+	/* Product.xml -> insertPeriodInfo */
+		INSERT INTO TB_BAS_YY_INFO
+					( BAS_YY					<!-- 기준년도 -->
+					, BAS_YY_SEQ				<!-- 기간년도순번 -->    
+					, SSN_GBN					<!-- 시즌구분 -->
+					, ST_DT1					<!-- 시작일1 -->
+					, ED_DT1					<!-- 종료일1 -->
+					, ST_DT2					<!-- 시작일2 -->
+					, ED_DT2					<!-- 종료일2 -->
+					, ST_DT3					<!-- 시작일3 -->
+					, ED_DT3					<!-- 종료일3 -->
+					, REG_DTM					<!-- 작성일 -->
+					, REG_ID					<!-- 작성자 -->
+					, UPD_DTM					<!-- 수정일 -->
+					, UPD_ID					<!-- 수정자 -->
+					)
+			 VALUES ( #{BAS_YY}
+					, (SELECT IFNULL(MAX(B.BAS_YY_SEQ) + 1, 1) 
+						 FROM TB_BAS_YY_INFO B
+						WHERE BAS_YY = #{BAS_YY})
+					, #{SSN_GBN}
+					, #{ST_DT1}
+					, #{ED_DT1}
+					, #{ST_DT2}
+					, #{ED_DT2}
+					, #{ST_DT3}
+					, #{ED_DT3}
+					, current_date()
+					, #{LOGIN_USER}
+					, current_date()
+					, #{LOGIN_USER}
+					)
+	</insert>
+	
+	<update id="updatePeriodInfo" parameterType="BMap">
+	/* Product.xml -> updatePeriodInfo */
+		UPDATE TB_BAS_YY_INFO
+		   SET SSN_GBN 		= #{SSN_GBN}			<!-- 시즌구분 -->
+			 , ST_DT1 		= #{ST_DT1}				<!-- 시작일1 -->
+			 , ED_DT1 		= #{ED_DT1}				<!-- 종료일1 -->
+			 , ST_DT2 		= #{ST_DT2}				<!-- 시작일2 -->
+			 , ED_DT1 		= #{ED_DT1}				<!-- 종료일2 -->
+			 , ST_DT3 		= #{ST_DT3}				<!-- 시작일3 -->
+			 , ED_DT1 		= #{ED_DT1}				<!-- 종료일3 -->
+			 , UPD_DTM		= current_date()		<!-- 수정일 -->
+			 , UPD_ID		= #{LOGIN_USER}			<!-- 수정자 -->
+		 WHERE 1 = 1
+		   AND BAS_YY 		= #{BAS_YY}				<!-- 기준년도 -->
+		   AND BAS_YY_SEQ 	= #{BAS_YY_SEQ}			<!-- 기간년도순번 -->
+	</update>
+	
+	<delete id="deletePeriodInfo" parameterType="BMap">
+	/* Product.xml -> deletePeriodInfo */
+		DELETE FROM TB_BAS_YY_INFO
+ 	  	 WHERE BAS_YY 		= #{BAS_YY}
+		   AND BAS_YY_SEQ 	= #{BAS_YY_SEQ}
+	</delete>
+	
+	
+	<insert id="insertPeriodCopyInfo" parameterType="BMAP">
+	/* Product.xml -> insertPeriodCopyInfo */
+		INSERT INTO TB_BAS_YY_INFO
+		SELECT #{BAS_YY_PASTE}
+			 , BAS_YY_SEQ
+			 , SSN_GBN
+			 , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ST_DT1, 5)))
+			 , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ED_DT1, 5)))
+			 , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ST_DT2, 5))) 
+		     , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ED_DT2, 5))) 
+		     , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ST_DT3, 5))) 
+		     , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ED_DT3, 5))) 
+			 , current_date()
+			 , #{LOGIN_USER}
+			 , current_date()
+			 , #{LOGIN_USER}
+		  FROM TB_BAS_YY_INFO
+		 WHERE 1 = 1
+		   AND BAS_YY = #{BAS_YY_COPY}
+	</insert>
+	
+	<insert id="insertProductCopyInfo" parameterType="BMAP">
+	/* Product.xml -> insertProductCopyInfo */
+		INSERT INTO TB_PROD_INFO
+		SELECT #{BAS_YY_PASTE}				
+			 , PROD_SEQ						
+			 , HDNG_GBN				
+			 , PROD_COND	
+			 , SSN_GBN	
+			 , BAS_YY_SEQ		
+			 , COM_AMT				
+			 , COM_BAS_PER			
+			 , COM_BAS_DAY				
+			 , COM_CNTN				
+			 , AGN_AMT				
+			 , AGN_BAS_PER			
+			 , AGN_BAS_DAY			
+			 , AGN_CNTN		
+		     , current_date()
+		     , #{LOGIN_USER}
+		     , current_date()
+		     , #{LOGIN_USER}
+		  FROM TB_PROD_INFO
+	     WHERE 1 = 1
+	       AND BAS_YY = #{BAS_YY_COPY}
+     </insert>
+     
+    <select id="selectPeriodPopUp" parameterType="BMap" resultType="BMap">
+	/* Product.xml -> selectPeriodPopUp */
+		SELECT SSN_GBN					<!-- 시즌구분 -->
+		     , ST_DT1					<!-- 시작일1 -->
+		     , ED_DT1					<!-- 종료일1 -->
+			 , ST_DT2					<!-- 시작일2 -->
+		     , ED_DT2					<!-- 종료일2 -->
+			 , ST_DT3					<!-- 시작일3 -->
+		     , ED_DT3					<!-- 종료일3 -->
+		     , BAS_YY_SEQ
+		  FROM TB_BAS_YY_INFO
+		 WHERE 1 = 1
+		   AND BAS_YY = #{BAS_YY}
+		   AND SSN_GBN = #{SSN_GBN}
+	</select>
+	
+
+</mapper>
