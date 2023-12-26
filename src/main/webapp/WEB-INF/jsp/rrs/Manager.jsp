@@ -3,7 +3,7 @@
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
 <%
 	/**
-	 * @Name : UserManager
+	 * @Name : Manager
 	 */
 %>
 <c:import url="../import/frameTop.jsp">
@@ -27,10 +27,6 @@
 						<td class="medium_td"><input type="text" id="S_USER_ID" name="S_USER_ID" class="cmc_txt" /></td>
 						<td class="small_td"><p><s:message code='system.Username'/></p></td>
 						<td class="medium_td"><input type="text" id="S_USER_NM" name="S_USER_NM" class="cmc_txt" /></td>
-						<%-- <td class="small_td"><p><s:message code='system.department'/></p></td>
-						<td><input type="text" id="DEPT_CD" name="DEPT_CD" class="cmc_txt" disabled="" readonly="readonly"/ style="float:left;">
-						<button class='grid_popupbtn' id='btn_department' type='button'></button>
-						<p name="DEPT_NM" id="DEPT_NM"></p></td> --%>
 					</tr>
 				</tbody>
 			</table>
@@ -99,62 +95,18 @@
 				cSearch(null)
 			}
 		});
-		/*
-		$('#DEPT_CD').on('keyup', function (e) {
-			if (e.which  == 8 || e.which  == 46){
-				if(fn_empty($("#DEPT_CD").val())){
-					$("#DEPT_NM").text("");
-				}
-			}
-		});
-		$("#btn_department").click(function(e){
-
-			var url = "/common/DeptPopup.do";
-			var pid = "deptPopup"
-			var param = {"S_DEPT_CD" : $("#DEPT_CD").val()};
-			
-			popupOpen(url, pid, param, function(data){
-				if(!fn_empty(data)){
-					$("#DEPT_CD").val(data[0].DEPT_CD);
-					$("#DEPT_NM").text(data[0].DEPT_NM);
-				}
-			});
-		})
-		*/
 	});
 
 	function createGrid1(){
-		var colName = ['<s:message code='system.compcd'/>',
-				    '<s:message code='system.UserID'/>',
-					'<s:message code='system.name'/>',
-					'<s:message code='system.secondname'/>',
+		var colName = ['<s:message code='system.UserID'/>',
 					'<s:message code='system.fullname'/>',
-					'<s:message code='system.usertypecode'/>',
-					'<s:message code='system.usertype'/>',
-					'<s:message code='system.createtype'/>',
-					'<s:message code='system.usergroup'/>',
-					'<s:message code='system.department'/>',
-					'<s:message code='system.nation'/>',
-					'<s:message code='system.email'/>',
-					'<s:message code='system.lockyn'/>',
-					'<s:message code='common.language'/>',
-					'<s:message code='common.status'/>']
+					'텔레그램ID',
+					'<s:message code='system.compcd'/>']
 		var colModel = [
+			{ name: 'USER_ID', width: 150, align: 'center' },
+			{ name: 'NAME_1ST', width: 200, align: 'center' },
+			{ name: 'CHAT_ID', width: 150, align: 'center'},
 			{ name: 'COMP_CD', width: 100, align: 'center', hidden: true },
-			{ name: 'USER_ID', width: 150, align: 'left' },
-			{ name: 'NAME_1ST', width: 150, align: 'left' },
-			{ name: 'NAME_2ND', width: 150, align: 'left' },
-			{ name: 'NAME_FULL', width: 200, align: 'left' },
-			{ name: 'USER_TP', width: 70, align: 'center', hidden:true },
-			{ name: 'CRE_TP', width: 70, align: 'center', hidden:true },
-			{ name: 'USER_TP_NM', width: 100, align: 'center' },
-			{ name: 'USER_GD', width: 100, align: 'center' , hidden:true},
-			{ name: 'DEPT_NM', width: 150, align: 'left' },
-			{ name: 'LAND_CD', width: 100, align: 'left', hidden:true },
-			{ name: 'E_MAIL', width: 200, align: 'left' },
-			{ name: 'LOCK_YN', width: 75, align: 'center' },
-			{ name: 'LAMG_NM', width: 75, align: 'center' },
-			{ name: 'STATUS_NM', width: 75, align: 'center'}
 	  	];
 		
 		var gSetting = {

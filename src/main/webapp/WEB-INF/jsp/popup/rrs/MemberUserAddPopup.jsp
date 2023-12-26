@@ -21,7 +21,7 @@
 			      	</tr>
 			      	<tr>
 						<td class="small_td">전화번호</td>
-			      		<td><p><input type="text" id="TEL_NO" name="TEL_NO"></p></td>
+			      		<td><p><input type="text" id="TEL_NO" name="TEL_NO" maxlength="13" oninput="autoHyphen(this)"></p></td>
 			      	</tr>
 				</tbody>
 			</table>
@@ -60,6 +60,11 @@ $(function() {
 			$('#Ex_HAN_NAME').val($(this).data('HAN_NAME'));
 			$('#Ex_ENG_NAME').val($(this).data('ENG_NAME'));
 			$('#Ex_TEL_NO').val($(this).data('TEL_NO'));
+			
+			// 연락처 하이픈 처리
+			var tel_no = $("#TEL_NO").val();
+			var convert_tel_no = tel_no.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
+			$("#TEL_NO").val(convert_tel_no);
 		},
 		close: function() {
 			popupClose($(this).data('pid'));
@@ -82,6 +87,13 @@ function saveMemberUserInfo(){
 			}
 		});
 	}
+}
+
+function autoHyphen(target) {
+	target.value = target.value
+		.replace(/[^0-9]/g, '')
+	  	.replace(/^(\d{0,3})(\d{0,4})(\d{0,4})$/g, "$1-$2-$3").replace(/(\-{1,2})$/g, "");
+	return target
 }
 
 </script>

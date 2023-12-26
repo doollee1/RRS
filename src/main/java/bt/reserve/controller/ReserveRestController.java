@@ -54,6 +54,8 @@ public class ReserveRestController {
 
 		BRespData respData = new BRespData();
 		respData.put("result", resultDeptDetail);
+		
+		respData.put("image", reserveService.selectAirlineImg(paramData));
 		return respData;
 	}
 	
@@ -127,6 +129,7 @@ public class ReserveRestController {
 		paramData.put("SEQ"        , (String) reqData.get("SEQ"));
 		paramData.put("REQ_DT"     , (String) reqData.get("REQ_DT"));
 		paramData.put("ITEM_CD"    , (String) reqData.get("ITEM_CD"));
+		paramData.put("TOT_AMT"    , reqData.get("TOT_AMT"));
 		paramData.put("LOGIN_USER" , LoginInfo.getUserId());
 		
 		if(!reserveService.deleteInvoiceManager(paramData)){
@@ -147,11 +150,28 @@ public class ReserveRestController {
 	public BRespData selectPrdInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
 		BRespData respData = new BRespData();
 		BMap paramData = new BMap();
-		paramData.put("HEAD_CD"    , 500050);
+		paramData.put("HEAD_CD"    , 500210);
 		paramData.put("BAS_YY"     , String.valueOf( reqData.get("BAS_YY")));
 		paramData.put("SSN_GBN"    , (String) reqData.get("SSN_GBN"));
 		paramData.put("BAS_YY_SEQ" , Integer.parseInt(String.valueOf(reqData.get("BAS_YY_SEQ"))));
 		respData.put("result"      , reserveService.selectPrdInfo(paramData));
+		return respData;
+	}
+	
+	/**
+	 * 미팅샌딩 리스트 조회
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/selectPickupList.do", method = RequestMethod.POST)
+	public BRespData selectPickupList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BRespData respData = new BRespData();
+		BMap paramData = new BMap();
+		paramData.put("REQ_SEQ", reqData.get("REQ_SEQ"));
+		paramData.put("REQ_DT" , (String)reqData.get("REQ_DT"));
+		respData.put("result"  , reserveService.selectPickupList(paramData));
 		return respData;
 	}
 	
@@ -165,15 +185,17 @@ public class ReserveRestController {
 	@RequestMapping(value = "/pickupManager.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData pickupManager(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		List<BMap> detail = reqData.getParamDataList("detail");
 		BRespData respData = new BRespData();
 		
 		BMap paramData = new BMap();
 		paramData.put("REQ_SEQ"   , reqData.get("REQ_SEQ"));
 		paramData.put("REQ_DT"    , (String)reqData.get("REQ_DT"));
+		paramData.put("PICK_GBN"  , (String)reqData.get("PICK_GBN"));
 		paramData.put("PROD_SEQ"  , reqData.get("PROD_SEQ"));
 		paramData.put("LOGIN_USER", LoginInfo.getUserId());
 		
-		if(!reserveService.pickupManager(paramData , reqData)){
+		if(!reserveService.pickupManager(paramData , detail)){
 			respData.put("dup", "Y");
 		};
 		
@@ -220,6 +242,47 @@ public class ReserveRestController {
 		paramData.put("LOGIN_USER"   , LoginInfo.getUserId());
 		
 		if(!reserveService.updateReserveStatus(paramData)){
+			respData.put("dup", "Y");
+		};
+		return respData;
+	}
+	
+	/**
+	 * 여행사 이미지 불러오기
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/selectAirlineImg.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData selectAirlineImg(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BRespData respData = new BRespData();
+		
+		BMap paramData = new BMap();
+		paramData.put("SEQ"          , reqData.get("SEQ"));
+		paramData.put("REQ_DT"       , (String)reqData.get("REQ_DT"));
+		
+		respData.put("result", reserveService.selectAirlineImg(paramData));
+		return respData;
+	}
+	
+	/**
+	 * 예약 데이터 저장 및 업데이트 
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/ReserveManager.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData ReserveManager(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BRespData respData = new BRespData();
+		BMap reserveInfo = reqData.getParamDataMap("reserveInfo");
+		reserveInfo.put("V_FLAG"    , (String)reqData.get("V_FLAG"));
+		reserveInfo.put("LOGIN_USER", LoginInfo.getUserId());
+		
+		if(!reserveService.ReserveManager(reserveInfo)){
 			respData.put("dup", "Y");
 		};
 		return respData;

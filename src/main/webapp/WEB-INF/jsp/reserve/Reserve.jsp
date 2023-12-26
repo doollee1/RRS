@@ -26,14 +26,14 @@
 					    <td class="small_td"><p><s:message code="reservation.period"/></p></td>
                         <td class="medium_td">
                             <select id="SEARCH" name="SEARCH" class="">
-                                <option value="REQ_DT">예약 일자</option>
-                                <option value="CHK_IN_DT">체크인 일자</option>
+                                <option value="T1.REQ_DT">예약 일자</option>
+                                <option value="T1.CHK_IN_DT">체크인 일자</option>
                             </select>
                         </td>
 						<td class="medium_td">
-						    <input type="text" name="RESERVE_STDT" id="RESERVE_STDT" data-type="date" style="width:90px; float:left;"/>
+						    <input type="text" name="RESERVE_STDT" id="RESERVE_STDT" data-type="date" style="width:90px; float:left; text-align: center;"/>
 						    <p style="float:left;">-</p>
-						    <input type="text" name="RESERVE_EDDT" id="RESERVE_EDDT" data-type="date" style="width:90px;float:left;"/>
+						    <input type="text" name="RESERVE_EDDT" id="RESERVE_EDDT" data-type="date" style="width:90px;float:left; text-align: center;"/>
 					    </td>
 						<td class="small_td"><p><s:message code="reservation.state"/></p></td>
 						<td class="medium_td">
@@ -122,37 +122,41 @@
 				var selRowData = $("#quotationGrid").jqGrid("getRowData",rowid);
 				param = {};                       
 				param.SEQ    = selRowData.SEQ;    
-				param.REQ_DT = selRowData.REQ_DT; 
+				param.REQ_DT = selRowData.REQ_DT.replaceAll(".",""); 
 				reservePopup(param);              
 			}
 		}); 
-		
 		cSearch();
-		
 	}
+	
 	function createQuotationGrid() {
-		var colName = [ '<s:message code="reservation.seq"/>',
-				'<s:message code="reservation.mem_gbn"/>',
-				'<s:message code="reservation.date"/>',
-				'<s:message code="reservation.member"/>',
-				'<s:message code="reservation.product_gbn"/>',
-				'<s:message code="reservation.checkIn"/>',
-				'<s:message code="reservation.checkOut"/>',
-				'<s:message code="reservation.totalCnt"/>',
-				'<s:message code="reservation.amount"/>',
-				'<s:message code="reservation.totAmount"/>',
-				'<s:message code="reservation.flight"/>',
-				'<s:message code="reservation.state"/>', '상품순번"/>' ];
+		var colName = [ 
+            '<s:message code="reservation.seq"/>',
+	        '<s:message code="reservation.mem_gbn"/>',
+		    '<s:message code="reservation.reserveSeq"/>',
+	        '<s:message code="reservation.date"/>',
+	        '<s:message code="reservation.member"/>',
+	        '<s:message code="reservation.product_gbn"/>',
+	        '<s:message code="reservation.checkIn"/>',
+	        '<s:message code="reservation.checkOut"/>',
+	        '<s:message code="reservation.totalCnt"/>',
+	        '<s:message code="reservation.amount"/>',
+	        '<s:message code="reservation.totAmount"/>',
+	        '<s:message code="reservation.flight"/>',
+	        '<s:message code="reservation.state"/>', 
+	        '<s:message code="reservation.prodCnt"/>',
+		];
 		var colModel = [ 
-		    {name : 'SEQ'       , width : 70  , align : 'center'}, 
+		    {name : 'ROWNUM'       , width : 70  , align : 'center'}, 
 		    {name : 'MEM_NM'    , width : 70  , align : 'center'}, 
+		    {name : 'SEQ'       , width : 70  , align : 'center'}, 
 		    {name : 'REQ_DT'    , width : 100 , align : 'center'}, 
 		    {name : 'REQ_HAN_NM', width : 70  , align : 'center'}, 
-		    {name : 'CONTENTS'  , width : 70  , align : 'center'}, 
-		    {name : 'CHK_IN_DT' , width : 70  , align : 'center'}, 
-		    {name : 'CHK_OUT_DT', width : 150 , align : 'center'}, 
-		    {name : 'TOT_PERSON', width : 150 , align : 'center'}, 
-		    {name : 'DEP_AMT'   , width : 70  , align : 'center'}, 
+		    {name : 'PROD_NM'   , width : 200, align : 'center'}, 
+		    {name : 'CHK_IN_DT' , width : 100  , align : 'center'}, 
+		    {name : 'CHK_OUT_DT', width : 100 , align : 'center'}, 
+		    {name : 'TOT_PERSON', width : 70 , align : 'center'}, 
+		    {name : 'DEP_AMT'   , width : 100  , align : 'center'}, 
 		    {name : 'TOT_AMT'   , width : 100 , align : 'center'}, 
 		    {name : 'FLIGHT_OUT', width : 100 , align : 'center'}, 
 		    {name : 'STATE_NM'  , width : 100 , align : 'center', ref : 'linkq'}, 
@@ -177,15 +181,15 @@
 	function cSearch(currentPage) {
 		var url = "/reserve/reserveSelectList.do";
 		var formData = { "SEARCH"       : $("#SEARCH option:selected").val()
-				       //, "RESERVE_STDT" : $("#RESERVE_STDT").val().replaceAll(/\./gi, '')
-				       , "RESERVE_STDT" : '20230101'
+				       , "RESERVE_STDT" : $("#RESERVE_STDT").val().replaceAll(/\./gi, '')
+				       //, "RESERVE_STDT" : '20230101'
 				       , "RESERVE_EDDT" : $("#RESERVE_EDDT").val().replaceAll(/\./gi, '')
 				       , "MEM_GBN"      : $("#MEM_GBN option:selected").val()
 				       , "PRC_STS"      : $("#PRC_STS option:selected").val()
 		               };
 		var param = {"param":formData};
 		fn_ajax(url, true, param, function(data, xhr) {
-		    reloadGrid("quotationGrid", data.result);
+		    reloadGrid("quotationGrid", fn_dataSet(data.result));
 			btGrid.gridQueryPaging($('#quotationGrid'), 'cSearch',data.result);
 			var colModel = $("#quotationGrid").jqGrid('getGridParam','colModel');
 			for (var i = 0; i < data.result.length; i++) {
@@ -208,6 +212,24 @@
 			}
 		});
 	}
+	
+	function fn_dataSet(data){
+		var array = [];
+		for (var i = 0; i < data.length; i++) {
+			var obj = new Object;
+			$.each(data[i] , function(key , value){
+				if(key == "REQ_DT" || key == "CHK_IN_DT" || key == "CHK_OUT_DT"){
+					value = Util.converter.dateFormat1(value);
+				}else if(key == "TOT_PERSON" || key == "DEP_AMT" || key == "TOT_AMT"){
+					value = fn_comma(value);
+				}
+				obj[key] = value;
+				delete obj;
+			});
+	        array.push(obj);
+		}
+		return array;
+	}
 
 	function cAdd() {
 		reservePopup();
@@ -217,7 +239,7 @@
 		var pid = "p_reserveRegi"; //팝업 페이지의 취상위 div ID
 
 		popupOpen(url, pid, param, function(data) {
-			//cSearch();
+			cSearch();
 		});
 	}
 </script>

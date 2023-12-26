@@ -20,9 +20,14 @@
 			<button class="btn btn-default" id="btn_preview" onclick='cExcelSample(this);'><i class="fa fa-cube"></i><s:message code='button.preview'/></button>
 			<button class="btn btn-default" id="btn_send"    onclick='cExcelSample(this);'><i class="fa fa-phone"></i><s:message code='button.send'/></button>
 			<button class="btn btn-default" id="btn_save"><i class="fa fa-save"></i><s:message code='button.save'/></button>
-			<button class="btn btn-default" id="btn_add"><i class="fa fa-plus-square-o"></i><s:message code='button.add'/></button>
 			<button class="btn btn-default" id="btn_del"><i class="fa fa-trash"></i><s:message code='button.delete'/></button>
+            <button class="btn btn-default" id="btn_close"><i class="fa fa-close"></i><s:message code='button.close'/></button>
+            <br><br>
+            <p style="text-align:right">
+            <button class="btn btn-default" id="btn_add" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.add'/></button>
+            </p>
 		</div>
+        
 	</div>
 	<!-- 그리드 시작 -->
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
@@ -82,9 +87,11 @@ $(function() {
 			}
 			var obj = new Object();
 			$.each(data.selectList , function(i , v){
-				obj[v.CODE] = v.CODE;
+			    obj += v.CODE + ':'+ v.CODE_NM + ';';
+				
 			});
 			$("#invoiceGrid").setColProp('ITEM_CD', { editoptions: { value:obj}});
+			btGrid.gridResizing('invoiceGrid');
 	    });
 	}
 	
@@ -119,11 +126,13 @@ $(function() {
 						, '<s:message code="invoice.tot_amt"/>'
 						, '<s:message code="invoice.reg_dtm"/>'
 						, '<s:message code="invoice.upd_dtm"/>'
+						, 'PREV_ITEM_CD'
+						, 'PREV_ORDER'
 						, 'STATUS_V'
 					];
 
 		var colModel = [
-						  { name: 'SEQ',      width : 70 , align: 'center' , editoptions:{readonly: true}}
+						  { name: 'SEQ',      width : 70 , align: 'center' , hidden : true, editoptions:{readonly: true}}
 						, { name: 'ORDER',    width : 70 , align: 'center' , editable:true, editoptions:{dataInit: function(element) {
 			                $(element).keyup(function(){
 				                 var val1 = element.value;
@@ -135,9 +144,9 @@ $(function() {
 				               }
 						      }
 						  }
-						, { name: 'ITEM_CD',  width : 150, align: 'center', editable:true , edittype:"select"}
+						, { name: 'ITEM_CD',  width : 150, align: 'left'   , editable:true , edittype:"select"}
 						, { name: 'ITEM_NM',  width : 150, align: 'center' , editable:true, editoptions:{maxlength:100}}
-						, { name: 'AMT_SIGN', width : 50 , align: 'center' , editable:true, edittype:"select" ,  editoptions:{value:{"\\" : "\\" , "$" : "$"}}} 
+						, { name: 'AMT_SIGN', width : 50 , align: 'center' , editable:true, edittype:"select" ,  editoptions:{value:{"￦" : "￦" , "$" : "$"}}} 
 						, { name: 'PER_AMT',  width : 70 , align: 'center' , editable:true, editoptions:{    
 				            dataInit: function(element) {
 				                $(element).keyup(function(){
@@ -177,8 +186,10 @@ $(function() {
                            }
 						, { name: 'STR_UNIT_NUM', width : 50 , align: 'center' ,  editable:true,edittype:"select" ,  editoptions:{value:'${REF_CHR4}'}}
 						, { name: 'TOT_AMT',  width : 100, align: 'center' ,  editoptions:{readonly: true}}
-						, { name: 'REG_DTM',  width : 100, align: 'center' ,  editoptions:{readonly: true}}
-						, { name: 'UPD_DTM',  width : 100, align: 'center' ,  editoptions:{readonly: true}}
+						, { name: 'REG_DTM',  width : 120, align: 'center' ,  editoptions:{readonly: true}}
+						, { name: 'UPD_DTM',  width : 120, align: 'center' ,  editoptions:{readonly: true}}
+						, { name: 'PREV_ITEM_CD',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
+						, { name: 'PREV_ORDER',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
 						, { name: 'STATUS_V',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
 					];
 		
@@ -211,7 +222,7 @@ $(function() {
 		var gridData  = $("#invoiceGrid").getRowData();
 		$.each(gridData , function(i , json){
 			$.each(json, function(k , value){
-				if(k == "SEQ" || k == "PER_AMT" || k == "USE_DAY" || k == "USE_NUM" || k == "TOT_AMT"){
+				if(k == "SEQ" || k == "PER_AMT" || k == "USE_DAY" || k == "USE_NUM" || k == "TOT_AMT" ){
 					if(k == "PER_AMT" || k == "TOT_AMT") json[k] = parseInt(value.replaceAll("," , ""));
 					else                                 json[k] = parseInt(value);
 				}
@@ -234,7 +245,10 @@ $(function() {
 			});
 		}
 	});
-	
+	//닫기
+	$("#btn_close").on("click" , function(){
+		popupClose($('#p_invoicePopup').data('pid'));
+	});
 	$("#btn_del").on("click" , function(){
 		var rowId   = $('#invoiceGrid').jqGrid('getGridParam', 'selrow');
 		var rowData = $("#invoiceGrid").getRowData(rowId);
@@ -252,7 +266,7 @@ $(function() {
 				if(data.resultCd == "-1"){
 					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
 				}else{
-					alert("<s:message code='success.sendemail'/>");
+				    alert("<s:message code='info.save'/>");
 					cSearch();
 				}
 			});
@@ -266,8 +280,23 @@ $(function() {
 				    , "EMAIL"   : email
 				    , "MEM_GBN" : mem_gbn
 		}
-		if(data.id == "btn_preview") param.WK_GBN = "R";
-		fn_formSubmit('/report/retrieveCustomerReportAll.do', param);
+		alert(seq);alert(req_dt);
+		if(data.id == "btn_preview") param.WK_GBN = "";
+		alert('adfa');
+		//fn_formSubmit('/report/retrieveCustomerReportAll.do', param);
+		alert('ad');
+		var url = "/report/retrieveCustomerReportAll.do";
+		fn_ajax(url, false, param, function(data, xhr){
+		    alert(1);
+		    if(data.resultCd == "-1"){
+		        alert(2);
+				alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
+			}else{
+			    alert(3);
+				alert("<s:message code='success.sendemail'/>");
+				cSearch();
+			}
+		});
 	}
 	
 	$("#invoiceGrid").bind("change , keyup" , function(){

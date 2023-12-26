@@ -1,4 +1,5 @@
 package bt.reserve.service;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import javax.annotation.Resource;
@@ -85,9 +86,10 @@ public class ReserveService {
 	    List<BMap> result = null; 
 		int detailCnt = reserveDao.selectInvoiceListCnt(param);
 		if(detailCnt == 0){
-		   result = reserveDao.firstInvoiceSelectList(param);
+		    reserveDao.firstInvoiceSelectList(param);
+		    result = reserveDao.invoiceSelectList(param);
 		}else{
-		   result = reserveDao.invoiceSelectList(param);
+		    result = reserveDao.invoiceSelectList(param);
 		}
 		
 		return result;
@@ -116,6 +118,16 @@ public class ReserveService {
 	}
 	
 	/**
+	 * 미팅샌딩 리스트 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> selectPickupList(BMap param) throws Exception {
+		return reserveDao.selectPickupList(param);
+	}
+	
+	/**
 	 * 인보이스 데이터 삽입 및 수정
 	 * @param param
 	 * @return
@@ -123,15 +135,19 @@ public class ReserveService {
 	 */
 	public Boolean saveInvoiceManager(BMap param, List<BMap> detail) throws Exception{
 		Boolean isValid = true;
+		int sum_tot = 0;
+		int feeCnt  = 0;
 		
-		for(int i = 0; i < detail.size(); i++){
-			BMap detailMap = new BMap(detail.get(i));
+		try {
 			
-			detailMap.put("SEQ"       , (String) param.get("SEQ"));
-			detailMap.put("REQ_DT"    , (String) param.get("REQ_DT"));
-			detailMap.put("LOGIN_USER", LoginInfo.getUserId());
-			
-			try {
+			for(int i = 0; i < detail.size(); i++){
+				BMap detailMap = new BMap(detail.get(i));
+				detailMap.put("SEQ"       , (String) param.get("SEQ"));
+				detailMap.put("REQ_DT"    , (String) param.get("REQ_DT"));
+				detailMap.put("LOGIN_USER", LoginInfo.getUserId());
+				feeCnt = reserveDao.selectFeeListCnt(detailMap);
+				sum_tot += detailMap.getInt("TOT_AMT");
+				
 				if(detailMap.getString("STATUS_V").equals("I")){
 					reserveDao.insertInvoiceDetailInfo(detailMap);
 					reserveDao.addInvoiceDetailHis(detailMap);
@@ -139,12 +155,26 @@ public class ReserveService {
 					reserveDao.updateInvoiceDetailInfo(detailMap);
 					reserveDao.addInvoiceDetailHis(detailMap);
 				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-				isValid = false;
 			}
+			
+			BMap paramMap = new BMap();
+			paramMap.put("SEQ"       , (String) param.get("SEQ"));      
+			
+			paramMap.put("REQ_DT"    , (String) param.get("REQ_DT"));   
+			paramMap.put("LOGIN_USER", LoginInfo.getUserId());          
+			paramMap.put("TOT_AMT"   , sum_tot);
+			
+			if(feeCnt == 0){ //fee table insert
+				reserveDao.insertFeeInfo(paramMap);
+			}else if(feeCnt == 1 && sum_tot != reserveDao.selectFeeTOT_AMT(paramMap)){ //fee table update
+				reserveDao.updateFeeInfo(paramMap);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			isValid = false;
 		}
+		
 		return isValid;
 	}
 	
@@ -161,6 +191,7 @@ public class ReserveService {
         	param.put("STATUS_V" , "D");
         	reserveDao.delInvoiceDetailHis(param);
 		    reserveDao.deleteInvoiceManager(param);
+		    reserveDao.deleteFeeInfo(param);
 		} catch (Exception e) {
 		    // TODO: handle exception
 			e.printStackTrace();
@@ -186,50 +217,93 @@ public class ReserveService {
 	 * @return
 	 * @throws Exception
 	 */
-	public Boolean pickupManager(BMap param , BReqData reqData) throws Exception{
+	public Boolean pickupManager(BMap param , List<BMap> detail) throws Exception{
 		Boolean isValid = true;
-		String pick_gbn = (String)reqData.get("PICK_GBN");
-		Locale locale;
-		locale = Locale.KOREA;
-		param.put("ADD_AMT"      , reqData.get("ADD_AMT"));
-		param.put("CAR_NUM"      , reqData.get("CAR_NUM"));
-		param.put("PER_NUM"      , reqData.get("PER_NUM"));
-		param.put("USE_AMT"      , reqData.get("USE_AMT"));
-		param.put("PICK_GBN"     , reqData.get("PICK_GBN"));
-		param.put("HD_PROD_SEQ"  , reqData.get("HD_PROD_SEQ"));;
+		Locale locale = Locale.KOREA;
 		
 		try {
-			if("01".equals(pick_gbn)){
-				//delete
+			if(param.getString("PICK_GBN").equals("01")){ //delete
 				int deleteCnt = reserveDao.deletePickupInfo(param);
-				if(deleteCnt != 1 ){
-					throw new Exception(messageSource.getMessage("fail.common.msg", null, locale));	// 에러가 발생했습니다!
-				}else{
+				if(deleteCnt == 1 || deleteCnt == 2){
 					reserveDao.updatePickGbn(param);
+				}else{
+					throw new Exception(messageSource.getMessage("fail.common.msg", null, locale));	// 에러가 발생했습니다!
 				}
 			}else{
 				int selectPickCnt = reserveDao.selectPickListCnt(param);
-				if (selectPickCnt == 0){
-					//insert
-					int insertCnt = reserveDao.insertPickupInfo(param);
-					if(insertCnt != 1 ){
-						//exeption
-						throw new Exception(messageSource.getMessage("fail.common.msg", null, locale));	// 에러가 발생했습니다!
-					}else{
-						reserveDao.updatePickGbn(param);
+				for(int i = 0; i < detail.size(); i++){
+					BMap detailMap = new BMap(detail.get(i));
+					detailMap.put("REQ_SEQ"   , param.get("REQ_SEQ"));
+					detailMap.put("REQ_DT"    , (String) param.get("REQ_DT"));
+					detailMap.put("LOGIN_USER", LoginInfo.getUserId());
+					
+					if (selectPickCnt == 0 ) {
+						int insertCnt = reserveDao.insertPickupInfo(detailMap);
+						if(insertCnt == 1 || insertCnt == 2 ){
+							reserveDao.updatePickGbn(detailMap);
+						}else{
+							//exeption
+							throw new Exception(messageSource.getMessage("fail.common.msg", null, locale));	// 에러가 발생했습니다!
+						}
+					} else if(selectPickCnt == 1){
+						if(detail.size() == 1){
+							int updateCnt = reserveDao.updatePickupInfo(detailMap);
+							if(updateCnt != 1){
+								//exeption
+								throw new Exception(messageSource.getMessage("fail.common.msg", null, locale));	// 에러가 발생했습니다!
+							}else{
+								reserveDao.updatePickGbn(detailMap);
+							}
+						}else if(detail.size() == 2){
+							if(i == 0 ){
+								int updateCnt = reserveDao.updatePickupInfo(detailMap);
+								if(updateCnt != 1){
+									//exeption
+									throw new Exception(messageSource.getMessage("fail.common.msg", null, locale));	// 에러가 발생했습니다!
+								}else{
+									reserveDao.updatePickGbn(detailMap);
+								}
+							}else if( i == 1){
+								int insertCnt = reserveDao.insertPickupInfo(detailMap);
+								if(insertCnt == 1 ){
+									reserveDao.updatePickGbn(detailMap);
+								}else{
+									//exeption
+									throw new Exception(messageSource.getMessage("fail.common.msg", null, locale));	// 에러가 발생했습니다!
+								}
+							}
+						}
+					}else { 
+						if(detail.size() == 1){
+							//삭제후 insert 
+							int deleteCnt = reserveDao.deletePickupInfo(param);
+							if(deleteCnt == 1 || deleteCnt == 2){
+								reserveDao.updatePickGbn(param);
+							}else{
+								throw new Exception(messageSource.getMessage("fail.common.msg", null, locale));	// 에러가 발생했습니다!
+							}
+							
+							int insertCnt = reserveDao.insertPickupInfo(detailMap);
+							if(insertCnt == 1 ){
+								reserveDao.updatePickGbn(detailMap);
+							}else{
+								//exeption
+								throw new Exception(messageSource.getMessage("fail.common.msg", null, locale));	// 에러가 발생했습니다!
+							}
+						}else{
+							//둘다update
+							int updateCnt = reserveDao.updatePickupInfo(detailMap);
+							if(updateCnt == 1){
+								reserveDao.updatePickGbn(detailMap);
+							}else{
+								//exeption
+								throw new Exception(messageSource.getMessage("fail.common.msg", null, locale));	// 에러가 발생했습니다!
+							}
+						}
 					}
-				}else if(selectPickCnt == 1){
-					//update
-					int updateCnt = reserveDao.updatePickupInfo(param);
-					if(updateCnt != 1){
-						//exeption
-						throw new Exception(messageSource.getMessage("fail.common.msg", null, locale));	// 에러가 발생했습니다!
-					}else{
-						reserveDao.updatePickGbn(param);
-					}
+					
 				}
 			}
-			
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -256,4 +330,59 @@ public class ReserveService {
 		}
 		return isValid;
 	}
+	
+	/**
+	 * 여행사 이미지 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap selectAirlineImg(BMap param) throws Exception {
+		return reserveDao.selectAirlineImg(param);
+	}
+	
+	/**
+	 * 인보이스 등록일자 변경
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public Boolean updateInvRegDt(BMap param ) throws Exception{
+		Boolean isValid = true;
+
+        try {
+		    reserveDao.updateInvRegDt(param);
+		} catch (Exception e) {
+		    // TODO: handle exception
+			e.printStackTrace();
+			isValid = false;
+		}
+		return isValid;
+	}
+	
+
+	/**
+	 * 예약변경 및 등록
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public Boolean ReserveManager(BMap reserveInfo) throws Exception{
+		Boolean isValid = true;
+        try {
+        	if(reserveInfo.getString("V_FLAG").equals("new")){ //insert
+        		reserveDao.insertReserveInfo(reserveInfo);
+        	}else if(reserveInfo.getString("V_FLAG").equals("detail")){ //update
+        		reserveDao.updateReserveInfo(reserveInfo);
+        	}
+		} catch (Exception e) {
+		    // TODO: handle exception
+			e.printStackTrace();
+			isValid = false;
+		}
+		return isValid;
+	}
+	
+	
+	
 }
