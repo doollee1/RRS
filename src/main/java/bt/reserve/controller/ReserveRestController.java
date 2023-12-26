@@ -79,6 +79,26 @@ public class ReserveRestController {
 		BRespData respData = new BRespData();
 		respData.put("result", resultDeptDetail);
 		
+	/*	BMap param = new BMap();
+		param.put("HEAD_CD"   , 500140);
+		param.put("REF_CHR1"  , (String)reqData.get("MEM_GBN"));
+		param.put("ORDER_GBN" , 1);
+		
+		respData.put("selectList"   , reserveService.selectGetCommonCode(param));*/
+		return respData;
+	}
+	
+	/**
+	 * 인보이스 아이템 코드 리스트 조회
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/invoiceItemList.do", method = RequestMethod.POST)
+	public BRespData invoiceItemList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BRespData respData = new BRespData();
+	
 		BMap param = new BMap();
 		param.put("HEAD_CD"   , 500140);
 		param.put("REF_CHR1"  , (String)reqData.get("MEM_GBN"));

@@ -56,13 +56,14 @@ $(function() {
 			popupClose($(this).attr('id')); /* 필수로 들어가야함 */
 		},
 		open : function() {
-			createGrid();
 			seq     = $(this).data("SEQ");
 			req_dt  = $(this).data("REQ_DT");
 			mem_gbn = $(this).data("MEM_GBN");
 			email   = $(this).data("EMAIL");
+			createGrid();
+			
+			//gridColspan();
 			cSearch();
-			gridColspan();
 		}
 	});
 	
@@ -74,23 +75,20 @@ $(function() {
 				   , "MEM_GBN" : mem_gbn
 				   };
 		fn_ajax(url, true, param, function(data, xhr){
+			
 			$.each(data.result , function(i , val){
 				val.TOT_AMT = parseInt(val.TOT_AMT).toLocaleString();
-				val.PER_AMT = parseInt(val.PER_AMT).toLocaleString();
+				//val.PER_AMT = parseInt(val.PER_AMT).toLocaleString();
 				val.STATUS_V = "R";
 			});
-			reloadGrid("invoiceGrid", data.result);
 			
+			reloadGrid("invoiceGrid", data.result);
+
 			var colModel = $("#invoiceGrid").jqGrid('getGridParam', 'colModel'); 
 			for(var i =0; i < data.result.length; i++){
 				jQuery("#invoiceGrid").setCell(i+1);
 			}
-			var obj = new Object();
-			$.each(data.selectList , function(i , v){
-			    obj += v.CODE + ':'+ v.CODE_NM + ';';
-				
-			});
-			$("#invoiceGrid").setColProp('ITEM_CD', { editoptions: { value:obj}});
+
 			btGrid.gridResizing('invoiceGrid');
 	    });
 	}
@@ -109,9 +107,30 @@ $(function() {
 		    colspan: "2"
 		});
 		$('#invoiceGrid').jqGrid("setLabel", "UNIT_NUM", "", "", {style: "display: none"});
+		
+		btGrid.gridResizing('grid1');
 	}
 	
 	function createGrid(){
+		var url = "/reserve/invoiceItemList.do";
+		var formData = formIdAllToMap('frmSearch');
+		var param = {"MEM_GBN" : mem_gbn
+				   };
+		var obj = new Object();
+		obj +=":;";
+		
+		fn_ajax(url, true, param, function(data, xhr){
+			$.each(data.selectList , function(i , v){
+				if (!v.CODE) {
+					return;
+				}
+				obj += v.CODE + ':'+ v.CODE_NM + ';';
+			});
+			obj = obj.substr(0, obj.length-1);
+			
+			$("#invoiceGrid").setColProp('ITEM_CD', {  formatter : "select", editoptions: { value:obj}});
+	    });
+		
 		var colName = [
 						  '<s:message code="invoice.seq"/>'
 						, '<s:message code="invoice.order"/>'
@@ -120,9 +139,9 @@ $(function() {
 						, '<s:message code="invoice.amt_sign"/>'
 						, '<s:message code="invoice.per_amt"/>'
 						, '<s:message code="invoice.use_day"/>'
-						, '횟수단위'
-						, '<s:message code="invoice.use_amt"/>'
-						, '수량단위'
+						, '<s:message code="invoice.use_unit"/>'
+						, '<s:message code="invoice.use_num"/>'
+						, '<s:message code="invoice.num_unit"/>'
 						, '<s:message code="invoice.tot_amt"/>'
 						, '<s:message code="invoice.reg_dtm"/>'
 						, '<s:message code="invoice.upd_dtm"/>'
@@ -132,8 +151,8 @@ $(function() {
 					];
 
 		var colModel = [
-						  { name: 'SEQ',      width : 70 , align: 'center' , hidden : true, editoptions:{readonly: true}}
-						, { name: 'ORDER',    width : 70 , align: 'center' , editable:true, editoptions:{dataInit: function(element) {
+						  { name: 'SEQ',      width : 1 , align: 'center' , hidden : true, editoptions:{readonly: true}}
+						, { name: 'ORDER',    width : 50 , align: 'center' , editable:true, editoptions:{dataInit: function(element) {
 			                $(element).keyup(function(){
 				                 var val1 = element.value;
 				                 var num = new Number(val1);
@@ -141,13 +160,13 @@ $(function() {
 				                  alert("Please enter a valid number");
 				                  element.value = ''; }
 				                })
-				               }
+				               }, maxlength:5
 						      }
 						  }
-						, { name: 'ITEM_CD',  width : 150, align: 'left'   , editable:true , edittype:"select"}
-						, { name: 'ITEM_NM',  width : 150, align: 'center' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'ITEM_CD',  width : 120, align: 'left'   , editable:true , edittype:"select", formatter : "select"}
+						, { name: 'ITEM_NM',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
 						, { name: 'AMT_SIGN', width : 50 , align: 'center' , editable:true, edittype:"select" ,  editoptions:{value:{"￦" : "￦" , "$" : "$"}}} 
-						, { name: 'PER_AMT',  width : 70 , align: 'center' , editable:true, editoptions:{    
+						, { name: 'PER_AMT',  width : 70 , align: 'right' , editable:true, formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{    
 				            dataInit: function(element) {
 				                $(element).keyup(function(){
 				                 var val1 = element.value;
@@ -156,10 +175,10 @@ $(function() {
 				                  alert("Please enter a valid number");
 				                  element.value = ''; }
 				                })
-				               }
+				               }, maxlength:15 
 				              }
                            } 
-						, { name: 'USE_DAY',  width : 30 , align: 'center' , editable:true,editoptions:{    
+						, { name: 'USE_DAY',  width : 60 , align: 'center' , editable:true,editoptions:{    
 				            dataInit: function(element) {
 				                $(element).keyup(function(){
 				                 var val1 = element.value;
@@ -168,11 +187,11 @@ $(function() {
 				                  alert("Please enter a valid number");
 				                  element.value = ''; }
 				                })
-				               }
+				               }, maxlength:5
 				              }
                            }
-						, { name: 'STR_UNIT_DAY', width : 50 , align: 'center'  , editable:true, edittype:"select" , editoptions:{value:'${REF_CHR3}'}}
-						, { name: 'USE_NUM'	,  width : 30 , align: 'center' , editable:true, editoptions:{    
+						, { name: 'UNIT_DAY', width : 50 , align: 'center'  , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${REF_CHR3}'}}
+						, { name: 'USE_NUM'	,  width : 60 , align: 'center' , editable:true, editoptions:{    
 				            dataInit: function(element) {
 				                $(element).keyup(function(){
 				                 var val1 = element.value;
@@ -181,16 +200,17 @@ $(function() {
 				                  alert("Please enter a valid number");
 				                  element.value = ''; }
 				                })
-				               }
+				               }, maxlength:5
 				              }
                            }
-						, { name: 'STR_UNIT_NUM', width : 50 , align: 'center' ,  editable:true,edittype:"select" ,  editoptions:{value:'${REF_CHR4}'}}
-						, { name: 'TOT_AMT',  width : 100, align: 'center' ,  editoptions:{readonly: true}}
-						, { name: 'REG_DTM',  width : 120, align: 'center' ,  editoptions:{readonly: true}}
-						, { name: 'UPD_DTM',  width : 120, align: 'center' ,  editoptions:{readonly: true}}
+						, { name: 'UNIT_NUM', width : 50 , align: 'center' ,  editable:true,edittype:"select" , formatter : "select",  editoptions:{value:'${REF_CHR4}'}}
+						, { name: 'TOT_AMT',  width : 120, align: 'right' ,  editoptions:{readonly: true}}
+						, { name: 'REG_DTM',  width : 140, align: 'center' ,  editoptions:{readonly: true}}
+						, { name: 'UPD_DTM',  width : 140, align: 'center' ,  editoptions:{readonly: true}}
 						, { name: 'PREV_ITEM_CD',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
 						, { name: 'PREV_ORDER',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
 						, { name: 'STATUS_V',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
+						
 					];
 		
 		var gSetting = {
@@ -205,8 +225,16 @@ $(function() {
 				queryPagingGrid:true, // 쿼리 페이징 처리 여부
 				height : 487
 		};
+		
 		// 그리드 생성 및 초기화
 		btGrid.createGrid('invoiceGrid', colName, colModel, gSetting);
+		
+		$('#invoiceGrid').jqGrid('setGroupHeaders', {
+			useColSpanStyle: true, 
+			groupHeaders:[
+				{startColumnName: 'USE_DAY', numberOfColumns: 4, titleText: '사용'},
+				]
+		});
 	}
 	
 	$("#btn_add").on("click" , function(){
@@ -220,17 +248,69 @@ $(function() {
 	$("#btn_save").on("click" , function(){
 		btGrid.gridSaveRow('invoiceGrid');
 		var gridData  = $("#invoiceGrid").getRowData();
-		$.each(gridData , function(i , json){
+		var ids = $("#invoiceGrid").jqGrid("getDataIDs");
+		var gridDataChk = [];
+		var cnt = 0;
+		
+		for(var i = 0; i < ids.length; i++){
+			gridDataChk.push($("#invoiceGrid").getRowData(ids[i]));
+		}
+
+		var args = '';
+		$.each(gridDataChk , function(i , json){
 			$.each(json, function(k , value){
-				if(k == "SEQ" || k == "PER_AMT" || k == "USE_DAY" || k == "USE_NUM" || k == "TOT_AMT" ){
+				if(k == "SEQ" || k == "PREV_ORDER" || k == "PER_AMT" || k == "USE_DAY" || k == "USE_NUM" || k == "TOT_AMT" ){
 					if(k == "PER_AMT" || k == "TOT_AMT") json[k] = parseInt(value.replaceAll("," , ""));
 					else                                 json[k] = parseInt(value);
 				}
 			});
 		});
 		
+		for(var i = 0; i < gridDataChk.length; i++){
+			if(fn_empty(gridDataChk[i]["ORDER"])){
+				args = '<s:message code="invoice.order"/>';
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				return;
+			}
+			if(fn_empty(gridDataChk[i]["ITEM_CD"]) || gridDataChk[i]["ITEM_CD"].length == 0){
+				args = '<s:message code="invoice.item_cd"/>';
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				return;
+			}
+			if(fn_empty(gridDataChk[i]["ITEM_NM"])){
+				args = '<s:message code="invoice.item_nm"/>';
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				return;
+			}
+			if(fn_empty(gridDataChk[i]["PER_AMT"])){
+				args = '<s:message code="invoice.per_amt"/>';
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				return;
+			} 
+			if(fn_empty(gridDataChk[i]["USE_DAY"])){
+				args = '<s:message code="invoice.use_day"/>';
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				return;
+			}
+			if(fn_empty(gridDataChk[i]["USE_NUM"])){
+				args = '<s:message code="invoice.use_num"/>';
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				return;
+			}
+
+			if(!gridDataChk[i]["STATUS_V"] == 'R'){
+				cnt++;
+			}
+		}
+		
+		if(cnt > 0){
+			args = '<s:message code='system.programcode'/>';
+			alert("<s:message code='errors.saveNull' arguments='" + args + "' javaScriptEscape='false'/>");
+			return;
+		}
+	
 		var url = '/reserve/saveInvoiceManager.do';
-		var param = {"detail"   : gridData
+		var param = {"detail"   : gridDataChk
 				   , "SEQ"      : seq 
 				   , "REQ_DT"   : req_dt
 				   };
@@ -279,24 +359,32 @@ $(function() {
 				    , "SEQ"     : seq
 				    , "EMAIL"   : email
 				    , "MEM_GBN" : mem_gbn
+				    , "WK_GBN"	: ""
 		}
-		alert(seq);alert(req_dt);
-		if(data.id == "btn_preview") param.WK_GBN = "";
-		alert('adfa');
-		//fn_formSubmit('/report/retrieveCustomerReportAll.do', param);
-		alert('ad');
-		var url = "/report/retrieveCustomerReportAll.do";
-		fn_ajax(url, false, param, function(data, xhr){
-		    alert(1);
-		    if(data.resultCd == "-1"){
-		        alert(2);
-				alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
-			}else{
-			    alert(3);
-				alert("<s:message code='success.sendemail'/>");
-				cSearch();
+		
+		if(data.id == "btn_preview") param.WK_GBN = "R";
+		else {
+			if(!confirm("<s:message code='confirm.send'/>")){
+				return false;
 			}
-		});
+		}
+		fn_formSubmit('/report/retrieveCustomerReportAll.do', param);
+		
+		if(!(data.id == "btn_preview"))
+		{
+			
+			var url = "/report/retrieveCustomerReportSend.do";
+			fn_ajax(url, false, param, function(data, xhr){
+			    
+			    if(data.resultCd == "-1"){
+					alert("<s:message code='error.sendmail' javaScriptEscape='false'/>"); 
+				}else{
+					alert("<s:message code='success.sendemail'/>");
+					cSearch();
+				}
+			});
+			
+		}
 	}
 	
 	$("#invoiceGrid").bind("change , keyup" , function(){
