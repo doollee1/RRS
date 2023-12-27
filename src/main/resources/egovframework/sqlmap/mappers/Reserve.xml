@@ -741,8 +741,10 @@
              ( REQ_DT     /* 예약일자       */
              , REQ_SEQ	  /* 순번           */
              , DEP_IN_DT  /* 예약금입금일자 */
+             , EXP_DT     /* 예약기한       */
              , DEP_AMT	  /* 예약금액       */
              , BAL_AMT	  /* 잔금           */
+             , BAL_IN_DT  /* 잔금기한       */
              , DCT_AMT	  /* 할인금액       */
              , PAY_AMT	  /* 입금금액       */
              , TOT_AMT	  /* 총액           */
@@ -754,8 +756,10 @@
       VALUES ( #{REQ_DT  }
              , #{SEQ     }
              , #{DEP_IN_DT}
+             , #{EXP_DT}
              , #{DEP_AMT}
              , #{BAL_AMT}
+             , #{BAL_IN_DT}
              , #{DCT_AMT}
              , #{PAY_AMT}
              , #{TOT_AMT}
