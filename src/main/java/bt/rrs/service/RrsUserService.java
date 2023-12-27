@@ -86,11 +86,11 @@ public class RrsUserService {
 		if(cnt == 0){
 			rrsUserDao.insertMemberUserInfo(param); //등록되지 않았을 때 등록
 		}else{
-			if(param.getString("ISNEW").equals("0")){
-				isValid = false;
-			}else{
-				rrsUserDao.updateMemberUserInfo(param); //등록된 사용자 정보 수정
-			}
+			rrsUserDao.updateMemberUserInfo(param); //멤버 테이블의 멤버 정보 수정
+			// 회원 테이블에 있는지 검사 후
+			int memberCnt = rrsUserDao.selectMemberUserInfoCntAfterMemberUpdate(param);
+			// 있으면 회원테이블에도 멤버 정보 수정
+			if(memberCnt > 0) rrsUserDao.updateUserInfoAfterMemberUpdate(param);
 		}
 		return isValid;
 	}

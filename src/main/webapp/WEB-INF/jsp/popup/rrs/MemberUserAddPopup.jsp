@@ -13,11 +13,11 @@
 				<tbody>
 					<tr>
 						<td class="small_td">이름</td>
-			      		<td><p><input type="text" id="HAN_NAME" name="HAN_NAME"></p></td>
+			      		<td><p><input type="text" id="HAN_NAME" name="HAN_NAME" maxlength="20"></p></td>
 			      	</tr>
 			      	<tr>
 						<td class="small_td">영문이름</td>
-			      		<td><p><input type="text" id="ENG_NAME" name="ENG_NAME"></p></td>
+			      		<td><p><input type="text" id="ENG_NAME" name="ENG_NAME" maxlength="30"></p></td>
 			      	</tr>
 			      	<tr>
 						<td class="small_td">전화번호</td>
@@ -74,6 +74,8 @@ $(function() {
 
 function saveMemberUserInfo(){
 	var formData = formIdAllToMap('frmMemberUserInfo');
+	formData.TEL_NO = formData.TEL_NO.replace(/-/g, '');
+	formData.Ex_TEL_NO = formData.Ex_TEL_NO.replace(/-/g, '');
 	var param = {"param" : formData};
 	var url = "/rrs/saveMemberUserInfo.do"
 		

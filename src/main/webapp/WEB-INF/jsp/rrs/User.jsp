@@ -76,7 +76,6 @@
 		initLayout();
 		createGrid1();
 		cSearch();
-		setTelNoHypen(); // 연락처 하이픈 처리
 		
 		/* grid1 Event */
 		$('#grid1').jqGrid('setGridParam', {
@@ -161,6 +160,7 @@
 			reloadGrid("grid1", data.result);
 			btGrid.gridQueryPaging($('#grid1'), 'cSearch', data.result);
 		});
+		setTelNoHypen();
 	}
 	
 	function grid1_ondblClickRow(rowid, iRow, iCol, e){
@@ -189,16 +189,17 @@
 
 		popupOpen(url, pid, param, function(data) {
 			cSearch();
-			setTelNoHypen();
 		});
 	}
 	
 	// 멤버정보등록 버튼
-	function cUser1() {
+	function cUser1(param) {
 		var url = "/rrs/MemberUserPopup.do";
 		var pid = "p_MemberUser";  //팝업 페이지의 취상위 div ID
 
-		popupOpen(url, pid);
+		popupOpen(url, pid, param, function(data) {
+			cSearch();
+		});
 	}
 	
 	function cDel(){

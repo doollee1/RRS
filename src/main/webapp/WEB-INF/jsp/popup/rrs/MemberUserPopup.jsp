@@ -61,7 +61,6 @@ $(function() {
 			
 			grid_MemberUser_Load();
 			popupSearch();
-			setTelNoHypen(); // 연락처 하이픈 처리
 
 			/* 그리드 이벤트 */
 			$('#grid_MemberUser').jqGrid('setGridParam', {
@@ -201,6 +200,7 @@ function popupSearch() {
 	    $('#grid_MemberUser').jqGrid('setGridParam', {data:gridData});
 	    $('#grid_MemberUser').trigger('reloadGrid');
 	});
+	setTelNoHypen();
 }
 
 function setTelNoHypen() {
@@ -227,7 +227,6 @@ function memberUserPopup(param){
 
 	popupOpen(url, pid, param, function(data) {
 		popupSearch();
-		setTelNoHypen();
 	});
 }
 
@@ -239,7 +238,9 @@ function deleteMemberUser() {
 	for(var i = 0; i < ids.length; i++){
 		if($('#grid_MemberUser_' + ids[i] + '_CHK').prop('checked')){
 			cnt++;
-			gridData.push($("#grid_MemberUser").getRowData(ids[i]));
+			var rowData = $("#grid_MemberUser").getRowData(ids[i]);
+			rowData.TEL_NO = rowData.TEL_NO.replace(/-/g, '');
+			gridData.push(rowData);
 		}
 	}
 	
@@ -251,6 +252,7 @@ function deleteMemberUser() {
 	if(confirm("삭제하시겠습니까?")){
 		var url = '/rrs/deleteMemberUserInfo.do';
 		var param = {"gridData" : gridData};
+		
 		fn_ajax(url, false, param, function(data, xhr){
 			alert("삭제하였습니다.");
 			popupSearch();

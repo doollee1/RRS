@@ -40,11 +40,11 @@
 					</td>
 					<th><s:message code='system.name'/></th>
 					<td>
-						<input type="text"  id="NAME_1ST" name="NAME_1ST" class="cmc_txt" style="width:150px;" maxlength="30"/>
+						<input type="text"  id="NAME_1ST" name="NAME_1ST" class="cmc_txt" style="width:150px;" maxlength="40"/>
 					</td>
 					<th>텔레그램 ID</th>
 					<td>
-						<input type="text" id="CHAT_ID" name="CHAT_ID" class="cmc_txt" style="width:150px;" maxlength="15"/>
+						<input type="text" id="CHAT_ID" name="CHAT_ID" class="cmc_txt" style="width:150px;" maxlength="20"/>
 					</td>
 				</tr>
 			</table>
