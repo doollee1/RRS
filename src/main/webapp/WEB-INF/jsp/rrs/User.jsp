@@ -189,6 +189,7 @@
 
 		popupOpen(url, pid, param, function(data) {
 			cSearch();
+			setTelNoHypen();
 		});
 	}
 	

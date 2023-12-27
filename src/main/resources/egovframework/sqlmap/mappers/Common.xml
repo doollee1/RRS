@@ -29,9 +29,9 @@
 			 		,#{COLHIDDEN}
 			 		,#{COLWIDTH}
 			 		,#{COLINX}
-					,GETDATE()
+					,NOW()
 					,#{USER_CD}
-					,GETDATE()
+					,NOW()
 					,#{USER_CD}
 					)
 	</insert>

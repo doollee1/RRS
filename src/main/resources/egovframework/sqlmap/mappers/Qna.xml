@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="QnaMapper">
+	<select id="QnaSelectList" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"></include>
+	
+	SELECT ROW_NUMBER() OVER(ORDER BY A.QNA_SEQ DESC) ROWNUM
+			  , A.QNA_SEQ
+			  , A.REG_DT
+			  , A.TITLE               
+			  , A.REG_STS
+			  , A.REG_ID
+			  ,	(SELECT CODE_NM
+                 FROM BC_COMM_L
+                 WHERE 1 = 1
+                 AND HEAD_CD = '500100'
+                 AND CODE = A.REG_STS) AS STATE_NM 		
+		  FROM TB_QNA_BOARD A
+		  WHERE A.UP_SEQ='0'
+		  AND A.REG_DT BETWEEN #{fromDate} AND #{toDate}	 	
+		  <if test="REG_STS != null and REG_STS != ''">
+		  AND A.REG_STS=#{REG_STS}
+		  </if>
+
+	 <include refid="page.pagingPost"/>
+	</select>
+	
+	<select id="qnaViewDetail" parameterType="BMap" resultType="BMap">
+		
+		SELECT 
+			   A.QNA_SEQ
+			  , A.REG_DT
+			  , A.TITLE
+			  , A.CONTENT               
+			  , A.REG_ID			
+		  FROM TB_QNA_BOARD A 
+		  WHERE A.QNA_SEQ=#{QNA_SEQ}
+		  AND A.UP_SEQ='0'
+	</select>
+	
+		<select id="qnaViewAnswer" parameterType="BMap" resultType="BMap">
+		
+		SELECT 
+			   A.REG_DT
+			  , A.TITLE
+			  , A.CONTENT               
+			  , A.REG_ID			
+		  FROM TB_QNA_BOARD A 
+		  WHERE A.UP_SEQ=#{QNA_SEQ}
+	</select>
+	
+	<insert id="qnaInsertAnswer">
+		INSERT INTO tb_qna_board(
+		QNA_SEQ
+		,UP_SEQ
+		,REG_DT
+		,CONTENT
+		,REG_DTM
+		,REG_ID)
+	VALUE(
+	(SELECT NVL(MAX(QNA_SEQ),0) AS SEQ FROM TB_QNA_BOARD T2) + 1
+	,#{QNA_SEQ}
+	,(select DATE_FORMAT(now(), '%Y%m%d'))
+	,#{CONTENT}
+	,NOW()
+	,'관리자');
+
+
+	</insert>
+	
+	<update id="qnaStsUpdate">
+	update tb_qna_board
+	SET REG_STS='2'
+	WHERE QNA_SEQ=#{QNA_SEQ};
+	</update>
+</mapper>

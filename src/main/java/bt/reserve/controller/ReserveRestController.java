@@ -154,6 +154,10 @@ public class ReserveRestController {
 		paramData.put("REQ_DT"     , (String) reqData.get("REQ_DT"));
 		paramData.put("ITEM_CD"    , (String) reqData.get("ITEM_CD"));
 		paramData.put("TOT_AMT"    , reqData.get("TOT_AMT"));
+		paramData.put("PREV_ITEM_CD"  , (String) reqData.get("ITEM_CD"));
+		paramData.put("PREV_ORDER"    , (String) reqData.get("ORDER"));
+		paramData.put("ORDER"    		, (String) reqData.get("ORDER"));
+		
 		paramData.put("LOGIN_USER" , LoginInfo.getUserId());
 		
 		if(!reserveService.deleteInvoiceManager(paramData)){
