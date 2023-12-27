@@ -15,15 +15,8 @@
 	<!---------->
 	<form id="frmProductPeriodDetail" action="#">
 		<div id="pop_ct_form_wrap">
-			<input type="hidden" name="BAS_YY" id="BAS_YY" value="" />
-			<input type="hidden" name="BAS_YY_SEQ_I" id="BAS_YY_SEQ_I" value="" />
-			<input type="hidden" name="SSN_GBN" id="SSN_GBN" value="" />
-			<input type="hidden" name="ST_DT1" id="ST_DT1" value="" />
-			<input type="hidden" name="ED_DT1" id="ED_DT1" value="" />
-			<input type="hidden" name="ST_DT2" id="ST_DT2" value="" />
-			<input type="hidden" name="ED_DT2" id="ED_DT2" value="" />
-			<input type="hidden" name="ST_DT3" id="ST_DT3" value="" />
-			<input type="hidden" name="ED_DT3" id="ED_DT3" value="" />
+			<input type="hidden" name="BAS_YY_UP" id="BAS_YY_UP" value="" />
+			<input type="hidden" name="BAS_YY_SEQ_PD" id="BAS_YY_SEQ_PD" value="" />
 			<input type="hidden" name="modify" id="modify" value="" />
 			
 			<table class="pop_tblForm">
@@ -42,9 +35,8 @@
 					<th style="text-align:center;"><s:message code="product.season"/></th>
 					<td>&nbsp;
 						<select id="SSN_GBN_I" name="SSN_GBN_I" class="cmc_combo" style="width:260px;">
-							<c:forEach var="i" items="${season}">
-								<option value="${i.CODE}">${i.CODE_NM}</option>
-							</c:forEach>
+    						<option value="1" selected>시즌</option>
+    						<option value="2">비시즌</option>
 						</select>
 					</td>
 				</tr>
@@ -127,16 +119,22 @@ $(function(){
 				$("#cSave").text("수정");
 				$("#modify").val("1");
 				$("#BAS_YY_I").attr("readonly", true);
-
+				
 				$('#BAS_YY_I').val($(this).data("BAS_YY"));			//기준년도
-				$("#BAS_YY_SEQ_I").val($(this).data("BAS_YY_SEQ"));
-				$('#SSN_GBN_I').val($(this).data("SSN_GBN"));		//시즌구분
+				$('#BAS_YY_SEQ_PD').val($(this).data("BAS_YY_SEQ"));
+				if($(this).data("SSN_GBN") == "시즌"){
+					$('#SSN_GBN_I').val(1);
+				} else {
+					$('#SSN_GBN_I').val(2);
+				}
 				$('#ST_DT1_I').val($(this).data("ST_DT1"));			//시작일1
 				$('#ED_DT1_I').val($(this).data("ED_DT1"));			//종료일1
 				$('#ST_DT2_I').val($(this).data("ST_DT2"));			//시작일2
 				$('#ED_DT2_I').val($(this).data("ED_DT2"));			//종료일2
 				$('#ST_DT3_I').val($(this).data("ST_DT3"));			//시작일3
 				$('#ED_DT3_I').val($(this).data("ED_DT3"));			//종료일3
+				
+				$('#BAS_YY_UP').val($(this).data("BAS_YY"));			//기준년도
 			}
 		},
 		close: function() {
@@ -150,8 +148,8 @@ $(function(){
 function saveProductInfo(){
 	var formData = formIdAllToMap('frmProductPeriodDetail');
 	var param = {"param" : 
-					{"BAS_YY" 		: formData.BAS_YY_I
-					,"BAS_YY_SEQ" 	: formData.BAS_YY_SEQ_I
+					{"BAS_YY" 		: (formData.BAS_YY_I != "") ? formData.BAS_YY_I : formData.BAS_YY_UP
+					,"BAS_YY_SEQ" 	: formData.BAS_YY_SEQ_PD
 					,"SSN_GBN"		: formData.SSN_GBN_I
 					,"ST_DT1" 		: formData.ST_DT1_I
 					,"ED_DT1" 		: formData.ED_DT1_I
@@ -176,11 +174,12 @@ function saveProductInfo(){
 	}
 }
 
+//삭제
 function deleteProductInfo(){
 	var formData = formIdAllToMap('frmProductPeriodDetail');
 	var param = {"param" : 
-					{"BAS_YY" 		: formData.BAS_YY_I
-					,"BAS_YY_SEQ" 	: formData.BAS_YY_SEQ_I
+					{"BAS_YY" 		: formData.BAS_YY_UP
+					,"BAS_YY_SEQ" 	: formData.BAS_YY_SEQ_PD
 					}
 				}
 	var url = "/common/deletePeriodInfo.do"

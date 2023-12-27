@@ -16,9 +16,9 @@
 	<!---------->
 	<form id="frmProductDetail" action="#">
 		<div id="pop_ct_form_wrap">
-			<input type="hidden" name="BAS_YY" id="BAS_YY" value="" />
-			<input type="hidden" name="BAS_YY_SEQ" id="BAS_YY_SEQ" value="" />
-			<input type="hidden" name="PROD_SEQ" id="PROD_SEQ" value="" />
+			<input type="hidden" name="BAS_YY_UP" id="BAS_YY_UP" value="" />
+			<input type="hidden" name="BAS_YY_SEQ_UP" id="BAS_YY_SEQ_UP" value="" />
+			<input type="hidden" name="PROD_SEQ_UP" id="PROD_SEQ_UP" value="" />
 			<input type="hidden" name="modify" id="modify" value="" />
 			
 			<table class="pop_tblForm">
@@ -32,19 +32,18 @@
 				<tr>
 					<th style="text-align:center;"><s:message code="product.baseyear"/></th>
 					<td>&nbsp;
-						<select id="ST_DT1" name="ST_DT1" class="cmc_combo" style="width:238px;">
+						<select id="BAS_YY_IN" name="BAS_YY_IN" class="cmc_combo" style="width:238px;">
 							<c:forEach var="i" items="${basyy}">
 								<option value="${i.BAS_YY}">${i.BAS_YY}</option>
 							</c:forEach>
 						</select>
-						<input type="text" name="ST_DT1_mod" id="ST_DT1_mod" style="display:none; width:230px;" readonly >
+						<input type="text" name="BAS_YY_IN_mod" id="BAS_YY_IN_mod" style="display:none; width:230px;" readonly >
 					</td>
 					<th style="text-align:center;"><s:message code="product.season"/></th>
 					<td>&nbsp;
 						<select id="SSN_GBN" name="SSN_GBN" class="cmc_combo" style="width:238px;">
-							<c:forEach var="i" items="${season}">
-								<option value="${i.CODE}">${i.CODE_NM}</option>
-							</c:forEach>
+    						<option value="1" selected>시즌</option>
+    						<option value="2">비시즌</option>
 						</select>
 						<input type="text" name="SSN_GBN_mod" id="SSN_GBN_mod" style="display:none; width:230px;" readonly >
 					</td>
@@ -63,36 +62,41 @@
 				<tr>
 					<th style="text-align:center;"><s:message code="product.condition"/></th>
 					<td colspan=3>&nbsp;
-						<input type="text" name="PROD_COND" id="PROD_COND" style="width:595px;">
+						<select id="PROD_COND" name="PROD_COND" class="cmc_combo" style="width:604px;">
+							<c:forEach var="i" items="${cond}">
+								<option value="${i.CODE}">${i.CODE_NM}</option>
+							</c:forEach>
+						</select>
 					</td>
 				</tr>
 				<tr>
 					<th style="text-align:center;"><s:message code="product.seldt"/></th>
 					<td colspan=3>&nbsp;
-						<input type="text" name="" id="" style="width:400px;" readonly>
+						<input type="text" name="seldt_P" id="seldt_P" style="width:235px;" readonly>
+						<input type="hidden" name="seldt_I" id="seldt_I">
 						<button class='btn btn-default' type="button" name="seldt" id="seldt" style="width:50px;">선택</button>
 					</td>
 				</tr>
 				<tr>
 					<th style="text-align:center;"><s:message code="product.amount"/></th>
 					<td colspan=3>&nbsp;
-						일반 <input type="text" name="COM_AMT" id="COM_AMT" style="width:170px">&nbsp;원 &emsp;&emsp;&emsp;
-						에이전시 <input type="text" name="AGN_AMT" id="AGN_AMT" style="width:170px">&nbsp;원
+						일반 <input type="text" name="COM_AMT" id="COM_AMT" style="width:170px; text-align:right">&nbsp;원 &emsp;&emsp;&emsp;
+						에이전시 <input type="text" name="AGN_AMT" id="AGN_AMT" style="width:170px; text-align:right">&nbsp;원
 					</td>
 				</tr>
 				<tr>
 					<th style="text-align:center;">일반<s:message code="product.etc"/></th>
 					<td colspan=3>&nbsp;
-						기준인원 <input type="text" name="COM_BAS_PER" id="COM_BAS_PER" style="width:50px">&nbsp;명 &emsp;&emsp;&emsp;
-						기준일 <input type="text" name="COM_BAS_DAY" id="COM_BAS_DAY" style="width:50px">&nbsp;일 &emsp;&emsp;&emsp;&emsp;
+						기준인원 <input type="text" name="COM_BAS_PER" id="COM_BAS_PER" style="width:50px; text-align:right">&nbsp;명 &emsp;&emsp;&emsp;
+						기준일 <input type="text" name="COM_BAS_DAY" id="COM_BAS_DAY" style="width:50px; text-align:right">&nbsp;일 &emsp;&emsp;&emsp;&emsp;
 						<input type="text" name="COM_CNTN" id="COM_CNTN" style="width:251px" readonly>
 					</td>
 				</tr>
 				<tr>
 					<th style="text-align:center;">에이전시<s:message code="product.etc"/></th>
 					<td colspan=3>&nbsp;
-						기준인원 <input type="text" name="AGN_BAS_PER" id="AGN_BAS_PER" style="width:50px">&nbsp;명 &emsp;&emsp;&emsp;
-						기준일 <input type="text" name="AGN_BAS_DAY" id="AGN_BAS_DAY" style="width:50px">&nbsp;일 &emsp;&emsp;&emsp;&emsp;
+						기준인원 <input type="text" name="AGN_BAS_PER" id="AGN_BAS_PER" style="width:50px; text-align:right">&nbsp;명 &emsp;&emsp;&emsp;
+						기준일 <input type="text" name="AGN_BAS_DAY" id="AGN_BAS_DAY" style="width:50px; text-align:right">&nbsp;일 &emsp;&emsp;&emsp;&emsp;
 						<input type="text" name="AGN_CNTN" id="AGN_CNTN" style="width:251px" readonly>
 					</td>
 				</tr>
@@ -144,10 +148,14 @@ $(function(){
 				$("#cSave").text("수정");
 				$("#modify").val("1");
 				
-				$('#ST_DT1_mod').val($(this).data("ST_DT1"));			//기준년도 (수정)
+				$('#BAS_YY_IN_mod').val($(this).data("BAS_YY"));			//기준년도 (수정)
 				$('#SSN_GBN_mod').val($(this).data("SSN_GBN"));			//시즌구분 (수정)
 				$('#HDNG_GBN_mod').val($(this).data("HDNG_GBN"));		//항목구분 (수정)
-				$("#PROD_COND").val($(this).data("PROD_COND"));			//조건
+				$("#PROD_COND").val($(this).data("PROD_COND2"));			//조건
+				
+				$("#seldt_P").val($(this).data("ST_DT1") + " ~ " + $(this).data("ED_DT1"));
+				$("#seldt_I").val($(this).data("BAS_YY_SEQ"));
+				
 				$("#COM_AMT").val($(this).data("COM_AMT"));				//일반 금액
 				$("#AGN_AMT").val($(this).data("AGN_AMT"));				//에이전시 금액
 				
@@ -159,12 +167,12 @@ $(function(){
 				$("#AGN_BAS_DAY").val($(this).data("AGN_BAS_DAY"));		//에이전시 기준일수
 				$("#AGN_CNTN").val($(this).data("AGN_CNTN"));			//에이전시 기타내용
 				
-				$('#BAS_YY').val($(this).data("BAS_YY"));				//기준년도
-				$('#BAS_YY_SEQ').val($(this).data("BAS_YY_SEQ"));		//기준년도 순번
-				$('#PROD_SEQ').val($(this).data("PROD_SEQ"));			//상품순번
+				$('#BAS_YY_UP').val($(this).data("BAS_YY"));				//기준년도
+				$('#BAS_YY_SEQ_UP').val($(this).data("BAS_YY_SEQ"));		//기준년도 순번
+				$('#PROD_SEQ_UP').val($(this).data("PROD_SEQ"));			//상품순번
 				
-				$('#ST_DT1').hide();
-				$('#ST_DT1_mod').show();
+				$('#BAS_YY_IN').hide();
+				$('#BAS_YY_IN_mod').show();
 				$('#SSN_GBN').hide();
 				$('#SSN_GBN_mod').show();
 				$('#HDNG_GBN').hide();
@@ -183,8 +191,7 @@ $(function(){
 function saveProductInfo(){
 	var formData = formIdAllToMap('frmProductDetail');
 	var param = {"param" : 
-					{"ST_DT1" :(formData.ST_DT1 != "") ? formData.ST_DT1 : formData.ST_DT1_mod
-					,"SSN_GBN":(formData.SSN_GBN != "") ? formData.SSN_GBN : formData.SSN_GBN_mod
+					{"SSN_GBN":(formData.SSN_GBN != "") ? formData.SSN_GBN : formData.SSN_GBN_mod
 					,"HDNG_GBN":(formData.HDNG_GBN != "") ? formData.HDNG_GBN : formData.HDNG_GBN_mod
 					,"PROD_COND" : formData.PROD_COND
 					,"COM_AMT" : formData.COM_AMT
@@ -195,9 +202,9 @@ function saveProductInfo(){
 					,"AGN_BAS_PER" : formData.AGN_BAS_PER
 					,"AGN_BAS_DAY" : formData.AGN_BAS_DAY
 					,"AGN_CNTN" : formData.AGN_CNTN
-					,"BAS_YY" : (formData.BAS_YY != "") ? formData.BAS_YY : formData.ST_DT1
-					,"BAS_YY_SEQ" : formData.BAS_YY_SEQ
-					,"PROD_SEQ" : formData.PROD_SEQ
+					,"BAS_YY" : (formData.BAS_YY_UP != "") ? formData.BAS_YY_UP : formData.BAS_YY_IN
+					,"BAS_YY_SEQ" : (formData.BAS_YY_SEQ_UP != "") ? formData.BAS_YY_SEQ_UP : formData.seldt_I
+					,"PROD_SEQ" : formData.PROD_SEQ_UP
 					,"modify" : formData.modify
 					}
 				}
@@ -219,9 +226,9 @@ function saveProductInfo(){
 function deleteProductInfo(){
 	var formData = formIdAllToMap('frmProductDetail');
 	var param = {"param" : 
-					{"BAS_YY" : (formData.BAS_YY != "") ? formData.BAS_YY : formData.ST_DT1
-					,"BAS_YY_SEQ" : formData.BAS_YY_SEQ
-					,"PROD_SEQ" : formData.PROD_SEQ
+					{"BAS_YY" : formData.BAS_YY_UP
+					,"BAS_YY_SEQ" : formData.BAS_YY_SEQ_UP
+					,"PROD_SEQ" : formData.PROD_SEQ_UP
 					}
 				}
 	var url = "/common/deleteProductInfo.do"
@@ -237,14 +244,14 @@ function deleteProductInfo(){
 // 기간선택 팝업 열기
 function openSeldtPopUp(){
 	var url = "/popup/ProductSelectPeriodPopUp.do";
-	var pid = "ProductSelectPeriodPopUp";	//팝업 페이지의 최상위 div ID
+	var pid = "productSelectPeriodPopUp";	//팝업 페이지의 최상위 div ID
 	var formData = formIdAllToMap('frmProductDetail');
 	var param = { 
-			"ST_DT1" : formData.ST_DT1,
+			"BAS_YY" : (formData.BAS_YY_UP != "") ? formData.BAS_YY_UP : formData.BAS_YY_IN,
 			"SSN_GBN" : formData.SSN_GBN
 	}
-	
 	popupOpen(url, pid, param, function(data){
+		
 	});
 }
 

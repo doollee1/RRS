@@ -5,9 +5,9 @@
 <div class="top_button_h_margin"></div>
 <div id="ctu_no_resize">
 	<form id="frmSearch" action="#">
-		<input type="hidden" name="ST_DT1_COPY" id="ST_DT1_COPY" />
+		<input type="hidden" name="BAS_YY_COPY" id="BAS_YY_COPY" />
 		<input type="hidden" name="branch" id="branch" />
-	</form>  
+	</form>
 </div>
 
 <div id="productCopyPopUp">
@@ -74,8 +74,8 @@ $(function(){
 		height: 115,
 		modal: true,
 		open: function() {
-			$('#ST_DT1_COPY').val($(this).data("ST_DT1"));
-			$('#noticeCopy').text("대상년도(" + $(this).data("ST_DT1") + ")가 선택한 복사년도에 복사 됩니다.");
+			$('#BAS_YY_COPY').val($(this).data("BAS_YY"));
+			$('#noticeCopy').text("대상년도(" + $(this).data("BAS_YY") + ")가 선택한 복사년도에 복사 됩니다.");
 			$('#branch').val($(this).data("branch"));
 // 			$("#ST_DT1_Normal").val($(this).data("ST_DT1"));
 			if($(this).data("branch") == "period"){
@@ -95,7 +95,7 @@ function saveProductCopy(){
 	var formData = formIdAllToMap('frmProductCopy');
 	var formData2 = formIdAllToMap('frmSearch');
 	var param = { "param" : 
-					{"BAS_YY_COPY"		: formData2.ST_DT1_COPY
+					{"BAS_YY_COPY"		: formData2.BAS_YY_COPY
 					,"BAS_YY_PASTE" 	: (formData.ST_DT1_Period != "") ? formData.ST_DT1_Period : formData.ST_DT1_Normal
 					,"branch"			: formData2.branch
 					}
