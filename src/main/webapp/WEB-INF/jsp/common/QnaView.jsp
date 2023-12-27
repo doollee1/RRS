@@ -71,9 +71,9 @@
 	<div id="CONTENTS2" style="padding:5px;"></div>
 	<form id="answerInsert">
 
-				    <h3>답변하기</h3>
+				    <h5 style="color:#ff7f00;">※ 답변하기</h5>
 			
-				        <textarea id="ANSWER" name="REMARK" rows="5" style="width: 100%"></textarea>
+				        <textarea id="ANSWER" name="REMARK" rows="5" style="width: 100%" maxlength="2000"></textarea>
 
 	</form>
 </div>
@@ -83,7 +83,7 @@
 $(function() {
 	var gv_seq;
 	$('#noticePopup').dialog({
-		title :'<s:message code='meetSanding.Regi'/>',
+		title :'QNA',
 		autoOpen : false,
 		//height: 400,
 		width: 940,

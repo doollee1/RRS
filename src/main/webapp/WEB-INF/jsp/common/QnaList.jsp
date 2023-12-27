@@ -33,15 +33,16 @@
 					<tr>
 					    <td class="small_td"><p>조회기간</p></td>
 						<td class="medium_td">
-						    <input type="text" name="fromDate" id="fromDate" data-type="date" style="width:90px; float:left;"/>
+						    <input type="text" name="fromDate" id="fromDate" data-type="date" style="width:90px; float:left; text-align: center;"/>
 						    <p style="float:left;">-</p>
-						    <input type="text" name="toDate" id="toDate" data-type="date" style="width:90px;float:left;"/>
+						    <input type="text" name="toDate" id="toDate" data-type="date" style="width:90px;float:left; text-align: center;"/>
 					    </td>
 					    <td class="small_td"><p>상태:</p></td>
 					   	<td class="medium_td">
 						    <select id="REG_STS" name="REG_STS" class="">
 						        <option value="1" selected>접수</option>
 							    <option value="2">완료</option>
+							    <option value="">전체</option>
 						    </select>
 						</td>
 					</tr>
@@ -81,6 +82,8 @@ $(function() {
 function fn_Init(){
 	var fromDay=getOneWeekBefore();
 	var toDay = getToday();
+	console.log(fromDay);
+	console.log(toDay);
 	var lastMonth = getlastMonth();
 	
 	$("#fromDate").val(Util.converter.dateFormat1(Util.converter.dateFormat3(fromDay)));
@@ -112,7 +115,7 @@ function createQuotationGrid() {
 	    {name : 'REG_DT'    , width : 150  , align : 'center'}, 
 	    {name : 'REG_ID'    , width : 150 , align : 'center'}, 
 	    {name : 'TITLE', width : 250  , align : 'center'}, 
-	    {name : 'REG_STS'  , width : 150  , align : 'center'}, 
+	    {name : 'STATE_NM'  , width : 150  , align : 'center'}, 
 	    ];
 	var gSetting = {
 		pgflg : true,
@@ -121,8 +124,8 @@ function createQuotationGrid() {
 		searchInit : false,
 		resizeing : true,
 		rownumbers : false,
-		//shrinkToFit: true,
-		//autowidth: true,
+		shrinkToFit: true,
+		autowidth: true,
 		queryPagingGrid : true, // 쿼리 페이징 처리 여부
 		height : 487
 	};
@@ -134,14 +137,15 @@ function cSearch(currentPage) {
 	var url = "/common/qnaSelectList.do";
 	var formData = { "REG_STS"       : $("#REG_STS option:selected").val()
 			       //, "RESERVE_STDT" : $("#RESERVE_STDT").val().replaceAll(/\./gi, '')
-			       , "fromDate" : $("#toDate").val().replaceAll(/\./gi, '')
+			       , "fromDate" : $("#fromDate").val().replaceAll(/\./gi, '')
 			       , "toDate" : $("#toDate").val().replaceAll(/\./gi, '')
 	               };
 	
 	var param = {"param":formData};
 	fn_ajax(url, true, param, function(data, xhr) {
-		console.log(data)
-	    reloadGrid("quotationGrid", data.result);
+		
+	
+	    reloadGrid("quotationGrid", fn_dataSet(data.result));
 		btGrid.gridQueryPaging($('#quotationGrid'), 'cSearch',data.result);
 		var colModel = $("#quotationGrid").jqGrid('getGridParam','colModel');
 		for (var i = 0; i < data.result.length; i++) {
@@ -166,6 +170,24 @@ function getOneWeekBefore(){
 	
 	return dd + '.' + mm + '.'+yyyy;
 }
+
+function fn_dataSet(data){
+    var array = [];
+    for (var i = 0; i < data.length; i++) {
+       var obj = new Object;
+       $.each(data[i] , function(key , value){
+          if(key == "REG_DT" || key == "CHK_IN_DT" || key == "CHK_OUT_DT"){
+             value = Util.converter.dateFormat1(value);
+          }else if(key == "TOT_PERSON" || key == "DEP_AMT" || key == "TOT_AMT"){
+             value = fn_comma(value);
+          }
+          obj[key] = value;
+          delete obj;
+       });
+         array.push(obj);
+    }
+    return array;
+ }
 
 function reservePopup(param) {
 	var url = "/common/QnaView.do";
