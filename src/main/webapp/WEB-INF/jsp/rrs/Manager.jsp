@@ -113,7 +113,7 @@
 				height:632,
 				pgflg:true,
 				exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
-				colsetting : true,  // 컬럼 설정 버튼 노출여부
+				colsetting : false,  // 컬럼 설정 버튼 노출여부
 				searchInit : false,  // 데이터 검색 버튼 노출여부
 				resizeing : true,
 				rownumbers:false,
