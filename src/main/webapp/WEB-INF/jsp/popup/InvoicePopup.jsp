@@ -22,16 +22,19 @@
 			<button class="btn btn-default" id="btn_save"><i class="fa fa-save"></i><s:message code='button.save'/></button>
 			<button class="btn btn-default" id="btn_del"><i class="fa fa-trash"></i><s:message code='button.delete'/></button>
             <button class="btn btn-default" id="btn_close"><i class="fa fa-close"></i><s:message code='button.close'/></button>
-            <br><br>
-            <p style="text-align:right">
-            <button class="btn btn-default" id="btn_addRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.addRow'/></button>
-            <button class="btn btn-default" id="btn_delRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.delRow'/></button>
-            </p>
 		</div>
         
 	</div>
+
 	<!-- 그리드 시작 -->
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
+		<div class="pop_grid_top_wrap">
+			<div class="ct_grid_top_left"><h4><s:message code="invoice.invoiceTitle"/></h4></div>
+			<div class="ct_grid_top_right">
+				<button class="btn btn-default" id="btn_addRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.addRow'/></button>
+            	<button class="btn btn-default" id="btn_delRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.delRow'/></button>
+            </div>
+		</div>
 		<div class="pop_grid_wrap">
 			<table id="invoiceGrid"></table>
 			<div id="PartnerSchGrid_pager"></div>
@@ -380,13 +383,14 @@ $(function() {
     	}
 		args =  $("#"+rowId+"_ITEM_NM").val()
 		if(confirm("<s:message code='confirm.delRow' arguments='" + args + "' javaScriptEscape='false'/>")){
-			var url = '/reserve/deleteInvoiceManager.do';
+			var url = '/reserve/deleteInvoiceManager.do';alert($("#invoiceGrid").jqGrid("getCell", rowId, "TOT_AMT"));
 			var param = { "REQ_DT"  : req_dt
 					, "SEQ"     : seq
 					, "ITEM_CD" : $("#invoiceGrid").jqGrid("getCell", rowId, "PREV_ITEM_CD")
 					, "ORDER" 	: $("#invoiceGrid").jqGrid("getCell", rowId, "PREV_ORDER")
+					, "TOT_AMT" : $("#invoiceGrid").jqGrid("getCell", rowId, "TOT_AMT")
 			        }
-			alert($("#invoiceGrid").jqGrid("getCell", rowId, "PREV_ITEM_CD"));
+			
 				fn_ajax(url, false, param, function(data, xhr){
 					if(data.resultCd == "-1"){
 						alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
