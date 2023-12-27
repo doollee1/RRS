@@ -369,11 +369,18 @@ public class ReserveService {
 	 */
 	public Boolean ReserveManager(BMap reserveInfo) throws Exception{
 		Boolean isValid = true;
+		int feeCnt = 0;
         try {
         	if(reserveInfo.getString("V_FLAG").equals("new")){ //insert
         		reserveDao.insertReserveInfo(reserveInfo);
         	}else if(reserveInfo.getString("V_FLAG").equals("detail")){ //update
         		reserveDao.updateReserveInfo(reserveInfo);
+        		feeCnt = reserveDao.selectFeeListCnt(reserveInfo);
+        		if(feeCnt == 0){
+        			reserveDao.insertFeeInfoDetail(reserveInfo);
+        		}else if(feeCnt == 1){
+        			reserveDao.updateReserveFee(reserveInfo);
+        		}
         	}
 		} catch (Exception e) {
 		    // TODO: handle exception
@@ -381,6 +388,66 @@ public class ReserveService {
 			isValid = false;
 		}
 		return isValid;
+	}
+	
+	/**
+	 * 입금금액 UPDATE
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap depositComplete(BMap param) throws Exception{
+		BMap result = new BMap();
+		try {
+        	reserveDao.depositComplete(param);
+        	result.put("resultCd", "0000");
+		} catch (Exception e) {
+		    // TODO: handle exception
+			e.printStackTrace();
+			result.put("result", "");
+		}
+		return result;
+	}
+	
+	/**
+	 * 예약최초 등록
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap insertReserve(BMap param) throws Exception{
+		BMap result = new BMap();
+        try {
+        	int cnt = reserveDao.insertReserve(param);
+        	if(cnt == 1){
+        		result.put("resultCd", "0000");
+        		result.put("SEQ"     , param.getInt("SEQ"));
+        	}else{
+        		result.put("result", "");
+        	}
+		} catch (Exception e) {
+		    // TODO: handle exception
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public boolean checkBasYy(BMap param) throws Exception{
+		boolean result = false;
+		BMap dataMap = reserveDao.reserveSelectDetail(param);
+		String dbBAS_YY     = dataMap.getString("BAS_YY");
+		int    dbBAS_YY_SEQ = dataMap.getInt("BAS_YY_SEQ");
+		
+		BMap chKMap = reserveDao.checkBasYy(param);
+		String cllientBAS_YY    = chKMap.getString("BAS_YY");
+		int    clientBAS_YY_SEQ = chKMap.getInt("BAS_YY_SEQ");
+		
+		if(!dbBAS_YY.equals(cllientBAS_YY) || dbBAS_YY_SEQ != clientBAS_YY_SEQ){
+			result = false;
+		}else{
+			result = true;
+		}
+		return result;
 	}
 	
 	

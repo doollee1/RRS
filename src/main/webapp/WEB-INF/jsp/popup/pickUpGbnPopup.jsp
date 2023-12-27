@@ -278,6 +278,7 @@ $(function() {
 				alert("ajax 통신 error!");
 			}else{
 				if(!fn_empty(data.result)){
+					console.log(data.result);
 					$("#PRD_CNT").val(data.result.length).trigger("change");
 					for (var i = 0; i < data.result.length; i++) {
 						$.each(data.result[i], function(k , v){
@@ -353,6 +354,7 @@ $(function() {
 				   , "REQ_DT"   : gv_req_dt
 				   , "PICK_GBN" : $("#PICK_GBN_1").val()
 				   };
+		console.log(param);
 		if(confirm("<s:message code='confirm.save'/>")){
 			var url = '/reserve/pickupManager.do';
 			fn_ajax(url, false, param, function(data, xhr){

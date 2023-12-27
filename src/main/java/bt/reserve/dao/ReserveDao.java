@@ -247,6 +247,7 @@ public class ReserveDao extends DBAbstractMapper {
 	public void insertFeeInfo(BMap param) throws Exception{
 		insert("ReserveMapper.insertFeeInfo", param);
 	}
+	
 
 	/**
 	 * fee table update
@@ -298,6 +299,24 @@ public class ReserveDao extends DBAbstractMapper {
 	}
 	
 	/**
+	 * 예약 데이터 수정(요금테이블)
+	 * @param param
+	 * @throws Exception
+	 */
+	public void updateReserveFee(BMap param) throws Exception{
+		update("ReserveMapper.updateReserveFee", param);
+	}
+	
+	/**
+	 * 예약 데이터 등록(요금테이블)
+	 * @param param
+	 * @throws Exception
+	 */
+	public void insertFeeInfoDetail(BMap param) throws Exception{
+		insert("ReserveMapper.insertFeeInfoDetail", param);
+	}
+	
+	/**
 	 * 예약데이터 수정
 	 * @param param
 	 * @throws Exception
@@ -307,4 +326,34 @@ public class ReserveDao extends DBAbstractMapper {
 		update("ReserveMapper.updateReserveInfo", param);
 	}
 	
+	/**
+	 * 예약데이터 최초등록
+	 * @param param
+	 * @throws Exception
+	 */
+	
+	public int insertReserve(BMap param) throws Exception{
+		return insert("ReserveMapper.insertReserve", param);
+	}
+	
+	/**
+	 * 입금금액 수정
+	 * @param param
+	 * @throws Exception
+	 */
+	
+	public void depositComplete(BMap param) throws Exception{
+		update("ReserveMapper.depositComplete", param);
+	}
+	
+	/**
+	 * 상품시퀀스 확인
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	
+	public BMap checkBasYy(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.checkBasYy", param);
+	}
 }

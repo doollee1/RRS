@@ -38,6 +38,7 @@
          , T1.FLIGHT_OUT                          /* 출발항공기편          */
          , T1.TOT_PERSON                          /* 총인원                */
          , T1.BAS_YY                              /* 기준년도              */
+         , T1.BAS_YY_SEQ                          /* 기준년도SEQ           */
          , T1.PROD_SEQ                            /* 상품순번              */
          , T1.PICK_GBN                            /* 미팅샌딩구분          */
          , T1.ADD_R_S_PER                         /* 싱글룸추가인원수      */
@@ -182,6 +183,7 @@
 	         , T1.FLIGHT_OUT                          AS FLIGHT_OUT        /* 출발항공기편           */
 	         , NVL(T1.TOT_PERSON,0)                   AS TOT_PERSON        /* 총인원                 */
 	         , T1.BAS_YY                              AS BAS_YY            /* 기준년도               */
+	         , T1.BAS_YY_SEQ                          AS BAS_YY_SEQ        /* 기준년도SEQ            */
 	         , T1.PROD_SEQ                            AS PROD_SEQ          /* 상품순번               */
 	         , CASE WHEN T1.PICK_GBN = '03' || T1.PICK_GBN = '04' || T1.PICK_GBN = '05' THEN '03'
                     ELSE T1.PICK_GBN END              AS PICK_GBN          /* 미팅샌딩구분           */
@@ -568,7 +570,6 @@
 		           AND REF_CHR1 != ''
 			    ) B
 		  WHERE 1 = 1 
-		  
 		    AND A.BAS_YY     = #{BAS_YY}
 		    AND A.SSN_GBN    = #{SSN_GBN}
 		    AND A.BAS_YY_SEQ = #{BAS_YY_SEQ}
@@ -733,6 +734,36 @@
              )
 	</insert>
 	
+	<insert id="insertFeeInfoDetail" parameterType="BMap">
+   INSERT INTO TB_REQ_FEE
+             ( REQ_DT     /* 예약일자       */
+             , REQ_SEQ	  /* 순번           */
+             , DEP_IN_DT  /* 예약금입금일자 */
+             , DEP_AMT	  /* 예약금액       */
+             , BAL_AMT	  /* 잔금           */
+             , DCT_AMT	  /* 할인금액       */
+             , PAY_AMT	  /* 입금금액       */
+             , TOT_AMT	  /* 총액           */
+             , REG_DTM	  /* 등록일시       */
+             , REG_ID	  /* 등록자ID       */
+             , UPD_DTM	  /* 수정일시       */
+             , UPD_ID	  /* 수정자ID       */
+             )
+      VALUES ( #{REQ_DT  }
+             , #{SEQ     }
+             , #{DEP_IN_DT}
+             , #{DEP_AMT}
+             , #{BAL_AMT}
+             , #{DCT_AMT}
+             , #{PAY_AMT}
+             , #{TOT_AMT}
+             , NOW()
+             , #{LOGIN_USER}
+             , NOW()
+             , #{LOGIN_USER}
+             )
+	</insert>
+	
 	<update id="updateFeeInfo" parameterType="BMap">
 	    UPDATE TB_REQ_FEE
            SET TOT_AMT = #{TOT_AMT}
@@ -836,7 +867,7 @@
 		          , #{REQ_TEL_NO      }
 		          , #{MEM_GBN         }
 		          , #{AGN_CD          }
-		          , (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' ELSE NULL END )
+		          , (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' WHEN #{MEM_GBN} = '04' THEN '21' ELSE NULL END )
 		          , #{CHK_IN_DT       }
 		          , #{CHK_OUT_DT      }
 		          , #{ROOM_TYPE       }
@@ -866,9 +897,13 @@
 		                                     OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
 		                                     OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
 		                                 )
+		               AND BAS_YY  = (SELECT BAS_YY
+		                                FROM TB_BAS_YY_INFO
+		                               WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
+		                                  OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
+		                                  OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
+		                              )                  
 		               AND HDNG_GBN = #{PROD_SEQ}
-		               AND PROD_COND = (CASE WHEN STR_TO_DATE(#{CHK_OUT_DT},'%Y%m%d') - STR_TO_DATE(#{CHK_IN_DT}, '%Y%m%d') >= 10 THEN 'DU10'
-		                                     WHEN STR_TO_DATE(#{CHK_OUT_DT},'%Y%m%d') - STR_TO_DATE(#{CHK_IN_DT}, '%Y%m%d') <  10 THEN 'DD10' END)
 		             )
 		          , '01'
 		          , #{ADD_R_S_PER     }
@@ -897,5 +932,218 @@
           ]]>  
 	</insert>
 	
+	<update id="updateReserveInfo" parameterType="BMap">
+	<![CDATA[
+	    UPDATE TB_REQ_BOOKING_M
+		   SET USER_ID        = #{USER_ID         }
+		     , REQ_HAN_NM     = #{REQ_HAN_NM      }
+		     , REQ_ENG_NM     = #{REQ_ENG_NM      }
+		     , REQ_TEL_NO     = #{REQ_TEL_NO      }
+		     , MEM_GBN        = #{MEM_GBN         }
+		     , AGN_CD         = #{AGN_CD          }
+		     , PRC_STS        = (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' WHEN #{MEM_GBN} = '04' THEN '21' ELSE NULL END )
+		     , CHK_IN_DT      = #{CHK_IN_DT       }
+		     , CHK_OUT_DT     = #{CHK_OUT_DT      }
+		     , ROOM_TYPE      = #{ROOM_TYPE       }
+		     , FLIGHT_IN      = #{FLIGHT_IN       }
+		     , FLIGHT_OUT     = #{FLIGHT_OUT      }
+		     , TOT_PERSON     = #{TOT_PERSON      }
+		     , R_PERSON       = #{R_PERSON        }
+		     , N_PERSON       = #{N_PERSON        }
+		     , NR_PERSON      = #{NR_PERSON       }
+		     , K_PERSON       = #{K_PERSON        }
+		     , BAS_YY         = (SELECT BAS_YY
+		                           FROM TB_BAS_YY_INFO
+		                          WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
+		                             OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
+		                             OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3)
+		     , BAS_YY_SEQ     = (SELECT BAS_YY_SEQ
+		                           FROM TB_BAS_YY_INFO
+		                          WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
+		                             OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
+		                             OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3)
+		     , PROD_SEQ       = (SELECT PROD_SEQ
+		                           FROM TB_PROD_INFO
+		                          WHERE 1 = 1
+		                           AND BAS_YY_SEQ = (SELECT BAS_YY_SEQ
+		                                               FROM TB_BAS_YY_INFO
+		                                              WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
+		                                                 OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
+		                                                 OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
+		                                             )
+		                           AND BAS_YY  = (SELECT BAS_YY
+		                                               FROM TB_BAS_YY_INFO
+		                                              WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
+		                                                 OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
+		                                                 OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
+		                                         )                  
+		                           AND HDNG_GBN = #{PROD_SEQ}
+		                         )
+		     , PICK_GBN       = #{PICK_GBN}
+		     , ADD_R_S_PER    = #{ADD_R_S_PER     }
+		     , ADD_R_S_DAY    = #{ADD_R_S_DAY     }
+		     , ADD_R_S_CNT    = #{ADD_R_S_CNT     }
+		     , ADD_R_P_PER    = #{ADD_R_P_PER     }
+		     , ADD_R_P_DAY    = #{ADD_R_P_DAY     }
+		     , ADD_R_P_CNT    = #{ADD_R_P_CNT     }
+		     , CNT_D1         = #{CNT_D1          }
+		     , CNT_D2         = #{CNT_D2          }
+		     , CNT_P1         = #{CNT_P1          }
+		     , CNT_P2         = #{CNT_P2          }
+		     , PICK_IN        = #{PICK_IN         }
+		     , PICK_OUT       = #{PICK_OUT        }
+		     , LATE_CHECK_OUT = #{LATE_CHECK_OUT  }
+		     , REMARK         = #{REMARK          }
+		     , INV_REG_DT     = #{INV_REG_DT      }
+		     , CONFIRM_NO     = #{CONFIRM_NO      }
+		     , RND_CHG_YN1    = #{RND_CHG_YN1     }
+		     , RND_CHG_YN2    = #{RND_CHG_YN2     }
+		     , UPD_DTM        = NOW()
+		     , UPD_ID         = #{LOGIN_USER      }
+		 WHERE REQ_DT   = #{REQ_DT}
+		   AND SEQ      = #{SEQ}
+		
+		   ]]>  
+		
+
+	</update>
 	
+	<update id="updateReserveFee" parameterType="BMap">
+	    UPDATE TB_REQ_FEE
+		   SET DEP_IN_DT  =  #{DEP_IN_DT}
+		     , EXP_DT     =  #{EXP_DT   }
+		     , DEP_AMT    =  #{DEP_AMT  }
+		     , BAL_AMT    =  #{BAL_AMT  }
+		     , BAL_IN_DT  =  #{BAL_IN_DT}
+		     , DCT_AMT    =  #{DCT_AMT  }
+		     , PAY_AMT    =  #{PAY_AMT  }
+		     , TOT_AMT    =  #{TOT_AMT  }
+		     , UPD_DTM    =  #{UPD_DTM  }
+		     , UPD_ID     =  #{UPD_ID   }
+		 WHERE 1 = 1
+		   AND REQ_DT  = #{REQ_DT}
+		   AND REQ_SEQ = #{SEQ}
+	</update>
+	
+	<insert id="insertReserve" parameterType="BMap">
+	
+	<selectKey keyProperty="SEQ" resultType="int" order="BEFORE">
+        SELECT NVL(MAX(T1.SEQ),0) + 1 AS SEQ FROM TB_REQ_BOOKING_M T1 WHERE T1.REQ_DT = #{REQ_DT} 
+    </selectKey>
+	
+	<![CDATA[
+		INSERT INTO TB_REQ_BOOKING_M
+		       ( REQ_DT
+		       , SEQ
+		       , USER_ID
+		       , REQ_HAN_NM
+		       , REQ_ENG_NM
+		       , REQ_TEL_NO
+		       , MEM_GBN
+		       , AGN_CD
+		       , PRC_STS
+		       , CHK_IN_DT
+		       , CHK_OUT_DT
+		       , ROOM_TYPE
+		       , FLIGHT_IN
+		       , FLIGHT_OUT
+		       , TOT_PERSON
+		       , R_PERSON
+		       , N_PERSON
+		       , NR_PERSON
+		       , K_PERSON
+		       , BAS_YY
+		       , BAS_YY_SEQ
+		       , PROD_SEQ
+		       , PICK_GBN
+		       , ADD_R_S_PER
+		       , ADD_R_S_DAY
+		       , ADD_R_S_CNT
+		       , ADD_R_P_PER
+		       , ADD_R_P_DAY
+		       , ADD_R_P_CNT
+		       , CNT_D1
+		       , CNT_D2
+		       , CNT_P1
+		       , CNT_P2
+		       , PICK_IN
+		       , PICK_OUT
+		       , LATE_CHECK_OUT
+		       , REMARK
+		       , INV_REG_DT
+		       , CONFIRM_NO
+		       , RND_CHG_YN1
+		       , RND_CHG_YN2
+		       , REG_DTM
+		       , REG_ID
+		       , UPD_DTM
+		       , UPD_ID
+		       )
+		VALUES ( #{REQ_DT }
+		       , #{SEQ    }
+		       , #{USER_ID}
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , '01'
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NULL
+		       , NOW()
+		       , #{LOGIN_USER}
+		       , NOW()
+		       , #{LOGIN_USER}
+		       )
+     ]]>  
+	</insert>
+	
+	<update id="depositComplete" parameterType="BMap">
+		UPDATE TB_REQ_FEE
+		   SET BAL_AMT = 0
+		     , PAY_AMT = NVL(PAY_AMT,0) + #{BAL_AMT}
+		     , UPD_DTM = NOW()
+		     , UPD_ID  = #{LOGIN_USER}
+		 WHERE REQ_DT  = #{REQ_DT}
+		   AND REQ_SEQ = #{REQ_SEQ}
+	</update>
+	
+	<select id="checkBasYy" parameterType="BMap" resultType="BMap">
+	   SELECT T1.BAS_YY     AS BAS_YY
+            , T1.BAS_YY_SEQ AS BAS_YY_SEQ
+		 FROM TB_BAS_YY_INFO T1
+		WHERE #{CHK_IN_DT} BETWEEN T1.ST_DT1 AND T1.ED_DT1
+		   OR #{CHK_IN_DT} BETWEEN T1.ST_DT2 AND T1.ED_DT2
+		   OR #{CHK_IN_DT} BETWEEN T1.ST_DT3 AND T1.ED_DT3
+	</select>
 </mapper>

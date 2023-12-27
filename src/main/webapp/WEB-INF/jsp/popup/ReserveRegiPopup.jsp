@@ -26,6 +26,7 @@
 		   	     	<th>ID</th>
 					<td class="medium_td">
 						<input type="text" id="USER_ID" name="USER_ID"/>
+						<!-- <button type="button" class="pbtn_default" id="btn_search">아이디검색</button> -->
 					</td>
 				</tr>
 		   		<tr>
@@ -150,14 +151,14 @@
 				<tr>
 				    <th><s:message code='reservation.meetSanding'/></th>
 				    <td>
-						<select id="PICK_GBN" name="PICK_GBN" class="cmc_combo" style="width:100px;">
+						<select id="PICK_GBN" name="PICK_GBN" class="cmc_combo" style="width:100px;" disabled>
 						    <c:forEach var="i" items="${region}">
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
-						<input type="text" id="PER_NUM_CNT" name="PER_NUM_CNT" style="width:60px; text-align: right;" value="0">명
+						<input type="text" id="PER_NUM_CNT" name="PER_NUM_CNT" style="width:60px; text-align: right;" value="0" disabled>명
 						<input type="hidden" id="PCK_PROD_SEQ" name="PCK_PROD_SEQ">
-						<button type="button" class="pbtn_default" id="insertPickGbn">등록</button>
+						<button type="button" class="pbtn_default openPop" id="insertPickGbn">등록</button>
 					</td>
 				    <th><s:message code='reservation.lateCheckout'/></th>
 					<td>
@@ -215,29 +216,34 @@
 				    <th><s:message code='reservation.invoiceDt'/></th>
 				    <td>
 						<input type="text" id="INV_REG_DT" name="INV_REG_DT" data-type="date"/>
-					    <button type="button" class="pbtn_default" id="btn_create">생성</button>
+					    <button type="button" class="pbtn_default openPop" id="btn_create">생성</button>
+				    </td>
+				     <th class="status"><s:message code='reservation.state'/></th>
+				    <td class="status">
+						<input type="text" id="PRC_STS_NM" name="PRC_STS_NM" readonly/>
+					    <button type="button" class="pbtn_default" id="changeStatus">상태변경</button>
 				    </td>
 				</tr>
 				<tr>
 				    <th><s:message code='reservation.totalPrice'/></th>
 				    <td>
-				        <input type="text" id="TOT_AMT" name="TOT_AMT" style="text-align: right" value="0"/>원
+				        <input type="text" id="TOT_AMT" name="TOT_AMT" style="text-align: right" value="0" class="withComma"/>원
 				    </td>
 					<th><s:message code='reservation.payAmt'/></th>
 				    <td>
-				        <input type="text" id="PAY_AMT" name="PAY_AMT" style="text-align: right" value="0"/>원
+				        <input type="text" id="PAY_AMT" name="PAY_AMT" style="text-align: right" value="0" class="withComma"/>원
 				    </td>
 				</tr>
 				<tr>
 				    <th><s:message code='reservation.disctPrice'/></th>
 				    <td>
-				    	<input type="text" id="DCT_AMT" name="DCT_AMT" style="text-align: right" value="0"/>원
+				    	<input type="text" id="DCT_AMT" name="DCT_AMT" style="text-align: right" value="0" class="withComma"/>원
 				    </td>
 				    <th><s:message code='reservation.balancePrice'/></th>
 				    <td>
 				        <div style="display:inline-flex;" >
-					        <input type="text" id="BAL_AMT" name="BAL_AMT" style="text-align: right" value="0"/>원
-				            <button type="button"  class="pbtn_default">입금완료</button>
+					        <input type="text" id="BAL_AMT" name="BAL_AMT" style="text-align: right" value="0" class="withComma"/>원
+				            <button type="button" class="pbtn_default openPop" id="btn_deposit">입금완료</button>
 			            </div>
 			        </td>
 				</tr>
@@ -248,7 +254,7 @@
 				    </td>
 				    <th><s:message code='reservation.deposit'/></th>
 				    <td>
-				    <input type="text" id="DEP_AMT" name="DEP_AMT" style="text-align: right" value="0"/>원
+				    <input type="text" id="DEP_AMT" name="DEP_AMT" style="text-align: right" value="0" class="withComma"/>원
 				    </td>
 				</tr>
 				<tr>
@@ -258,7 +264,7 @@
 				    </td>
 				    <th><s:message code='reservation.expdt'/></th>
 				    <td>
-				    <input type="text" id="EXP_DT" name="EXP_DT" style="text-align: right" value="0"/>원
+				    <input type="text" class="cmc_txt" id="EXP_DT" name="EXP_DT" data-type="date"/>
 				    </td>
 				</tr>
 				<tr>
@@ -308,13 +314,6 @@ $(function() {
 					$(this).dialog("close");
 				}
 			},
-			'<s:message code='reservation.chgState'/>' : {
-				text: '<s:message code='reservation.chgState'/>',
-				id : 'changeStatus',
-				click: function() {
-					changeStatus();
-				}
-			},
 		},
 		close : function() {
 			popupClose($(this).attr('id')); /* 필수로 들어가야함 */
@@ -349,8 +348,9 @@ $(function() {
 			 $("#CHK_IN_DT"      ).val(Util.converter.dateFormat1(today));
 			 $("#CHK_OUT_DT"     ).val(Util.converter.dateFormat1(today));
 		     $(".image"          ).hide();
-		     $("#changeStatus"   ).hide();
+		     $(".status"         ).hide();
 		     vflag = "new";
+		     $("#TOT_AMT , #PAY_AMT , #DCT_AMT , #BAL_AMT , #DEP_IN_DT , #BAL_IN_DT , #DEP_AMT , #EXP_DT , #INV_REG_DT").attr("disabled", true);
 		 }else{ // 상세
 			 $("#USER_ID , #MEM_GBN").attr("disabled", true);
 		     $(".ui-dialog-title").text('<s:message code='reservation.detail'/>');
@@ -358,30 +358,40 @@ $(function() {
 		     vflag = "detail";
 		 }
 		 
-		 $('#CHK_OUT_DT, #CHK_IN_DT, #DEP_IN_DT, #BAL_IN_DT').datepicker({
+		 $('#DEP_IN_DT, #BAL_IN_DT , #INV_REG_DT , #EXP_DT').datepicker({
 		     dateFormat : 'yy.mm.dd',
 		     showOn : 'both'
 		 }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
 		     function(e) {
 		 });
-		 $('#datepicker').datepicker('setDate', 'today'); 
+		 
+		 $('#CHK_OUT_DT, #CHK_IN_DT').datepicker({
+		     dateFormat : 'yy.mm.dd',
+		     showOn  : 'both',
+		     minDate : 0,
+		     maxDate : '+1y'
+		 }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
+		     function(e) {
+		 });
 	
 	}
 	
 	
+	
 	function fn_dataSet(data){
+		console.log(data);
     	$.each(data, function(key , val){
     		if(key == "TOT_PERSON"  || key == "R_PERSON"    || key == "N_PERSON"    || key == "K_PERSON"    || key == "ADD_R_S_PER" ||
         	   key == "ADD_R_S_DAY" || key == "ADD_R_S_CNT" || key == "ADD_R_S_CNT" || key == "ADD_R_P_PER" || key == "ADD_R_P_DAY" || 
         	   key == "ADD_R_P_CNT" || key == "CNT_D1"      || key == "CNT_D2"      || key == "CNT_P1"      || key == "CNT_P2"      ||
-        	   key == "TOT_AMT"     || key == "DCT_AMT"     || key == "BAL_AMT"     || key == "DEP_AMT"){
+        	   key == "TOT_AMT"     || key == "DCT_AMT"     || key == "BAL_AMT"     || key == "DEP_AMT"     || key == "PAY_AMT"){
     			$('[name='+ key +']').val (fn_comma(val));
     		}else if(key == "REQ_TEL_NO"){
 	    		$('[name='+ key +']').val (formatPhoneNumber(val));
     		}else if(key == "RND_CHG_YN1" || key == "RND_CHG_YN2"){
     			if(val == "Y") $('[name='+ key +']').prop("checked", true);
     			else           $('[name='+ key +']').prop("checked", false);
-    		}else if(key == "CHK_IN_DT" || key == "CHK_OUT_DT" || key == "REQ_DT"){
+    		}else if(key == "CHK_IN_DT" || key == "CHK_OUT_DT" || key == "REQ_DT" || key == "DEP_IN_DT" || key == "BAL_IN_DT" || key == "EXP_DT"){
     			$('[name='+ key +']').val(Util.converter.dateFormat1(val));
     		}else{
     			$('[name='+ key +']').val(val);
@@ -416,6 +426,13 @@ $(function() {
     			isDisabled(false);
     		}
     	}
+    	
+    	//상태표시
+     	if(!fn_empty(data.PRC_STS)){
+     		if(data.PRC_STS == "07" || data.PRC_STS == "08"){
+     			$("#btn_deposit").attr("disabled", true);
+     		}
+     	}
     }
 	
 	function initSelect(){
@@ -441,6 +458,12 @@ $(function() {
 		}
 	}
 	
+	// 천단위 콤마 (소수점포함)
+	function numberWithCommas(num) {
+	    var parts = num.toString().split(".");	
+	    return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? "." + parts[1] : "");
+	}
+	
 	function changeStatus(){
 		var url = "/reserve/chgStatusPopup.do";
 	    var pid = "p_changeStatusPopup";
@@ -450,7 +473,6 @@ $(function() {
 		           , "PRC_STS_NM" : $("#PRC_STS_NM").val()
 		           , "MEM_GBN"    : $("#MEM_GBN").val()
  		           };
-	    console.log(param);
 		popupOpen(url, pid, param, function(data) {
 		});
 	}
@@ -547,8 +569,9 @@ $(function() {
 	
 	function saveReserveInfo(){
 		if(!isValidation())return;
-		var obj   = { "USER_ID"         : $("#usrId").val()
+		var obj   = { "USER_ID"         : $("#USER_ID").val()
 				    , "REQ_DT"          : $("#REQ_DT").val().replaceAll(".","")
+				    , "SEQ"             : seq
 				    , "REQ_HAN_NM"      : $("#REQ_HAN_NM").val()
 				    , "REQ_ENG_NM"      : $("#REQ_ENG_NM").val()
 				    , "REQ_TEL_NO"      : $("#REQ_TEL_NO").val().replaceAll("-","")
@@ -583,6 +606,14 @@ $(function() {
 				    , "CONFIRM_NO"      : $("#CONFIRM_NO").val()
 				    , "RND_CHG_YN1"     : $("#RND_CHG_YN1").is(":checked") == true ? "Y" : "N"
 				    , "RND_CHG_YN2"     : $("#RND_CHG_YN2").is(":checked") == true ? "Y" : "N"
+				    , "TOT_AMT"         : parseInt($("#TOT_AMT"  ).val().replaceAll("," , ""))
+				    , "PAY_AMT"         : parseInt($("#PAY_AMT"  ).val().replaceAll("," , ""))
+				    , "DCT_AMT"         : parseInt($("#DCT_AMT"  ).val().replaceAll("," , ""))
+				    , "BAL_AMT"         : parseInt($("#BAL_AMT"  ).val().replaceAll("," , ""))
+				    , "DEP_IN_DT"       : $("#DEP_IN_DT").val().replaceAll(".", "")
+				    , "DEP_AMT"         : $("#DEP_AMT"  ).val().replaceAll("," , "")
+				    , "BAL_IN_DT"       : $("#BAL_IN_DT").val().replaceAll(".", "")
+				    , "EXP_DT"          : $("#EXP_DT"   ).val().replaceAll(".", "")
 		}
 		var param = {"reserveInfo"   : obj
 				   , "V_FLAG" : vflag};
@@ -598,6 +629,29 @@ $(function() {
 				}
 			});
 		}
+	}
+	
+	function openPopVali(data){
+		var chk_in_dt  = $("#CHK_IN_DT").val().replaceAll(".","");
+		var chk_out_dt = $("#CHK_OUT_DT").val().replaceAll(".","");
+		if(vflag == "new"){ // 신규
+			alert("해당기능은 상세페이지에서 진행가능합니다.");
+			return false;
+		}else { //상세
+			var url = '/reserve/checkBasYy.do';
+			var param = {"CHK_IN_DT" : chk_in_dt
+					    ,"SEQ"       : seq
+			            ,"REQ_DT"    : req_dt};
+			fn_ajax(url, false, param, function(data, xhr){
+				if(!data.result){
+					console.log("11");
+				}else{ //같을때
+					console.log("22");
+				}
+			});
+		}
+		
+		return true;
 	}
 	
 	
@@ -651,6 +705,11 @@ $(function() {
 		var chk_out_dt = $("#CHK_OUT_DT").val();
 		if(fn_empty(chk_out_dt)){
 			alert("체크아웃 날짜를 선택해주세요.");
+			return false;
+		}
+		
+		if(chk_in_dt > chk_out_dt){
+			alert("체크아웃 날짜보다 체크인 날짜가 큽니다.")
 			return false;
 		}
 		
@@ -740,12 +799,21 @@ $(function() {
 	}
 	
 	$('#REQ_TEL_NO').keyup(function (event) {
-		  event = event || window.event;
-		  var _val = this.value.trim();
-		  this.value = autoHypenTel(_val);
-		});
+	    event = event || window.event;
+		var _val = this.value.trim();
+		this.value = autoHypenTel(_val);
+	});
+	
+	$(".withComma").on("keyup" , function(){
+		var tmpValue = $(this).val().replace(/[^0-9,]/g,'');
+		tmpValue = tmpValue.replace(/[,]/g,'');
+		// 천단위 콤마 처리 후 값 강제변경
+	    $(this).val(numberWithCommas(tmpValue));
+		
+	});
 	
 	$("#btn_create").click(function(){
+		//if(!openPopVali($(this))) return;
     	var url = "/reserve/InvoicePopup.do";
 	    var pid = "p_invoicePopup";
 	    var param = {"SEQ"     : seq
@@ -763,6 +831,7 @@ $(function() {
 	});
 	
 	$("#insertPickGbn").click(function() {
+		//if(!openPopVali($(this))) return;
 	    var url = "/reserve/pickUpGbnPopup.do";
 	    var pid = "p_pickUpGbnPopup";
 	    var param = { "PICK_GBN"     : $("#PICK_GBN").val()
@@ -801,20 +870,45 @@ $(function() {
 			 
 		});
 	});	
+
+	$("#changeStatus").on("click" , function(){
+		changeStatus();
+	});
 	
-	
-	
-	
-	
-	$("#USER_ID").on("click", function(){
+	$("#btn_search").on("click", function(){
 		var url = "/reserve/searchId.do";
 	    var pid = "p_searchIdPopup";
-	    var param = { "SEQ"          : seq
-			        , "REQ_DT"       : req_dt
-	                };
-	    
+	    var param = {};
 		popupOpen(url, pid, param, function(data) {
+			if(!fn_empty(data)){
+				$("#USER_ID"   ).val(data.USER_ID).attr("disabled", true);
+				$("#btn_search").css({ 'pointer-events': 'none' });
+				seq    = data.SEQ+"";
+				req_dt = data.REQ_DT; 
+			}
 		});
+	});
+	
+	$("#btn_deposit").on("click", function(){
+		//if(!openPopVali($(this))) return;($(this));
+		var url = "/reserve/deposit.do";
+	    var param = { "REQ_SEQ"      : parseInt(seq)
+			        , "REQ_DT"       : req_dt
+			        , "PAY_AMT"      : parseInt($("#PAY_AMT").val().replaceAll(",", ""))
+			        , "BAL_AMT"      : parseInt($("#BAL_AMT").val().replaceAll(",", ""))
+	                };
+	    if(confirm("<s:message code='confirm.deposit'/>")){
+			fn_ajax(url, false, param, function(data, xhr){
+				console.log(data);
+				if(data.result.resultCd == "0000"){
+					alert("입금처리 완료되었습니다.");
+					$("#PAY_AMT").val(fn_comma(param.PAY_AMT + param.BAL_AMT));
+					$("#BAL_AMT").val(0);
+				}else{
+					alert("error!");
+				}
+			});
+		}
 	});
 	
 });
