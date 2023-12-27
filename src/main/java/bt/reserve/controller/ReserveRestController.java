@@ -150,15 +150,15 @@ public class ReserveRestController {
 		BRespData respData = new BRespData();
 		
 		BMap paramData = new BMap();
-		paramData.put("SEQ"        		, (String) reqData.get("SEQ"));
-		paramData.put("REQ_DT"    		, (String) reqData.get("REQ_DT"));
+		paramData.put("SEQ"        , (String) reqData.get("SEQ"));
+		paramData.put("REQ_DT"     , (String) reqData.get("REQ_DT"));
+		paramData.put("ITEM_CD"    , (String) reqData.get("ITEM_CD"));
+		paramData.put("TOT_AMT"    , reqData.get("TOT_AMT"));
+		paramData.put("LOGIN_USER" , LoginInfo.getUserId());
+		
 		paramData.put("PREV_ITEM_CD"  , (String) reqData.get("ITEM_CD"));
 		paramData.put("PREV_ORDER"    , (String) reqData.get("ORDER"));
-		paramData.put("ITEM_CD"  		, (String) reqData.get("ITEM_CD"));
 		paramData.put("ORDER"    		, (String) reqData.get("ORDER"));
-
-		paramData.put("TOT_AMT"    	, reqData.get("TOT_AMT"));
-		paramData.put("LOGIN_USER" 	, LoginInfo.getUserId());
 		
 		if(!reserveService.deleteInvoiceManager(paramData)){
 			respData.put("resultCd", "-1");
