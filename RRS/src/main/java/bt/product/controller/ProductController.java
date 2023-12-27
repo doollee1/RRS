@@ -98,7 +98,7 @@ public class ProductController {
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
 
-		if(!productService.saveProductInfo(param)){ 
+		if(!productService.saveProductInfo(param)){
 			respData.put("SAVE", "N");
 		}
 		

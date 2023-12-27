@@ -8,7 +8,7 @@
 		SELECT ROW_NUMBER() OVER(ORDER BY B.PROD_SEQ) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
 			 , A.BAS_YY						<!-- 기준년도 -->
 		     , A.BAS_YY_SEQ					<!-- 기간년도순번 -->
-		     , B.PROD_SEQ			 		<!-- 상품순번 -->
+		     , B.PROD_SEQ					<!-- 상품순번 -->
 		     , A.SSN_GBN					<!-- 시즌구분 -->
 		     , B.HDNG_GBN					<!-- 항목구분 -->
 		     , B.PROD_COND					<!-- 조건 -->

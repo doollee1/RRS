@@ -8,7 +8,7 @@
 		<input type="hidden" name="BAS_YY" id="BAS_YY" />
 		<input type="hidden" name="BAS_YY_SEQ" id="BAS_YY_SEQ" />
 		<input type="hidden" name="PROD_SEQ" id="PROD_SEQ" />
-	</form> 
+	</form>
 </div>
 
 <div id="productPeriodPopUp">

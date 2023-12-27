@@ -62,7 +62,7 @@ $(function(){
 	$('#productSelectPeriodPopUp').dialog({
 		title: '<s:message code="product.seldt"/>',
 		autoOpen: false,
-		width: 750, 
+		width: 750,
 		modal: true,
 		open: function() {
 			$("#BAS_YY_SEL").val($(this).data("BAS_YY"));

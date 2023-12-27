@@ -132,7 +132,7 @@ public class ProductDao extends DBAbstractMapper {
 	
 	/**
 	 * Product Copy 등록
-	 * @param param 
+	 * @param param
 	 * @throws Exception
 	 */
 	public void insertProductCopyInfo(BMap param )throws Exception{

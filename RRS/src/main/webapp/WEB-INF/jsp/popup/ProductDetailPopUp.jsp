@@ -20,7 +20,7 @@
 			<input type="hidden" name="BAS_YY_SEQ_UP" id="BAS_YY_SEQ_UP" value="" />
 			<input type="hidden" name="PROD_SEQ_UP" id="PROD_SEQ_UP" value="" />
 			<input type="hidden" name="modify" id="modify" value="" />
-			 
+			
 			<table class="pop_tblForm">
 			<colgroup>
 				<col width="15%">

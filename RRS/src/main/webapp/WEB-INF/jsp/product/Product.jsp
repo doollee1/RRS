@@ -165,7 +165,7 @@ function createGrid(){
 		{ name: 'AGN_CNTN', width: 7, align: 'left'},
 		{ name: 'BAS_YY', hidden:true},
 		{ name: 'BAS_YY_SEQ', hidden:true},
-		{ name: 'PROD_SEQ', hidden:true}, 
+		{ name: 'PROD_SEQ', hidden:true},
 		{ name: 'COM_BAS_PER', hidden:true},
 		{ name: 'COM_BAS_DAY', hidden:true},
 		{ name: 'AGN_BAS_PER', hidden:true},

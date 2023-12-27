@@ -128,7 +128,7 @@ public class ProductService {
 	 */
 	public Boolean saveCopyInfo(BMap param) throws Exception{
 		Boolean isValid = true;
-		param.put("LOGIN_USER", LoginInfo.getUserId()); 
+		param.put("LOGIN_USER", LoginInfo.getUserId());
 		if(param.getString("branch").equals("period")){
 			productDao.insertPeriodCopyInfo(param); //기간 복사
 		} else if(param.getString("branch").equals("normal")) {
