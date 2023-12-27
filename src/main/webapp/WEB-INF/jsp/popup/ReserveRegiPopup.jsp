@@ -14,7 +14,7 @@
 		<div id="pop_ct_form_wrap">
 			<input type="hidden" name="PRC_STS"    id="PRC_STS"    value="" />
 			<input type="hidden" name="PRC_STS_NM" id="PRC_STS_NM" value="" />
-			<input type="hidden" name="EMAIL"      id="EMAIL"      value="" />
+			<input type="hidden" name="EMAIL"      id="EMAIL"      value="" />  
 			<table class="pop_tblForm">
 				<colgroup>
 					<col width="20%" />
