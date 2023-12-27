@@ -166,4 +166,15 @@ public class ReserveController {
 		return "/popup/arrImgPopup";
 	}
 	
+	/**
+	 * 아이디 팝업 호출
+	 * @param model
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/reserve/searchId.do")
+	public String searchId(ModelMap model,HttpServletRequest request) throws Exception{
+		return "/popup/searchId";
+	}
 }
