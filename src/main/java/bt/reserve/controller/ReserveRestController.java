@@ -14,6 +14,7 @@ import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
 import bt.btframework.utils.LoginInfo;
 import bt.reserve.service.ReserveService;
+import bt.rrs.dao.RrsUserDao;
 
 @RestController
 @RequestMapping("/reserve")
@@ -22,6 +23,9 @@ public class ReserveRestController {
 	
 	@Resource
 	private ReserveService reserveService;
+	
+	@Resource(name = "RrsUserDao")
+	private RrsUserDao rrsUserDao;
 	
 	/**
 	 * 예약 현황 리스트 조회
@@ -79,6 +83,26 @@ public class ReserveRestController {
 		BRespData respData = new BRespData();
 		respData.put("result", resultDeptDetail);
 		
+	/*	BMap param = new BMap();
+		param.put("HEAD_CD"   , 500140);
+		param.put("REF_CHR1"  , (String)reqData.get("MEM_GBN"));
+		param.put("ORDER_GBN" , 1);
+		
+		respData.put("selectList"   , reserveService.selectGetCommonCode(param));*/
+		return respData;
+	}
+	
+	/**
+	 * 인보이스 아이템 코드 리스트 조회
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/invoiceItemList.do", method = RequestMethod.POST)
+	public BRespData invoiceItemList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BRespData respData = new BRespData();
+	
 		BMap param = new BMap();
 		param.put("HEAD_CD"   , 500140);
 		param.put("REF_CHR1"  , (String)reqData.get("MEM_GBN"));
@@ -288,5 +312,81 @@ public class ReserveRestController {
 		return respData;
 	}
 	
+	/**
+	 * 예약 현황 리스트 조회
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/selectSearchId.do", method = RequestMethod.POST)
+	public BRespData selectSearchId(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BMap param = reqData.getParamDataMap("param");
+		BRespData respData = new BRespData();
+		respData.put("result", rrsUserDao.selectUserInfo(param));
+		return respData;
+	}
+	
+	/**
+	 * 예약최초데이터 insert
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/insertReserve.do", method = RequestMethod.POST)
+	public BRespData insertReserve(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BRespData respData = new BRespData();
+		BMap param = new BMap();
+		param.put("REQ_DT"     , (String)reqData.get("REQ_DT"));
+		param.put("USER_ID"    , (String)reqData.get("USER_ID"));
+		param.put("LOGIN_USER" , LoginInfo.getUserId());
+		
+		
+		respData.put("result", reserveService.insertReserve(param));
+		return respData;
+	}
+	
+	/**
+	 * 입금금액 UPDATE
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/deposit.do", method = RequestMethod.POST)
+	public BRespData depositComplete(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BRespData respData = new BRespData();
+		BMap param = new BMap();
+		param.put("REQ_DT"     , (String)reqData.get("REQ_DT"));
+		param.put("REQ_SEQ"    , reqData.get("REQ_SEQ"));
+		param.put("PAY_AMT"    , reqData.get("PAY_AMT"));
+		param.put("BAL_AMT"    , reqData.get("BAL_AMT"));
+		param.put("LOGIN_USER" , LoginInfo.getUserId());
+	
+		respData.put("result", reserveService.depositComplete(param));
+		return respData;
+	}
+	
+
+	/**
+	 * 상품시퀀스 확인(변경시)
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/checkBasYy.do", method = RequestMethod.POST)
+	public BRespData checkBasYy(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BRespData respData = new BRespData();
+		BMap param = new BMap();
+		param.put("REQ_DT"     , (String)reqData.get("REQ_DT"));
+		param.put("SEQ"        , reqData.get("SEQ"));
+		param.put("CHK_IN_DT"  , reqData.get("CHK_IN_DT"));
+		param.put("CHK_OUT_DT" , reqData.get("CHK_OUT_DT"));
+	
+		respData.put("result", reserveService.checkBasYy(param));
+		return respData;
+	}
 	
 }
