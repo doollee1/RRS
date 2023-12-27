@@ -1,5 +1,7 @@
 package bt.product.controller;
 
+import java.text.SimpleDateFormat;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,6 +18,7 @@ import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
 import bt.product.service.ProductService;
+import egovframework.com.utl.sim.service.EgovFileScrty;
 
 @Controller
 public class ProductController {
@@ -36,6 +39,7 @@ public class ProductController {
 		model.addAttribute("basyy", productService.selectBasYY(null));
 		model.addAttribute("season", productService.selectSeason(null));
 		model.addAttribute("hdng", productService.selectHdng(null));
+		model.addAttribute("cond", productService.selectCond(null));
 		return "/popup/ProductDetailPopUp";
 	}
 	
@@ -74,7 +78,7 @@ public class ProductController {
 	public BRespData selectProductInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = new BMap();
 		param.put("SSN_GBN", reqData.get("SSN_GBN"));
-		param.put("ST_DT1", reqData.get("ST_DT1"));
+		param.put("BAS_YY", reqData.get("BAS_YY"));
 		
 		BRespData respData = new BRespData();
 		
@@ -132,7 +136,7 @@ public class ProductController {
 	@ResponseBody
 	public BRespData selectPeriodInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = new BMap();
-		param.put("ST_DT1", reqData.get("ST_DT1"));
+		param.put("BAS_YY", reqData.get("BAS_YY"));
 		
 		BRespData respData = new BRespData();
 		
@@ -178,7 +182,6 @@ public class ProductController {
 		return respData;
 	}	
 	
-	
 	/**
 	 * Period Copy 등록
 	 * @param reqData
@@ -196,6 +199,26 @@ public class ProductController {
 			respData.put("SAVE", "N");
 		}
 		
+		return respData;
+	}
+	
+	/**
+	 * Period Info PopUp 조회
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/common/selectPeriodPopUp.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData selectPeriodPopUp(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BMap param = new BMap();
+		param.put("SSN_GBN", reqData.get("SSN_GBN"));
+		param.put("BAS_YY", reqData.get("BAS_YY"));
+		
+		BRespData respData = new BRespData();
+		
+		respData.put("result", productService.selectPeriodPopUp(param));
 		return respData;
 	}
 	
