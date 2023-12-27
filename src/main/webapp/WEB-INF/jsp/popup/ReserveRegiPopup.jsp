@@ -603,7 +603,7 @@ $(function() {
 	
 	function isValidation(){ 
 		if(vflag == "new"){
-			var usrId = $("#usrId").val();
+			var usrId = $("#USER_ID").val();
 			if(fn_empty(usrId)){
 				alert("id를 입력해주세요.");
 				return false;
@@ -798,11 +798,15 @@ $(function() {
 	                };
 	    
 		popupOpen(url, pid, param, function(data) {
-			
+			 
 		});
 	});	
 	
-	$("#usrId").on("click", function(){
+	
+	
+	
+	
+	$("#USER_ID").on("click", function(){
 		var url = "/reserve/searchId.do";
 	    var pid = "p_searchIdPopup";
 	    var param = { "SEQ"          : seq
@@ -810,7 +814,6 @@ $(function() {
 	                };
 	    
 		popupOpen(url, pid, param, function(data) {
-			
 		});
 	});
 	
