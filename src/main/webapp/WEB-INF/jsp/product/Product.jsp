@@ -43,7 +43,7 @@
 				<tr>
 					<td class="small_td"><p><s:message code="product.baseyear"/></p></td>
 					<td>
-						<select id="ST_DT1" name="ST_DT1" class="cmc_combo" style=width:80%;>
+						<select id="BAS_YY" name="BAS_YY" class="cmc_combo" style=width:80%;>
 							<c:forEach var="i" items="${basyy}">
 								<option value="${i.BAS_YY}">${i.BAS_YY}</option>
 							</c:forEach>
@@ -121,7 +121,7 @@ $(function() {
 	});
 	
 	//조회조건 변경 시 복사등록 비활성화 처리
-	$("#ST_DT1, #SSN_GBN").change(function(){
+	$("#BAS_YY, #SSN_GBN").change(function(){
 		$("#cBtnCopy").attr("disabled", true);
 	})
 });
@@ -148,21 +148,22 @@ function createGrid(){
 				'COM_BAS_DAY',
 				'AGN_BAS_PER',
 				'AGN_BAS_DAY',
+				'PROD_COND2',
 				]
 	var colModel = [
 		{ name: 'SSN_GBN', width: 5, align: 'center'},
-		{ name: 'HDNG_GBN', width: 5, align: 'center'},
+		{ name: 'HDNG_GBN', width: 13, align: 'center'},
 		{ name: 'PROD_COND', width: 5, align: 'center'},
-		{ name: 'ST_DT1', width: 7, align: 'right'},
-		{ name: 'ED_DT1', width: 7, align: 'right'},
-		{ name: 'ST_DT2', width: 7, align: 'right'},
-		{ name: 'ED_DT2', width: 7, align: 'right'},
-		{ name: 'ST_DT3', width: 7, align: 'right'},
-		{ name: 'ED_DT3', width: 7, align: 'right'},
-		{ name: 'COM_AMT', width: 7, align: 'right'},
-		{ name: 'COM_CNTN', width: 7, align: 'right'},
-		{ name: 'AGN_AMT', width: 7, align: 'right'},
-		{ name: 'AGN_CNTN', width: 7, align: 'right'},
+		{ name: 'ST_DT1', width: 7, align: 'center'},
+		{ name: 'ED_DT1', width: 7, align: 'center'},
+		{ name: 'ST_DT2', width: 7, align: 'center'},
+		{ name: 'ED_DT2', width: 7, align: 'center'},
+		{ name: 'ST_DT3', width: 7, align: 'center'},
+		{ name: 'ED_DT3', width: 7, align: 'center'},
+		{ name: 'COM_AMT', width: 7, align: 'right', formatter:'integer', formatoptions : {defaultValue: '', thousandsSeparator : ','}},
+		{ name: 'COM_CNTN', width: 7, align: 'left'},
+		{ name: 'AGN_AMT', width: 7, align: 'right', formatter:'integer', formatoptions : {defaultValue: '', thousandsSeparator : ','}},
+		{ name: 'AGN_CNTN', width: 7, align: 'left'},
 		{ name: 'BAS_YY', hidden:true},
 		{ name: 'BAS_YY_SEQ', hidden:true},
 		{ name: 'PROD_SEQ', hidden:true},
@@ -170,13 +171,14 @@ function createGrid(){
 		{ name: 'COM_BAS_DAY', hidden:true},
 		{ name: 'AGN_BAS_PER', hidden:true},
 		{ name: 'AGN_BAS_DAY', hidden:true},
+		{ name: 'PROD_COND2', hidden:true},
   	];
 	
 	var gSetting = {
 			height:600,
 			pgflg:true,
 			exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
-			colsetting : true,  // 컬럼 설정 버튼 노출여부
+			colsetting : false,  // 컬럼 설정 버튼 노출여부
 			searchInit : false,  // 데이터 검색 버튼 노출여부
 			resizeing : true,
 			rownumbers:false,
@@ -196,8 +198,6 @@ function createGrid(){
 			{startColumnName: 'AGN_AMT', numberOfColumns: 2, titleText: '에이전시'},
 			]
 	});
-	
-	btGrid.gridResizing('grid1');
 	
 }
 	
@@ -219,7 +219,7 @@ function cSearch(currentPage){
 	var url = "/common/selectProductInfo.do";
 	
 	var formData = formIdAllToMap('frmDetail');
-	var param = {"ST_DT1" :formData.ST_DT1
+	var param = {"BAS_YY" :formData.BAS_YY
 				,"SSN_GBN":formData.SSN_GBN};
 	
 	fn_ajax(url, false, param, function(data, xhr){
@@ -244,11 +244,12 @@ function grid1_ondblClickRow(rowid, iRow, iCol, e){
 	var formData = formIdAllToMap('frmDetail');
 	var param = {
 		"modify" : true,
-		"ST_DT1" : formData.ST_DT1,					// 기준년도
+		"BAS_YY" : formData.BAS_YY,					// 기준년도
 		"SSN_GBN" : gridData["SSN_GBN"],			// 시즌구분
 		"HDNG_GBN" : gridData["HDNG_GBN"],			// 항목구분
 		"PROD_COND" : gridData["PROD_COND"],		// 조건
-		//기간선택 추가
+		"PROD_COND2" : gridData["PROD_COND2"],		// 조건
+		
 		"COM_AMT" : gridData["COM_AMT"],			// 일반 금액
 		"COM_BAS_PER" : gridData["COM_BAS_PER"],	// 일반 기준인원수
 		"COM_BAS_DAY" : gridData["COM_BAS_DAY"],	// 일반 기준일수
@@ -260,7 +261,10 @@ function grid1_ondblClickRow(rowid, iRow, iCol, e){
 		
 		"BAS_YY" : gridData["BAS_YY"],				// 기준년도
 		"BAS_YY_SEQ" : gridData["BAS_YY_SEQ"],		// 기간년도순번
-		"PROD_SEQ" : gridData["PROD_SEQ"]			// 상품순번
+		"PROD_SEQ" : gridData["PROD_SEQ"],			// 상품순번
+		
+		"ST_DT1" : gridData["ST_DT1"],				// 시작일
+		"ED_DT1" : gridData["ED_DT1"],				// 종료일
 	};
 	productDetailPopUp(param);
 }
@@ -286,6 +290,7 @@ function cPeriod(param){
 	var pid = "productPeriodPopUp";	//팝업 페이지의 최상위 div ID
 	
 	popupOpen(url, pid, param, function(data){
+// 		jQuery("#grid1").trigger("reloadGrid");
 	});
 }
 
@@ -295,11 +300,12 @@ function cCopy(param){
 	var pid = "productCopyPopUp";	//팝업 페이지의 최상위 div ID
 	var formData = formIdAllToMap('frmDetail');
 	var param = { 
-			"ST_DT1" : formData.ST_DT1,
+			"BAS_YY" : formData.BAS_YY,
 			"branch" : "normal"
 	}
 	
 	popupOpen(url, pid, param, function(data){
+// 		jQuery("#grid1").trigger("reloadGrid");
 	});
 }
 	
