@@ -146,7 +146,8 @@ public class ReserveService {
 				detailMap.put("REQ_DT"    , (String) param.get("REQ_DT"));
 				detailMap.put("LOGIN_USER", LoginInfo.getUserId());
 				feeCnt = reserveDao.selectFeeListCnt(detailMap);
-				sum_tot += detailMap.getInt("TOT_AMT");
+				
+				sum_tot += Integer.parseInt((String)detailMap.get("TOT_AMT"));
 				
 				if(detailMap.getString("STATUS_V").equals("I")){
 					reserveDao.insertInvoiceDetailInfo(detailMap);

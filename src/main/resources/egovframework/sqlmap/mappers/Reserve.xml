@@ -257,7 +257,7 @@
 	
 	<select id="invoiceSelectList" parameterType="BMap" resultType="BMap">
         <include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
-            SELECT ROW_NUMBER() OVER(ORDER BY T1.ORDER DESC) AS ROWNUM
+            SELECT ROW_NUMBER() OVER(ORDER BY T1.ORDER) AS ROWNUM
                 , T1.REQ_DT     /*  예약일자     */
                 , T1.SEQ        /*  일련번호     */
                 , T1.ITEM_CD    /*  항목코드     */
@@ -268,7 +268,7 @@
                 , T1.UNIT_DAY   /*  횟수단위     */
                 , T1.USE_NUM    /*  이용수량     */
                 , T1.UNIT_NUM   /*  수량단위     */
-                , CASE WHEN T1.UNIT_NUM = 'P' THEN '인' WHEN T1.UNIT_NUM = 'R'THEN '개' ELSE NULL END AS STR_UNIT_NUM  /* 일일 횟수 또는 일 */
+                , CASE WHEN T1.UNIT_NUM = 'P' THEN '명' WHEN T1.UNIT_NUM = 'R'THEN '개' ELSE NULL END AS STR_UNIT_NUM  /* 일일 횟수 또는 일 */
                 , CASE WHEN T1.UNIT_DAY = 'D' THEN '일' WHEN T1.UNIT_DAY = 'C'THEN '회' ELSE NULL END AS STR_UNIT_DAY  /* 일일 횟수 또는 일 */
                 , T1.TOT_AMT    /*  총금액       */
                 , T1.ORDER      /*  표시순서     */
@@ -338,9 +338,9 @@
                     , #{AMT_SIGN}
                     , #{PER_AMT }
                     , #{USE_DAY }
-                    , CASE WHEN #{STR_UNIT_DAY} = '일' THEN 'D' WHEN #{STR_UNIT_DAY} = '회' THEN 'C' ELSE NULL END
+                    , #{UNIT_DAY}
                     , #{USE_NUM }
-                    , CASE WHEN #{STR_UNIT_NUM} = '인' THEN 'P' WHEN #{STR_UNIT_NUM} = '개' THEN 'R' ELSE NULL END
+                    , #{UNIT_NUM}
                     , #{TOT_AMT }
                     , NULL
                     , NULL
@@ -424,7 +424,7 @@
                     , T1.SEQ
                     , T1.ITEM_CD
                     , T1.ORDER
-                    , (SELECT NVL(MAX(HIS_SEQ),0) AS SEQ FROM TB_REQ_INVOICE_HIS T2 WHERE REQ_DT = #{REQ_DT} AND SEQ = #{SEQ} AND ITEM_CD = #{ITEM_CD} ) + 1
+                    , (SELECT NVL(MAX(HIS_SEQ),0) AS SEQ FROM TB_REQ_INVOICE_HIS T2 WHERE REQ_DT = #{REQ_DT} AND SEQ = #{SEQ}  ) + 1
                     , #{STATUS_V}
                     , T1.ITEM_NM
                     , T1.AMT_SIGN
@@ -445,6 +445,7 @@
                   AND REQ_DT  = #{REQ_DT}
                   AND SEQ     = #{SEQ}
                   AND ITEM_CD = #{ITEM_CD}
+                  AND T1.ORDER = #{ORDER}
 	</insert>
 	
 	<update id="updateInvoiceDetailInfo" parameterType="BMap">
@@ -549,7 +550,8 @@
 	     WHERE 1 = 1
 	       AND REQ_DT  = #{REQ_DT}
 	       AND SEQ     = #{SEQ}
-	       AND ITEM_CD = #{ITEM_CD}
+	       AND ITEM_CD = #{PREV_ITEM_CD}
+	       AND TB_REQ_INVOICE.ORDER = #{PREV_ORDER}
 	</delete>
 	
 	<select id="selectPrdInfo" parameterType="BMap" resultType="BMap" >
@@ -755,7 +757,7 @@
 	
 	<update id="updateInvRegDt" parameterType="BMap">
 	    UPDATE TB_REQ_BOOKING_M
-           SET INV_REG_DT = NOW()
+           SET INV_REG_DT = date_format(NOW(),'%Y%m%d')
              , UPD_DTM  = NOW()
              , UPD_ID   = #{LOGIN_USER}
          WHERE REQ_DT   = #{REQ_DT}

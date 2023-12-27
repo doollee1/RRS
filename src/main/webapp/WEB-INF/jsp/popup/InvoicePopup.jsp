@@ -24,7 +24,8 @@
             <button class="btn btn-default" id="btn_close"><i class="fa fa-close"></i><s:message code='button.close'/></button>
             <br><br>
             <p style="text-align:right">
-            <button class="btn btn-default" id="btn_add" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.add'/></button>
+            <button class="btn btn-default" id="btn_addRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.addRow'/></button>
+            <button class="btn btn-default" id="btn_delRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.delRow'/></button>
             </p>
 		</div>
         
@@ -77,7 +78,7 @@ $(function() {
 		fn_ajax(url, true, param, function(data, xhr){
 			
 			$.each(data.result , function(i , val){
-				val.TOT_AMT = parseInt(val.TOT_AMT).toLocaleString();
+				//val.TOT_AMT = parseInt(val.TOT_AMT).toLocaleString();
 				//val.PER_AMT = parseInt(val.PER_AMT).toLocaleString();
 				val.STATUS_V = "R";
 			});
@@ -204,7 +205,7 @@ $(function() {
 				              }
                            }
 						, { name: 'UNIT_NUM', width : 50 , align: 'center' ,  editable:true,edittype:"select" , formatter : "select",  editoptions:{value:'${REF_CHR4}'}}
-						, { name: 'TOT_AMT',  width : 120, align: 'right' ,  editoptions:{readonly: true}}
+						, { name: 'TOT_AMT',  width : 120, align: 'right' ,  formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{readonly: true}}
 						, { name: 'REG_DTM',  width : 140, align: 'center' ,  editoptions:{readonly: true}}
 						, { name: 'UPD_DTM',  width : 140, align: 'center' ,  editoptions:{readonly: true}}
 						, { name: 'PREV_ITEM_CD',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
@@ -214,16 +215,16 @@ $(function() {
 					];
 		
 		var gSetting = {
-		        pgflg:true,
+		        pgflg:false,
 		        exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
-		        colsetting : true,
+		        colsetting : false,
 				searchInit : false,
 				resizeing : true,
 				rownumbers:false,
-				shrinkToFit: true,
+				shrinkToFit: false,
 				autowidth: true,
-				queryPagingGrid:true, // 쿼리 페이징 처리 여부
-				height : 487
+				queryPagingGrid:false, // 쿼리 페이징 처리 여부
+				height : 200
 		};
 		
 		// 그리드 생성 및 초기화
@@ -237,7 +238,7 @@ $(function() {
 		});
 	}
 	
-	$("#btn_add").on("click" , function(){
+	$("#btn_addRow").on("click" , function(){
 		btGrid.gridSaveRow('invoiceGrid');
 		var rowId = $('#invoiceGrid').jqGrid('getGridParam', 'selrow');
 		var rowData = $("#invoiceGrid").getRowData(rowId);
@@ -251,20 +252,43 @@ $(function() {
 		var ids = $("#invoiceGrid").jqGrid("getDataIDs");
 		var gridDataChk = [];
 		var cnt = 0;
+		var errChk=0;
 		
 		for(var i = 0; i < ids.length; i++){
 			gridDataChk.push($("#invoiceGrid").getRowData(ids[i]));
 		}
 
 		var args = '';
-		$.each(gridDataChk , function(i , json){
+		$.each(gridData , function(i , json){
 			$.each(json, function(k , value){
-				if(k == "SEQ" || k == "PREV_ORDER" || k == "PER_AMT" || k == "USE_DAY" || k == "USE_NUM" || k == "TOT_AMT" ){
+				if(k == "STATUS_V" && json[k] !='R'){
+					cnt++;
+					return;
+				}
+			
+				if(k == "ITEM_CD" && json[k].indexOf("Object") >-1 ){
+					errChk++;
+					return;
+				}
+				
+				if(k == "SEQ" || k == "PER_AMT" || k == "USE_DAY" || k == "USE_NUM" || k == "TOT_AMT" ){
 					if(k == "PER_AMT" || k == "TOT_AMT") json[k] = parseInt(value.replaceAll("," , ""));
 					else                                 json[k] = parseInt(value);
 				}
+				
+				
 			});
 		});
+		
+		if(cnt == 0){
+			alert("<s:message code='errors.noChange' javaScriptEscape='false'/>"); 
+			return;
+		}
+		if(errChk > 0){
+			var args = '<s:message code="invoice.item_cd"/>';
+			alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+			return;
+		}
 		
 		for(var i = 0; i < gridDataChk.length; i++){
 			if(fn_empty(gridDataChk[i]["ORDER"])){
@@ -272,7 +296,7 @@ $(function() {
 				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
 				return;
 			}
-			if(fn_empty(gridDataChk[i]["ITEM_CD"]) || gridDataChk[i]["ITEM_CD"].length == 0){
+			if(fn_empty(gridDataChk[i]["ITEM_CD"]) ){
 				args = '<s:message code="invoice.item_cd"/>';
 				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
 				return;
@@ -297,18 +321,8 @@ $(function() {
 				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
 				return;
 			}
+		}
 
-			if(!gridDataChk[i]["STATUS_V"] == 'R'){
-				cnt++;
-			}
-		}
-		
-		if(cnt > 0){
-			args = '<s:message code='system.programcode'/>';
-			alert("<s:message code='errors.saveNull' arguments='" + args + "' javaScriptEscape='false'/>");
-			return;
-		}
-	
 		var url = '/reserve/saveInvoiceManager.do';
 		var param = {"detail"   : gridDataChk
 				   , "SEQ"      : seq 
@@ -325,6 +339,27 @@ $(function() {
 			});
 		}
 	});
+	
+	$("#btn_delRow").on("click" , function(){
+		var rowId =$("#invoiceGrid").jqGrid('getGridParam','selrow');
+		var args = "";
+		if (rowId == null) {
+			args = '<s:message code='title.row'/>';
+    		alert("<s:message code='errors.selectdel' arguments='" + args + "' javaScriptEscape='false'/>");
+
+    		return;
+		}else{
+			var grdData = $("#invoiceGrid").jqGrid("getCell", rowId, "STATUS_V");
+			
+			if(grdData != 'I'){
+				alert("<s:message code='errors.statusR' javaScriptEscape='false'/>"); 
+	    		return;
+	    	} else {
+	    			$("#invoiceGrid").jqGrid("delRowData",rowId);
+	    	}
+		}
+	});
+	
 	//닫기
 	$("#btn_close").on("click" , function(){
 		popupClose($('#p_invoicePopup').data('pid'));
@@ -332,24 +367,34 @@ $(function() {
 	$("#btn_del").on("click" , function(){
 		var rowId   = $('#invoiceGrid').jqGrid('getGridParam', 'selrow');
 		var rowData = $("#invoiceGrid").getRowData(rowId);
+		var args    = "";
 		if(rowId == "" || rowId == null){
     		alert("<s:message code='errors.selectdel' arguments='행(을)' javaScriptEscape='false'/>");
 			return;
 		}
-		var url = '/reserve/deleteInvoiceManager.do';
-		param = { "REQ_DT"  : req_dt
-				, "SEQ"     : seq
-				, "ITEM_CD" : $("#"+rowId+"_ITEM_CD").val()
-		        }
-		if(confirm("<s:message code='confirm.delete'/>")){
-			fn_ajax(url, false, param, function(data, xhr){
-				if(data.resultCd == "-1"){
-					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
-				}else{
-				    alert("<s:message code='info.save'/>");
-					cSearch();
-				}
-			});
+		var grdData = $("#invoiceGrid").jqGrid("getCell", rowId, "STATUS_V");
+		
+		if(grdData == 'I'){
+			alert("<s:message code='errors.statusI' javaScriptEscape='false'/>"); 
+    		return;
+    	}
+		args =  $("#"+rowId+"_ITEM_NM").val()
+		if(confirm("<s:message code='confirm.delRow' arguments='" + args + "' javaScriptEscape='false'/>")){
+			var url = '/reserve/deleteInvoiceManager.do';
+			var param = { "REQ_DT"  : req_dt
+					, "SEQ"     : seq
+					, "ITEM_CD" : $("#invoiceGrid").jqGrid("getCell", rowId, "PREV_ITEM_CD")
+					, "ORDER" 	: $("#invoiceGrid").jqGrid("getCell", rowId, "PREV_ORDER")
+			        }
+			alert($("#invoiceGrid").jqGrid("getCell", rowId, "PREV_ITEM_CD"));
+				fn_ajax(url, false, param, function(data, xhr){
+					if(data.resultCd == "-1"){
+						alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
+					}else{
+					    alert("<s:message code='product.info.delete'/>");
+						cSearch();
+					}
+				});
 		}
 	});
 	
@@ -397,7 +442,7 @@ $(function() {
 		var use_num = $("#"+changeRowId+"_USE_NUM").val();// == undefined ? $(this).jqGrid('getCell', changeRowId ,"USE_NUM") : $("#"+changeRowId+"_USE_NUM").val();
 		var tot_amt = parseInt(per_amt.replaceAll("," , "")) * parseInt(use_day.replaceAll("," , "")) * parseInt(use_num.replaceAll("," , ""));
 		if(per_amt != "" && use_day != "" && use_num != ""){
-			$(this).jqGrid('setCell' , changeRowId , 'TOT_AMT' , tot_amt.toLocaleString());
+			$(this).jqGrid('setCell' , changeRowId , 'TOT_AMT' , tot_amt);
 		}else{
 			$(this).jqGrid('setCell' , changeRowId , 'TOT_AMT' , 0);
 		}
