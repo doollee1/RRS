@@ -90,7 +90,7 @@ $(function(){
 		}
 	});
 });
-
+ 
 function saveProductCopy(){
 	var formData = formIdAllToMap('frmProductCopy');
 	var formData2 = formIdAllToMap('frmSearch');

@@ -166,7 +166,7 @@ function saveProductInfo(){
 				alert("<s:message code='info.save'/>");
 				popupClose($('#productPeriodDetailPopUp').data('pid'));	
 			}
-		});
+		}); 
 	}
 }
 
