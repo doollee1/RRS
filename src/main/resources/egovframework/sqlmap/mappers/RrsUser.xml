@@ -30,6 +30,9 @@
 		<if test='S_USER_NM != null and S_USER_NM != ""'>
 		   AND (HAN_NAME LIKE CONCAT('%',#{S_USER_NM},'%')) OR (ENG_NAME LIKE CONCAT('%',#{S_USER_NM},'%'))
 		</if>
+		<if test='USER_ID != null and USER_ID != ""'>
+		   AND USER_ID = #{USER_ID}
+		</if>
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
 	

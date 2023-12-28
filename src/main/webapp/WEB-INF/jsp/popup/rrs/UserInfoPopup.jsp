@@ -69,6 +69,7 @@
 						<input type="text" id="UPD_DTM" name="UPD_DTM" class="cmc_txt" style="width:150px;" readonly />
 					</td>
 				</tr>
+				<p id="mem_gbn_announce" style="color:#ff7f00; margin-top:4px;"></p>
 			</table>
 		</div>
 	</form>	
@@ -104,18 +105,29 @@ $(function() {
 		open : function() {
 			if(!fn_empty($(this).data("USER_ID"))) {
 				// 회원 수정 팝업인 경우
-				selectUserInfo($(this).data("USER_ID"));
-				$("#USER_ID").attr("readonly", true);
+				selectUserInfo($(this).data("USER_ID"));	// USER_ID로 조회
+				$("#USER_ID").attr("readonly", true);		// USER_ID readonly
 				var reg_dtm = $("#REG_DTM").val();
 				var upd_dtm = $("#UPD_DTM").val();
-				$("#REG_DTM").val(new Date(Number(reg_dtm)).toLocaleDateString());
-				$("#UPD_DTM").val(new Date(Number(upd_dtm)).toLocaleDateString());
+				$("#REG_DTM").val(new Date(Number(reg_dtm)).toLocaleDateString());	// 등록일시 readonly
+				$("#UPD_DTM").val(new Date(Number(upd_dtm)).toLocaleDateString());	// 수정일시 readonly
 				
+				// 연락처 하이픈 처리
 				var tel_no = $("#TEL_NO").val();
 				var convert_tel_no = tel_no.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
 				$("#TEL_NO").val(convert_tel_no);
 				
+				// 회원 구분 disabled
 				$("#MEM_GBN").attr("disabled", true);
+				// 멤버 회원이면 이름, 영문이름, 전화번호 readonly
+				var MEM_GUBUN = $("#MEM_GBN").val();
+				if(MEM_GUBUN == "01") {
+					$("#HAN_NAME").attr("readonly", true);
+					$("#ENG_NAME").attr("readonly", true);
+					$("#TEL_NO").attr("readonly", true);
+					$("#mem_gbn_announce").text("※ 멤버의 이름, 전화번호, 이메일 변경은 멤버정보등록 팝업에서 가능합니다.");
+				}
+				
 			}
 		}
 	});
