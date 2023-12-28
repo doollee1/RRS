@@ -194,7 +194,7 @@
 	/* System.xml -> saveMyMenuList */
 		INSERT INTO SY_MYMENU (USER_ID, PROG_CD, PRIORITY, REG_DT, REG_ID, 
 			    UPT_DT, UPT_ID)
-		VALUES (#{USER_ID}, #{PROG_CD},ISNULL(#{PRIORITY},0), NOW(), #{USER_ID}, 
+		VALUES (#{USER_ID}, #{PROG_CD},IFNULL(#{PRIORITY},0), NOW(), #{USER_ID}, 
 				          NOW(), #{USER_ID})	
 	</insert>
 	

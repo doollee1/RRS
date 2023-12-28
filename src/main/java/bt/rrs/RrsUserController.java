@@ -64,6 +64,10 @@ public class RrsUserController {
 	 */
 	@RequestMapping(value = "/rrs/UserPopup.do")
 	public String UserPopup(ModelMap model,HttpServletRequest request) throws Exception{
+		BMap param = new BMap();
+		param.put("HEAD_CD", 500030);
+		model.addAttribute("mem_gbn"  , rrsUserService.selectGetCommonCode(param));
+		
 		return "/popup/rrs/UserInfoPopup";
 	}
 	
@@ -79,8 +83,11 @@ public class RrsUserController {
 	public BRespData saveUserInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
-		if(!rrsUserService.saveUserInfo(param)){
-			respData.put("isExistMember", "N");
+		
+		BMap result = rrsUserService.saveUserInfo(param);
+		if(!result.getString("result").equals("success")){
+			if(result.getString("result").equals("isExistUser")) respData.put("isExistUser", "Y");
+			if(result.getString("result").equals("isExistMember")) respData.put("isExistMember", "N");
 		}
 		
 		return respData;
