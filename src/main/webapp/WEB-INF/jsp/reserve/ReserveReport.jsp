@@ -117,22 +117,22 @@
 			{name: 'INV_REG_DT', width: 100, align: 'center'},
 			{name: 'DEP_IN_DT', width: 100, align: 'center'},
 			{name: 'DEP_AMT', width: 100, align: 'center'},
-			{name: 'UPD_DTM', width: 100, align: 'center'},
+			{name: 'BAL_IN_DT', width: 100, align: 'center'},
 			{name: 'BAL_AMT', width: 100, align: 'center'},
 			{name: 'PICK_IN', width: 100, align: 'center'},
 			{name: 'PICK_OUT', width: 100, align: 'center'},
 			{name: 'FLIGHT_IN', width: 100, align: 'center'},
 			{name: 'FLIGHT_OUT', width: 100, align: 'center'},
-			{name: 'PER_NUM', width: 100, align: 'center'},
+			{name: 'TOT_PERSON', width: 100, align: 'center'},
 			{name: 'CNT_D1', width: 100, align: 'center'},
 			{name: 'CNT_D2', width: 100, align: 'center'},
 			{name: 'CNT_P1', width: 100, align: 'center'},
 			{name: 'CNT_P1', width: 100, align: 'center'},
-			{name: 'weekday', width: 100, align: 'center'},
-			{name: 'sat_morning', width: 100, align: 'center'},
-			{name: 'sat_afternoon', width: 100, align: 'center'},
-			{name: 'sun_morning', width: 100, align: 'center'},
-			{name: 'sun_afternoon', width: 100, align: 'center'},
+			{name: 'ROUNDING_WEEK', width: 100, align: 'center'},
+			{name: 'ROUNDING_SAT_MORNING', width: 100, align: 'center'},
+			{name: 'ROUNDING_SAT_AFTERNOON', width: 100, align: 'center'},
+			{name: 'ROUNDING_SUN_MORNING', width: 100, align: 'center'},
+			{name: 'ROUNDING_SUN_AFTERNOON', width: 100, align: 'center'},
 		];
 		
 		var gSetting = {
@@ -157,7 +157,7 @@
 			groupHeaders: [
 				{startColumnName: 'REQ_HAN_NM', numberOfColumns: 2, titleText: '예약자'},
 				{startColumnName: 'DEP_IN_DT', numberOfColumns: 2, titleText: '예약금'},
-				{startColumnName: 'UPD_DTM', numberOfColumns: 2, titleText: '잔금'},
+				{startColumnName: 'BAL_IN_DT', numberOfColumns: 2, titleText: '잔금'},
 				{startColumnName: 'PICK_IN', numberOfColumns: 2, titleText: '픽업차량'},
 				{startColumnName: 'FLIGHT_IN', numberOfColumns: 2, titleText: '항공편'},
 				{startColumnName: 'CNT_D1', numberOfColumns: 4, titleText: '리조트(숙박)'},
@@ -167,13 +167,14 @@
 	}
 
 	function cSearch(currentPage) {
-		var url = "/reserve/reserveReportInfoList.do";
+		var url = "/reserve/reserveReportSelectList.do";
 		var formData = {"SEARCH_DT": $("#SEARCH_DT").val().replaceAll(/\./gi, '').substr(0,6)};
 		var param = {"param":formData};
 		console.log('param: ', param)
 		fn_ajax(url, true, param, function(data, xhr) {
+			console.log('result data: ', data)
 		    reloadGrid("reserveReportGrid", data.result);
-			btGrid.gridQueryPaging($('#reserveReportGrid'), 'cSearch',data.result);
+			btGrid.gridQueryPaging($('#reserveReportGrid'), 'cSearch', data.result);
 			var colModel = $("#reserveReportGrid").jqGrid('getGridParam','colModel');
 			for (var i = 0; i < data.result.length; i++) {
 				jQuery("#reserveReportGrid").setCell(i + 1);

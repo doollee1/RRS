@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ReserveReportMapper">
+	<select id="reserveReportSelectList" parameterType="BMap" resultType="BMap">
+    <include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+	    SELECT 
+			ROW_NUMBER() OVER(ORDER BY T1.REQ_DT ASC, T1.SEQ ASC) AS ROWNUM
+			,T1.REQ_DT
+			,T1.SEQ
+			,T1.USER_ID
+			,T1.MEM_GBN
+			,(
+				SELECT CODE_NM
+				FROM BC_COMM_L
+				WHERE 1=1
+				AND HEAD_CD = '500030'
+				AND CODE = T1.MEM_GBN
+			) AS MEM_NM /* 회원 구분 */
+			,T1.CONFIRM_NO /* 리조트 CF 번호 */
+			,T1.REQ_HAN_NM /* 예약자 한글 */
+			,T1.REQ_ENG_NM /* 예약자 영문 */
+			,T1.INV_REG_DT /* 인보이스 발행일자 */
+			,T2.DEP_IN_DT /* 예약금 입금 일자 */
+			,T2.DEP_AMT /* 예약금 금액 */
+			,T2.BAL_IN_DT /* 잔금 입금 일자 */
+			,T2.BAL_AMT /* 잔금 금액 */
+			,T1.PICK_IN /* 픽업 차량 도착 */
+			,T1.PICK_OUT /* 픽업 차량 출발 */
+			,T1.FLIGHT_IN /* 항공편 도착 */
+			,T1.FLIGHT_OUT /* 항공편 출발 */
+			,T1.TOT_PERSON /* 예약 인원 */
+			,T1.CNT_D1 /* 숙박 트윈 */
+			,T1.CNT_D2 /* 숙박 더블 */
+			,T1.CNT_P1 /* 숙박 프리미엄트윈 */
+			,T1.CNT_P2 /* 숙박 프리미엄킹 */
+			,T1.BAS_YY
+			,T1.PROD_SEQ
+			,T3.HDNG_GBN /* 상품 항목 구분 */
+			,(
+				SELECT REF_NUM1
+				FROM BC_COMM_L
+				WHERE 1=1
+				AND HEAD_CD = '500030'
+				AND CODE = T3.HDNG_GBN
+			) AS ROUNDING_WEEK /* 라운딩 평일 */
+			,(
+				SELECT REF_NUM2
+				FROM BC_COMM_L
+				WHERE 1=1
+				AND HEAD_CD = '500030'
+				AND CODE = T3.HDNG_GBN
+			) AS ROUNDING_SAT /* 라운딩 토 */
+			,(
+				SELECT REF_NUM3
+				FROM BC_COMM_L
+				WHERE 1=1
+				AND HEAD_CD = '500030'
+				AND CODE = T3.HDNG_GBN
+			) AS ROUNDING_SUN /* 라운딩 일 */
+			,T1.RND_CHG_YN1 /* 라운딩변경(토오전)여부 */
+			,T1.RND_CHG_YN2 /* 라운딩변경(일오전)여부 */
+			,T1.REMARK /* 비고(추가요구사항) */
+		FROM TB_REQ_BOOKING_M T1
+			LEFT JOIN tb_req_fee T2
+			ON T1.REQ_DT = T2.REQ_DT AND T1.SEQ = T2.REQ_SEQ
+			LEFT JOIN tb_prod_info T3
+			ON T1.BAS_YY = T3.BAS_YY AND T1.PROD_SEQ = T3.PROD_SEQ
+		WHERE DATE_FORMAT(T1.CHK_IN_DT,'%Y%m') = #{SEARCH_DT}
+    <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	</select>
+	
+</mapper>
