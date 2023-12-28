@@ -735,7 +735,7 @@
              , #{LOGIN_USER}
              )
 	</insert>
-	
+	 
 	<insert id="insertFeeInfoDetail" parameterType="BMap">
    INSERT INTO TB_REQ_FEE
              ( REQ_DT     /* 예약일자       */
