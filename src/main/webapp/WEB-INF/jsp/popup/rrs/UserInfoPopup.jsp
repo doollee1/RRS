@@ -24,10 +24,9 @@
 					<th>회원타입</th>
 					<td>
 						<select id="MEM_GBN" name="MEM_GBN" class="cmc_combo" style="width:150px;">
-							<option value="01">멤버</option>
-							<option value="02">일반</option>
-							<option value="03">교민</option>
-							<option value="04">에이전시</option>
+							<c:forEach var="i" items="${mem_gbn}">
+							    <option value="${i.CODE}">${i.CODE_NM}</option>
+						    </c:forEach>
 						</select>
 					</td>
 					<th>이름</th>

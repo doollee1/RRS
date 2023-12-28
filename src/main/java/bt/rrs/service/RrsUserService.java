@@ -32,6 +32,16 @@ public class RrsUserService {
 	}
 	
 	/**
+	 * 공통코드 리스트 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> selectGetCommonCode(BMap param) throws Exception {
+		return rrsUserDao.selectGetCommonCode(param);
+	}
+	
+	/**
 	 * 회원 정보 저장
 	 * @param param
 	 * @throws Exception

@@ -21,6 +21,17 @@ public class RrsUserDao extends DBAbstractMapper {
 	}
 	
 	/**
+	 * 공통코드 리스트 가져오기
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> selectGetCommonCode(BMap param) throws Exception{
+		return list("RrsUserMapper.selectGetCommonCode", param);
+	}
+	
+	/**
 	 * 회원 정보 추가
 	 * @param param
 	 * @throws Exception

@@ -64,6 +64,10 @@ public class RrsUserController {
 	 */
 	@RequestMapping(value = "/rrs/UserPopup.do")
 	public String UserPopup(ModelMap model,HttpServletRequest request) throws Exception{
+		BMap param = new BMap();
+		param.put("HEAD_CD", 500030);
+		model.addAttribute("mem_gbn"  , rrsUserService.selectGetCommonCode(param));
+		
 		return "/popup/rrs/UserInfoPopup";
 	}
 	

@@ -33,6 +33,28 @@
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
 	
+	<select id="selectGetCommonCode" parameterType="Bmap" resultType="Bmap">
+	    SELECT T1.CODE , T1.CODE_NM
+          FROM BC_COMM_L T1
+          JOIN BC_COMM_H T2 ON T2.HEAD_CD = /**/ T1.HEAD_CD
+         WHERE 1 = 1
+           AND T1.HEAD_CD = #{HEAD_CD}
+       <if test="REF_CHR1 != null and REF_CHR1 != ''">
+	  	   AND T1.REF_CHR1 = #{REF_CHR1}
+	   </if>
+	   <if test="CODE != null and CODE != ''">
+	  	   AND T1.CODE > #{CODE}
+	   </if>
+	   <choose>
+	       <when test="ORDER_GBN != null and ORDER_GBN != ''">
+	           ORDER BY T1.REF_CHR5
+	       </when>
+	       <otherwise>
+               ORDER BY T1.CODE
+	       </otherwise>
+	   </choose>
+	</select>
+	
 	<select id="selectUserInfoCnt" parameterType="BMap" resultType="int">
 		SELECT COUNT(1)
 		  FROM TB_MEMBER 
