@@ -9,7 +9,7 @@
 %>
 
 <c:import url="../import/frameTop.jsp">
-	<c:param name="progcd" value="Product" />
+	<c:param name="progcd" value="Pr01" />
 </c:import>
 
 <!-- dummy -->
@@ -99,15 +99,23 @@
 //초기 로드
 $(function() {
 		
-	//미리보기, 기준년도관리, 조회, 등록, 닫기 버튼
-	$("#divBtn").append("<button class='cBtnclass cBtnPut_style' id='cBtnPut' type='button' onclick=''>미리보기</button>");
-	$("#divBtn").append("<button class='cBtnclass cBtnEdit_style' id='cBtnPeriod' type='button' onclick='cPeriod()'>기준년도관리</button>");
-    $("#divBtn").append("<button class='cBtnclass cBtnSearch_style' id='cBtnSearch' type='button' onclick='cSearch();'>조회</button>");
-    $("#divBtn").append("<button class='cBtnclass cBtnAdd_style' id='cBtnAdd' type='button' onclick='cAdd();'>등록</button>");
-    $("#divBtn").append("<button class='cBtnclass cBtnCancel_style' id='cBtnCancel' type='button' onclick='cCancel();'>닫기</button>");
-	    
+	//미리보기, 기준년도관리, 조회, 등록
+// 	$("#divBtn").append("<button class='cBtnclass cBtnPut_style' id='cBtnPut' type='button' onclick=''>미리보기</button>");
+// 	$("#divBtn").append("<button class='cBtnclass cBtnEdit_style' id='cBtnPeriod' type='button' onclick='cPeriod()'>기준년도관리</button>");
+//     $("#divBtn").append("<button class='cBtnclass cBtnSearch_style' id='cBtnSearch' type='button' onclick='cSearch();'>조회</button>");
+//     $("#divBtn").append("<button class='cBtnclass cBtnAdd_style' id='cBtnAdd' type='button' onclick='cAdd();'>등록</button>");
+	
+	$('#cBtnSearch').text("조회");
+	$('#cBtnAdd').text("등록");
+	$('#cBtnUser1').text("미리보기").addClass("cBtnclass cBtnPut_style").click(function(e){
+		alert("미리보기");
+	});
+	$('#cBtnUser2').text("기준년도관리").addClass("cBtnclass cBtnEdit_style").click(function(e){
+		cPeriod();
+	});
+	
     //즐겨찾기 숨기기
-    $("#cBtnUser6").hide();
+//     $("#cBtnUser6").hide();
     
     //초기 진입시 시작 (그리드그리기와 조회)
 	createGrid();
@@ -235,7 +243,6 @@ function cSearch(currentPage){
 		cBtnCopy.disabled = true;
 	}
 	vRowsPerPage = btGrid.getGridRowSel('grid1_pager');
-	btGrid.gridResizing('grid1');
 }
 
 //그리드 더블클릭 - 상세조회
@@ -273,7 +280,7 @@ function grid1_ondblClickRow(rowid, iRow, iCol, e){
 function cAdd(){
 	productDetailPopUp();
 }
-	
+
 //상세조회 및 등록 팝업
 function productDetailPopUp(param){
 	var url = "/popup/ProductDetailPopUp.do";
@@ -290,7 +297,7 @@ function cPeriod(param){
 	var pid = "productPeriodPopUp";	//팝업 페이지의 최상위 div ID
 	
 	popupOpen(url, pid, param, function(data){
-// 		jQuery("#grid1").trigger("reloadGrid");
+		cSearch();
 	});
 }
 
@@ -305,7 +312,7 @@ function cCopy(param){
 	}
 	
 	popupOpen(url, pid, param, function(data){
-// 		jQuery("#grid1").trigger("reloadGrid");
+		cSearch();
 	});
 }
 	

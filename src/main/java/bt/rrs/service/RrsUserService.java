@@ -32,27 +32,51 @@ public class RrsUserService {
 	}
 	
 	/**
+	 * 공통코드 리스트 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> selectGetCommonCode(BMap param) throws Exception {
+		return rrsUserDao.selectGetCommonCode(param);
+	}
+	
+	/**
 	 * 회원 정보 저장
 	 * @param param
 	 * @throws Exception
 	 */
-	public Boolean saveUserInfo(BMap param) throws Exception{
+	public BMap saveUserInfo(BMap param) throws Exception{
+		BMap bMap = new BMap();
+		
 		String MEM_GBN = param.getString("MEM_GBN");
-		if(MEM_GBN.equals("01")) {
+		if(MEM_GBN.equals("01")) {	// 멤버 회원이면 멤버테이블에 있는지 검사
 			int memberUserCnt = rrsUserDao.selectMemberUserCnt(param);
-			if(memberUserCnt == 0) {
-				return false;
+			if(memberUserCnt == 0) {	// 멤버테이블에 등록된 회원이 없으면 return false
+				bMap.put("result", "isExistMember");
+				return bMap;
 			}
 		}
 		
-		int cnt = rrsUserDao.selectUserInfoCnt(param); //현 ID가 등록된 ID인지 카운트 
-		if(cnt == 0) {
-			param.put("PASSWD", "1234");
-			rrsUserDao.insertUserInfo(param); //등록되지 않았을 때 등록
+		String isNew = param.getString("isNew");
+	
+		int cnt = rrsUserDao.selectUserInfoCnt(param); //현 ID가 등록된 ID인지 카운트
+		if(isNew.equals("Y")) {
+			// 신규 입력인 경우
+			if(cnt == 0) {
+				param.put("PASSWD", "1234");
+				rrsUserDao.insertUserInfo(param); //등록되지 않았을 때 등록
+			} else {
+				bMap.put("result", "isExistUser");
+				return bMap;
+			}
 		} else {
+			// 수정인경우
 			rrsUserDao.updateUserInfo(param); //등록된 사용자 정보 수정
 		}
-		return true;
+		
+		bMap.put("result", "success");
+		return bMap;
 	}
 	
 	/**

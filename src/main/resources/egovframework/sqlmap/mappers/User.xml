@@ -3,9 +3,9 @@
 
 <mapper namespace="UserMapper">
 	<select id="selectUserInfo" parameterType="BMap" resultType="BMap">
-	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
+	<include refid="page.pagingPre"/> 
 	/* User.xml -> selectUserInfo */
-		SELECT ROW_NUMBER() OVER(ORDER BY A.USER_ID) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.USER_ID) ROWNUM 
 			  ,A.COMP_CD
 			  ,A.USER_ID
 			  ,A.NAME_1ST
@@ -60,7 +60,88 @@
             ON A.COMP_CD = D.COMP_CD 
            AND A.DEPT_cD = D.DEPT_CD
 		 WHERE 1 = 1
-		   <!-- AND USER_TP != '03' --> <!-- OM/KAM 외에는 조회안되도록 수정 -->
+		 AND USER_TP != '03'
+		<if test='G_COMP_CD != null and G_COMP_CD != ""'>
+		   AND A.COMP_CD = #{G_COMP_CD}
+		</if>
+		<if test='COMP_CD != null and COMP_CD != ""'>
+		   AND A.COMP_CD = #{COMP_CD}
+		</if>
+		<if test='S_USER_NM != null and S_USER_NM != ""'>
+		   AND A.NAME_1ST LIKE CONCAT('%',#{S_USER_NM},'%')
+		</if>
+		<if test='S_USER_ID != null and S_USER_ID != ""'>
+		   AND A.USER_ID LIKE CONCAT('%',#{S_USER_ID},'%')
+		</if>
+		<if test='USER_ID != null and USER_ID != ""'>
+		   AND A.USER_ID = #{USER_ID}
+		</if>
+		<if test='DEPT_CD != null and DEPT_CD != ""'>
+		   AND A.DEPT_CD = #{DEPT_CD}
+		</if>
+	<include refid="page.pagingPost"/>
+	</select>
+
+	<!-- 
+	<select id="selectUserInfo" parameterType="BMap" resultType="BMap">
+	<include refid="page.pagingPre"/> 
+	/* User.xml -> selectUserInfo */
+		SELECT ROW_NUMBER() OVER(ORDER BY A.USER_ID) ROWNUM 
+			  ,A.COMP_CD
+			  ,A.USER_ID
+			  ,A.NAME_1ST
+			  ,A.NAME_2ND
+			  ,A.NAME_FULL
+			  ,A.USER_TP
+			  ,B.CODE_NM USER_TP_NM
+			  ,A.USER_GD
+			  ,A.DEPT_CD
+			  ,CASE WHEN #{LANG} = 'FR' THEN D.DEPT_FR
+			        WHEN #{LANG} = 'EN' THEN D.DEPT_EN
+			    	ELSE D.DEPT_NM END AS DEPT_NM
+			  ,A.CUST_CD
+			  ,A.WEB_ID
+			  ,A.TEL_NO
+			  ,CONCAT(A.STR_NM,' ',A.HAUS_NO) AS ADDR
+			  ,A.STR_NM
+			  ,A.HAUS_NO
+			  ,A.ZIP_NO
+			  ,A.ORT_NM
+			  ,A.REGION_CD
+			  ,GETCODENM('LANG_CD', A.LANG_CD, #{LANG}) AS LAMG_NM
+			  ,A.LAND_CD
+			  ,A.E_MAIL
+			  ,A.PW_CURR
+			  ,A.PW_PAST1
+			  ,A.PW_PAST2
+			  ,A.PW_PAST3
+			  ,A.WRONG_CNT
+			  ,A.LOCK_YN
+			  ,A.AREA_CD
+			  ,A.AUTH_GR
+			  ,A.LANG_CD
+			  ,A.CRE_TP
+			  ,A.START_DT START_DT
+			  ,A.STOP_DT STOP_DT
+			  ,A.STATUS
+			  ,C.CODE_NM STATUS_NM
+			  ,A.REG_DT
+			  ,A.REG_ID
+			  ,A.UPT_DT
+			  ,A.UPT_ID
+			  ,A.CHAT_ID
+		  FROM BC_USER A 
+	INNER JOIN BC_COMM_L B 
+			ON A.USER_TP = B.CODE
+		   AND B.HEAD_CD = '100200'
+	INNER JOIN BC_COMM_L C 
+			ON A.STATUS = C.CODE
+		   AND C.HEAD_CD = '100300'
+     LEFT JOIN BC_DEPT D 
+            ON A.COMP_CD = D.COMP_CD 
+           AND A.DEPT_cD = D.DEPT_CD
+		 WHERE 1 = 1
+		 AND USER_TP != '03'
 		<if test='G_COMP_CD != null and G_COMP_CD != ""'>
 		   AND A.COMP_CD = #{G_COMP_CD}
 		</if>
@@ -79,8 +160,9 @@
 		<if test='DEPT_CD != null and DEPT_CD != ""'>
 		   AND A.DEPT_CD = #{DEPT_CD}
 		</if>
-	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
+	<include refid="page.pagingPost"/>
 	</select>
+	-->
 	
 	<insert id="insertUserInfo" parameterType="BMap">
 		INSERT INTO BC_USER
