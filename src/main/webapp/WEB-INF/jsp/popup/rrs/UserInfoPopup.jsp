@@ -157,15 +157,14 @@ function saveUserInfo(){
 	
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
-			console.log('data: ', data)
 			if(data.isExistUser == 'Y'){
 				alert("기존에 등록된 아이디 입니다.");
 			} else if(data.isExistMember == 'N') {
 				alert("멤버회원이 등록되어 있지 않습니다."); 
 			} else {
 				alert("<s:message code='info.save'/>");
+				popupClose($('#p_UserInfo').data('pid'));			
 			}
-			popupClose($('#p_UserInfo').data('pid'));			
 		});
 	}
 }
