@@ -30,6 +30,11 @@
                AND HEAD_CD = '500020'
                AND CODE = T1.PRC_STS) AS STATE_NM /* 상태구분              */
          , T1.AGN_CD                              /* 에이전시코드          */
+         , (SELECT CODE_NM
+	          FROM BC_COMM_L
+	         WHERE 1 = 1
+	           AND HEAD_CD = '500120'
+	           AND CODE = T1.AGN_CD)  AS AGN_CD_NM /* 에이전시구분           */
          , T1.PRC_STS                             /* 예약상태              */
          , T1.CHK_IN_DT                           /* 체크인일자            */
          , T1.CHK_OUT_DT                          /* 체크아웃일자          */
@@ -735,14 +740,16 @@
              , #{LOGIN_USER}
              )
 	</insert>
-	
+	 
 	<insert id="insertFeeInfoDetail" parameterType="BMap">
    INSERT INTO TB_REQ_FEE
              ( REQ_DT     /* 예약일자       */
              , REQ_SEQ	  /* 순번           */
              , DEP_IN_DT  /* 예약금입금일자 */
+             , EXP_DT     /* 예약기한       */
              , DEP_AMT	  /* 예약금액       */
              , BAL_AMT	  /* 잔금           */
+             , BAL_IN_DT  /* 잔금기한       */
              , DCT_AMT	  /* 할인금액       */
              , PAY_AMT	  /* 입금금액       */
              , TOT_AMT	  /* 총액           */
@@ -754,8 +761,10 @@
       VALUES ( #{REQ_DT  }
              , #{SEQ     }
              , #{DEP_IN_DT}
+             , #{EXP_DT}
              , #{DEP_AMT}
              , #{BAL_AMT}
+             , #{BAL_IN_DT}
              , #{DCT_AMT}
              , #{PAY_AMT}
              , #{TOT_AMT}
@@ -789,6 +798,7 @@
 	<update id="updateInvRegDt" parameterType="BMap">
 	    UPDATE TB_REQ_BOOKING_M
            SET INV_REG_DT = date_format(NOW(),'%Y%m%d')
+             , PRC_STS  = '05'
              , UPD_DTM  = NOW()
              , UPD_ID   = #{LOGIN_USER}
          WHERE REQ_DT   = #{REQ_DT}
@@ -811,8 +821,7 @@
 		   AND REQ_SEQ  = #{SEQ}
 	</select>
 	
-	<insert id="insertReserveInfo" parameterType="BMap">
-	
+	<insert id="insertReserveInfo" parameterType="BMap"> 
 	<![CDATA[
 		INSERT INTO TB_REQ_BOOKING_M
 		          ( REQ_DT
@@ -869,7 +878,7 @@
 		          , #{REQ_TEL_NO      }
 		          , #{MEM_GBN         }
 		          , #{AGN_CD          }
-		          , (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' WHEN #{MEM_GBN} = '04' THEN '21' ELSE NULL END )
+		          , (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' ELSE NULL END )
 		          , #{CHK_IN_DT       }
 		          , #{CHK_OUT_DT      }
 		          , #{ROOM_TYPE       }
@@ -943,7 +952,7 @@
 		     , REQ_TEL_NO     = #{REQ_TEL_NO      }
 		     , MEM_GBN        = #{MEM_GBN         }
 		     , AGN_CD         = #{AGN_CD          }
-		     , PRC_STS        = (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' WHEN #{MEM_GBN} = '04' THEN '21' ELSE NULL END )
+		     , PRC_STS        = (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' ELSE NULL END )
 		     , CHK_IN_DT      = #{CHK_IN_DT       }
 		     , CHK_OUT_DT     = #{CHK_OUT_DT      }
 		     , ROOM_TYPE      = #{ROOM_TYPE       }

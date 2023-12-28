@@ -12,9 +12,13 @@
 <div id="p_reserveRegi">
 	<form id="frmReserveInfo" action="#">
 		<div id="pop_ct_form_wrap">
-			<input type="hidden" name="PRC_STS"    id="PRC_STS"    value="" />
-			<input type="hidden" name="PRC_STS_NM" id="PRC_STS_NM" value="" />
-			<input type="hidden" name="EMAIL"      id="EMAIL"      value="" />  
+			<input type="hidden" name="PRC_STS"      id="PRC_STS"    value="" />
+			<input type="hidden" name="PRC_STS_NM"   id="PRC_STS_NM" value="" />
+			<input type="hidden" name="EMAIL"        id="EMAIL"      value="" />  
+			<input type="hidden" name="PAY_AMT"  id="PRV_PAY_AMT"      value="" />  
+			<input type="hidden" name="DCT_AMT"  id="PRV_DCT_AMT"      value="" />  
+			<input type="hidden" name="BAL_AMT"  id="PRV_BAL_AMT"      value="" />  
+			
 			<table class="pop_tblForm">
 				<colgroup>
 					<col width="20%" />
@@ -227,7 +231,7 @@
 				<tr>
 				    <th><s:message code='reservation.totalPrice'/></th>
 				    <td>
-				        <input type="text" id="TOT_AMT" name="TOT_AMT" style="text-align: right" value="0" class="withComma"/>원
+				        <input type="text" id="TOT_AMT" name="TOT_AMT" style="text-align: right" value="0" class="withComma" readonly="readonly"/>원
 				    </td>
 					<th><s:message code='reservation.payAmt'/></th>
 				    <td>
@@ -242,7 +246,7 @@
 				    <th><s:message code='reservation.balancePrice'/></th>
 				    <td>
 				        <div style="display:inline-flex;" >
-					        <input type="text" id="BAL_AMT" name="BAL_AMT" style="text-align: right" value="0" class="withComma"/>원
+					        <input type="text" id="BAL_AMT" name="BAL_AMT" style="text-align: right" value="0" class="withComma" readonly="readonly"/>원
 				            <button type="button" class="pbtn_default openPop" id="btn_deposit">입금완료</button>
 			            </div>
 			        </td>
@@ -324,17 +328,20 @@ $(function() {
 	});
     
 	$('#MEM_GBN').change(function() {
-		if($(this).val() != '04'){
-			if($(this).val() == '03'){
+		if($(this).val() != '02'){ // 01,03
+			if($(this).val() == '03'){ // 03
 				isDisabled(true);
-			}else{
+			}else{ //01
 				isDisabled(false);
 			}
 			$("#AGN_CD").attr("disabled", true);
-		}else{
+		}else if($(this).val() == '03'){
 			isDisabled(true);
 			$("#AGN_CD").attr("disabled", false);
+		}else{
+			isDisabled(false);
 		}
+		
 	});
 	
 	function fn_init(receivedData){
@@ -379,12 +386,12 @@ $(function() {
 	
 	
 	function fn_dataSet(data){
-		console.log(data);
     	$.each(data, function(key , val){
     		if(key == "TOT_PERSON"  || key == "R_PERSON"    || key == "N_PERSON"    || key == "K_PERSON"    || key == "ADD_R_S_PER" ||
         	   key == "ADD_R_S_DAY" || key == "ADD_R_S_CNT" || key == "ADD_R_S_CNT" || key == "ADD_R_P_PER" || key == "ADD_R_P_DAY" || 
         	   key == "ADD_R_P_CNT" || key == "CNT_D1"      || key == "CNT_D2"      || key == "CNT_P1"      || key == "CNT_P2"      ||
-        	   key == "TOT_AMT"     || key == "DCT_AMT"     || key == "BAL_AMT"     || key == "DEP_AMT"     || key == "PAY_AMT"){
+        	   key == "TOT_AMT"     || key == "DCT_AMT"     || key == "BAL_AMT"     || key == "DEP_AMT"     || key == "PAY_AMT"     ||
+        	   key == "PRV_DCT_AMT" || key == "PRV_BAL_AMT" || key == "PRV_PAY_AMT"){
     			$('[name='+ key +']').val (fn_comma(val));
     		}else if(key == "REQ_TEL_NO"){
 	    		$('[name='+ key +']').val (formatPhoneNumber(val));
@@ -474,6 +481,7 @@ $(function() {
 		           , "MEM_GBN"    : $("#MEM_GBN").val()
  		           };
 		popupOpen(url, pid, param, function(data) {
+			initSelect();
 		});
 	}
 	
@@ -644,9 +652,7 @@ $(function() {
 			            ,"REQ_DT"    : req_dt};
 			fn_ajax(url, false, param, function(data, xhr){
 				if(!data.result){
-					console.log("11");
 				}else{ //같을때
-					console.log("22");
 				}
 			});
 		}
@@ -686,14 +692,6 @@ $(function() {
 		if(fn_empty(mem_gbn)){
 			alert("회원구분을 선택해주세요.");
 			return false;
-		}
-		
-		if(mem_gbn == "04"){
-			var agn_cd = $("#AGN_CD").val(); 
-			if(fn_empty(agn_cd)){
-				alert("에이전시를 선택해주세요.");
-				return false;
-			}
 		}
 		
 		var chk_in_dt = $("#CHK_IN_DT").val();
@@ -746,11 +744,15 @@ $(function() {
 		}
 		
 		var confirm_no = $("#CONFIRM_NO").val();
-		if(fn_empty(confirm_no)){
-			alert("리조트컨펌번호를 입력해주세요.");
-			return false;
+		var prc_sts    = $("#PRC_STS").val();
+		if(mem_gbn == "01" || mem_gbn == "02"){
+			if(!fn_emtpy(prc_sts) && prc_sts == "06"){
+				if(fn_empty(confirm_no)){
+					alert("리조트컨펌번호를 입력해주세요.");
+					return false;
+				}
+			}
 		}
-		
 		var r_person = parseInt($("#R_PERSON").val());
 		var n_person = parseInt($("#N_PERSON").val());
 		var k_person = parseInt($("#K_PERSON").val());
@@ -782,17 +784,19 @@ $(function() {
 			    return false;
 			}
 		}
-		
-		var pick_in = $("#PICK_IN").val();
-		if(fn_empty(pick_in)){
-			alert("픽업차량-도착을 선택해주세요.");
-			return false;
-		}
-		
-		var pick_out = $("#PICK_OUT").val();
-		if(fn_empty(pick_out)){
-			alert("픽업차량-출발을 선택해주세요.");
-			return false;
+		var pick_gbn = $("#PICK_GBN").val();
+		if(pick_gbn != "01"){
+			var pick_in = $("#PICK_IN").val();
+			if(fn_empty(pick_in)){
+				alert("픽업차량-도착을 선택해주세요.");
+				return false;
+			}
+			
+			var pick_out = $("#PICK_OUT").val();
+			if(fn_empty(pick_out)){
+				alert("픽업차량-출발을 선택해주세요.");
+				return false;
+			}
 		}
 		
 		return true;
@@ -809,8 +813,45 @@ $(function() {
 		tmpValue = tmpValue.replace(/[,]/g,'');
 		// 천단위 콤마 처리 후 값 강제변경
 	    $(this).val(numberWithCommas(tmpValue));
-		
 	});
+	
+	$("#DCT_AMT").on("keyup", function(){
+		var prv_dct_amt = $("#PRV_DCT_AMT").val();
+		var prv_bal_amt = $("#PRV_BAL_AMT").val();
+		var dct_amt = fn_uncomma($(this).val());
+		var tot_amt = fn_uncomma($("#TOT_AMT").val());
+		var pay_amt = fn_uncomma($("#PAY_AMT").val());
+		var dep_amt = fn_uncomma($("#DEP_AMT").val());
+		var bal_amt;
+		
+		bal_amt = tot_amt - dct_amt - pay_amt - dep_amt;
+		if(dct_amt > tot_amt){
+			$(this      ).val(prv_dct_amt);
+			$("#BAL_AMT").val(prv_bal_amt);
+			alert("금액을 확인해주세요.");
+			return false;
+		}
+		$("#BAL_AMT").val(fn_comma(bal_amt));
+	})
+	
+	$("#PAY_AMT").on("keyup", function(){
+		var prv_bal_amt = $("#PRV_BAL_AMT").val();
+		var prv_pay_amt = $("#PRV_PAY_AMT").val();
+		var prv_amt = $(this).val();
+		var dct_amt = fn_uncomma($("#DCT_AMT").val());
+		var tot_amt = fn_uncomma($("#TOT_AMT").val());
+		var pay_amt = fn_uncomma($(this).val());
+		var dep_amt = fn_uncomma($("#DEP_AMT").val());
+		var bal_amt;
+		bal_amt = tot_amt - dct_amt - pay_amt - dep_amt;
+		if(bal_amt < 0 ){
+			$(this      ).val(prv_pay_amt);
+			$("#BAL_AMT").val(prv_bal_amt);
+			alert("금액을 확인해주세요.");
+			return false;
+		}
+		$("#BAL_AMT").val(fn_comma(bal_amt));
+	})
 	
 	$("#btn_create").click(function(){
 		//if(!openPopVali($(this))) return;
@@ -867,7 +908,7 @@ $(function() {
 	                };
 	    
 		popupOpen(url, pid, param, function(data) {
-			 
+			initSelect();
 		});
 	});	
 
@@ -899,7 +940,6 @@ $(function() {
 	                };
 	    if(confirm("<s:message code='confirm.deposit'/>")){
 			fn_ajax(url, false, param, function(data, xhr){
-				console.log(data);
 				if(data.result.resultCd == "0000"){
 					alert("입금처리 완료되었습니다.");
 					$("#PAY_AMT").val(fn_comma(param.PAY_AMT + param.BAL_AMT));
