@@ -33,6 +33,7 @@
 				</td>
 			</tr>
 		</table>
+		<h4>※예약확정은 입금완료로 처리됩니다.</h4>
 	</div>
 </div>
 
@@ -87,19 +88,15 @@ $(function() {
 				vhtml += '<option value="" >--<s:message code="system.select"/>--</option>'
 				$.each(data.result , function ( i , v){
 					if(mem_gbn == "01"){ // 멤버 
-                        if((parseInt(v.CODE) <= 10) && v.CODE != "02"){
+                        if((parseInt(v.CODE) <= 10) && v.CODE != "02" && v.CODE != "06"){
                         	vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
                         }
 					}else if(mem_gbn == "02"){ // 일반
-						if((parseInt(v.CODE) <= 10) && v.CODE != "02"){	
+						if((parseInt(v.CODE) <= 10) && v.CODE != "02" && v.CODE != "06"){	
                         	vhtml += '<option value = '+ v.CODE+'>'+v.CODE_NM+'</option>';
                         }
 					}else if(mem_gbn == "03"){ //교민
 						if(((10 < parseInt(v.CODE)) && (parseInt(v.CODE) <= 20)) || v.CODE == "96"){
-							vhtml += '<option value = '+ v.CODE +'>'+v.CODE_NM+'</option>';
-						}
-					}else if(mem_gbn == "04"){ //에이전시
-						if(((20 < parseInt(v.CODE)) && (parseInt(v.CODE) <= 30)) || v.CODE == "96" ){
 							vhtml += '<option value = '+ v.CODE +'>'+v.CODE_NM+'</option>';
 						}
 					}

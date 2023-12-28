@@ -397,6 +397,10 @@ public class ReserveService {
 		BMap result = new BMap();
 		try {
         	reserveDao.depositComplete(param);
+        	
+        	param.put("CHG_PRC_STS", "06");
+        	param.put("SEQ", param.getInt("REQ_SEQ"));
+        	reserveDao.updateReserveStatus(param);
         	result.put("resultCd", "0000");
 		} catch (Exception e) {
 		    // TODO: handle exception

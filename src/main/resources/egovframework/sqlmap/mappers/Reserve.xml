@@ -244,7 +244,6 @@
 	         , T3.EXP_DT                              AS EXP_DT            /* 예약 기한              */
 	         , NVL(T3.DEP_AMT,0)                      AS DEP_AMT           /* 예약금액               */
 	         , NVL(T3.BAL_AMT,0)                      AS BAL_AMT           /* 잔금                   */
-	         , T3.BAL_IN_DT                           AS BAL_IN_DT         /* 잔금 기한              */
 	         , NVL(T3.DCT_AMT,0)                      AS DCT_AMT           /* 할인금액               */
 	         , NVL(T3.PAY_AMT,0)                      AS PAY_AMT           /* 입금금액               */
 	         , NVL(T3.TOT_AMT,0)                      AS TOT_AMT           /* 총액                   */
@@ -749,7 +748,6 @@
              , EXP_DT     /* 예약기한       */
              , DEP_AMT	  /* 예약금액       */
              , BAL_AMT	  /* 잔금           */
-             , BAL_IN_DT  /* 잔금기한       */
              , DCT_AMT	  /* 할인금액       */
              , PAY_AMT	  /* 입금금액       */
              , TOT_AMT	  /* 총액           */
@@ -764,7 +762,6 @@
              , #{EXP_DT}
              , #{DEP_AMT}
              , #{BAL_AMT}
-             , #{BAL_IN_DT}
              , #{DCT_AMT}
              , #{PAY_AMT}
              , #{TOT_AMT}
@@ -1025,7 +1022,6 @@
 		     , EXP_DT     =  #{EXP_DT   }
 		     , DEP_AMT    =  #{DEP_AMT  }
 		     , BAL_AMT    =  #{BAL_AMT  }
-		     , BAL_IN_DT  =  #{BAL_IN_DT}
 		     , DCT_AMT    =  #{DCT_AMT  }
 		     , PAY_AMT    =  #{PAY_AMT  }
 		     , TOT_AMT    =  #{TOT_AMT  }
@@ -1141,13 +1137,16 @@
 	
 	<update id="depositComplete" parameterType="BMap">
 		UPDATE TB_REQ_FEE
-		   SET BAL_AMT = 0
-		     , PAY_AMT = NVL(PAY_AMT,0) + #{BAL_AMT}
+		   SET DEP_AMT   = #{PAY_AMT}
+		     , DEP_IN_DT = date_format(NOW(),'%Y%m%d')
+		     , BAL_AMT   = BAL_AMT - #{PAY_AMT}
 		     , UPD_DTM = NOW()
 		     , UPD_ID  = #{LOGIN_USER}
 		 WHERE REQ_DT  = #{REQ_DT}
 		   AND REQ_SEQ = #{REQ_SEQ}
 	</update>
+	
+	
 	
 	<select id="checkBasYy" parameterType="BMap" resultType="BMap">
 	   SELECT T1.BAS_YY     AS BAS_YY

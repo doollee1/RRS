@@ -365,7 +365,6 @@ public class ReserveRestController {
 		param.put("REQ_DT"     , (String)reqData.get("REQ_DT"));
 		param.put("REQ_SEQ"    , reqData.get("REQ_SEQ"));
 		param.put("PAY_AMT"    , reqData.get("PAY_AMT"));
-		param.put("BAL_AMT"    , reqData.get("BAL_AMT"));
 		param.put("LOGIN_USER" , LoginInfo.getUserId());
 	
 		respData.put("result", reserveService.depositComplete(param));

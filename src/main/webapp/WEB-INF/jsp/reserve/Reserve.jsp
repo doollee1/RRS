@@ -178,6 +178,7 @@
 	}
 
 	function cSearch(currentPage) {
+		if(!validation()) return; 
 		var url = "/reserve/reserveSelectList.do";
 		var formData = { "SEARCH"       : $("#SEARCH option:selected").val()
 				       , "RESERVE_STDT" : $("#RESERVE_STDT").val().replaceAll(/\./gi, '')
@@ -195,6 +196,16 @@
 				jQuery("#quotationGrid").setCell(i + 1);
 			}
 		});
+	}
+	
+	function validation(){
+		var stdt = $("#RESERVE_STDT").val().replaceAll(/\./gi, '')
+		var eddt = $("#RESERVE_EDDT").val().replaceAll(/\./gi, '')
+		if(stdt > eddt){
+			alert("시작일자가 종료일자보다 큽니다. 날짜를 확인해주세요.");
+			return false;
+		}
+		return true;
 	}
 
 	function openCustomerPopUp(custVal) {

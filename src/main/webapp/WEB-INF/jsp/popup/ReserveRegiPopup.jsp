@@ -233,9 +233,9 @@
 				    <td>
 				        <input type="text" id="TOT_AMT" name="TOT_AMT" style="text-align: right" value="0" class="withComma" readonly="readonly"/>원
 				    </td>
-					<th><s:message code='reservation.payAmt'/></th>
+					<th><s:message code='reservation.deposit'/></th>
 				    <td>
-				        <input type="text" id="PAY_AMT" name="PAY_AMT" style="text-align: right" value="0" class="withComma"/>원
+				        <input type="text" id="DEP_AMT" name="DEP_AMT" style="text-align: right" value="0" class="withComma" readonly="readonly"/>원
 				    </td>
 				</tr>
 				<tr>
@@ -247,28 +247,24 @@
 				    <td>
 				        <div style="display:inline-flex;" >
 					        <input type="text" id="BAL_AMT" name="BAL_AMT" style="text-align: right" value="0" class="withComma" readonly="readonly"/>원
-				            <button type="button" class="pbtn_default openPop" id="btn_deposit">입금완료</button>
 			            </div>
 			        </td>
 				</tr>
 				<tr>
 				    <th><s:message code='reservation.depositDate'/></th>
 				    <td>
-				    <input type="text" class="cmc_txt"  id="DEP_IN_DT" name="DEP_IN_DT" data-type="date"/>
+				        <input type="text" class="cmc_txt"  id="DEP_IN_DT" name="DEP_IN_DT" data-type="date"/>
 				    </td>
-				    <th><s:message code='reservation.deposit'/></th>
+				    <th><s:message code='reservation.payAmt'/></th>
 				    <td>
-				    <input type="text" id="DEP_AMT" name="DEP_AMT" style="text-align: right" value="0" class="withComma"/>원
+				        <input type="text" id="PAY_AMT" name="PAY_AMT" style="text-align: right" value="0" class="withComma"/>원
+				        <button type="button" class="pbtn_default openPop" id="btn_deposit" disabled>입금완료</button>
 				    </td>
 				</tr>
 				<tr>
-				    <th><s:message code='reservation.balindt'/></th>
-				    <td>
-				    <input type="text" class="cmc_txt"  id="BAL_IN_DT" name="BAL_IN_DT" data-type="date"/>
-				    </td>
 				    <th><s:message code='reservation.expdt'/></th>
 				    <td>
-				    <input type="text" class="cmc_txt" id="EXP_DT" name="EXP_DT" data-type="date"/>
+				    <input type="text" class="cmc_txt" id="EXP_DT" name="EXP_DT" data-type="date" readonly="readonly"/>
 				    </td>
 				</tr>
 				<tr>
@@ -398,7 +394,7 @@ $(function() {
     		}else if(key == "RND_CHG_YN1" || key == "RND_CHG_YN2"){
     			if(val == "Y") $('[name='+ key +']').prop("checked", true);
     			else           $('[name='+ key +']').prop("checked", false);
-    		}else if(key == "CHK_IN_DT" || key == "CHK_OUT_DT" || key == "REQ_DT" || key == "DEP_IN_DT" || key == "BAL_IN_DT" || key == "EXP_DT"){
+    		}else if(key == "CHK_IN_DT" || key == "CHK_OUT_DT" || key == "REQ_DT" || key == "DEP_IN_DT" || key == "BAL_IN_DT" || key == "EXP_DT" || key == "INV_REG_DT"){
     			$('[name='+ key +']').val(Util.converter.dateFormat1(val));
     		}else{
     			$('[name='+ key +']').val(val);
@@ -436,8 +432,8 @@ $(function() {
     	
     	//상태표시
      	if(!fn_empty(data.PRC_STS)){
-     		if(data.PRC_STS == "07" || data.PRC_STS == "08"){
-     			$("#btn_deposit").attr("disabled", true);
+     		if(data.PRC_STS == "05"){
+     			$("#btn_deposit").attr("disabled", false);
      		}
      	}
     }
@@ -820,11 +816,10 @@ $(function() {
 		var prv_bal_amt = $("#PRV_BAL_AMT").val();
 		var dct_amt = fn_uncomma($(this).val());
 		var tot_amt = fn_uncomma($("#TOT_AMT").val());
-		var pay_amt = fn_uncomma($("#PAY_AMT").val());
 		var dep_amt = fn_uncomma($("#DEP_AMT").val());
 		var bal_amt;
 		
-		bal_amt = tot_amt - dct_amt - pay_amt - dep_amt;
+		bal_amt = tot_amt - dct_amt - dep_amt;
 		if(dct_amt > tot_amt){
 			$(this      ).val(prv_dct_amt);
 			$("#BAL_AMT").val(prv_bal_amt);
@@ -832,9 +827,9 @@ $(function() {
 			return false;
 		}
 		$("#BAL_AMT").val(fn_comma(bal_amt));
-	})
+	});
 	
-	$("#PAY_AMT").on("keyup", function(){
+	/* $("#PAY_AMT").on("keyup", function(){
 		var prv_bal_amt = $("#PRV_BAL_AMT").val();
 		var prv_pay_amt = $("#PRV_PAY_AMT").val();
 		var prv_amt = $(this).val();
@@ -851,7 +846,7 @@ $(function() {
 			return false;
 		}
 		$("#BAL_AMT").val(fn_comma(bal_amt));
-	})
+	}); */
 	
 	$("#btn_create").click(function(){
 		//if(!openPopVali($(this))) return;
@@ -932,18 +927,22 @@ $(function() {
 	
 	$("#btn_deposit").on("click", function(){
 		//if(!openPopVali($(this))) return;($(this));
+		var pay_amt = parseInt($("#PAY_AMT").val().replaceAll(",", ""));
+		if(pay_amt == 0 ){
+			alert("예약금액과 예약기한은 인보이스에서 등록하세요.");
+			return false;
+		}
 		var url = "/reserve/deposit.do";
 	    var param = { "REQ_SEQ"      : parseInt(seq)
 			        , "REQ_DT"       : req_dt
-			        , "PAY_AMT"      : parseInt($("#PAY_AMT").val().replaceAll(",", ""))
-			        , "BAL_AMT"      : parseInt($("#BAL_AMT").val().replaceAll(",", ""))
+			        , "PAY_AMT"      : pay_amt
 	                };
 	    if(confirm("<s:message code='confirm.deposit'/>")){
 			fn_ajax(url, false, param, function(data, xhr){
 				if(data.result.resultCd == "0000"){
 					alert("입금처리 완료되었습니다.");
-					$("#PAY_AMT").val(fn_comma(param.PAY_AMT + param.BAL_AMT));
-					$("#BAL_AMT").val(0);
+					initSelect();
+					//$("#DEP_AMT").val(fn_comma(param.PAY_AMT));
 				}else{
 					alert("error!");
 				}
