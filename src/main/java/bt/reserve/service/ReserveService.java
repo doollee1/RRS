@@ -350,7 +350,6 @@ public class ReserveService {
 	 */
 	public Boolean updateInvRegDt(BMap param ) throws Exception{
 		Boolean isValid = true;
-
         try {
 		    reserveDao.updateInvRegDt(param);
 		} catch (Exception e) {

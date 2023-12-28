@@ -133,6 +133,7 @@
 		var colName = [ 
             '<s:message code="reservation.seq"/>',
 	        '<s:message code="reservation.mem_gbn"/>',
+	        '에이전시명',
 		    '<s:message code="reservation.reserveSeq"/>',
 	        '<s:message code="reservation.date"/>',
 	        '<s:message code="reservation.member"/>',
@@ -147,8 +148,9 @@
 	        '<s:message code="reservation.prodCnt"/>',
 		];
 		var colModel = [ 
-		    {name : 'ROWNUM'       , width : 70  , align : 'center'}, 
+		    {name : 'ROWNUM'    , width : 70  , align : 'center'}, 
 		    {name : 'MEM_NM'    , width : 70  , align : 'center'}, 
+		    {name : 'AGN_CD_NM' , width : 70  , align : 'center'}, 
 		    {name : 'SEQ'       , width : 70  , align : 'center'}, 
 		    {name : 'REQ_DT'    , width : 100 , align : 'center'}, 
 		    {name : 'REQ_HAN_NM', width : 70  , align : 'center'}, 

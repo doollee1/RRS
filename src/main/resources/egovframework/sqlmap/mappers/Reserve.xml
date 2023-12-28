@@ -30,6 +30,11 @@
                AND HEAD_CD = '500020'
                AND CODE = T1.PRC_STS) AS STATE_NM /* 상태구분              */
          , T1.AGN_CD                              /* 에이전시코드          */
+         , (SELECT CODE_NM
+	          FROM BC_COMM_L
+	         WHERE 1 = 1
+	           AND HEAD_CD = '500120'
+	           AND CODE = T1.AGN_CD)  AS AGN_CD_NM /* 에이전시구분           */
          , T1.PRC_STS                             /* 예약상태              */
          , T1.CHK_IN_DT                           /* 체크인일자            */
          , T1.CHK_OUT_DT                          /* 체크아웃일자          */
@@ -793,6 +798,7 @@
 	<update id="updateInvRegDt" parameterType="BMap">
 	    UPDATE TB_REQ_BOOKING_M
            SET INV_REG_DT = date_format(NOW(),'%Y%m%d')
+             , PRC_STS  = '05'
              , UPD_DTM  = NOW()
              , UPD_ID   = #{LOGIN_USER}
          WHERE REQ_DT   = #{REQ_DT}
@@ -873,7 +879,7 @@
 		          , #{REQ_TEL_NO      }
 		          , #{MEM_GBN         }
 		          , #{AGN_CD          }
-		          , (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' WHEN #{MEM_GBN} = '04' THEN '21' ELSE NULL END )
+		          , (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' ELSE NULL END )
 		          , #{CHK_IN_DT       }
 		          , #{CHK_OUT_DT      }
 		          , #{ROOM_TYPE       }
@@ -947,7 +953,7 @@
 		     , REQ_TEL_NO     = #{REQ_TEL_NO      }
 		     , MEM_GBN        = #{MEM_GBN         }
 		     , AGN_CD         = #{AGN_CD          }
-		     , PRC_STS        = (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' WHEN #{MEM_GBN} = '04' THEN '21' ELSE NULL END )
+		     , PRC_STS        = (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' ELSE NULL END )
 		     , CHK_IN_DT      = #{CHK_IN_DT       }
 		     , CHK_OUT_DT     = #{CHK_OUT_DT      }
 		     , ROOM_TYPE      = #{ROOM_TYPE       }
