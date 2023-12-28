@@ -20,6 +20,7 @@
 			        <col width="200px" />
 			    </colgroup>
 		   		<tr>
+		   			<input type="hidden" name="isNew" id="isNew" value="Y" />
 		   			<input type="hidden" name="PASSWD" id="PASSWD" />
 					<th>회원타입</th>
 					<td>
@@ -128,6 +129,8 @@ $(function() {
 					$("#mem_gbn_announce").text("※ 멤버의 이름, 전화번호, 이메일 변경은 멤버정보등록 팝업에서 가능합니다.");
 				}
 				
+				// 신규 등록 or 수정
+				$("#isNew").val("N");
 			}
 		}
 	});
@@ -154,9 +157,12 @@ function saveUserInfo(){
 	
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
-			if(data.isExistMember == 'N'){
+			console.log('data: ', data)
+			if(data.isExistUser == 'Y'){
+				alert("기존에 등록된 아이디 입니다.");
+			} else if(data.isExistMember == 'N') {
 				alert("멤버회원이 등록되어 있지 않습니다."); 
-			}else{
+			} else {
 				alert("<s:message code='info.save'/>");
 			}
 			popupClose($('#p_UserInfo').data('pid'));			
