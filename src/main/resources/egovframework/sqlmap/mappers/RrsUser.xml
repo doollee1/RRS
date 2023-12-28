@@ -23,8 +23,12 @@
 					AND CODE = T1.MEM_GBN
 				) AS MEM_NM
 		FROM tb_member as T1
-		<if test='USER_ID != null and USER_ID != ""'>
-		WHERE USER_ID = #{USER_ID}
+		WHERE 1 = 1
+		<if test='S_USER_ID != null and S_USER_ID != ""'>
+		   AND USER_ID LIKE CONCAT('%',#{S_USER_ID},'%')
+		</if>
+		<if test='S_USER_NM != null and S_USER_NM != ""'>
+		   AND (HAN_NAME LIKE CONCAT('%',#{S_USER_NM},'%')) OR (ENG_NAME LIKE CONCAT('%',#{S_USER_NM},'%'))
 		</if>
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
