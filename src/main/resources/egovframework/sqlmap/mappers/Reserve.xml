@@ -822,7 +822,6 @@
 	</select>
 	
 	<insert id="insertReserveInfo" parameterType="BMap"> 
-	
 	<![CDATA[
 		INSERT INTO TB_REQ_BOOKING_M
 		          ( REQ_DT

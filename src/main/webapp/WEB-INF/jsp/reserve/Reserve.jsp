@@ -8,8 +8,7 @@
 	 */
 %>
 <c:import url="../import/frameTop.jsp">
-	<%-- <c:param name="progcd" value="SalesReport" /> --%>
-	<c:param name="progcd" value="Reserve" />
+	<c:param name="progcd" value="RV01" />
 </c:import>
 <div id="ctu_wrap">	
 	<div id="ctm_mg_wrap">
@@ -112,10 +111,8 @@
 		$('#SEARCH option:eq(0)').prop("selected" , true);
         createQuotationGrid();
 		
-		$("#divBtn").append("<button class='cBtnclass cBtnSearch_style' id='cBtnSearch' type='button' onclick='cSearch();'>조회</button>");
-		$("#divBtn").append("<button class='cBtnclass cBtnAdd_style' id='cBtnAdd' type='button' onclick='cAdd();'>예약등록</button>");
-		$("#divBtn").append("<button class='cBtnclass cBtnCancel_style' id='cBtnSearch' type='button' onclick='cSearch();'>닫기</button>");
-		
+        $("#cBtnAdd"   ).text("예약등록");
+       
 		/* 그리드 로우 클릭시 상세조회 팝업 open */
 		$('#quotationGrid').jqGrid('setGridParam', {
 			ondblClickRow: function(rowid) {
@@ -128,7 +125,6 @@
 		}); 
 		cSearch();
 	}
-	
 	
 	function createQuotationGrid() {
 		var colName = [ 

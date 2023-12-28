@@ -652,9 +652,7 @@ $(function() {
 			            ,"REQ_DT"    : req_dt};
 			fn_ajax(url, false, param, function(data, xhr){
 				if(!data.result){
-					console.log("11");
 				}else{ //같을때
-					console.log("22");
 				}
 			});
 		}
