@@ -6,18 +6,27 @@
 	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
 	/* Product.xml -> selectProductInfo */
 		SELECT ROW_NUMBER() OVER(ORDER BY B.PROD_SEQ) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
-			 , B.BAS_YY						<!-- 기준년도 -->
-		     , B.BAS_YY_SEQ					<!-- 기간년도순번 -->
+			 , A.BAS_YY						<!-- 기준년도 -->
+		     , A.BAS_YY_SEQ					<!-- 기간년도순번 -->
 		     , B.PROD_SEQ					<!-- 상품순번 -->
-		     , B.SSN_GBN					<!-- 시즌구분 -->
-		     , B.HDNG_GBN					<!-- 항목구분 -->
-		     , B.PROD_COND					<!-- 조건 -->
-		     , A.ST_DT1						<!-- 시작일1 -->
-		     , A.ED_DT1						<!-- 종료일1 -->
-			 , A.ST_DT2						<!-- 시작일2 -->
-		     , A.ED_DT2						<!-- 종료일2 -->
-			 , A.ST_DT3						<!-- 시작일3 -->
-		     , A.ED_DT3						<!-- 종료일3 -->
+		     , (SELECT CODE_NM 
+				  FROM bc_comm_l C
+				 WHERE HEAD_CD = 500090
+				   AND A.SSN_GBN = C.CODE)	SSN_GBN			<!-- 시즌구분 -->
+		     , (SELECT CODE_NM 
+				  FROM bc_comm_l C
+				 WHERE HEAD_CD = 500000
+				   AND B.HDNG_GBN = C.CODE) HDNG_GBN		<!-- 항목구분 -->
+		     , (SELECT CODE_NM 
+				  FROM bc_comm_l C
+				 WHERE HEAD_CD = 500220
+				   AND B.PROD_COND = C.CODE) PROD_COND		<!-- 조건 -->
+		     , date_format(A.ST_DT1, '%Y-%m-%d') ST_DT1		<!-- 시작일1 -->
+		     , date_format(A.ED_DT1, '%Y-%m-%d') ED_DT1		<!-- 종료일1 -->
+			 , date_format(A.ST_DT2, '%Y-%m-%d') ST_DT2		<!-- 시작일2 -->
+		     , date_format(A.ED_DT2, '%Y-%m-%d') ED_DT2		<!-- 종료일2 -->
+			 , date_format(A.ST_DT3, '%Y-%m-%d') ST_DT3		<!-- 시작일3 -->
+		     , date_format(A.ED_DT3, '%Y-%m-%d') ED_DT3		<!-- 종료일3 -->
 			 , B.COM_AMT					<!-- 일반금액 -->
 			 , B.COM_BAS_PER				<!-- 일반 기준인원수 -->
 			 , B.COM_BAS_DAY				<!-- 일반 기준일수 -->
@@ -26,15 +35,19 @@
 			 , B.AGN_BAS_PER				<!-- 에이전시 기준인원수 -->
       		 , B.AGN_BAS_DAY				<!-- 에이전시 기준일수 -->
       		 , B.AGN_CNTN					<!-- 에이전시 기타내용 -->
+      		 , (SELECT CODE
+				  FROM bc_comm_l C
+				 WHERE HEAD_CD = 500220
+				   AND B.PROD_COND = C.CODE) PROD_COND2		<!-- 조건2 -->
 		  FROM TB_BAS_YY_INFO A
-	INNER JOIN TB_PROD_INFO B
+	LEFT JOIN TB_PROD_INFO B
 		    ON A.BAS_YY_SEQ = B.BAS_YY_SEQ
 		   AND A.BAS_YY = B.BAS_YY
 		 WHERE 1 = 1
 		 <if test='SSN_GBN != "3"'>
 		   AND A.SSN_GBN = #{SSN_GBN}
 		 </if> 
-		   AND substr(A.ST_DT1, 1, 4) = #{ST_DT1}
+		   AND A.BAS_YY = #{BAS_YY}
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
 	
@@ -54,10 +67,17 @@
 	</select>
 	
 	<select id="selectHdng" parameterType="Bmap" resultType="Bmap">
-	/* Product.xml -> selectSeason */
+	/* Product.xml -> selectHdng */
 		SELECT CODE, CODE_NM
 		  FROM bc_comm_l
 		 WHERE HEAD_CD = 500000
+	</select>
+	
+	<select id="selectCond" parameterType="Bmap" resultType="Bmap">
+	/* Product.xml -> selectProdCond */
+		SELECT CODE, CODE_NM
+		  FROM bc_comm_l
+		 WHERE HEAD_CD = 500220
 	</select>
 	
 	<insert id="insertProductInfo" parameterType="BMAP">
@@ -81,9 +101,7 @@
 					, UPD_ID					<!-- 수정자 -->
 					)
 	         VALUES ( #{BAS_YY}
-	         		, (SELECT IFNULL(MAX(B.BAS_YY_SEQ) + 1, 1) 
-	         		     FROM TB_PROD_INFO B
-	         		    WHERE BAS_YY = #{BAS_YY})
+	         		, #{BAS_YY_SEQ}
 					, (SELECT IFNULL(MAX(B.PROD_SEQ) + 1, 1) 
 						 FROM TB_PROD_INFO B)
 					, #{SSN_GBN}
@@ -127,21 +145,23 @@
 		   AND PROD_SEQ 	= #{PROD_SEQ}
 	</delete>
 	
-	
 	<select id="selectPeriodInfo" parameterType="BMap" resultType="BMap">
 	/* Product.xml -> selectPeriodInfo */
 		SELECT BAS_YY					<!-- 기준년도 -->
 			 , BAS_YY_SEQ				<!-- 기준년도 순번 -->
-			 , SSN_GBN					<!-- 시즌구분 -->
-		     , ST_DT1					<!-- 시작일1 -->
-		     , ED_DT1					<!-- 종료일1 -->
-			 , ST_DT2					<!-- 시작일2 -->
-		     , ED_DT2					<!-- 종료일2 -->
-			 , ST_DT3					<!-- 시작일3 -->
-		     , ED_DT3					<!-- 종료일3 -->
-		  FROM TB_BAS_YY_INFO
+			 , (SELECT CODE_NM 
+				  FROM bc_comm_l B
+				 WHERE HEAD_CD = 500090
+				   AND A.SSN_GBN = B.CODE) SSN_GBN			<!-- 시즌구분 -->
+		     , date_format(A.ST_DT1, '%Y-%m-%d') ST_DT1		<!-- 시작일1 -->
+		     , date_format(A.ED_DT1, '%Y-%m-%d') ED_DT1		<!-- 종료일1 -->
+			 , date_format(A.ST_DT2, '%Y-%m-%d') ST_DT2		<!-- 시작일2 -->
+		     , date_format(A.ED_DT2, '%Y-%m-%d') ED_DT2		<!-- 종료일2 -->
+			 , date_format(A.ST_DT3, '%Y-%m-%d') ST_DT3		<!-- 시작일3 -->
+		     , date_format(A.ED_DT3, '%Y-%m-%d') ED_DT3		<!-- 종료일3 -->
+		  FROM TB_BAS_YY_INFO A
 		 WHERE 1 = 1
-		   AND substr(ST_DT1, 1, 4) = #{ST_DT1}
+		   AND BAS_YY = #{BAS_YY}
 	</select>
 	
 	<insert id="insertPeriodInfo" parameterType="BMAP">
@@ -163,7 +183,7 @@
 					)
 			 VALUES ( #{BAS_YY}
 					, (SELECT IFNULL(MAX(B.BAS_YY_SEQ) + 1, 1) 
-						 FROM TB_PROD_INFO B
+						 FROM TB_BAS_YY_INFO B
 						WHERE BAS_YY = #{BAS_YY})
 					, #{SSN_GBN}
 					, #{ST_DT1}
@@ -250,4 +270,27 @@
 	     WHERE 1 = 1
 	       AND BAS_YY = #{BAS_YY_COPY}
      </insert>
+     
+    <select id="selectPeriodPopUp" parameterType="BMap" resultType="BMap">
+	/* Product.xml -> selectPeriodPopUp */
+		SELECT (SELECT CODE_NM 
+				  FROM bc_comm_l B
+				 WHERE HEAD_CD = 500090
+				   AND A.SSN_GBN = B.CODE) SSN_GBN			<!-- 시즌구분 -->
+		     , date_format(A.ST_DT1, '%Y-%m-%d') ST_DT1		<!-- 시작일1 -->
+		     , date_format(A.ED_DT1, '%Y-%m-%d') ED_DT1		<!-- 종료일1 -->
+			 , date_format(A.ST_DT2, '%Y-%m-%d') ST_DT2		<!-- 시작일2 -->
+		     , date_format(A.ED_DT2, '%Y-%m-%d') ED_DT2		<!-- 종료일2 -->
+			 , date_format(A.ST_DT3, '%Y-%m-%d') ST_DT3		<!-- 시작일3 -->
+		     , date_format(A.ED_DT3, '%Y-%m-%d') ED_DT3		<!-- 종료일3 -->
+		     , A.BAS_YY_SEQ
+		  FROM TB_BAS_YY_INFO A
+		 WHERE 1 = 1
+		   AND BAS_YY = #{BAS_YY}
+		   AND SSN_GBN = #{SSN_GBN}
+	</select>
+	
+
+		     
+		     
 </mapper>

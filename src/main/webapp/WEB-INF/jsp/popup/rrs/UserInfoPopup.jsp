@@ -24,7 +24,6 @@
 					<th>회원타입</th>
 					<td>
 						<select id="MEM_GBN" name="MEM_GBN" class="cmc_combo" style="width:150px;">
-							<option value="00">전체</option>
 							<option value="01">멤버</option>
 							<option value="02">일반</option>
 							<option value="03">교민</option>
@@ -33,7 +32,7 @@
 					</td>
 					<th>이름</th>
 					<td>
-						<input type="text"  id="HAN_NAME" name="HAN_NAME" class="cmc_txt" style="width:150px;" maxlength="30"/>
+						<input type="text"  id="HAN_NAME" name="HAN_NAME" class="cmc_txt" style="width:150px;" maxlength="20"/>
 					</td>
 					<th>영문이름</th>
 					<td>
@@ -47,7 +46,7 @@
 					</td>
 					<th>회원 ID</th>
 					<td>
-						<input type="text" id="USER_ID" name="USER_ID" class="cmc_txt" style="width:150px;" maxlength="30"/>
+						<input type="text" id="USER_ID" name="USER_ID" class="cmc_txt" style="width:150px;" maxlength="20"/>
 					</td>
 					<th>Email</th>
 					<td>
@@ -64,11 +63,11 @@
 					</td>
 					<th>등록일시</th>
 					<td>
-						<input type="text" id="REG_DTM" name="REG_DTM" class="cmc_txt" style="width:150px;" readonly maxlength="50"/>
+						<input type="text" id="REG_DTM" name="REG_DTM" class="cmc_txt" style="width:150px;" readonly />
 					</td>
 					<th>수정일시</th>
 					<td>
-						<input type="text" id="UPD_DTM" name="UPD_DTM" class="cmc_txt" style="width:150px;" readonly maxlength="50"/>
+						<input type="text" id="UPD_DTM" name="UPD_DTM" class="cmc_txt" style="width:150px;" readonly />
 					</td>
 				</tr>
 			</table>
@@ -116,6 +115,8 @@ $(function() {
 				var tel_no = $("#TEL_NO").val();
 				var convert_tel_no = tel_no.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
 				$("#TEL_NO").val(convert_tel_no);
+				
+				$("#MEM_GBN").attr("disabled", true);
 			}
 		}
 	});
@@ -136,9 +137,10 @@ function selectUserInfo(userId){
 
 function saveUserInfo(){
 	var formData = formIdAllToMap('frmUserInfo');
+	formData.TEL_NO = formData.TEL_NO.replace(/-/g, '');
 	var param = {"param" : formData};
 	var url = "/rrs/saveUserInfo.do"
-		
+	
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
 			if(data.isExistMember == 'N'){

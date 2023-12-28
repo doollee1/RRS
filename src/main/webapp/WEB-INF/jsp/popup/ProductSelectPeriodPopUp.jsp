@@ -5,7 +5,7 @@
 <div class="top_button_h_margin"></div>
 <div id="ctu_no_resize">
 	<form id="frmSearch" action="#">
-		<input type="hidden" name="ST_DT1_SEL" id="ST_DT1_SEL" />
+		<input type="hidden" name="BAS_YY_SEL" id="BAS_YY_SEL" />
 		<input type="hidden" name="SSN_GBN_SEL" id="SSN_GBN_SEL" />
 	</form>
 </div>
@@ -34,8 +34,8 @@
 				<tr>
 					<td class="small_td"><p><s:message code="product.bas-season"/></p></td>
 					<td>
-						<input type="hidden" name="ST_DT1" id="ST_DT1" style="width:230px;" readonly>
-						<p id="ST_DT1_T" style="font-size: 12px;"></p>
+						<input type="hidden" name="BAS_YY_PS" id="BAS_YY_PS" style="width:230px;" readonly>
+						<p id="BAS_YY_PS_T" style="font-size: 12px;"></p>
 					</td>
 				</tr>
 			</tbody>
@@ -49,7 +49,7 @@
 					<h4>조회내역</h4>
 				</div>	
 			</div>
-			<table id="grid1"></table>
+			<table id="grid2"></table>
 		</div>
 		<!-- grid end -->
 		<br>
@@ -65,17 +65,17 @@ $(function(){
 		width: 750,
 		modal: true,
 		open: function() {
-			$("#ST_DT1_SEL").val($(this).data("ST_DT1"));
+			$("#BAS_YY_SEL").val($(this).data("BAS_YY"));
 			$("#SSN_GBN_SEL").val($(this).data("SSN_GBN"));
-			$("#ST_DT1_T").text($(this).data("ST_DT1") + "-" + $(this).data("SSN_GBN"));
+			$("#BAS_YY_PS_T").text($(this).data("BAS_YY") + "-" + $(this).data("SSN_GBN"));
 			
 			createGrid();
 			cSearch();
 			
-			/* grid1 Event */
-			$('#grid1').jqGrid('setGridParam', {
+			/* grid2 Event */
+			$('#grid2').jqGrid('setGridParam', {
 				ondblClickRow: function(rowid, iRow, iCol, e) {
-					grid1_ondblClickRow(rowid, iRow, iCol, e);
+					grid2_ondblClickRow(rowid, iRow, iCol, e);
 				}
 			});
 		},
@@ -100,12 +100,12 @@ function createGrid(){
 				]
 	var colModel = [
 		{ name: 'SSN_GBN', width: 5, align: 'center'},
-		{ name: 'ST_DT1', width: 7, align: 'right'},
-		{ name: 'ED_DT1', width: 7, align: 'right'},
-		{ name: 'ST_DT2', width: 7, align: 'right'},
-		{ name: 'ED_DT2', width: 7, align: 'right'},
-		{ name: 'ST_DT3', width: 7, align: 'right'},
-		{ name: 'ED_DT3', width: 7, align: 'right'},
+		{ name: 'ST_DT1', width: 7, align: 'center'},
+		{ name: 'ED_DT1', width: 7, align: 'center'},
+		{ name: 'ST_DT2', width: 7, align: 'center'},
+		{ name: 'ED_DT2', width: 7, align: 'center'},
+		{ name: 'ST_DT3', width: 7, align: 'center'},
+		{ name: 'ED_DT3', width: 7, align: 'center'},
 		{ name: 'BAS_YY', hidden:true},
 		{ name: 'BAS_YY_SEQ', hidden:true},
   	];
@@ -114,7 +114,7 @@ function createGrid(){
 			height:200,
 			pgflg:true,
 			exportflg : false,  //엑셀, pdf 출력 버튼 노출여부
-			colsetting : true,  // 컬럼 설정 버튼 노출여부
+			colsetting : false,  // 컬럼 설정 버튼 노출여부
 			searchInit : false,  // 데이터 검색 버튼 노출여부
 			resizeing : true,
 			rownumbers:false,
@@ -122,41 +122,31 @@ function createGrid(){
 			autowidth: true,
 			queryPagingGrid:false // 쿼리 페이징 처리 여부				
 	};
-	btGrid.createGrid('grid1', colName, colModel, gSetting);
+	btGrid.createGrid('grid2', colName, colModel, gSetting);
 }
 
 //조회
 function cSearch(){
-	var url = "/common/selectPeriodInfo.do";
+	var url = "/common/selectPeriodPopUp.do";
 	
-	var formData = formIdAllToMap('frmProductPeriod');
-	var param = {"ST_DT1" :formData.ST_DT1};
+	var formData = formIdAllToMap('frmSearch');
+	var param = {"BAS_YY" : formData.BAS_YY_SEL,
+				 "SSN_GBN" : formData.SSN_GBN_SEL};
 	
 	fn_ajax(url, false, param, function(data, xhr){
-		reloadGrid("grid1", data.result);
-		btGrid.gridQueryPaging($('#grid1'), 'cSearch', data.result);
+		reloadGrid("grid2", data.result);
+		btGrid.gridQueryPaging($('#grid2'), 'cSearch', data.result);
 	});
-	btGrid.gridResizing('grid1');
+	btGrid.gridResizing('grid2');
 	
 }
 
-//그리드 더블클릭 - 상세조회
-function grid1_ondblClickRow(rowid, iRow, iCol, e){
-	var gridData = $("#grid1").getRowData(rowid);
-	var formData = formIdAllToMap('frmProductPeriod');
-	var param = {
-		"BAS_YY" : gridData["BAS_YY"],				// 기준년도
-		"BAS_YY_SEQ" : gridData["BAS_YY_SEQ"],		// 기준년도 순번
-		"SSN_GBN" : gridData["SSN_GBN"],			// 시즌구분
-		"ST_DT1" : gridData["ST_DT1"],				// 시작일1
-		"ED_DT1" : gridData["ED_DT1"],				// 종료일1
-		"ST_DT2" : gridData["ST_DT2"],				// 시작일2
-		"ED_DT2" : gridData["ED_DT2"],				// 종료일2
-		"ST_DT3" : gridData["ST_DT3"],				// 시작일3
-		"ED_DT3" : gridData["ED_DT3"],				// 종료일3
-	};
-	alert("더블클릭");
-// 	productPeriodDetailPopUp(param);
+//그리드 더블클릭
+function grid2_ondblClickRow(rowid, iRow, iCol, e){
+	var gridData = $("#grid2").getRowData(rowid);
+	parent.$("#seldt_P").val(gridData["ST_DT1"] + " ~ " + gridData["ED_DT1"]);
+	parent.$("#seldt_I").val(gridData["BAS_YY_SEQ"]);
+	$('#productSelectPeriodPopUp').dialog('close');
 }
 
 //닫기 버튼

@@ -37,7 +37,7 @@
 				<tr>
 					<td class="small_td"><p><s:message code="product.baseyear"/></p></td>
 					<td>
-						<select id="ST_DT1" name="ST_DT1" class="cmc_combo" style=width:80%;>
+						<select id="BAS_YY_PP" name="BAS_YY_PP" class="cmc_combo" style=width:80%;>
 							<c:forEach var="i" items="${basyy}">
 								<option value="${i.BAS_YY}">${i.BAS_YY}</option>
 							</c:forEach>
@@ -70,7 +70,7 @@
 $(function(){
 	
 	//조회조건 변경 시 복사등록 비활성화 처리
-	$("#ST_DT1").change(function(){
+	$("#BAS_YY_PP").change(function(){
 		$("#cBtnCopy").attr("disabled", true);
 		$("#cBtnSearch").attr("disabled", false);
 	})
@@ -92,8 +92,8 @@ $(function(){
 			});
 			
 			//조회결과 없을 시 비활성화 및 alert
-			if($("#ST_DT1").val() == ""){
-				$("#ST_DT1").attr("disabled", true);
+			if($("#BAS_YY_PP").val() == ""){
+				$("#BAS_YY_PP").attr("disabled", true);
 				$("#cBtnCopy").attr("disabled", true);
 				$("#cBtnSearch").attr("disabled", true);
 				alert("년도별 기간관리를 마저 등록해 주세요.");
@@ -120,12 +120,12 @@ function createGrid(){
 				]
 	var colModel = [
 		{ name: 'SSN_GBN', width: 5, align: 'center'},
-		{ name: 'ST_DT1', width: 7, align: 'right'},
-		{ name: 'ED_DT1', width: 7, align: 'right'},
-		{ name: 'ST_DT2', width: 7, align: 'right'},
-		{ name: 'ED_DT2', width: 7, align: 'right'},
-		{ name: 'ST_DT3', width: 7, align: 'right'},
-		{ name: 'ED_DT3', width: 7, align: 'right'},
+		{ name: 'ST_DT1', width: 7, align: 'center'},
+		{ name: 'ED_DT1', width: 7, align: 'center'},
+		{ name: 'ST_DT2', width: 7, align: 'center'},
+		{ name: 'ED_DT2', width: 7, align: 'center'},
+		{ name: 'ST_DT3', width: 7, align: 'center'},
+		{ name: 'ED_DT3', width: 7, align: 'center'},
 		{ name: 'BAS_YY', hidden:true},
 		{ name: 'BAS_YY_SEQ', hidden:true},
   	];
@@ -134,7 +134,7 @@ function createGrid(){
 			height:200,
 			pgflg:true,
 			exportflg : false,  //엑셀, pdf 출력 버튼 노출여부
-			colsetting : true,  // 컬럼 설정 버튼 노출여부
+			colsetting : false,  // 컬럼 설정 버튼 노출여부
 			searchInit : false,  // 데이터 검색 버튼 노출여부
 			resizeing : true,
 			rownumbers:false,
@@ -150,7 +150,7 @@ function cSearch(){
 	var url = "/common/selectPeriodInfo.do";
 	
 	var formData = formIdAllToMap('frmProductPeriod');
-	var param = {"ST_DT1" :formData.ST_DT1};
+	var param = {"BAS_YY" :formData.BAS_YY_PP};
 	
 	fn_ajax(url, false, param, function(data, xhr){
 		reloadGrid("grid1", data.result);
@@ -207,7 +207,7 @@ function cCopy(param){
 	var pid = "productCopyPopUp";	//팝업 페이지의 최상위 div ID
 	var formData = formIdAllToMap('frmProductPeriod');
 	var param = { 
-			"ST_DT1" : formData.ST_DT1,
+			"BAS_YY" : formData.BAS_YY_PP,
 			"branch" : "period"
 	}
 	

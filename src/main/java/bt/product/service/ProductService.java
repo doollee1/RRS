@@ -56,6 +56,16 @@ public class ProductService {
    }
    
 	/**
+    * 조건구분 셀렉트 항목 가져오기
+    * @param param
+    * @return
+    * @throws Exception
+    */
+   public List<BMap> selectCond(BMap param) throws Exception {
+      return productDao.selectCond(param);
+   }
+   
+	/**
 	 * Product Info 저장
 	 * @param param
 	 * @return 
@@ -138,4 +148,13 @@ public class ProductService {
 		return isValid;
 	}
 	
+	/**
+	 * Period Info 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> selectPeriodPopUp(BMap param) throws Exception{
+		return productDao.selectPeriodPopUp(param);
+	}
 }

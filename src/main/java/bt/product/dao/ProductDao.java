@@ -55,6 +55,17 @@ public class ProductDao extends DBAbstractMapper {
    }
    
 	/**
+    * 조건구분 셀렉트 항목 가져오기
+    * @param param
+    * @return
+    * @throws Exception
+    */
+   @SuppressWarnings("unchecked")
+   public List<BMap> selectCond(BMap param) throws Exception{
+      return list("ProductMapper.selectCond", param);
+   }
+   
+	/**
 	 * Product Info 등록
 	 * @param param
 	 * @throws Exception
@@ -137,6 +148,18 @@ public class ProductDao extends DBAbstractMapper {
 	 */
 	public void insertProductCopyInfo(BMap param )throws Exception{
 		insert("ProductMapper.insertProductCopyInfo", param);
+	}
+	
+	
+	/**
+	 * Period Info PopUp 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> selectPeriodPopUp(BMap param )throws Exception{
+		return list("ProductMapper.selectPeriodPopUp", param);
 	}
 	
 }

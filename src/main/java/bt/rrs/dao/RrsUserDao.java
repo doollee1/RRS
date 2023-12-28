@@ -104,6 +104,26 @@ public class RrsUserDao extends DBAbstractMapper {
 	}
 	
 	/**
+	 * 멤버정보를 가지고 회원 테이블에 멤버 회원 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public int selectMemberUserInfoCntAfterMemberUpdate(BMap param) throws Exception{
+		return (int)selectByPk("RrsUserMapper.selectMemberUserInfoCntAfterMemberUpdate", param);
+	}
+	
+	/**
+	 * 멤버정보를 가지고 회원 테이블에 멤버 회원 정보 수정
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public void updateUserInfoAfterMemberUpdate(BMap param) throws Exception{
+		update("RrsUserMapper.updateUserInfoAfterMemberUpdate", param);
+	}
+	
+	/**
 	 * 멤버회원 정보 삭제
 	 * @param param
 	 * @throws Exception

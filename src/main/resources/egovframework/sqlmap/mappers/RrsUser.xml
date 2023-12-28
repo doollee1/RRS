@@ -108,6 +108,26 @@
 		   AND TEL_NO = #{Ex_TEL_NO}
 	</select>
 	
+	<select id="selectMemberUserInfoCntAfterMemberUpdate" parameterType="BMap" resultType="int">
+		SELECT COUNT(1)
+		  FROM TB_MEMBER
+		 WHERE MEM_GBN = "01"
+		   AND HAN_NAME = #{Ex_HAN_NAME}
+		   AND ENG_NAME = #{Ex_ENG_NAME}
+		   AND TEL_NO = #{Ex_TEL_NO}
+	</select>
+	
+	<update id="updateUserInfoAfterMemberUpdate" parameterType="BMap">
+		UPDATE TB_MEMBER
+		   SET HAN_NAME = #{HAN_NAME}
+			  ,ENG_NAME = #{ENG_NAME}
+			  ,TEL_NO = #{TEL_NO}
+		 WHERE MEM_GBN = "01"
+		   AND HAN_NAME = #{Ex_HAN_NAME}
+		   AND ENG_NAME = #{Ex_ENG_NAME}
+		   AND TEL_NO = #{Ex_TEL_NO}
+	</update>
+	
 	<insert id="insertMemberUserInfo" parameterType="BMap">
 		INSERT INTO tb_admin_reg_member
 					(HAN_NAME
@@ -144,8 +164,6 @@
 		   AND ENG_NAME = #{ENG_NAME}
 		   AND TEL_NO = #{TEL_NO}
 	</delete>
-	
-	
 	
 	<update id="updatePassword" parameterType="BMap">
 		UPDATE BC_USER
