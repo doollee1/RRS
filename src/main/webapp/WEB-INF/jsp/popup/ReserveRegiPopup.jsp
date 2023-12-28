@@ -942,7 +942,6 @@ $(function() {
 	                };
 	    if(confirm("<s:message code='confirm.deposit'/>")){
 			fn_ajax(url, false, param, function(data, xhr){
-				console.log(data);
 				if(data.result.resultCd == "0000"){
 					alert("입금처리 완료되었습니다.");
 					$("#PAY_AMT").val(fn_comma(param.PAY_AMT + param.BAL_AMT));

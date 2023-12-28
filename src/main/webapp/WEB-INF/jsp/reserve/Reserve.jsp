@@ -129,6 +129,7 @@
 		cSearch();
 	}
 	
+	
 	function createQuotationGrid() {
 		var colName = [ 
             '<s:message code="reservation.seq"/>',
