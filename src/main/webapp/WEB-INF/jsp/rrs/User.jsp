@@ -69,7 +69,7 @@
 --%>
 	//init
 	$(function() {
-		setCommBtn("User6", false);	// hide bookmark button
+		// setCommBtn("User6", false);	// hide bookmark button
 		$('#cBtnUser1').text("멤버정보등록");
 		$('#cBtnUser1').addClass("cBtnUser1_style");
 		
