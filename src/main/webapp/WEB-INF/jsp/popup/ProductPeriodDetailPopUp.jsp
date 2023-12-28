@@ -103,7 +103,7 @@ $(function(){
 	
 	// 저장 버튼
 	$("#cSave").click(function(e){
-		saveProductInfo();
+		validation();
 	});
 	
 	// 등록, 수정 분기
@@ -127,12 +127,12 @@ $(function(){
 				} else {
 					$('#SSN_GBN_I').val(2);
 				}
-				$('#ST_DT1_I').val($(this).data("ST_DT1"));			//시작일1
-				$('#ED_DT1_I').val($(this).data("ED_DT1"));			//종료일1
-				$('#ST_DT2_I').val($(this).data("ST_DT2"));			//시작일2
-				$('#ED_DT2_I').val($(this).data("ED_DT2"));			//종료일2
-				$('#ST_DT3_I').val($(this).data("ST_DT3"));			//시작일3
-				$('#ED_DT3_I').val($(this).data("ED_DT3"));			//종료일3
+				$('#ST_DT1_I').val($(this).data("ST_DT1").replaceAll("-",""));			//시작일1
+				$('#ED_DT1_I').val($(this).data("ED_DT1").replaceAll("-",""));			//종료일1
+				$('#ST_DT2_I').val($(this).data("ST_DT2").replaceAll("-",""));			//시작일2
+				$('#ED_DT2_I').val($(this).data("ED_DT2").replaceAll("-",""));			//종료일2
+				$('#ST_DT3_I').val($(this).data("ST_DT3").replaceAll("-",""));			//시작일3
+				$('#ED_DT3_I').val($(this).data("ED_DT3").replaceAll("-",""));			//종료일3
 				
 				$('#BAS_YY_UP').val($(this).data("BAS_YY"));			//기준년도
 			}
@@ -145,7 +145,7 @@ $(function(){
 });
 
 // 저장
-function saveProductInfo(){
+function savePeriodInfo(){
 	var formData = formIdAllToMap('frmProductPeriodDetail');
 	var param = {"param" : 
 					{"BAS_YY" 		: (formData.BAS_YY_I != "") ? formData.BAS_YY_I : formData.BAS_YY_UP
@@ -190,5 +190,31 @@ function deleteProductInfo(){
 			popupClose($('#productPeriodDetailPopUp').data('pid'));			
 		});
 	}
+}
+
+//유효성 검사
+function validation(){
+	var BAS_YY_I = document.getElementById("BAS_YY_I");
+	var ST_DT1_I = document.getElementById("ST_DT1_I");
+	var ED_DT1_I = document.getElementById("ED_DT1_I");
+	
+	if(BAS_YY_I.value.length == 0){
+		alert("기준년도를 입력해주세요.");
+		BAS_YY_I.focus();
+		return false;
+	}
+
+	if(ST_DT1_I.value.length == 0){
+		alert("시작일1을 입력해주세요.");
+		ST_DT1_I.focus();
+		return false;
+	}
+	
+	if(ED_DT1_I.value.length == 0){
+		alert("종료일1을 입력해주세요.");
+		ED_DT1_I.focus();
+		return false;
+	}
+	savePeriodInfo();
 }
 </script>

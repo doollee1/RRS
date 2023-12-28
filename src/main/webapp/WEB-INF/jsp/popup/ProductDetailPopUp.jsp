@@ -73,30 +73,30 @@
 					<th style="text-align:center;"><s:message code="product.seldt"/></th>
 					<td colspan=3>&nbsp;
 						<input type="text" name="seldt_P" id="seldt_P" style="width:235px;" readonly>
-						<input type="hidden" name="seldt_I" id="seldt_I">
+						<input type="hidden" class="check" name="seldt_I" id="seldt_I">
 						<button class='btn btn-default' type="button" name="seldt" id="seldt" style="width:50px;">선택</button>
 					</td>
 				</tr>
 				<tr>
 					<th style="text-align:center;"><s:message code="product.amount"/></th>
 					<td colspan=3>&nbsp;
-						일반 <input type="text" name="COM_AMT" id="COM_AMT" style="width:170px; text-align:right">&nbsp;원 &emsp;&emsp;&emsp;
-						에이전시 <input type="text" name="AGN_AMT" id="AGN_AMT" style="width:170px; text-align:right">&nbsp;원
+						일반 <input type="text" class="check" name="COM_AMT" id="COM_AMT" style="width:170px; text-align:right" value="0">&nbsp;원 &emsp;&emsp;&emsp;
+						에이전시 <input type="text" class="check" name="AGN_AMT" id="AGN_AMT" style="width:170px; text-align:right" value="0">&nbsp;원
 					</td>
 				</tr>
 				<tr>
 					<th style="text-align:center;">일반<s:message code="product.etc"/></th>
 					<td colspan=3>&nbsp;
-						기준인원 <input type="text" name="COM_BAS_PER" id="COM_BAS_PER" style="width:50px; text-align:right">&nbsp;명 &emsp;&emsp;&emsp;
-						기준일 <input type="text" name="COM_BAS_DAY" id="COM_BAS_DAY" style="width:50px; text-align:right">&nbsp;일 &emsp;&emsp;&emsp;&emsp;
+						기준인원 <input type="text" class="check" name="COM_BAS_PER" id="COM_BAS_PER" style="width:50px; text-align:right" value="0">&nbsp;명 &emsp;&emsp;&emsp;
+						기준일 <input type="text" class="check" name="COM_BAS_DAY" id="COM_BAS_DAY" style="width:50px; text-align:right" value="0">&nbsp;일 &emsp;&emsp;&emsp;&emsp;
 						<input type="text" name="COM_CNTN" id="COM_CNTN" style="width:251px" readonly>
 					</td>
 				</tr>
 				<tr>
 					<th style="text-align:center;">에이전시<s:message code="product.etc"/></th>
 					<td colspan=3>&nbsp;
-						기준인원 <input type="text" name="AGN_BAS_PER" id="AGN_BAS_PER" style="width:50px; text-align:right">&nbsp;명 &emsp;&emsp;&emsp;
-						기준일 <input type="text" name="AGN_BAS_DAY" id="AGN_BAS_DAY" style="width:50px; text-align:right">&nbsp;일 &emsp;&emsp;&emsp;&emsp;
+						기준인원 <input type="text" class="check" name="AGN_BAS_PER" id="AGN_BAS_PER" style="width:50px; text-align:right" value="0">&nbsp;명 &emsp;&emsp;&emsp;
+						기준일 <input type="text" class="check" name="AGN_BAS_DAY" id="AGN_BAS_DAY" style="width:50px; text-align:right" value="0">&nbsp;일 &emsp;&emsp;&emsp;&emsp;
 						<input type="text" name="AGN_CNTN" id="AGN_CNTN" style="width:251px" readonly>
 					</td>
 				</tr>
@@ -127,13 +127,24 @@ $(function(){
 	
 	// 저장 버튼
 	$("#cSave").click(function(e){
-		saveProductInfo()
+		validation();
 	});
 	
 	// 기간선택 버튼
 	$("#seldt").click(function(e){
 		openSeldtPopUp();
 	})
+	
+// 	// 유효성 검사
+// 	$(".check").on('change', function(){
+//         var scriptTag2 = /[~^&()|<>?]/; 
+//         var regExp_tel1 = /^[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}$/;
+//         var checkText = "";
+//         var thisVal = $(this).val();
+        
+      
+//         }
+// 	})
 	
 	// 등록, 수정 분기
 	$('#productDetailPopUp').dialog({
@@ -194,13 +205,13 @@ function saveProductInfo(){
 					{"SSN_GBN":(formData.SSN_GBN != "") ? formData.SSN_GBN : formData.SSN_GBN_mod
 					,"HDNG_GBN":(formData.HDNG_GBN != "") ? formData.HDNG_GBN : formData.HDNG_GBN_mod
 					,"PROD_COND" : formData.PROD_COND
-					,"COM_AMT" : formData.COM_AMT
-					,"AGN_AMT" : formData.AGN_AMT
-					,"COM_BAS_PER" : formData.COM_BAS_PER
-					,"COM_BAS_DAY" : formData.COM_BAS_DAY
+					,"COM_AMT" : (formData.COM_AMT != "") ? formData.COM_AMT : 0
+					,"AGN_AMT" : (formData.AGN_AMT != "") ? formData.AGN_AMT : 0
+					,"COM_BAS_PER" : (formData.COM_BAS_PER != "") ? formData.COM_BAS_PER : 0
+					,"COM_BAS_DAY" : (formData.COM_BAS_DAY != "") ? formData.COM_BAS_DAY : 0
 					,"COM_CNTN" : formData.COM_CNTN
-					,"AGN_BAS_PER" : formData.AGN_BAS_PER
-					,"AGN_BAS_DAY" : formData.AGN_BAS_DAY
+					,"AGN_BAS_PER" : (formData.AGN_BAS_PER != "") ? formData.AGN_BAS_PER : 0
+					,"AGN_BAS_DAY" : (formData.AGN_BAS_DAY != "") ? formData.AGN_BAS_DAY : 0
 					,"AGN_CNTN" : formData.AGN_CNTN
 					,"BAS_YY" : (formData.BAS_YY_UP != "") ? formData.BAS_YY_UP : formData.BAS_YY_IN
 					,"BAS_YY_SEQ" : (formData.BAS_YY_SEQ_UP != "") ? formData.BAS_YY_SEQ_UP : formData.seldt_I
@@ -253,6 +264,17 @@ function openSeldtPopUp(){
 	popupOpen(url, pid, param, function(data){
 		
 	});
+}
+
+//유효성 검사
+function validation(){
+	var seldt = document.getElementById("seldt_I");
+	if(seldt.value.length == 0){
+		alert("기간선택을 해주세요.");
+		seldt.focus();
+		return false;
+	}
+	saveProductInfo();
 }
 
 </script>

@@ -212,7 +212,7 @@ function cCopy(param){
 	}
 	
 	popupOpen(url, pid, param, function(data){
-		
+		cSearch();
 	});
 }
 
