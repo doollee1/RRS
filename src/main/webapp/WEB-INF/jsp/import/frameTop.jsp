@@ -31,25 +31,25 @@
 					var lang = data.LANG;
 					var btnAppend = "";
 					if(auth.substr(0, 1) == "Y"){
-						btnAppend += "<button class='cBtnclass cBtnSearch_style' id='cBtnSearch' type='button' onclick='cSearch();'>Search</button>";	
+						btnAppend += "<button class='cBtnclass cBtnSearch_style' id='cBtnSearch' type='button' onclick='cSearch();'>검색</button>";	
 					}
 					if(auth.substr(1, 1) == "Y"){
-						btnAppend += "<button class='cBtnclass  cBtnAdd_style' id='cBtnAdd' type='button' onclick='cAdd();'>Add</button>";
+						btnAppend += "<button class='cBtnclass  cBtnAdd_style' id='cBtnAdd' type='button' onclick='cAdd();'>추가</button>";
 					}
 					if(auth.substr(2, 1) == "Y"){
-						btnAppend += "<button class='cBtnclass cBtnDel_style' id='cBtnDel' type='button' onclick='cDel();'>Delete</button>";
+						btnAppend += "<button class='cBtnclass cBtnDel_style' id='cBtnDel' type='button' onclick='cDel();'>삭제</button>";
 					}
 					if(auth.substr(3, 1) == "Y"){
-						btnAppend += "<button class='cBtnclass cBtnSave_style' id='cBtnSave' type='button' onclick='cSave();'>Save</button>";
+						btnAppend += "<button class='cBtnclass cBtnSave_style' id='cBtnSave' type='button' onclick='cSave();'>저장</button>";
 					}
 					if(auth.substr(4, 1) == "Y"){
-						btnAppend += "<button class='cBtnclass cBtnPrint_style' id='cBtnPrint' type='button' onclick='cPrint();'>Print</button>";
+						btnAppend += "<button class='cBtnclass cBtnPrint_style' id='cBtnPrint' type='button' onclick='cPrint();'>인쇄</button>";
 					}
 					if(auth.substr(5, 1) == "Y"){
-						btnAppend += "<button class='cBtnclass cBtnUpload_style' id='cBtnUpload' type='button' onclick='cUpload();'>Upload</button>";
+						btnAppend += "<button class='cBtnclass cBtnUpload_style' id='cBtnUpload' type='button' onclick='cUpload();'>업로드</button>";
 					}
 					if(auth.substr(6, 1) == "Y"){
-						btnAppend += "<button class='cBtnclass cBtnExcel_style' id='cBtnExcel' type='button' onclick='cExcel();'>Excel Download</button>";
+						btnAppend += "<button class='cBtnclass cBtnExcel_style' id='cBtnExcel' type='button' onclick='cExcel();'>엑셀 다운로드</button>";
 					}
 					if(auth.substr(7, 1) == "Y"){
 						btnAppend += "<button class='cBtnclass cBtnPdf_style' id='cBtnPdf' type='button' onclick='cPdf();'>Pdf Download</button>";
