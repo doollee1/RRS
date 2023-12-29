@@ -2,6 +2,7 @@ package bt.rrs.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -124,22 +125,105 @@ public class RrsUserService {
 	 * @param param
 	 * @throws Exception
 	 */
-	public BRespData uploadMemberUserExcel(HttpServletRequest req) throws Exception {
+	public BMap uploadMemberUserExcel(HttpServletRequest req) throws Exception {
 		POIExcelRRS upload = new POIExcelRRS();
 		MultipartHttpServletRequest mpRequest = (MultipartHttpServletRequest) req;
-		String[] header = new String[]{"NO", "HAN_NAME", "ENG_NAME", "TEL_NO"};
+		String[] header = new String[]{"HAN_NAME", "ENG_NAME", "TEL_NO"};
 		List<MultipartFile> files =  mpRequest.getFiles("fileupload[]");
-		List<BMap> result = new ArrayList<BMap>();
+		
+		BMap result = new BMap();
 		for(MultipartFile file : files) {
 			List<BMap> list = upload.excelUpload(file, header);
+			// 순회하면서 데이터에 문제 있으면 return
+			for (BMap bMap : list) {
+				// excel upload data validation
+				BMap validationResultMap = inputValidation(bMap);
+				if(validationResultMap.getString("result").equals("failure")) {
+					// 실패 => return
+					return validationResultMap;
+				}
+				
+				// 중복 검사
+				int count = rrsUserDao.selectMemberUserCnt(bMap);
+				if(count > 0) {
+					// 실패 => return
+					validationResultMap.put("result", "failure");
+					validationResultMap.put("message", "중복된 멤버회원이 존재합니다.\n이름: " + bMap.getString("HAN_NAME"));
+					return validationResultMap;
+				}
+			}
+			
+			// 데이터에 문제 없으면 입력
 			for (BMap bMap : list) {
 				if(bMap.size() >= 3) { 
 					rrsUserDao.insertMemberUserInfo(bMap);
 				}
 			}
 		}
+		result.put("result", "success");
+		return result;
+	}
+	
+	public BMap inputValidation(BMap bMap) {
+		BMap resultMap = new BMap();
+		resultMap.put("result", "failure");
 		
-		return new BRespData(ResponseStatus.OK, result);
+		String HAN_NAME = bMap.getString("HAN_NAME");
+		String ENG_NAME = bMap.getString("ENG_NAME");
+		String TEL_NO = bMap.getString("TEL_NO");
+		
+		// empty value
+		if(HAN_NAME.length() == 0) {
+			resultMap.put("message", "이름을 입력해주세요.\n이름: " + HAN_NAME);
+			return resultMap;
+		}
+		
+		if(ENG_NAME.length() == 0) {
+			resultMap.put("message", "영문이름을 입력해주세요.\n영문이름: " + ENG_NAME);
+			return resultMap;
+		}
+		
+		if(TEL_NO.length() == 0) {
+			resultMap.put("message", "전화번호를 입력해주세요.\n전화번호: " + TEL_NO);
+			return resultMap;
+		}
+		
+		// maxlength
+		if(HAN_NAME.length() > 20) {
+			resultMap.put("message", "이름 길이를 20이하로 입력해주세요.\n이름: " + HAN_NAME);
+			return resultMap;
+		}
+		
+		if(ENG_NAME.length() > 30) {
+			resultMap.put("message", "영문이름 길이를 30이하로 입력해주세요.\n영문이름: " + ENG_NAME);
+			return resultMap;
+		}
+		
+		if(TEL_NO.length() > 20) {
+			resultMap.put("message", "전화번호 길이를 20이하로 입력해주세요.\n전화번호: " + TEL_NO);
+			return resultMap;
+		}
+		
+		// 한글만 입력
+		if(!Pattern.matches("^[ㄱ-ㅎ가-힣]*$", HAN_NAME)) {
+			resultMap.put("message", "이름에 한글만 입력해야 합니다.\n이름: " + HAN_NAME);
+			return resultMap;
+		}
+		
+		// 영어만 입력
+		if(!Pattern.matches("^[a-zA-Z]*$", ENG_NAME)) {
+			resultMap.put("message", "영문이름에 영어만 입력해야 합니다.\n영문이름: " + ENG_NAME);
+			return resultMap;
+		}
+		
+		// 숫자만 입력
+		if(!Pattern.matches("^[0-9]*$", TEL_NO)) {
+			resultMap.put("message", "전화번호에 숫자만 입력해야 합니다.\n전화번호: " + TEL_NO);
+			return resultMap;
+		}
+		
+		resultMap.put("result", "success");
+		return resultMap;
 	}
 	
 	/**

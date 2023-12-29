@@ -213,8 +213,14 @@ public class RrsUserController {
 	public BRespData uploadMemberUserExcel(HttpServletRequest req) throws Exception {
 		BRespData respData = new BRespData();
 		try {
+			BMap result = rrsUserService.uploadMemberUserExcel(req);
+			if(result.getString("result").equals("failure")) {
+				respData.put("success", false);
+				respData.put("message", result.get("message"));
+			} else {
+				respData.put("success", true);
+			}
 			respData.put("result", rrsUserService.uploadMemberUserExcel(req));
-			respData.put("success", true);
 		} catch(Exception e) {
 			respData.put("success", false);
 			respData.put("message", e.getMessage());

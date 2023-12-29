@@ -32,11 +32,11 @@
 					</td>
 					<th>이름</th>
 					<td>
-						<input type="text"  id="HAN_NAME" name="HAN_NAME" class="cmc_txt" style="width:150px;" maxlength="20"/>
+						<input type="text"  id="HAN_NAME" name="HAN_NAME" class="cmc_txt" style="width:150px;" maxlength="20" onlyKor />
 					</td>
 					<th>영문이름</th>
 					<td>
-						<input type="text"  id="ENG_NAME" name="ENG_NAME" class="cmc_txt" style="width:150px;" maxlength="30"/>
+						<input type="text"  id="ENG_NAME" name="ENG_NAME" class="cmc_txt" style="width:150px;" maxlength="30" onlyEng />
 					</td>
 				</tr>
 				<tr>
@@ -46,7 +46,7 @@
 					</td>
 					<th>회원 ID</th>
 					<td>
-						<input type="text" id="USER_ID" name="USER_ID" class="cmc_txt" style="width:150px;" maxlength="20"/>
+						<input type="text" id="USER_ID" name="USER_ID" class="cmc_txt" style="width:150px;" maxlength="20" noSpecial />
 					</td>
 					<th>Email</th>
 					<td>
@@ -77,6 +77,11 @@
 </div>
 
 <script type="text/javascript">
+$(document).on("keyup", "input[noSpecial]", function() {$(this).val( $(this).val().replace(/[^ㄱ-힣a-zA-Z0-9]/gi,"") );});
+$(document).on("keyup", "input[onlyNum]", function() {$(this).val( $(this).val().replace(/[^0-9]/gi,"") );});
+$(document).on("keyup", "input[onlyKor]", function() {$(this).val( $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"'\\]/g,"") );});
+$(document).on("keyup", "input[onlyEng]", function() {$(this).val( $(this).val().replace(/[^A-Za-z]/ig,"") );});
+
 $(function() {
 	$('#p_UserInfo').dialog({
 		title :'회원 정보',
@@ -142,7 +147,7 @@ function selectUserInfo(userId){
 			"USER_ID" : userId
 		}
 	};
-	var url = "/rrs/selectUserInfo.do"
+	var url = "/rrs/selectUserInfo.do";
 	
 	fn_ajax(url, false, param, function(data, xhr){
 		fn_dataBind('frmUserInfo', data.result[0]);
@@ -152,20 +157,25 @@ function selectUserInfo(userId){
 function saveUserInfo(){
 	var formData = formIdAllToMap('frmUserInfo');
 	formData.TEL_NO = formData.TEL_NO.replace(/-/g, '');
+	
+	if(!validChk_email(formData.EMAIL)) {
+		alert("이메일 형식이 올바르지 않습니다.");
+		return;
+	}
+	
 	var param = {"param" : formData};
-	var url = "/rrs/saveUserInfo.do"
+	var url = "/rrs/saveUserInfo.do";
 	
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
-			console.log('data: ', data)
 			if(data.isExistUser == 'Y'){
 				alert("기존에 등록된 아이디 입니다.");
 			} else if(data.isExistMember == 'N') {
 				alert("멤버회원이 등록되어 있지 않습니다."); 
 			} else {
 				alert("<s:message code='info.save'/>");
+				popupClose($('#p_UserInfo').data('pid'));			
 			}
-			popupClose($('#p_UserInfo').data('pid'));			
 		});
 	}
 }
@@ -174,7 +184,12 @@ function autoHyphen(target) {
 	target.value = target.value
 		.replace(/[^0-9]/g, '')
 	  	.replace(/^(\d{0,3})(\d{0,4})(\d{0,4})$/g, "$1-$2-$3").replace(/(\-{1,2})$/g, "");
-	return target
+	return target;
+}
+
+function validChk_email(val){
+	var pattern = /([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+	return (val != '' && val != 'undefined' && pattern.test(val));
 }
 
 </script>

@@ -24,9 +24,9 @@
 				<tbody>
 					<tr>
 						<td class="small_td"><p><s:message code='system.UserID'/></p></td>
-						<td class="medium_td"><input type="text" id="S_USER_ID" name="S_USER_ID" class="cmc_txt" /></td>
+						<td class="medium_td"><input type="text" id="S_USER_ID" name="S_USER_ID" class="cmc_txt" maxlength="20" noSpecial /></td>
 						<td class="small_td"><p><s:message code='system.Username'/></p></td>
-						<td class="medium_td"><input type="text" id="S_USER_NM" name="S_USER_NM" class="cmc_txt" /></td>
+						<td class="medium_td"><input type="text" id="S_USER_NM" name="S_USER_NM" class="cmc_txt" maxlength="30" noSpecial /></td>
 					</tr>
 				</tbody>
 			</table>
@@ -67,6 +67,8 @@
   * 버튼 표시/숨김 : setCommBtn('ret', true) : Search,Add,Del,Save,Print,Upload,Excel,Pdf,Cancel,User1,2,3,4,5
   * ===============================
 --%>
+  	$(document).on("keyup", "input[noSpecial]", function() {$(this).val( $(this).val().replace(/[^ㄱ-힣a-zA-Z0-9]/gi,"") );});
+  
 	//init
 	$(function() {
 		// setCommBtn("User6", false);	// hide bookmark button

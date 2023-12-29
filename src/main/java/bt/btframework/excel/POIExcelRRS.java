@@ -68,19 +68,19 @@ public class POIExcelRRS {
         
         // Header 데이터 적용 및 Body 스타일 설정
         XSSFRow xsRow = xsSheet.createRow(0);
-        XSSFCell xsCell = xsRow.createCell(0);
-        xsCell.setCellStyle(xshCS);
-        xsCell.setCellValue("NO");
+        XSSFCell xsCell;
 		xsSheet.setColumnWidth(0, 40 * 35);
 		XSSFCellStyle[] xsdCSs = new XSSFCellStyle[colModelLength]; // 셀스타일 Array
 		XSSFDataFormat xsDFormat = xsWB.createDataFormat();
 		
 		for (int i=0; i<colModelLength; i++) {
-    		xsSheet.setColumnWidth(i + 1, 40 * (Integer.parseInt(StringUtils.NULL(colModelList.get(i).get("width"), "0"))));
-    		xsCell = xsRow.createCell(i + 1);
+    		xsSheet.setColumnWidth(i, 40 * (Integer.parseInt(StringUtils.NULL(colModelList.get(i).get("width"), "0"))));
+    		xsCell = xsRow.createCell(i);
     		xsCell.setCellStyle(xshCS);
-    		xsCell.setCellValue(StringUtils.NULL(colModelList.get(i).get("label")));
-			
+    		String colName = StringUtils.NULL(colModelList.get(i).get("name"));
+    		String cellValue = StringUtils.NULL(colModelList.get(i).get("label"));
+    		xsCell.setCellValue(colName.equals("TEL_NO") ? cellValue + "(숫자만 입력)" : cellValue);
+    		
     		xsdCSs[i] = xsWB.createCellStyle();
     		xsdCSs[i].setVerticalAlignment(VerticalAlignment.CENTER);
     		xsdCSs[i].setFont(xsdFont);
@@ -232,8 +232,7 @@ public class POIExcelRRS {
 	                        map.put(header[columnindex], value);
 	                	}
 	                }
-	                
-	                list.add(map);
+	                if(map.size() > 0) list.add(map);
 	            }
 	            workbook.close();
 	        }

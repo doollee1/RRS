@@ -18,7 +18,7 @@ $(function() {
 	$('#MemberUserExcelUploadPopup').dialog({
 		title: 'Upload Excel',
 		autoOpen: false,
-		height: 250,
+		height: 160,
 		width: 450,
 		modal: true,
 		buttons: {
