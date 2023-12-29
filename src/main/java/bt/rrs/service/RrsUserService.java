@@ -127,7 +127,7 @@ public class RrsUserService {
 	public BRespData uploadMemberUserExcel(HttpServletRequest req) throws Exception {
 		POIExcelRRS upload = new POIExcelRRS();
 		MultipartHttpServletRequest mpRequest = (MultipartHttpServletRequest) req;
-		String[] header = new String[]{"NO", "HAN_NAME", "ENG_NAME", "TEL_NO"};
+		String[] header = new String[]{"HAN_NAME", "ENG_NAME", "TEL_NO"};
 		List<MultipartFile> files =  mpRequest.getFiles("fileupload[]");
 		List<BMap> result = new ArrayList<BMap>();
 		for(MultipartFile file : files) {
