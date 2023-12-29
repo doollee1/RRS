@@ -11,14 +11,14 @@
 		<button class='btn btn-default' id='btn_download_excel_form' type='button' onclick='downloadExcel();'>
       		엑셀샘플파일 내려받기
       	</button>
+		<button class='btn btn-default' id='btn_upload_excel_popup' type='button' onclick="uploadExcelFunc()">
+			엑셀 업로드
+      	</button>
 		<button class='btn btn-default' id='btn_memberUserAddPopup' type='button'>
       		등록
       	</button>
       	<button class='btn btn-default' id='btn_delete' type='button' onclick='deleteMemberUser()'>
       		삭제
-      	</button>
-		<button class='btn btn-default' id='btn_upload_excel_popup' type='button' onclick="uploadExcelFunc()">
-			엑셀 업로드
       	</button>
 	</div>
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
