@@ -232,8 +232,7 @@ public class POIExcelRRS {
 	                        map.put(header[columnindex], value);
 	                	}
 	                }
-	                
-	                list.add(map);
+	                if(map.size() > 0) list.add(map);
 	            }
 	            workbook.close();
 	        }
