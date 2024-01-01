@@ -74,9 +74,11 @@ public class ReserveRestController {
 	public BRespData invoiceSelectList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
 		
 		BMap paramData = new BMap();
-		paramData.put("SEQ"   , (String) reqData.get("SEQ"));
-		paramData.put("REQ_DT", (String) reqData.get("REQ_DT"));
-		paramData.put("LOGIN_USER", LoginInfo.getUserId());
+		paramData.put("SEQ"  			 , (String) reqData.get("SEQ"));
+		paramData.put("REQ_DT"		 , (String) reqData.get("REQ_DT"));
+		paramData.put("CHK_IN_DT"	 , (String)reqData.get("CHK_IN_DT"));
+		paramData.put("CHK_OUT_DT" , (String)reqData.get("CHK_OUT_DT"));
+		paramData.put("LOGIN_USER" , LoginInfo.getUserId());
 		
 		List<BMap> resultDeptDetail = reserveService.invoiceSelectList(paramData);
 
@@ -342,9 +344,11 @@ public class ReserveRestController {
 	public BRespData insertReserve(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
 		BRespData respData = new BRespData();
 		BMap param = new BMap();
-		param.put("REQ_DT"     , (String)reqData.get("REQ_DT"));
-		param.put("USER_ID"    , (String)reqData.get("USER_ID"));
-		param.put("LOGIN_USER" , LoginInfo.getUserId());
+		param.put("REQ_DT"     	, (String)reqData.get("REQ_DT"));
+		param.put("USER_ID"    	, (String)reqData.get("USER_ID"));
+		param.put("CHK_IN_DT"  	, (String)reqData.get("CHK_IN_DT"));
+		param.put("CHK_OUT_DT"	, (String)reqData.get("CHK_OUT_DT"));
+		param.put("LOGIN_USER" 	, LoginInfo.getUserId());
 		
 		
 		respData.put("result", reserveService.insertReserve(param));
@@ -389,6 +393,31 @@ public class ReserveRestController {
 		param.put("CHK_OUT_DT" , reqData.get("CHK_OUT_DT"));
 	
 		respData.put("result", reserveService.checkBasYy(param));
+		return respData;
+	}
+	
+	/**
+	 * 체크아웃-체크인 일자 수와 기준년도 등록된 일자 비교
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/selectDayDiffChk.do", method = RequestMethod.POST)
+	public BRespData invoicePopupChk(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BRespData respData = new BRespData();
+		BMap param = new BMap();
+		param.put("REQ_DT"     	, (String)reqData.get("REQ_DT"));
+		param.put("SEQ"        		, reqData.get("SEQ"));
+		param.put("CHK_IN_DT"  	, reqData.get("CHK_IN_DT"));
+		param.put("CHK_OUT_DT" , reqData.get("CHK_OUT_DT"));
+		try{
+			respData.put("result", reserveService.selectDayDiffChk(param));
+		} catch(Exception ex){
+			BMap dataMap = new BMap();
+			dataMap.put("resultCd", "9999");
+			respData.put("result",dataMap);
+		}
 		return respData;
 	}
 	

@@ -451,6 +451,17 @@ public class ReserveService {
 		return result;
 	}
 	
-	
-	
+	public BMap selectDayDiffChk(BMap param) throws Exception{
+		BMap dataMap = reserveDao.selectDayDiffChk(param);
+		
+		if(dataMap.get("CHK_DIFF_DAY") == null || dataMap.get("BAS_YY_CHK_DAY") == null)
+		{
+			dataMap.put("resultCd", "9999");  //날짜 입력 오류
+		} else if(!dataMap.getString("CHK_DIFF_DAY").equals(dataMap.getString("BAS_YY_CHK_DAY"))){
+			dataMap.put("resultCd", "1001"); //기간 불일치
+		} else {
+			dataMap.put("resultCd", "0000"); //정상
+		}
+		return dataMap;
+	}
 }

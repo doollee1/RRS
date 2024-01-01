@@ -356,4 +356,15 @@ public class ReserveDao extends DBAbstractMapper {
 	public BMap checkBasYy(BMap param) throws Exception {
 		return (BMap) selectByPk("ReserveMapper.checkBasYy", param);
 	}
+	
+	/**
+	 * 기준년도기간과 예약기간 확인
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	
+	public BMap selectDayDiffChk(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.selectDayDiffChk", param);
+	}
 }

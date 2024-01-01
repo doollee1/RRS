@@ -64,8 +64,10 @@ $(function() {
 			req_dt  = $(this).data("REQ_DT");
 			mem_gbn = $(this).data("MEM_GBN");
 			email   = $(this).data("EMAIL");
+			chk_in_dt 	= $(this).data("CHK_IN_DT");
+			chk_out_dt  = $(this).data("CHK_OUT_DT");
 			createGrid();
-			
+
 			//gridColspan();
 			cSearch();
 		}
@@ -77,6 +79,8 @@ $(function() {
 		var param = {"SEQ"     : seq
 				   , "REQ_DT"  : req_dt
 				   , "MEM_GBN" : mem_gbn
+				   , "CHK_IN_DT" : chk_in_dt
+				   , "CHK_OUT_DT" : chk_out_dt
 				   };
 		fn_ajax(url, true, param, function(data, xhr){
 			
