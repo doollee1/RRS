@@ -38,17 +38,6 @@ $(function() {
 		width: 930,
 		modal: true,
 		buttons: {
-			'<s:message code='button.confirm'/>': { 
-				text: '<s:message code='button.confirm'/>',
-				click: function() {		
-					var selRows = $('#grid_MemberUser').jqGrid('getGridParam', 'selrow');
-					var gridData = [$('#grid_MemberUser').getRowData(selRows)];
-					
-					p_rtnData = gridData;
-
-					popupClose($('#memberUserPopup').data('pid'));
-				}
-			},
 			'<s:message code='button.close'/>': {
 				text:'<s:message code='button.close'/>',
 				click: function() {
