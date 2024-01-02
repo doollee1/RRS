@@ -100,9 +100,9 @@ function saveMemberUserInfo(){
 		
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
-			if(data.dup == 'Y'){
-				alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
-			}else{
+			if(data.isExistMember == 'Y'){
+				alert("이미 등록된 멤버회원이 존재합니다."); 
+			} else {
 				alert("<s:message code='info.save'/>");
 				popupClose($('#MemberUserAddPopup').data('pid'));			
 			}

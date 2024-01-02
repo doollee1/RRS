@@ -104,20 +104,31 @@ public class RrsUserService {
 	 * @param param
 	 * @throws Exception
 	 */
-	public Boolean saveMemberUserInfo(BMap param) throws Exception{
-		Boolean isValid = true;
+	public BMap saveMemberUserInfo(BMap param) throws Exception{
+		BMap bMap = new BMap();
 		
-		int cnt = rrsUserDao.selectMemberUserInfoCnt(param); //현 ID가 등록된 ID인지 카운트 
+		int cnt = rrsUserDao.selectMemberUserInfoCnt(param); //현 ID가 등록된 ID인지 카운트 (Ex_HAN_NAME, Ex_ENG_NAME, Ex_TEL_NO)
 		if(cnt == 0){
-			rrsUserDao.insertMemberUserInfo(param); //등록되지 않았을 때 등록
+			// 새롭게 입력된 값으로 다시한번 조회
+			int memCnt = rrsUserDao.selectMemberUserCnt(param);
+			if(memCnt == 0) {
+				// 없으면 등록
+				rrsUserDao.insertMemberUserInfo(param); //등록되지 않았을 때 등록
+			} else {
+				// 있으면 false 리턴
+				bMap.put("result", "isExistMember");
+				return bMap;
+			}
 		}else{
-			rrsUserDao.updateMemberUserInfo(param); //멤버 테이블의 멤버 정보 수정
+			//멤버 테이블의 멤버 정보 수정
+			rrsUserDao.updateMemberUserInfo(param);
 			// 회원 테이블에 있는지 검사 후
 			int memberCnt = rrsUserDao.selectMemberUserInfoCntAfterMemberUpdate(param);
 			// 있으면 회원테이블에도 멤버 정보 수정
 			if(memberCnt > 0) rrsUserDao.updateUserInfoAfterMemberUpdate(param);
 		}
-		return isValid;
+		bMap.put("result", "success");
+		return bMap;
 	}
 	
 	/**

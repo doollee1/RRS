@@ -165,8 +165,9 @@ public class RrsUserController {
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
 		
-		if(!rrsUserService.saveMemberUserInfo(param)){
-			respData.put("dup", "Y");
+		BMap result = rrsUserService.saveMemberUserInfo(param);
+		if(!result.getString("result").equals("success")){
+			if(result.getString("result").equals("isExistMember")) respData.put("isExistMember", "Y");
 		}
 		
 		return respData;
