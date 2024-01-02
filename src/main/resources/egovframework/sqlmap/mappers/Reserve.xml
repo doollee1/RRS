@@ -475,78 +475,211 @@
            AND ITEM_CD = #{PREV_ITEM_CD}
            AND TB_REQ_INVOICE.ORDER = #{PREV_ORDER}
 	</update>
-	
-	<insert id="firstInvoiceSelectList" parameterType="BMap">
-        <![CDATA[
-        INSERT INTO TB_REQ_INVOICE
-        SELECT X.REQ_DT
-               ,X.SEQ
-               ,X.ITEM_CD
-               ,X.SORT  
-               ,X.ITEM_NM
-               ,X.AMT_SIGN
-               ,X.PER_AMT
-               ,X.USE_DAY
-               ,X.UNIT_DAY
-               ,X.USE_NUM
-               ,X.UNIT_NUM
-               ,(X.PER_AMT * USE_DAY * USE_NUM) AS TOT_AMT
-               ,'' AS REF1
-               ,'' AS REF2
-               ,NOW() AS REG_DTM
-               ,#{LOGIN_USER}  AS REG_ID   
-               ,NOW() AS UPD_DTM
-               ,#{LOGIN_USER}  AS UPD_DTM  
-        FROM (
-        SELECT  B.REQ_DT        AS REQ_DT
-		        , B.SEQ         AS SEQ
-		        , A.CODE        AS ITEM_CD
-		        , A.CODE_NM     AS ITEM_NM
-		        , A.REF_CHR2    AS AMT_SIGN 
-		        , B.TOT_PERSON  AS TOT_PERSON 
-		        , B.R_PERSON    AS R_PERSON
-		        , B.N_PERSON    AS N_PERSON
-		        , B.K_PERSON    AS K_PERSON
-		        , CASE WHEN A.REF_CHR3 = 'D' THEN ABS(TIMESTAMPDIFF(DAY,date_format(B.CHK_OUT_DT,'%Y-%m-%d'), date_format(B.CHK_IN_DT,'%Y-%m-%d'))) 
-		             ELSE 1 END AS USE_DAY
-		        , A.REF_CHR3    AS UNIT_DAY
-		        , CASE  WHEN A.CODE = CONCAT('PROD',B.MEM_GBN)           THEN B.R_PERSON
-		                WHEN A.CODE = CONCAT('ROOMN',B.MEM_GBN)          THEN B.N_PERSON
-		                WHEN A.CODE = CONCAT('ROOMK',B.MEM_GBN)          THEN B.K_PERSON
-		                WHEN A.CODE = CONCAT('ROOMUP',B.MEM_GBN)         THEN B.ADD_R_P_CNT
-		                WHEN A.CODE = CONCAT('ROOMADD',B.MEM_GBN)        THEN B.ADD_R_S_CNT
-		                WHEN A.REF_CHR4 = 'P'                            THEN B.TOT_PERSON
-		                WHEN A.REF_CHR4 = 'R'  AND B.ROOM_TYPE IN ('01', '02')     THEN B.CNT_D1 + B.CNT_D2
-		                WHEN A.REF_CHR4 = 'R'  AND B.ROOM_TYPE IN ('03', '04')     THEN B.CNT_P1 + B.CNT_P2
-		           END USE_NUM
-		        , A.REF_CHR4    AS UNIT_NUM
-		        , A.REF_CHR5    AS SORT
-		        , CASE  WHEN A.CODE = CONCAT('PROD',B.MEM_GBN)              AND B.PROD_SEQ = C.PROD_SEQ THEN C.COM_AMT 
-		                WHEN A.CODE = CONCAT('ROOMN',B.MEM_GBN)             AND B.N_PERSON > 0          AND C.HDNG_GBN = '29' AND C.PROD_COND = 'N' THEN C.COM_AMT
-		                WHEN A.CODE = CONCAT('ROOMK',B.MEM_GBN)             AND B.K_PERSON > 0          AND C.HDNG_GBN = '29' AND C.PROD_COND = 'K' THEN C.COM_AMT 
-		                WHEN A.CODE = CONCAT('LATECHECKOUT',B.MEM_GBN)      AND B.LATE_CHECK_OUT = '1'  AND C.HDNG_GBN = '16' THEN C.COM_AMT 
-		                WHEN A.CODE = CONCAT('LATECHECKOUT',B.MEM_GBN)      AND B.LATE_CHECK_OUT = '2'  AND C.HDNG_GBN = '17' THEN C.COM_AMT 
-		                WHEN A.CODE = CONCAT('ROOMUP',B.MEM_GBN)            AND B.ADD_R_P_DAY <> 0      AND C.HDNG_GBN = '15' THEN C.COM_AMT 
-                        WHEN A.CODE = CONCAT('SURCHARGE',B.MEM_GBN) AND (SELECT COUNT(*) CNT FROM BC_COMM_L X WHERE HEAD_CD = '500160' AND CODE IN (B.FLIGHT_IN ,  B.FLIGHT_OUT) > 0 )
-		                    AND  EXISTS (SELECT * FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ)
-                            AND  B.TOT_PERSON < 4 AND C.PROD_COND = 'PD4' AND HDNG_GBN = '21' THEN C.COM_AMT 
-		                WHEN A.CODE = CONCAT('SURCHARGE',B.MEM_GBN)  AND (SELECT COUNT(*) CNT FROM BC_COMM_L X WHERE HEAD_CD = '500160' AND CODE IN (B.FLIGHT_IN ,  B.FLIGHT_OUT) > 0 )
-		                    AND   EXISTS (SELECT * FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ)
-                            AND  B.TOT_PERSON >= 4 AND C.PROD_COND =  'PU4' AND HDNG_GBN = '21' THEN C.COM_AMT
-		          WHEN A.CODE = CONCAT('SENDING',B.MEM_GBN)  AND   EXISTS (SELECT * FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ) THEN  (SELECT SUM(USE_AMT) FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ) 
-		         ELSE 0 END PER_AMT
-		      FROM  bc_comm_l A
+	<sql id="tmpDayDiff">
+	<![CDATA[	
+    		SELECT a.*, CASE WHEN A.MIN_ST = A.ST_DT1 AND A.MAX_ED = A.ED_DT1 THEN  ABS(TIMESTAMPDIFF(DAY,date_format(B.CHK_OUT_DT,'%Y-%m-%d'), date_format(B.CHK_IN_DT,'%Y-%m-%d')))  -- 기간상품 1개인 경우 
+                          -- 아래 기간상품 2개 이상인 경우                                                  
+		                 WHEN A.MIN_ST = A.ST_DT1 THEN ABS(TIMESTAMPDIFF(DAY,date_format(A.ED_DT1,'%Y-%m-%d'), date_format(B.CHK_IN_DT,'%Y-%m-%d'))) +1  -- 첫번째                                                     
+		                 WHEN A.MAX_ED = A.ED_DT1 THEN ABS(TIMESTAMPDIFF(DAY,date_format(B.CHK_OUT_DT,'%Y-%m-%d'), date_format(A.ST_DT1,'%Y-%m-%d')))    -- 마지막
+		                 ELSE ABS(TIMESTAMPDIFF(DAY,date_format(A.ED_DT1,'%Y-%m-%d'), date_format(A.ST_DT1,'%Y-%m-%d')))+1 
+                         END
+
+				            AS USE_DAY
+		                     , B.REQ_DT                              /* 예약일자              */
+		                     , B.SEQ                                 /* 일련번호              */
+		                     , B.USER_ID                             /* 사용자ID              */
+		                     , B.MEM_GBN                             /* 회원구분              */
+		                     , B.AGN_CD                              /* 에이전시코드          */
+		                     , B.CHK_IN_DT                           /* 체크인일자            */
+		                     , B.CHK_OUT_DT                          /* 체크아웃일자          */
+		                     , B.ROOM_TYPE                           /* 객실타입              */
+		                     , B.FLIGHT_IN                           /* 도착항공기편          */
+		                     , B.FLIGHT_OUT                          /* 출발항공기편          */
+		                     , B.PICK_GBN                            /* 미팅샌딩구분          */
+		                     , B.TOT_PERSON
+		                     , NVL(B.R_PERSON,0)                     AS R_PERSON          /* 라운딩 수              */
+		        	         , NVL(B.N_PERSON,0)                     AS N_PERSON          /* 비라운딩 수            */
+		        	         , NVL(B.K_PERSON,0)                     AS K_PERSON          /* 소아 수                */
+		        	         , NVL(B.ADD_R_S_PER,0)                  AS ADD_R_S_PER       /* 싱글룸추가인원수       */
+		        	         , NVL(B.ADD_R_S_DAY,0)                  AS ADD_R_S_DAY       /* 싱글룸추가일수         */
+		        	         , NVL(B.ADD_R_S_CNT,0)                  AS ADD_R_S_CNT       /* 싱글룸추가갯수         */
+		        	         , NVL(B.ADD_R_P_PER,0)                  AS ADD_R_P_PER       /* 프리미엄룸추가일수     */
+		        	         , NVL(B.ADD_R_P_DAY,0)                  AS ADD_R_P_DAY       /* 프리미엄룸추가일수     */
+		        	         , NVL(B.ADD_R_P_CNT,0)                  AS ADD_R_P_CNT       /* 프리미엄추가갯수       */
+		        	         , NVL(B.CNT_D1,0)                       AS CNT_D1            /* 트윈갯수               */
+		        	         , NVL(B.CNT_D2,0)                       AS CNT_D2            /* 더블갯수               */
+		        	         , NVL(B.CNT_P1,0)                       AS CNT_P1            /* 프리미엄트윈갯수       */
+		        	         , NVL(B.CNT_P2,0)                       AS CNT_P2            /* 프리미엄킹갯수         */    
+		                     , B.PICK_IN                             /* 픽업차량-도착         */
+		                     , B.PICK_OUT                            /* 픽업차량-출발         */
+		                     , B.LATE_CHECK_OUT                      /* Late체크아웃여부      */
+		                     , B.REMARK                              /* 비고(추가요구사항)    */
+		                     , B.INV_REG_DT                          /* 인보이스발행일자      */
+		                     , B.CONFIRM_NO                          /* 리조트confirm번호     */
+		                     , B.RND_CHG_YN1                         /* 라운딩변경(토오전)여부*/
+		                     , B.RND_CHG_YN2                         /* 라운딩변경(일오전)여부*/
+		                     , ( SELECT TT2.HDNG_GBN
+		            	           FROM TB_PROD_INFO TT2
+		            	          WHERE 1 = 1
+		            	            AND TT2.BAS_YY     = B.BAS_YY
+		            	            AND TT2.PROD_SEQ   = B.PROD_SEQ
+		            	       )                                      AS HDNG_GBN           /* 상품코드               */
+		                    ,ABS(TIMESTAMPDIFF(DAY,date_format(B.CHK_OUT_DT,'%Y-%m-%d'), date_format(B.CHK_IN_DT,'%Y-%m-%d'))) CHK_DIFF_DAY
+		        FROM  (SELECT X.*, MIN(ST_DT1) OVER(ORDER BY ST_DT1) MIN_ST
+                              , MAX(ED_DT1) OVER(ORDER BY ED_DT1 DESC) MAX_ED 
+                              FROM (   
+                       SELECT BAS_YY, BAS_YY_SEQ, ST_DT1,ED_DT1 FROM tb_bas_yy_info b
+                       WHERE 1=1
+		               AND (    #{CHK_IN_DT  }  BETWEEN B.ST_DT1 AND B.ED_DT1 -- IN 체크인
+		                     OR #{CHK_OUT_DT  }	BETWEEN B.ST_DT1 AND B.ED_DT1  -- IN 체크아웃
+		                     OR (#{CHK_IN_DT  } < B.ST_DT1 AND #{CHK_OUT_DT  } > B.ED_DT1)
+		                   )
+                        UNION ALL
+                         SELECT BAS_YY, BAS_YY_SEQ, ST_DT2,ED_DT2 FROM tb_bas_yy_info b
+                       WHERE 1=1
+		               AND (     #{CHK_IN_DT  } BETWEEN B.ST_DT2 AND B.ED_DT2  -- IN 체크인
+		                     OR #{CHK_OUT_DT  } BETWEEN B.ST_DT2 AND B.ED_DT2    -- IN 체크아웃
+		                     OR (#{CHK_IN_DT  } < B.ST_DT2 AND #{CHK_OUT_DT  } > B.ED_DT2)
+		                   )
+                        AND IFNULL(ST_DT2,'') != ''
+                        UNION ALL
+                           SELECT BAS_YY, BAS_YY_SEQ, ST_DT3,ED_DT3 FROM tb_bas_yy_info b
+                       WHERE 1=1
+		               AND (    #{CHK_IN_DT  } 	BETWEEN B.ST_DT3 AND B.ED_DT3  -- IN 체크인
+		                     OR #{CHK_OUT_DT  } BETWEEN B.ST_DT3 AND B.ED_DT3    -- IN 체크아웃
+                             OR (#{CHK_IN_DT  } < B.ST_DT3 AND #{CHK_OUT_DT  } > B.ED_DT3)
+		                   )
+                        AND IFNULL(ST_DT3,'') != ''
+                        ) X ORDER BY ST_DT1) A
 		        INNER JOIN TB_REQ_BOOKING_M B
-		            ON A.HEAD_CD      = '500140'   -- 인보이스 항목
-		            AND INSTR(A.REF_CHR1,B.MEM_GBN) > 0  -- 항목구분   
-		        INNER JOIN TB_PROD_INFO C
-		            ON B.BAS_YY   = C.BAS_YY
-		            AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
-		 WHERE B.REQ_DT     = #{REQ_DT}
-		 AND B.SEQ          = #{SEQ}      -- INPUT 
-         ) X
-         WHERE PER_AMT <> 0
-         ORDER BY SORT ASC      
+		           ON B.CHK_IN_DT >= A.MIN_ST
+                   AND B.CHK_OUT_DT <= A.MAX_ED
+		        WHERE B.REQ_DT = #{REQ_DT}
+           		  AND B.SEQ    = #{SEQ}
+           		    ]]>  
+	</sql>
+
+	<select id="selectDayDiffChk" resultType="BMap">
+	SELECT Y.CHK_DIFF_DAY, SUM(USE_DAY) BAS_YY_CHK_DAY
+		FROM (
+	    <include refid="tmpDayDiff"></include>
+	    ) Y 
+	</select>
+
+	<insert id="firstInvoiceSelectList" parameterType="BMap">
+        INSERT INTO TB_REQ_INVOICE
+		WITH TBL AS ( 
+			<include refid="tmpDayDiff"></include> 
+		)
+		<![CDATA[	
+		 SELECT X.REQ_DT
+		               ,X.SEQ
+		               , @ROW:=@ROW+1 
+		               ,X.ITEM_CD
+		               ,X.ITEM_NM
+		               ,X.AMT_SIGN
+		               ,X.PER_AMT
+		               ,X.USE_DAY
+		               ,X.UNIT_DAY
+		               ,X.USE_NUM
+		               ,X.UNIT_NUM
+		               ,(X.PER_AMT * USE_DAY * USE_NUM) AS TOT_AMT
+		               ,'' AS REF1
+		               ,'' AS REF2
+		               ,NOW() AS REG_DTM
+		               ,#{LOGIN_USER}  AS REG_ID   
+		               ,NOW() AS UPD_DTM
+		               ,#{LOGIN_USER}  AS UPD_DTM  
+		        FROM (
+		    SELECT Y.* 
+		    FROM (
+					SELECT 		 TB.REQ_DT        AS REQ_DT
+						        , TB.SEQ         AS SEQ
+				                , P.BAS_YY
+				                , P.BAS_YY_SEQ
+				                , P.PROD_SEQ
+						        , C.CODE        AS ITEM_CD
+						        , CONCAT(C.CODE_NM,' ',date_format(TB.ST_DT1,'%Y-%m-%d')) AS ITEM_NM
+						        , C.REF_CHR2    AS AMT_SIGN 
+						        , TB.TOT_PERSON  AS TOT_PERSON 
+						        , TB.R_PERSON    AS R_PERSON
+						        , TB.N_PERSON    AS N_PERSON
+						        , TB.K_PERSON    AS K_PERSON
+						        , TB.USE_DAY     AS USE_DAY
+						        , C.REF_CHR3     AS UNIT_DAY
+						        , CASE  WHEN C.CODE = CONCAT('PROD',TB.MEM_GBN)           THEN TB.R_PERSON
+						                WHEN C.CODE = CONCAT('ROOMN',TB.MEM_GBN)          THEN TB.N_PERSON
+						                WHEN C.CODE = CONCAT('ROOMK',TB.MEM_GBN)          THEN TB.K_PERSON
+						           END USE_NUM
+						        , C.REF_CHR4    AS UNIT_NUM
+						        , ROW_NUMBER() OVER(ORDER BY C.REF_CHR5 , CONCAT(P.BAS_YY,P.BAS_YY_SEQ))    AS SORT
+						        , MAX(CASE  WHEN C.CODE = CONCAT('PROD',TB.MEM_GBN)		AND TB.HDNG_GBN = P.HDNG_GBN 	AND P.PROD_COND = 'DU10' 	AND TB.USE_DAY >= 10 	THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_AMT ELSE P.COM_AMT END 
+    						                WHEN C.CODE = CONCAT('PROD',TB.MEM_GBN)		AND TB.HDNG_GBN = P.HDNG_GBN 	AND P.PROD_COND = 'DD10' 	AND TB.USE_DAY <  10 	THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_AMT ELSE P.COM_AMT END 
+                                            WHEN C.CODE = CONCAT('PROD',TB.MEM_GBN)		AND TB.HDNG_GBN = P.HDNG_GBN 	AND P.PROD_COND = '0'                         		THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_AMT ELSE P.COM_AMT END 
+                                            WHEN C.CODE = CONCAT('ROOMN',TB.MEM_GBN)	AND P.HDNG_GBN = '29'          	AND P.PROD_COND = 'N' 		AND TB.N_PERSON > 0  	THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_AMT ELSE P.COM_AMT END  
+    						                WHEN C.CODE = CONCAT('ROOMK',TB.MEM_GBN)	AND P.HDNG_GBN = '29'          	AND P.PROD_COND = 'K'		AND TB.K_PERSON > 0  	THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_AMT ELSE P.COM_AMT END  
+						                    WHEN C.CODE = CONCAT('ROOMK',TB.MEM_GBN)	AND P.HDNG_GBN = '29' 			AND P.PROD_COND = '0'                              	THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_AMT ELSE P.COM_AMT END
+						              ELSE 0 END) PER_AMT  
+				FROM TBL TB
+				INNER JOIN BC_COMM_L C
+				    ON C.HEAD_CD      = '500140'   -- 인보이스 항목
+				    AND INSTR(C.REF_CHR1,TB.MEM_GBN) > 0  -- 항목구분   
+				    AND C.CODE IN(CONCAT('PROD',TB.MEM_GBN),CONCAT('ROOMN',TB.MEM_GBN),CONCAT('ROOMK',TB.MEM_GBN)) 
+				INNER JOIN TB_PROD_INFO P
+					ON TB.bas_yy = P.BAS_YY
+					AND TB.bas_yy_seq = P.BAS_YY_SEQ   
+				GROUP BY C.REF_CHR5,P.bas_yy, P.bas_yy_seq, P.PROD_SEQ, CONCAT(C.CODE_NM,' ',date_format(TB.ST_DT1,'%Y-%m')) 
+				UNION ALL
+				SELECT    B.REQ_DT      AS REQ_DT
+				        , B.SEQ         AS SEQ
+				        , C.BAS_YY
+				        , C.BAS_YY_SEQ
+				        , C.PROD_SEQ
+				        , A.CODE        AS ITEM_CD
+				        , A.CODE_NM     AS ITEM_NM
+				        , A.REF_CHR2    AS AMT_SIGN 
+				        , B.TOT_PERSON  AS TOT_PERSON 
+				        , B.R_PERSON    AS R_PERSON
+				        , B.N_PERSON    AS N_PERSON
+				        , B.K_PERSON    AS K_PERSON
+				        , CASE WHEN A.REF_CHR3 = 'D' THEN ABS(TIMESTAMPDIFF(DAY,date_format(B.CHK_OUT_DT,'%Y-%m-%d'), date_format(B.CHK_IN_DT,'%Y-%m-%d'))) 
+				             ELSE 1 END AS USE_DAY
+				        , A.REF_CHR3    AS UNIT_DAY
+				        , CASE  WHEN A.CODE = CONCAT('ROOMUP',B.MEM_GBN)         THEN B.ADD_R_P_CNT
+				                WHEN A.CODE = CONCAT('ROOMADD',B.MEM_GBN)        THEN B.ADD_R_S_CNT
+				                WHEN A.REF_CHR4 = 'P'                            THEN B.TOT_PERSON
+				                WHEN A.REF_CHR4 = 'R'  AND B.ROOM_TYPE IN ('01', '02')     THEN B.CNT_D1 + B.CNT_D2
+				                WHEN A.REF_CHR4 = 'R'  AND B.ROOM_TYPE IN ('03', '04')     THEN B.CNT_P1 + B.CNT_P2
+		                        ELSE 1
+				           END USE_NUM
+				        , A.REF_CHR4    AS UNIT_NUM
+				        , A.REF_CHR5    AS SORT
+				        , CASE  WHEN A.CODE = CONCAT('LATECHECKOUT',B.MEM_GBN)      AND B.LATE_CHECK_OUT = '1'  AND C.HDNG_GBN = '16' AND C.PROD_COND = '0' THEN CASE WHEN LENGTH(B.AGN_CD) = 2 THEN C.AGN_AMT ELSE C.COM_AMT END 
+				                WHEN A.CODE = CONCAT('LATECHECKOUT',B.MEM_GBN)      AND B.LATE_CHECK_OUT = '2'  AND C.HDNG_GBN = '17' AND C.PROD_COND = '0' THEN CASE WHEN LENGTH(B.AGN_CD) = 2 THEN C.AGN_AMT ELSE C.COM_AMT END 
+				                WHEN A.CODE = CONCAT('ROOMUP',B.MEM_GBN)            AND B.ADD_R_P_DAY <> 0      AND C.HDNG_GBN = '15' AND C.PROD_COND = '0' THEN CASE WHEN LENGTH(B.AGN_CD) = 2 THEN C.AGN_AMT ELSE C.COM_AMT END
+		                        WHEN A.CODE = CONCAT('SURCHARGE',B.MEM_GBN) AND (SELECT COUNT(*) CNT FROM BC_COMM_L X WHERE HEAD_CD = '500160' AND CODE IN (B.FLIGHT_IN ,  B.FLIGHT_OUT) > 0 )
+				                    AND  EXISTS (SELECT * FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ)
+		                            AND HDNG_GBN = '21' AND C.PROD_COND = 'PD4' AND  B.TOT_PERSON < 4   THEN CASE WHEN LENGTH(B.AGN_CD) = 2 THEN C.AGN_AMT ELSE C.COM_AMT END
+				                WHEN A.CODE = CONCAT('SURCHARGE',B.MEM_GBN)  AND (SELECT COUNT(*) CNT FROM BC_COMM_L X WHERE HEAD_CD = '500160' AND CODE IN (B.FLIGHT_IN ,  B.FLIGHT_OUT) > 0 )
+				                    AND   EXISTS (SELECT * FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ)
+		                            AND HDNG_GBN = '21' AND C.PROD_COND =  'PU4' AND  B.TOT_PERSON >= 4  THEN CASE WHEN LENGTH(B.AGN_CD) = 2 THEN C.AGN_AMT ELSE C.COM_AMT END
+				          WHEN A.CODE = CONCAT('SENDING',B.MEM_GBN)  AND   EXISTS (SELECT * FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ) THEN  (SELECT SUM(CASE WHEN LENGTH(B.AGN_CD) = 2 THEN C.AGN_AMT ELSE C.COM_AMT END) +SUM(ADD_AMT) FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ) 
+				         ELSE 0 END PER_AMT
+				      FROM  BC_COMM_L A
+				        INNER JOIN TB_REQ_BOOKING_M B
+				            ON A.HEAD_CD      = '500140'   -- 인보이스 항목
+				            AND INSTR(A.REF_CHR1,B.MEM_GBN) > 0  -- 항목구분
+				            AND A.CODE NOT IN(CONCAT('PROD',B.MEM_GBN),CONCAT('ROOMN',B.MEM_GBN),CONCAT('ROOMK',B.MEM_GBN))    
+				        INNER JOIN TB_PROD_INFO C
+				            ON B.BAS_YY   = C.BAS_YY
+				            AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
+				 WHERE B.REQ_DT     = #{REQ_DT}
+				 AND B.SEQ          = #{SEQ}      -- INPUT 
+				 ORDER BY 14
+				) Y, (SELECT @ROW:=0) R
+				WHERE PER_AMT <> 0  
+		   ORDER BY ITEM_NM ) X
+		;
           ]]>  
 	</insert>
 	
@@ -985,7 +1118,9 @@
 		                                                 OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
 		                                                 OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
 		                                         )                  
-		                           AND HDNG_GBN = #{PROD_SEQ}
+		                           AND HDNG_GBN = #{PROD_CD}
+		                           AND PROD_COND IN ((CASE WHEN ABS(TIMESTAMPDIFF(DAY,date_format('20240102','%Y-%m-%d'), date_format('20240102','%Y-%m-%d'))) >= 10 THEN 'DU10' -- 10일이상
+		                                                ELSE 'DD10' END), '0') -- 10일이상 , 10일미만, 조건없음
 		                         )
 		     , PICK_GBN       = #{PICK_GBN}
 		     , ADD_R_S_PER    = #{ADD_R_S_PER     }
@@ -1025,7 +1160,7 @@
 		     , DCT_AMT    =  #{DCT_AMT  }
 		     , PAY_AMT    =  #{PAY_AMT  }
 		     , TOT_AMT    =  #{TOT_AMT  }
-		     , UPD_DTM    =  #{UPD_DTM  }
+		     , UPD_DTM    =  NOW()
 		     , UPD_ID     =  #{UPD_ID   }
 		 WHERE 1 = 1
 		   AND REQ_DT  = #{REQ_DT}

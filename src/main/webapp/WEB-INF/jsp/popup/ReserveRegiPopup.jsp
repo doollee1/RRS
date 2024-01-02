@@ -601,7 +601,7 @@ $(function() {
 				    , "R_PERSON"        : parseInt($("#R_PERSON").val())
 				    , "N_PERSON"        : parseInt($("#N_PERSON").val())
 				    , "K_PERSON"        : parseInt($("#K_PERSON").val())
-				    , "PROD_SEQ"        : parseInt($("#PROD_CD").val())
+				    , "PROD_CD"         : $("#PROD_CD").val()
 				    , "PICK_GBN"        : $("#PICK_GBN").val()
 				    , "ADD_R_S_PER"     : parseInt($("#ADD_R_S_PER").val())
 				    , "ADD_R_S_DAY"     : parseInt($("#ADD_R_S_DAY").val())
@@ -858,19 +858,50 @@ $(function() {
 		$("#BAL_AMT").val(fn_comma(bal_amt));
 	}); */
 	
-	$("#btn_create").click(function(){
+	$("#btn_create").click(function() {
 		//if(!openPopVali($(this))) return;
-    	var url = "/reserve/InvoicePopup.do";
-	    var pid = "p_invoicePopup";
-	    var param = {"SEQ"     : seq
-		           , "REQ_DT"  : req_dt
-		           , "MEM_GBN" : $("#MEM_GBN option:selected").val()
-		           , "EMAIL"   : $("#EMAIL").val()
-		           };
-	    if(fn_empty(param.MEM_GBN) || param.MEM_GBN == "03" || param.MEM_GBN == "04" ){
-	    	alert("교민 및 에이전시는 인보이스생성을 할수 없습니다.");
-	    	return false;
-	    }
+		var url = "/reserve/InvoicePopup.do";
+		var pid = "p_invoicePopup";
+		var param = {
+			"SEQ" : seq,
+			"REQ_DT" : req_dt,
+			"MEM_GBN" : $("#MEM_GBN option:selected").val(),
+			"EMAIL" : $("#EMAIL").val(),
+			"CHK_IN_DT" : $("#CHK_IN_DT").val().replaceAll(".", ""),
+			"CHK_OUT_DT" : $("#CHK_OUT_DT").val().replaceAll(".", ""),
+			"TOT_PERSON" : $("#TOT_PERSON").val(),
+			"TOT_DAY" : "",
+			"INV_REG_DT" :  $("#INV_REG_DT").val()
+		};
+		if (fn_empty(param.MEM_GBN) || param.MEM_GBN == "03") {
+			alert("교민은 인보이스생성을 할수 없습니다.");
+			return false;
+		}
+		var url2 = "/reserve/selectDayDiffChk.do";
+		var param2 = {
+			"SEQ" : seq, 	
+			"REQ_DT" : req_dt,
+			"CHK_IN_DT" : $("#CHK_IN_DT").val().replaceAll(".", ""),
+			"CHK_OUT_DT" : $("#CHK_OUT_DT").val().replaceAll(".", "")
+		};
+		var errChk = 0;
+		fn_ajax(url2, false, param2, function(data, xhr) {
+			if (data.result.resultCd == "0000") {
+				param.TOT_DAY = data.result.TOT_DAY
+			} else if (data.result.resultCd == "1001") {
+				alert("기준년도관리 및 상품관리를 확인해주세요 \n체크인: " + $("#CHK_IN_DT").val()
+						+ "\n체크아웃: "+$("#CHK_OUT_DT").val());
+				errChk++;
+				return false;
+			} else  {
+				alert("날짜입력오류");
+				errChk++;
+				return false;
+			}
+		});
+		
+		if (errChk > 0) return false;
+		
 		popupOpen(url, pid, param, function(data) {
 			initSelect();
 		});
