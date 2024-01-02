@@ -36,15 +36,15 @@
 						<input type="hidden" id="STATUS" name = 'STATUS' value="A" />
 						<input type="hidden" id="START_DT" name = 'START_DT' />
 						<input type="hidden" id="STOP_DT" name = 'STOP_DT' value="9999.12.31" />
-						<input type="text" id="USER_ID" name="USER_ID" class="cmc_txt disabled" readonly="readonly" style="width:150px;" maxlength="15"/>
+						<input type="text" id="USER_ID" name="USER_ID" class="cmc_txt disabled" readonly="readonly" style="width:150px;" maxlength="15" noSpecial />
 					</td>
 					<th><s:message code='system.name'/></th>
 					<td>
-						<input type="text"  id="NAME_1ST" name="NAME_1ST" class="cmc_txt" style="width:150px;" maxlength="40"/>
+						<input type="text"  id="NAME_1ST" name="NAME_1ST" class="cmc_txt" style="width:150px;" maxlength="40" noSpecial />
 					</td>
 					<th>텔레그램 ID</th>
 					<td>
-						<input type="text" id="CHAT_ID" name="CHAT_ID" class="cmc_txt" style="width:150px;" maxlength="20"/>
+						<input type="text" id="CHAT_ID" name="CHAT_ID" class="cmc_txt" style="width:150px;" maxlength="20" noSpecial />
 					</td>
 				</tr>
 			</table>
@@ -53,8 +53,9 @@
 </div>
 
 <script type="text/javascript">
+$(document).on("keyup", "input[noSpecial]", function() {$(this).val( $(this).val().replace(/[^ㄱ-힣a-zA-Z0-9]/gi,"") );});
+
 $(function() {
-	
 	$('#START_DT').val($.datepicker.formatDate('yy.mm.dd', new Date()));
 	
 	$('#USER_TP').change(function() {
@@ -198,6 +199,17 @@ function selectUserInfo(compCd, userId, userTp){
 
 function saveUserInfo(){
 	var formData = formIdAllToMap('frmUserInfo');
+	
+	// validtaion check
+	if(formData.USER_ID === "") {
+		alert("사용자ID를 입력해주세요.");
+		return;
+	}
+	if(formData.NAME_1ST === "") {
+		alert("이름을 입력해주세요.");
+		return;
+	}
+	
 	var param = {"param" : formData};
 	var url = "/common/saveUserInfo.do"
 		
