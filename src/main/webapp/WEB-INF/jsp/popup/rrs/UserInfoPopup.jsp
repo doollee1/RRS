@@ -158,6 +158,23 @@ function saveUserInfo(){
 	var formData = formIdAllToMap('frmUserInfo');
 	formData.TEL_NO = formData.TEL_NO.replace(/-/g, '');
 	
+	// validtaion check
+	if(formData.HAN_NAME === "") {
+		alert("이름을 입력해주세요.");
+		return;
+	}
+	if(formData.ENG_NAME === "") {
+		alert("영문이름을 입력해주세요.");
+		return;
+	}
+	if(formData.TEL_NO === "") {
+		alert("연락처를 입력해주세요.");
+		return;
+	}
+	if(formData.USER_ID === "") {
+		alert("전화번호를 입력해주세요.");
+		return;
+	}
 	if(!validChk_email(formData.EMAIL)) {
 		alert("이메일 형식이 올바르지 않습니다.");
 		return;

@@ -13,11 +13,11 @@
 				<tbody>
 					<tr>
 						<td class="small_td">이름</td>
-			      		<td><p><input type="text" id="HAN_NAME" name="HAN_NAME" maxlength="20"></p></td>
+			      		<td><p><input type="text" id="HAN_NAME" name="HAN_NAME" maxlength="20" onlyKor></p></td>
 			      	</tr>
 			      	<tr>
 						<td class="small_td">영문이름</td>
-			      		<td><p><input type="text" id="ENG_NAME" name="ENG_NAME" maxlength="30"></p></td>
+			      		<td><p><input type="text" id="ENG_NAME" name="ENG_NAME" maxlength="30" onlyEng></p></td>
 			      	</tr>
 			      	<tr>
 						<td class="small_td">전화번호</td>
@@ -32,6 +32,9 @@
 	</div>
 </div>
 <script type="text/javascript">
+$(document).on("keyup", "input[onlyKor]", function() {$(this).val( $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"'\\]/g,"") );});
+$(document).on("keyup", "input[onlyEng]", function() {$(this).val( $(this).val().replace(/[^A-Za-z]/ig,"") );});
+
 $(function() {
 	$('#MemberUserAddPopup').dialog({
 		title:'멤버 회원 정보 등록',
@@ -74,6 +77,22 @@ $(function() {
 
 function saveMemberUserInfo(){
 	var formData = formIdAllToMap('frmMemberUserInfo');
+	
+	// validation check
+	if(formData.HAN_NAME === "") {
+		alert("이름을 입력해주세요.");
+		return;
+	}
+	if(formData.ENG_NAME === "") {
+		alert("영문이름을 입력해주세요.");
+		return;
+	}
+	if(formData.TEL_NO === "") {
+		alert("전화번호를 입력해주세요.");
+		return;
+	}
+	
+	// delete hypen
 	formData.TEL_NO = formData.TEL_NO.replace(/-/g, '');
 	formData.Ex_TEL_NO = formData.Ex_TEL_NO.replace(/-/g, '');
 	var param = {"param" : formData};
@@ -81,9 +100,9 @@ function saveMemberUserInfo(){
 		
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
-			if(data.dup == 'Y'){
-				alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
-			}else{
+			if(data.isExistMember == 'Y'){
+				alert("이미 등록된 멤버회원이 존재합니다."); 
+			} else {
 				alert("<s:message code='info.save'/>");
 				popupClose($('#MemberUserAddPopup').data('pid'));			
 			}

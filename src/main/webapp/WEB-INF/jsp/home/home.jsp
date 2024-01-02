@@ -65,7 +65,8 @@
 					</ul>
 					
 					<div id="tabs-1">
-						<iframe src="/main/main.do" id="icontent" name="icontent" style="width:100%;height:100%;"  allowfullscreen></iframe>
+						<!-- <iframe src="/main/main.do" id="icontent" name="icontent" style="width:100%;height:100%;"  allowfullscreen></iframe> -->
+						<iframe src="/reserve/reserveList.do" id="icontent" name="icontent" style="width:100%;height:100%;"  allowfullscreen></iframe>
 					</div>
 				</div>
 			</div>
