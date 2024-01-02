@@ -422,7 +422,7 @@ public class ReserveService {
         	int cnt = reserveDao.insertReserve(param);
         	if(cnt == 1){
         		result.put("resultCd", "0000");
-        		result.put("SEQ"     , param.getInt("SEQ"));
+        		result.put("SEQ"     , String.valueOf(param.get("SEQ")));
         	}else{
         		result.put("result", "");
         	}
@@ -464,4 +464,7 @@ public class ReserveService {
 		}
 		return dataMap;
 	}
+	
+	
+	
 }

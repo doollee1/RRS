@@ -344,11 +344,13 @@ public class ReserveRestController {
 	public BRespData insertReserve(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
 		BRespData respData = new BRespData();
 		BMap param = new BMap();
-		param.put("REQ_DT"     	, (String)reqData.get("REQ_DT"));
-		param.put("USER_ID"    	, (String)reqData.get("USER_ID"));
-		param.put("CHK_IN_DT"  	, (String)reqData.get("CHK_IN_DT"));
-		param.put("CHK_OUT_DT"	, (String)reqData.get("CHK_OUT_DT"));
-		param.put("LOGIN_USER" 	, LoginInfo.getUserId());
+		param.put("REQ_DT"       , (String)reqData.get("REQ_DT"));
+		param.put("USER_ID"      , (String)reqData.get("USER_ID"));
+		param.put("MEM_GBN"      , (String)reqData.get("MEM_GBN"));
+		param.put("REQ_ENG_NM"   , (String)reqData.get("ENG_NAME"));
+		param.put("REQ_HAN_NM"   , (String)reqData.get("HAN_NAME"));
+		param.put("REQ_TEL_NO"   , (String)reqData.get("TEL_NO"));
+		param.put("LOGIN_USER"   , LoginInfo.getUserId());
 		
 		
 		respData.put("result", reserveService.insertReserve(param));
