@@ -181,9 +181,7 @@ public class ReserveRestController {
 		BRespData respData = new BRespData();
 		BMap paramData = new BMap();
 		paramData.put("HEAD_CD"    , 500210);
-		paramData.put("BAS_YY"     , String.valueOf( reqData.get("BAS_YY")));
-		paramData.put("SSN_GBN"    , (String) reqData.get("SSN_GBN"));
-		paramData.put("BAS_YY_SEQ" , Integer.parseInt(String.valueOf(reqData.get("BAS_YY_SEQ"))));
+		paramData.put("CHK_IN_DT"  , (String)reqData.get("CHK_IN_DT"));
 		respData.put("result"      , reserveService.selectPrdInfo(paramData));
 		return respData;
 	}

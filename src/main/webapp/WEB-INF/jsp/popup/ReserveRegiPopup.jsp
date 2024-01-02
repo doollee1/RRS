@@ -132,7 +132,7 @@
 				<tr>
 				    <th><s:message code='reservation.totalCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="TOT_PERSON" name="TOT_PERSON" value="0" style="width:60px; text-align: right;"/>명
+						<input type="text" class="cmc_txt withComma" id="TOT_PERSON" name="TOT_PERSON" value="0" style="width:60px; text-align: right;" maxlength="5" />명
 					</td>	
 				    <th><s:message code='reservation.resortNum'/></th>
 					<td>
@@ -144,11 +144,11 @@
 				    <td colspan="5">
 					    <div style="display:inline-flex;">
 						    <s:message code='reservation.roundY'/>
-						    <input type="text" id="R_PERSON" name="R_PERSON" style="width:60px; text-align: right;" value="0"/>명
+						    <input type="text" id="R_PERSON" name="R_PERSON" style="width:60px; text-align: right;" value="0" maxlength="5" class="withComma"/>명
 						    <s:message code='reservation.roundN'/>
-						    <input type="text" id="N_PERSON" name="N_PERSON" style="width:60px; text-align: right;" value="0"/>명
+						    <input type="text" id="N_PERSON" name="N_PERSON" style="width:60px; text-align: right;" value="0" maxlength="5" class="withComma"/>명
 						    <s:message code='reservation.infant'/>
-						    <input type="text" id="K_PERSON" name="K_PERSON" style="width:60px; text-align: right;" value="0"/>명
+						    <input type="text" id="K_PERSON" name="K_PERSON" style="width:60px; text-align: right;" value="0" maxlength="5" class="withComma"/>명
 						</div>
 					</td>
 				</tr>	
@@ -173,27 +173,27 @@
 				<tr>
 					<th><s:message code='reservation.addSingle'/></th>
 					<td>
-						<input type="text" id="ADD_R_S_PER" name="ADD_R_S_PER"  value="0" style="width:60px; text-align: right";"/>명
-						<input type="text" id="ADD_R_S_DAY" name="ADD_R_S_DAY"  value="0" style="width:60px; text-align: right";"/>일
-						<input type="text" id="ADD_R_S_CNT" name="ADD_R_S_CNT"  value="0" style="width:60px; text-align: right";"/>개
+						<input type="text" id="ADD_R_S_PER" name="ADD_R_S_PER"  value="0" style="width:60px; text-align: right";" maxlength="3" class="withComma"/>명
+						<input type="text" id="ADD_R_S_DAY" name="ADD_R_S_DAY"  value="0" style="width:60px; text-align: right";" maxlength="3" class="withComma"/>일
+						<input type="text" id="ADD_R_S_CNT" name="ADD_R_S_CNT"  value="0" style="width:60px; text-align: right";" maxlength="3" class="withComma"/>개
 					</td>
 					<th><s:message code='reservation.addPremium'/></th>
 					<td>
-						<input type="text" id="ADD_R_P_PER" name="ADD_R_P_PER" value="0" style="width:60px; text-align: right";/>명
-					    <input type="text" id="ADD_R_P_DAY" name="ADD_R_P_DAY" value="0" style="width:60px; text-align: right";/>일
-					    <input type="text" id="ADD_R_P_CNT" name="ADD_R_P_CNT" value="0" style="width:60px; text-align: right";/>개
+						<input type="text" id="ADD_R_P_PER" name="ADD_R_P_PER" value="0" style="width:60px; text-align: right"; maxlength="3" class="withComma"/>명
+					    <input type="text" id="ADD_R_P_DAY" name="ADD_R_P_DAY" value="0" style="width:60px; text-align: right"; maxlength="3" class="withComma"/>일
+					    <input type="text" id="ADD_R_P_CNT" name="ADD_R_P_CNT" value="0" style="width:60px; text-align: right"; maxlength="3" class="withComma"/>개
 					</td>
 				</tr>
 				<tr>
 				    <th>트윈/더블</th>
 					<td>
-						<input type="text" id="CNT_D1" name="CNT_D1" style="width:60px; text-align: right";" value="0"/>개
-						<input type="text" id="CNT_D2" name="CNT_D2" style="width:60px; text-align: right";" value="0"/>개
+						<input type="text" id="CNT_D1" name="CNT_D1" style="width:60px; text-align: right";" value="0" maxlength="3" class="withComma"/>개
+						<input type="text" id="CNT_D2" name="CNT_D2" style="width:60px; text-align: right";" value="0" maxlength="3" class="withComma"/>개
 					</td>                                                               
 					<th>프리미엄 트윈/더블</th>
 					<td>
-						<input type="text" id="CNT_P1" name="CNT_P1" style="width:60px; text-align: right";" value="0"/>개
-					    <input type="text" id="CNT_P2" name="CNT_P2" style="width:60px; text-align: right";" value="0"/>개
+						<input type="text" id="CNT_P1" name="CNT_P1" style="width:60px; text-align: right";" value="0" maxlength="3" class="withComma"/>개
+					    <input type="text" id="CNT_P2" name="CNT_P2" style="width:60px; text-align: right";" value="0" maxlength="3" class="withComma"/>개
 					</td>                                                               
 				</tr>	
 				<tr>
@@ -219,7 +219,7 @@
 				<tr>
 				    <th><s:message code='reservation.invoiceDt'/></th>
 				    <td>
-						<input type="text" id="INV_REG_DT" name="INV_REG_DT" data-type="date"/>
+						<input type="text" id="INV_REG_DT" name="INV_REG_DT" data-type="date" readonly="readonly"/>
 					    <button type="button" class="pbtn_default openPop" id="btn_create">생성</button>
 				    </td>
 				     <th class="status"><s:message code='reservation.state'/></th>
@@ -396,7 +396,11 @@ $(function() {
     			if(val == "Y") $('[name='+ key +']').prop("checked", true);
     			else           $('[name='+ key +']').prop("checked", false);
     		}else if(key == "CHK_IN_DT" || key == "CHK_OUT_DT" || key == "REQ_DT" || key == "DEP_IN_DT" || key == "EXP_DT" || key == "INV_REG_DT"){
-    			$('[name='+ key +']').val(Util.converter.dateFormat1(val));
+    			if(!fn_empty(val)){
+	    			$('[name='+ key +']').val(Util.converter.dateFormat1(val));
+    			}else{
+    				$('[name='+ key +']').val("");
+    			}
     		}else{
     			$('[name='+ key +']').val(val);
     		}
@@ -405,10 +409,10 @@ $(function() {
     	//미팅샌딩 셋팅
     	if(!fn_empty(data.PICK_GBN)){
 	    	if(data.PICK_GBN == "01"){
-	    		$("#PICK_GBN"     ).attr("disabled", false);
+	    		$("#PICK_GBN"     ).attr("disabled", true);
 	    		$("#insertPickGbn").text("등록");
 	    		$("#PER_NUM_CNT"  ).val("0");
-	    		$("#PER_NUM_CNT"  ).attr("readonly", false);
+	    		$("#PER_NUM_CNT"  ).attr("readonly", true);
 	    	}else{
 	    		$("#PICK_GBN"     ).attr("disabled", true);
 	    		$("#insertPickGbn").text("상세");
@@ -597,22 +601,22 @@ $(function() {
 				    , "ROOM_TYPE"       : $("#ROOM_TYPE").val()
 				    , "FLIGHT_IN"       : $("#FLIGHT_IN").val()
 				    , "FLIGHT_OUT"      : $("#FLIGHT_OUT").val()
-				    , "TOT_PERSON"      : parseInt($("#TOT_PERSON").val())
-				    , "R_PERSON"        : parseInt($("#R_PERSON").val())
-				    , "N_PERSON"        : parseInt($("#N_PERSON").val())
-				    , "K_PERSON"        : parseInt($("#K_PERSON").val())
+				    , "TOT_PERSON"      : parseInt($("#TOT_PERSON").val().replaceAll("," , ""))
+				    , "R_PERSON"        : parseInt($("#R_PERSON").val().replaceAll("," , ""))
+				    , "N_PERSON"        : parseInt($("#N_PERSON").val().replaceAll("," , ""))
+				    , "K_PERSON"        : parseInt($("#K_PERSON").val().replaceAll("," , ""))
 				    , "PROD_CD"         : $("#PROD_CD").val()
 				    , "PICK_GBN"        : $("#PICK_GBN").val()
-				    , "ADD_R_S_PER"     : parseInt($("#ADD_R_S_PER").val())
-				    , "ADD_R_S_DAY"     : parseInt($("#ADD_R_S_DAY").val())
-				    , "ADD_R_S_CNT"     : parseInt($("#ADD_R_S_CNT").val())
-				    , "ADD_R_P_PER"     : parseInt($("#ADD_R_P_PER").val())
-				    , "ADD_R_P_DAY"     : parseInt($("#ADD_R_P_DAY").val())
-				    , "ADD_R_P_CNT"     : parseInt($("#ADD_R_P_CNT").val())
-				    , "CNT_D1"          : parseInt($("#CNT_D1").val())
-				    , "CNT_D2"          : parseInt($("#CNT_D2").val())
-				    , "CNT_P1"          : parseInt($("#CNT_P1").val())
-				    , "CNT_P2"          : parseInt($("#CNT_P2").val())
+				    , "ADD_R_S_PER"     : parseInt($("#ADD_R_S_PER").val().replaceAll("," , ""))
+				    , "ADD_R_S_DAY"     : parseInt($("#ADD_R_S_DAY").val().replaceAll("," , ""))
+				    , "ADD_R_S_CNT"     : parseInt($("#ADD_R_S_CNT").val().replaceAll("," , ""))
+				    , "ADD_R_P_PER"     : parseInt($("#ADD_R_P_PER").val().replaceAll("," , ""))
+				    , "ADD_R_P_DAY"     : parseInt($("#ADD_R_P_DAY").val().replaceAll("," , ""))
+				    , "ADD_R_P_CNT"     : parseInt($("#ADD_R_P_CNT").val().replaceAll("," , ""))
+				    , "CNT_D1"          : parseInt($("#CNT_D1").val().replaceAll("," , ""))
+				    , "CNT_D2"          : parseInt($("#CNT_D2").val().replaceAll("," , ""))
+				    , "CNT_P1"          : parseInt($("#CNT_P1").val().replaceAll("," , ""))
+				    , "CNT_P2"          : parseInt($("#CNT_P2").val().replaceAll("," , ""))
 				    , "PICK_IN"         : $("#PICK_IN").val()
 				    , "PICK_OUT"        : $("#PICK_OUT").val()
 				    , "LATE_CHECK_OUT"  : $("[name='LATE_CHECK_OUT']:checked").val()
@@ -743,7 +747,7 @@ $(function() {
 			return false;
 		}
 		
-		var tot_person = parseInt($("#TOT_PERSON").val());
+		var tot_person = parseInt($("#TOT_PERSON").val().replaceAll("," , ""));
 		if(tot_person == 0){
 			alert("총인원을 입력해주세요.");
 			return false;
@@ -752,16 +756,16 @@ $(function() {
 		var confirm_no = $("#CONFIRM_NO").val();
 		var prc_sts    = $("#PRC_STS").val();
 		if(mem_gbn == "01" || mem_gbn == "02"){
-			if(!fn_emtpy(prc_sts) && prc_sts == "06"){
+			if(!fn_empty(prc_sts) && prc_sts == "06"){
 				if(fn_empty(confirm_no)){
 					alert("리조트컨펌번호를 입력해주세요.");
 					return false;
 				}
 			}
 		}
-		var r_person = parseInt($("#R_PERSON").val());
-		var n_person = parseInt($("#N_PERSON").val());
-		var k_person = parseInt($("#K_PERSON").val());
+		var r_person = parseInt($("#R_PERSON").val().replaceAll("," , ""));
+		var n_person = parseInt($("#N_PERSON").val().replaceAll("," , ""));
+		var k_person = parseInt($("#K_PERSON").val().replaceAll("," , ""));
 		if(r_person == 0 && n_person == 0 && k_person == 0){
 			alert("인원내역을 입력해주세요.");
 			return false;
@@ -780,10 +784,10 @@ $(function() {
 				return false;
 			}
 			
-			var cnt_d1 = parseInt($("#CNT_D1").val());
-			var cnt_d2 = parseInt($("#CNT_D2").val());
-			var cnt_p1 = parseInt($("#CNT_P1").val());
-			var cnt_p2 = parseInt($("#CNT_P2").val());
+			var cnt_d1 = parseInt($("#CNT_D1").val().replaceAll("," , ""));
+			var cnt_d2 = parseInt($("#CNT_D2").val().replaceAll("," , ""));
+			var cnt_p1 = parseInt($("#CNT_P1").val().replaceAll("," , ""));
+			var cnt_p2 = parseInt($("#CNT_P2").val().replaceAll("," , ""));
 			
 			if(cnt_d1 == 0 && cnt_d2 == 0 && cnt_p1 == 0 && cnt_p2 == 0){
 			    alert("트윈/더블룸 개수를 입력해주세요.");
@@ -916,7 +920,9 @@ $(function() {
 	    		    , "SEQ"          : seq
 			        , "REQ_DT"       : req_dt
 			        , "PCK_PROD_SEQ" : $("#PCK_PROD_SEQ").val()
-			        , "PRC_STS"      : $("#PRC_STS").val()
+			        , "PRC_STS"      : $("#PRC_STS"     ).val()
+			        , "TOT_PERSON"   : $("#TOT_PERSON"  ).val().replaceAll("," , "")
+			        , "CHK_IN_DT"    : $("#CHK_IN_DT"   ).val().replaceAll(".","")
 	                };
 		popupOpen(url, pid, param, function(data) {
 			if(!fn_empty(data)){

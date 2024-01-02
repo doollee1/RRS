@@ -709,9 +709,17 @@
 		           AND REF_CHR1 != ''
 			    ) B
 		  WHERE 1 = 1 
-		    AND A.BAS_YY     = #{BAS_YY}
-		    AND A.SSN_GBN    = #{SSN_GBN}
-		    AND A.BAS_YY_SEQ = #{BAS_YY_SEQ}
+		    AND A.BAS_YY     = (SELECT BAS_YY
+		                           FROM TB_BAS_YY_INFO
+		                          WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
+		                             OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
+		                             OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3)
+		    AND A.BAS_YY_SEQ = (SELECT BAS_YY_SEQ
+		                           FROM TB_BAS_YY_INFO
+		                          WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
+		                             OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
+		                             OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3)
+		    <!-- AND A.SSN_GBN    = #{SSN_GBN} -->
 		    AND A.HDNG_GBN   = B.HDNG_GBN
 			    
 	</select>

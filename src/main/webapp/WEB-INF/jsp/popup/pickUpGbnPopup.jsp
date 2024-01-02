@@ -49,21 +49,21 @@
 				<tr>
 				    <th><s:message code='meetSanding.personCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="PER_NUM1" value="0" style="width:51.5%;" name="PER_NUM1"/>명
+						<input type="text" class="cmc_txt" id="PER_NUM1" value="0" style="width:51.5%;" name="PER_NUM1" maxlength="3"/>명
 					</td>
 					<th><s:message code='meetSanding.carCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="CAR_NUM1" value="0" style="width:51.5%;" name="CAR_NUM1"/>대
+						<input type="text" class="cmc_txt" id="CAR_NUM1" value="0" style="width:51.5%;" name="CAR_NUM1"/ maxlength="3">대
 					</td>
 				</tr>
 				<tr>
 				    <th><s:message code='meetSanding.fee'/></th>
 					<td>
-						<input type="text" class="cmc_txt fee" id="USE_AMT1" value="0" name="USE_AMT1" style="width:51.5%;" readonly/>원
+						<input type="text" class="cmc_txt fee withComma" id="USE_AMT1" value="0" name="USE_AMT1" style="width:51.5%;" readonly/>원
 					</td>	
 					<th><s:message code='meetSanding.addFee'/></th>
 					<td>
-						<input type="text" class="cmc_txt fee" id="ADD_AMT1" value="0" name="ADD_AMT1" style="width:51.5%;"	/>원
+						<input type="text" class="cmc_txt fee withComma" id="ADD_AMT1" value="0" name="ADD_AMT1" style="width:51.5%;"	maxlength="9"/>원
 					</td>
 				</tr>
 				<tr class="doubleCnt">
@@ -76,21 +76,21 @@
 				<tr class="doubleCnt">
 				    <th><s:message code='meetSanding.personCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="PER_NUM2" value="0" style="width:51.5%;" name="PER_NUM2"/>명
+						<input type="text" class="cmc_txt" id="PER_NUM2" value="0" style="width:51.5%;" name="PER_NUM2" maxlength="3"/>명
 					</td>
 					<th><s:message code='meetSanding.carCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="CAR_NUM2" value="0" style="width:51.5%;" name="CAR_NUM2"/>대
+						<input type="text" class="cmc_txt" id="CAR_NUM2" value="0" style="width:51.5%;" name="CAR_NUM2" maxlength="3"/>대
 					</td>
 				</tr>
 				<tr class="doubleCnt">
 				    <th><s:message code='meetSanding.fee'/></th>
 					<td>
-						<input type="text" class="cmc_txt fee" id="USE_AMT2" value="0" name="USE_AMT2" style="width:51.5%;" readonly/>원
+						<input type="text" class="cmc_txt fee withComma" id="USE_AMT2" value="0" name="USE_AMT2" style="width:51.5%;" readonly/>원
 					</td>	
 					<th><s:message code='meetSanding.addFee'/></th>
 					<td>
-						<input type="text" class="cmc_txt fee" id="ADD_AMT2" value="0" name="ADD_AMT2" style="width:51.5%;"/>원
+						<input type="text" class="cmc_txt fee withComma" id="ADD_AMT2" value="0" name="ADD_AMT2" style="width:51.5%;" maxlength="9"/>원
 					</td>
 				</tr>
 			</table>
@@ -102,6 +102,7 @@
 $(function() {
 	var gv_req_dt;
 	var gv_seq;
+	var gv_tot_person;
 	$('#p_pickUpGbnPopup').dialog({
 		title :'<s:message code='meetSanding.Regi'/>',
 		autoOpen : false,
@@ -129,7 +130,7 @@ $(function() {
 			popupClose($(this).attr('id')); /* 필수로 들어가야함 */
 		},
 		open : function() {
-			mkSelect();
+			mkSelect($(this).data());
 			fn_init($(this).data());
 		}
 	});
@@ -152,6 +153,7 @@ $(function() {
 		}else{ // 공항선택
 			fn_readonly(false);
 			$("#CAR_NUM1").val("1");
+			$("#PER_NUM1").val(gv_tot_person);
 		}
 		
 		$('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').prop("selected" , true);
@@ -166,33 +168,6 @@ $(function() {
 		$("#USE_AMT2").val($('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').attr("com_amt"));
 		
 	});
-	/* 
-    $("#PER_NUM1").on("keyup , change" , function(){
-		var pfee1;
-		var prod_seq1 = $("#PROD_SEQ1").val();
-		//var per_num1 = $("#PER_NUM1").val();   //인원수
-		var com_amt1 = parseInt($("#PROD_SEQ1 option:selected").attr("com_amt"));
-		if(!fn_empty(prod_seq1)){
-			pfee1 = com_amt1;
-		}else{
-			pfee1 = 0;
-		}
-		$("#USE_AMT1").val(pfee1);
-	});
-	
-	$("#PER_NUM2").on("keyup , change" , function(){
-		var pfee2;
-		var prod_seq2 = $("#PROD_SEQ2").val();
-		//var per_num2  = $("#PER_NUM2").val();
-		var com_amt2 = parseInt($("#PROD_SEQ2 option:selected").attr("com_amt"));
-		
-		if(!fn_empty(prod_seq2)){
-			pfee2 = com_amt2;
-		}else{
-			pfee2 = 0;
-		}
-		$("#USE_AMT2").val(pfee2);
-	}); */
 	
 	$("#PROD_SEQ1").on("change" , function(){
 		var prd_val = $(this).val();
@@ -219,6 +194,13 @@ $(function() {
 		$("#USE_AMT2").val(vfee2);
 	});
 	
+	$(".withComma").on("keyup" , function(){
+		var tmpValue = $(this).val().replace(/[^0-9,]/g,'');
+		tmpValue = tmpValue.replace(/[,]/g,'');
+		// 천단위 콤마 처리 후 값 강제변경
+	    $(this).val(numberWithCommas(tmpValue));
+	});
+	
 	function fn_readonly (temp){
 		$("#PRD_CNT"  ).attr("disabled" , temp);
 		$("#PROD_SEQ1").attr("disabled" , temp);
@@ -232,14 +214,11 @@ $(function() {
 		$("#ADD_AMT2" ).attr("readonly" , temp);
 	}
 	
-	function mkSelect(){
-		var now  = new Date();	// 현재 날짜 및 시간
-		var year = now.getFullYear();	
+	function mkSelect(recevicedData){
 		var url = "/reserve/selectPrdInfo.do";
-		var param = {"BAS_YY"     : year // 연도
-		           , "SSN_GBN"    : "1"  //시즌구분
-		           , "BAS_YY_SEQ" : 1    //기간년도순번
-		           };
+		var param = {"CHK_IN_DT"     : recevicedData.CHK_IN_DT // 연도
+		            };
+		console.log(param);
 		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
 				alert("ajax 통신 error!");
@@ -260,12 +239,13 @@ $(function() {
 	}
 	
 	function fn_init(recevicedData) {
-		gv_req_dt = recevicedData.REQ_DT;
-		gv_seq    = recevicedData.SEQ;
+		gv_req_dt     = recevicedData.REQ_DT;
+		gv_seq        = recevicedData.SEQ;
+		gv_tot_person = recevicedData.TOT_PERSON;
 		
 		if(!fn_empty(recevicedData.PRC_STS)){
 			if(recevicedData.PRC_STS == "05" || recevicedData.PRC_STS == "06" ||recevicedData.PRC_STS == "07"){
-				$(".ui-dialog-buttonset > button#save").hide();
+				$(".ui-dialog-buttonset > button#save").attr("disabled", true);
 			}	
 		}
 		
@@ -278,7 +258,6 @@ $(function() {
 				alert("ajax 통신 error!");
 			}else{
 				if(!fn_empty(data.result)){
-					console.log(data.result);
 					$("#PRD_CNT").val(data.result.length).trigger("change");
 					for (var i = 0; i < data.result.length; i++) {
 						$.each(data.result[i], function(k , v){
@@ -342,19 +321,12 @@ $(function() {
 			array.push(obj);
 		}
 		
-		if(parseInt(formData.PRD_CNT) == 2){
-			if(array[0].PROD_SEQ == array[1].PROD_SEQ){
-				alert("같은상품은 선택할수 없습니다.");
-				return false;	
-			}
-		}
-		
+		if(!validation(array)) return;
 		var param = {"detail"   : array
 				   , "REQ_SEQ"  : parseInt(gv_seq)
 				   , "REQ_DT"   : gv_req_dt
 				   , "PICK_GBN" : $("#PICK_GBN_1").val()
 				   };
-		console.log(param);
 		if(confirm("<s:message code='confirm.save'/>")){
 			var url = '/reserve/pickupManager.do';
 			fn_ajax(url, false, param, function(data, xhr){
@@ -368,6 +340,63 @@ $(function() {
 				}
 			});
 		}
+	}
+	
+	function validation(data){
+		var prd_cnt = $("#PRD_CNT").val();
+		if(!fn_empty(prd_cnt)){
+			var per_num1 = $("#PER_NUM1").val();
+		    var car_num1 = $("#CAR_NUM1").val();
+		    var per_num2 = $("#PER_NUM2").val();
+		    var car_num2 = $("#CAR_NUM2").val();
+		    if(prd_cnt == "1"){
+		    	if(per_num1 == "0" || fn_empty(per_num1)){
+			    	alert("인원수를 입력해주세요.");
+			        return false;
+			    }
+			    
+			    if(parseInt(per_num1) > parseInt(gv_tot_person)){
+			    	alert("입력하신 인원수가 총인원보다 많습니다.");
+			    	return false;
+			    }
+			    
+			    if(car_num1 == "0" || fn_empty(car_num1)){
+			    	alert("차량대수를 입력해주세요.");
+			    	return false;
+			    }
+		    }else{
+		    	if(data[0].PROD_SEQ == data[1].PROD_SEQ){
+					alert("같은상품은 선택할수 없습니다.");
+					return false;	
+				}
+		    	
+		    	if(per_num1 == "0" || fn_empty(per_num1)){
+			    	alert("인원수를 입력해주세요.");
+			        return false;
+			    }
+		    	
+		    	if(per_num2 == "0" || fn_empty(per_num2)){
+			    	alert("인원수를 입력해주세요.");
+			        return false;
+			    }
+		    	
+		    	if(car_num1 == "0" || fn_empty(car_num1)){
+			    	alert("차량대수를 입력해주세요.");
+			    	return false;
+			    }
+		    	
+		    	if(car_num2 == "0" || fn_empty(car_num2)){
+			    	alert("차량대수를 입력해주세요.");
+			    	return false;
+			    }
+		    	
+		    	if(parseInt(per_num1) + parseInt(per_num2) > parseInt(gv_tot_person)){
+			    	alert("입력하신 인원수가 총인원보다 많습니다.");
+			    	return false;
+			    }
+		    }
+		}
+    	return true;
 	}
 });
 
