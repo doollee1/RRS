@@ -1,6 +1,7 @@
 package bt.reserve.controller;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,13 +12,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
-import bt.reserve.service.ReserveService;
+import bt.reserve.service.ReserveReportService;
 
 @Controller
 public class ReserveReportController {
 
 	@Resource	
-	private ReserveService reserveService;
+	private ReserveReportService reserveReportService;
 	
 	/**
 	 * 예약 현황 화면 호출
@@ -43,7 +44,7 @@ public class ReserveReportController {
 	public BRespData reserveSelectList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
-		respData.put("result", reserveService.reserveSelectList(param));
+		respData.put("result", reserveReportService.reserveReportSelectList(param));
 		return respData;
 	}
 	
