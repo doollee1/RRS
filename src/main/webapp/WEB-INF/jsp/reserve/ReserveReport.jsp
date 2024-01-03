@@ -75,13 +75,13 @@
 		var toDay = getToday();
 		$("#SEARCH_DT").val(Util.converter.dateFormat1(Util.converter.dateFormat3(toDay)));
         
-		createreserveReportGrid();
-        setsetGroupHeadersGrid();
-		// cSearch();
+		// createreserveReportGrid();
+        // setsetGroupHeadersGrid();
+		cSearch();
 	}
 	
-	function createreserveReportGrid() {
-		var colName = [
+	function createreserveReportGrid(SEARCH_DT) {
+		var defaultColName = [
 			'순번',
 			'회원 구분',
 			'리조트 CF번호',
@@ -108,7 +108,7 @@
 			'일(오후)',
 		];
 				
-		var colModel = [
+		var defaultColModel = [
 			{name: 'ROWNUM', width: 70, align: 'center'},
 			{name: 'MEM_NM', width: 100, align: 'center'},
 			{name: 'CONFIRM_NO', width: 100, align: 'center'},
@@ -135,6 +135,23 @@
 			{name: 'ROUNDING_SUN_AFTERNOON', width: 100, align: 'center'},
 		];
 		
+		const search_dt_arr = SEARCH_DT.split(".");
+		const dayOfMonth = new Date(search_dt_arr[0],search_dt_arr[1],0).getDate();
+		
+		const dayColModel = [];
+		const dayColName = [];
+		for(let i=0; i<dayOfMonth; i++) {
+			dayColModel[i] = {
+					name: 'day'+(i+1),
+					width: 50,
+					align: 'center',
+			};
+			dayColName[i] = (i+1);
+		}
+		
+		const colName = defaultColName.concat(dayColName);
+		const colModel = defaultColModel.concat(dayColModel);
+		
 		var gSetting = {
 			pgflg : true,
 			exportflg : true, //엑셀, pdf 출력 버튼 노출여부
@@ -147,39 +164,110 @@
 			queryPagingGrid : true, // 쿼리 페이징 처리 여부
 			height : 600
 		};
+		
 		// 그리드 생성 및 초기화
 		btGrid.createGrid('reserveReportGrid', colName, colModel, gSetting);
 	}
 	
-	function setsetGroupHeadersGrid() {
+	function setGroupHeadersGrid(SEARCH_DT) {
+		const defaultGroupHeader = [
+			{startColumnName: 'REQ_HAN_NM', numberOfColumns: 2, titleText: '예약자'},
+			{startColumnName: 'DEP_IN_DT', numberOfColumns: 2, titleText: '예약금'},
+			{startColumnName: 'BAL_IN_DT', numberOfColumns: 2, titleText: '잔금'},
+			{startColumnName: 'PICK_IN', numberOfColumns: 2, titleText: '픽업차량'},
+			{startColumnName: 'FLIGHT_IN', numberOfColumns: 2, titleText: '항공편'},
+			{startColumnName: 'CNT_D1', numberOfColumns: 4, titleText: '리조트(숙박)'},
+			{startColumnName: 'weekday', numberOfColumns: 5, titleText: '골프(라운딩)'},
+		];
+		
+		const search_dt_arr = SEARCH_DT.split(".");
+		const dayOfMonth = new Date(search_dt_arr[0],search_dt_arr[1],0).getDate();
+		const dayGroupHeader = [];
+		for(let i=0; i<dayOfMonth; i++) {
+			dayGroupHeader[i] = {
+					startColumnName: 'day'+(i+1),
+					numberOfColumns: 1,
+					titleText: getDayOfWeek(search_dt_arr[0]+'.'+search_dt_arr[1]+'.'+(i+1)),
+			};
+		}
+		
+		const groupHeaders = defaultGroupHeader.concat(dayGroupHeader);
+		
 		$('#reserveReportGrid').jqGrid('setGroupHeaders', {
 			useColSpanStyle: true,
-			groupHeaders: [
-				{startColumnName: 'REQ_HAN_NM', numberOfColumns: 2, titleText: '예약자'},
-				{startColumnName: 'DEP_IN_DT', numberOfColumns: 2, titleText: '예약금'},
-				{startColumnName: 'BAL_IN_DT', numberOfColumns: 2, titleText: '잔금'},
-				{startColumnName: 'PICK_IN', numberOfColumns: 2, titleText: '픽업차량'},
-				{startColumnName: 'FLIGHT_IN', numberOfColumns: 2, titleText: '항공편'},
-				{startColumnName: 'CNT_D1', numberOfColumns: 4, titleText: '리조트(숙박)'},
-				{startColumnName: 'weekday', numberOfColumns: 5, titleText: '골프(라운딩)'},
-			]
+			groupHeaders: groupHeaders,
 		});
 	}
-
+	
+	function getDayOfWeek(yyyyMMdd) { //ex) getDayOfWeek('2022-06-13')
+	    const week = ['일', '월', '화', '수', '목', '금', '토'];
+	    const dayOfWeek = week[new Date(yyyyMMdd).getDay()];
+	    return dayOfWeek;
+	}
+	
+	function getWeekendOfMonth(SEARCH_DT) {
+		const search_dt_arr = SEARCH_DT.split(".");
+		const dayOfMonth = new Date(search_dt_arr[0],search_dt_arr[1],0).getDate();
+		
+		const weekendOfMonth = [];
+		for(let i=1; i<=dayOfMonth; i++) {
+			const dayOfWeek = getDayOfWeek(search_dt_arr[0]+'.'+search_dt_arr[1]+'.'+i);
+			if(dayOfWeek == '토' || dayOfWeek == '일') {
+				weekendOfMonth.push(i);
+			}
+		}
+		
+		return weekendOfMonth;
+	}
+	
 	function cSearch(currentPage) {
 		var url = "/reserve/reserveReportSelectList.do";
-		var formData = {"SEARCH_DT": $("#SEARCH_DT").val().replaceAll(/\./gi, '').substr(0,6)};
+		var SEARCH_DT = $("#SEARCH_DT").val();
+		var formData = {"SEARCH_DT": SEARCH_DT.replaceAll(/\./gi, '').substr(0,6)};
 		var param = {"param":formData};
 		console.log('param: ', param)
+		
+		$.jgrid.gridUnload("#reserveReportGrid");	// grid 초기화
+		createreserveReportGrid(SEARCH_DT);
+		setGroupHeadersGrid(SEARCH_DT);
+		const weekendOfMonth = getWeekendOfMonth(SEARCH_DT);
+		console.log('weekendOfMonth: ', weekendOfMonth);
+		
 		fn_ajax(url, true, param, function(data, xhr) {
 			console.log('result data: ', data)
-		    reloadGrid("reserveReportGrid", data.result);
+		    reloadGrid("reserveReportGrid", fn_dataSet(data.result));
 			btGrid.gridQueryPaging($('#reserveReportGrid'), 'cSearch', data.result);
-			var colModel = $("#reserveReportGrid").jqGrid('getGridParam','colModel');
-			for (var i = 0; i < data.result.length; i++) {
-				jQuery("#reserveReportGrid").setCell(i + 1);
+			
+			for(let i=0; i<data.result.length; i++) {
+				for(let j=0; j<weekendOfMonth.length; j++) {
+					$('#reserveReportGrid').jqGrid('setCell', i+1, "day"+weekendOfMonth[j], "", {'background-color':'#FFCB9E'});
+				}
 			}
+			
+			// var colModel = $("#reserveReportGrid").jqGrid('getGridParam','colModel');
+			// var colName = $("#reserveReportGrid").jqGrid('getGridParam','colNames');
+			// for (var i = 0; i < data.result.length; i++) {
+			// 	jQuery("#reserveReportGrid").setCell(i + 1);
+			// }
 		});
+	}
+	
+	function fn_dataSet(data){
+		var array = [];
+		for (var i = 0; i < data.length; i++) {
+			var obj = new Object;
+			$.each(data[i] , function(key , value){
+				if((key == "INV_REG_DT" || key == "DEP_IN_DT" || key == "BAL_IN_DT") && value != ""){
+					value = Util.converter.dateFormat1(value);
+				}else if(key == "DEP_AMT" || key == "BAL_AMT"){
+					value = fn_comma(value);
+				}
+				obj[key] = value;
+				delete obj;
+			});
+	        array.push(obj);
+		}
+		return array;
 	}
 </script>
 <c:import url="../import/frameBottom.jsp" />
