@@ -6,6 +6,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
@@ -37,11 +38,12 @@ public class ReserveReportController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/reserveReportSelectList.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/reserve/reserveReportSelectList.do", method = RequestMethod.POST)
+	@ResponseBody
 	public BRespData reserveSelectList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
-//		respData.put("result", reserveService.reserveSelectList(param));
+		respData.put("result", reserveService.reserveSelectList(param));
 		return respData;
 	}
 	
