@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import bt.btframework.utils.BMap;
-import bt.btframework.utils.StringUtils;
 import bt.reserve.dao.ReserveReportDao;
 
 @Service
@@ -27,7 +26,10 @@ public class ReserveReportService {
 	public List<BMap> reserveReportSelectList(BMap param) throws Exception {
 		List<BMap> list = reserveReportDao.reserveReportSelectList(param);
 
+		System.out.println("@@reserveReportSelectList");
 		for (BMap bMap : list) {
+			// System.out.println(bMap);
+			
 			String RND_CHG_YN1 = bMap.getString("RND_CHG_YN1");
 			String RND_CHG_YN2 = bMap.getString("RND_CHG_YN2");
 			double ROUNDING_SAT = bMap.getDouble("ROUNDING_SAT");
@@ -53,12 +55,14 @@ public class ReserveReportService {
 				bMap.put("ROUNDING_SUN_AFTERNOON", ROUNDING_SUN);
 			}
 			
+			// 일자별 인원수 데이터 조회
+			BMap reserveMap = new BMap();
+			reserveMap.put("REQ_DT", bMap.getString("REQ_DT"));
+			reserveMap.put("REQ_SEQ", bMap.getString("SEQ"));
+			List<BMap> numberOfReserveList = reserveReportDao.selectListNumberOfReserveInMonth(reserveMap);
 			
-			
-			
-			
+			bMap.put("dayOfReservation", numberOfReserveList);
 		}
-		
 		return list;
 	}
 	

@@ -145,6 +145,7 @@
 					name: 'day'+(i+1),
 					width: 50,
 					align: 'center',
+					editable: true,
 			};
 			dayColName[i] = (i+1);
 		}
@@ -231,7 +232,6 @@
 		createreserveReportGrid(SEARCH_DT);
 		setGroupHeadersGrid(SEARCH_DT);
 		const weekendOfMonth = getWeekendOfMonth(SEARCH_DT);
-		console.log('weekendOfMonth: ', weekendOfMonth);
 		
 		fn_ajax(url, true, param, function(data, xhr) {
 			console.log('result data: ', data)
@@ -239,8 +239,19 @@
 			btGrid.gridQueryPaging($('#reserveReportGrid'), 'cSearch', data.result);
 			
 			for(let i=0; i<data.result.length; i++) {
+				// 주말 음영 처리
 				for(let j=0; j<weekendOfMonth.length; j++) {
 					$('#reserveReportGrid').jqGrid('setCell', i+1, "day"+weekendOfMonth[j], "", {'background-color':'#FFCB9E'});
+				}
+				
+				// 일자별 현황값 추가
+				const reservationDayList = data.result[i].dayOfReservation;
+				if(reservationDayList.length > 0) {
+					for(let j=0; j<reservationDayList.length; j++) {
+						const day = Number(reservationDayList[j].DD);
+						const numOfPerson = reservationDayList[j].PER_STR;
+						$('#reserveReportGrid').jqGrid('setCell', i+1, "day"+day, numOfPerson);
+					}
 				}
 			}
 			
