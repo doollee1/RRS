@@ -76,7 +76,7 @@ $(function(){
 	})
 	
 	$('#productPeriodPopUp').dialog({
-		title: '<s:message code="product.regist"/>',
+		title: '<s:message code="product.pop_period"/>',
 		autoOpen: false,
 		width: 750,
 		modal: true,
@@ -147,7 +147,7 @@ function createGrid(){
 
 //조회
 function cSearch(){
-	var url = "/common/selectPeriodInfo.do";
+	var url = "/product/selectPeriodInfo.do";
 	
 	var formData = formIdAllToMap('frmProductPeriod');
 	var param = {"BAS_YY" :formData.BAS_YY_PP};
@@ -207,7 +207,6 @@ function cCopy(param){
 	var pid = "productCopyPopUp";	//팝업 페이지의 최상위 div ID
 	var formData = formIdAllToMap('frmProductPeriod');
 	var param = { 
-			"BAS_YY" : formData.BAS_YY_PP,
 			"branch" : "period"
 	}
 	

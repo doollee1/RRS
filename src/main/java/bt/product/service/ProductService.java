@@ -36,6 +36,16 @@ public class ProductService {
    }
    
 	/**
+	 * 공통코드 리스트 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> selectGetCommonCode(BMap param) throws Exception {
+		return productDao.selectGetCommonCode(param);
+	}
+   
+	/**
     * 시즌구분 셀렉트 항목 가져오기
     * @param param
     * @return

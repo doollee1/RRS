@@ -127,7 +127,7 @@ function createGrid(){
 
 //조회
 function cSearch(){
-	var url = "/common/selectPeriodPopUp.do";
+	var url = "/product/selectPeriodPopUp.do";
 	
 	var formData = formIdAllToMap('frmSearch');
 	var param = {"BAS_YY" : formData.BAS_YY_SEL,

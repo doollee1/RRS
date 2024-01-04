@@ -108,17 +108,17 @@ $(function(){
 	
 	// 등록, 수정 분기
 	$('#productPeriodDetailPopUp').dialog({
-		title: '<s:message code="product.regist"/>',
+		title: '<s:message code="product.reg_basyy"/>',
 		autoOpen: false,
 		width: 370,
 		modal: true,
 		open: function() {
 			if($(this).data("modify") == true){
-				
 				$("#cDel").show();
 				$("#cSave").text("수정");
 				$("#modify").val("1");
 				$("#BAS_YY_I").attr("readonly", true);
+				$('#productPeriodDetailPopUp').dialog({title : '<s:message code="product.adj_basyy"/>'});
 				
 				$('#BAS_YY_I').val($(this).data("BAS_YY"));			//기준년도
 				$('#BAS_YY_SEQ_PD').val($(this).data("BAS_YY_SEQ"));
@@ -160,7 +160,7 @@ function savePeriodInfo(){
 					,"modify" 		: formData.modify
 					}
 				}
-	var url = "/common/savePeriodInfo.do"
+	var url = "/product/savePeriodInfo.do"
 	
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
@@ -182,7 +182,7 @@ function deleteProductInfo(){
 					,"BAS_YY_SEQ" 	: formData.BAS_YY_SEQ_PD
 					}
 				}
-	var url = "/common/deletePeriodInfo.do"
+	var url = "/product/deletePeriodInfo.do"
 	
 	if(confirm("<s:message code='confirm.delete'/>")){
 		fn_ajax(url, false, param, function(data, xhr){

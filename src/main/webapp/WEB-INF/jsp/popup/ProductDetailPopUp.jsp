@@ -135,6 +135,18 @@ $(function(){
 		openSeldtPopUp();
 	})
 	
+	$("#HDNG_GBN").on("change", function(e){
+        $.ajax({
+    		url  : "/popup/ProductDetailPopUp.do",
+            type : "POST",
+            data : {code : $("#HDNG_GBN").val()},
+            success : function (data) {
+            },
+            error : function(){
+            	alert("error");
+            }
+	})
+	})
 // 	// 유효성 검사
 // 	$(".check").on('change', function(){
 //         var scriptTag2 = /[~^&()|<>?]/; 
@@ -148,7 +160,7 @@ $(function(){
 	
 	// 등록, 수정 분기
 	$('#productDetailPopUp').dialog({
-		title: '<s:message code="product.regist"/>',
+		title: '<s:message code="product.reg_product"/>',
 		autoOpen: false,
 		width: 750,
 		modal: true,
@@ -158,6 +170,7 @@ $(function(){
 				$("#cDel").show();
 				$("#cSave").text("수정");
 				$("#modify").val("1");
+				$('#productDetailPopUp').dialog({title : '<s:message code="product.adj_product"/>'});
 				
 				$('#BAS_YY_IN_mod').val($(this).data("BAS_YY"));			//기준년도 (수정)
 				$('#SSN_GBN_mod').val($(this).data("SSN_GBN"));			//시즌구분 (수정)
@@ -219,7 +232,7 @@ function saveProductInfo(){
 					,"modify" : formData.modify
 					}
 				}
-	var url = "/common/saveProductInfo.do"
+	var url = "/product/saveProductInfo.do"
 	
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
@@ -242,7 +255,7 @@ function deleteProductInfo(){
 					,"PROD_SEQ" : formData.PROD_SEQ_UP
 					}
 				}
-	var url = "/common/deleteProductInfo.do"
+	var url = "/product/deleteProductInfo.do"
 	
 	if(confirm("<s:message code='confirm.delete'/>")){
 		fn_ajax(url, false, param, function(data, xhr){

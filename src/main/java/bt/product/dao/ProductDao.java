@@ -33,6 +33,17 @@ public class ProductDao extends DBAbstractMapper {
    }
    
 	/**
+	 * 공통코드 리스트 가져오기
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> selectGetCommonCode(BMap param) throws Exception{
+		return list("ProductMapper.selectGetCommonCode", param);
+	}
+	
+	/**
     * 시즌구분 셀렉트 항목 가져오기
     * @param param
     * @return

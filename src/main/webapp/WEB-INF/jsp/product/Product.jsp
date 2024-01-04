@@ -12,13 +12,9 @@
 	<c:param name="progcd" value="Pr01" />
 </c:import>
 
-<!-- dummy -->
 <div class="top_button_h_margin"></div>
 <div id="ctu_no_resize">
 	<form id="frmSearch" action="#">
-		<input type="hidden" name="BAS_YY" id="BAS_YY" />
-		<input type="hidden" name="BAS_YY_SEQ" id="BAS_YY_SEQ" />
-		<input type="hidden" name="PROD_SEQ" id="PROD_SEQ" />
 		<input type="hidden"  name="CURRENT_PAGE"  id="CURRENT_PAGE" />
 		<input type="hidden"  name="ROWS_PER_PAGE"  id="ROWS_PER_PAGE" />
 	</form>
@@ -69,6 +65,7 @@
 					<h4>조회내역</h4>
 				</div>	
 				<div class="ct_grid_top_right">
+					<span style="text-align:right; font-size: 10px; font-weight: bold">※ 시즌구분 <font color="red">'전체'</font> 로 조회 후 복사등록이 가능합니다.</span>
 					<button class='cBtnclass cBtnCopy_style' id='cBtnCopy' type='button' onclick='cCopy()' disabled='disabled'>복사등록</button>
 				</div>
 			</div>
@@ -99,24 +96,12 @@
 //초기 로드
 $(function() {
 		
-	//미리보기, 기준년도관리, 조회, 등록
-// 	$("#divBtn").append("<button class='cBtnclass cBtnPut_style' id='cBtnPut' type='button' onclick=''>미리보기</button>");
-// 	$("#divBtn").append("<button class='cBtnclass cBtnEdit_style' id='cBtnPeriod' type='button' onclick='cPeriod()'>기준년도관리</button>");
-//     $("#divBtn").append("<button class='cBtnclass cBtnSearch_style' id='cBtnSearch' type='button' onclick='cSearch();'>조회</button>");
-//     $("#divBtn").append("<button class='cBtnclass cBtnAdd_style' id='cBtnAdd' type='button' onclick='cAdd();'>등록</button>");
-	
+	//조회, 등록, 미리보기, 기준년도관리
 	$('#cBtnSearch').text("조회");
 	$('#cBtnAdd').text("등록");
-	$('#cBtnUser1').text("미리보기").addClass("cBtnclass cBtnPut_style").click(function(e){
-		alert("미리보기");
-	});
-	$('#cBtnUser2').text("기준년도관리").addClass("cBtnclass cBtnEdit_style").click(function(e){
-		cPeriod();
-	});
+	$('#cBtnUser1').text("미리보기").addClass("cBtnclass cBtnPut_style").attr('disabled', true);
+	$('#cBtnUser2').text("기준년도관리").addClass("cBtnclass cBtnEdit_style");
 	
-    //즐겨찾기 숨기기
-//     $("#cBtnUser6").hide();
-    
     //초기 진입시 시작 (그리드그리기와 조회)
 	createGrid();
 	cSearch();
@@ -128,10 +113,12 @@ $(function() {
 		}
 	});
 	
-	//조회조건 변경 시 복사등록 비활성화 처리
+	//조회조건 변경 시 복사등록, 미리보기 비활성화 처리
 	$("#BAS_YY, #SSN_GBN").change(function(){
 		$("#cBtnCopy").attr("disabled", true);
+		$("#cBtnUser1").attr("disabled", true);
 	})
+
 });
 
 //그리드 그리기
@@ -224,7 +211,7 @@ function cSearch(currentPage){
 	$('#CURRENT_PAGE').val(vCurrentPage);
 	$('#ROWS_PER_PAGE').val(vRowsPerPage);
 	
-	var url = "/common/selectProductInfo.do";
+	var url = "/product/selectProductInfo.do";
 	
 	var formData = formIdAllToMap('frmDetail');
 	var param = {"BAS_YY" :formData.BAS_YY
@@ -243,6 +230,14 @@ function cSearch(currentPage){
 		cBtnCopy.disabled = true;
 	}
 	vRowsPerPage = btGrid.getGridRowSel('grid1_pager');
+	
+	//미리보기 비활성화 여부 설정
+	var cBtnUser1 = document.getElementById("cBtnUser1");
+	if(param.SSN_GBN != 3){
+		cBtnUser1.disabled = false;
+	} else {
+		cBtnUser1.disabled = true;
+	}
 }
 
 //그리드 더블클릭 - 상세조회
@@ -291,23 +286,12 @@ function productDetailPopUp(param){
 	});
 }
 
-//기준년도 관리 팝업
-function cPeriod(param){
-	var url = "/popup/ProductPeriodPopUp.do";
-	var pid = "productPeriodPopUp";	//팝업 페이지의 최상위 div ID
-	
-	popupOpen(url, pid, param, function(data){
-		cSearch();
-	});
-}
-
 //복사등록 팝업
 function cCopy(param){
 	var url = "/popup/ProductCopyPopUp.do";
 	var pid = "productCopyPopUp";	//팝업 페이지의 최상위 div ID
 	var formData = formIdAllToMap('frmDetail');
 	var param = { 
-			"BAS_YY" : formData.BAS_YY,
 			"branch" : "normal"
 	}
 	
@@ -315,7 +299,31 @@ function cCopy(param){
 		cSearch();
 	});
 }
+
+//미리보기
+function cUser1(){
+	var url = "/popup/ProductPreView.do";
+    var pid = "productPreView";
+    var param = { 
+    		"year"        : $("#BAS_YY").val(),
+	        "ssnGbn"      : $("#SSN_GBN").val()
+	};
+
+	popupOpen(url, pid, param, function(data) {
+	});
+
+// 	var url = "https://doollee.synology.me:8087/productInfoView.do?"+v_year+"&"+v_ssn;
+}
+
+//기준년도 관리 팝업
+function cUser2(param){
+	var url = "/popup/ProductPeriodPopUp.do";
+	var pid = "productPeriodPopUp";	//팝업 페이지의 최상위 div ID
 	
+	popupOpen(url, pid, param, function(data){
+		cSearch();
+	});
+}
 </script>
 
 <c:import url="../import/frameBottom.jsp" />

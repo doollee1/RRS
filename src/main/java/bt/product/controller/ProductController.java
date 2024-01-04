@@ -1,24 +1,25 @@
 package bt.product.controller;
 
-import java.text.SimpleDateFormat;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
 import bt.product.service.ProductService;
-import egovframework.com.utl.sim.service.EgovFileScrty;
 
 @Controller
 public class ProductController {
@@ -30,16 +31,34 @@ public class ProductController {
 	@RequestMapping(value = "/product/Product.do")
 	public String product(ModelMap model) throws Exception {
 		model.addAttribute("basyy", productService.selectBasYY(null));
-		model.addAttribute("season", productService.selectSeason(null));
+		
+		BMap param = new BMap();
+		param.put("HEAD_CD", 500090);
+		param.put("Season", true);
+		model.addAttribute("season"  , productService.selectGetCommonCode(param));
 		return "/product/Product";
 	}
 	
 	@RequestMapping(value = "/popup/ProductDetailPopUp.do")
-	public String ProductDetailPopUp(ModelMap model) throws Exception {
+	public String ProductDetailPopUp(ModelMap model, HttpServletRequest reqData) throws Exception {
 		model.addAttribute("basyy", productService.selectBasYY(null));
-		model.addAttribute("season", productService.selectSeason(null));
-		model.addAttribute("hdng", productService.selectHdng(null));
-		model.addAttribute("cond", productService.selectCond(null));
+
+		BMap param = new BMap();
+		param.put("HEAD_CD", 500090);
+		param.put("Season", true);
+		model.addAttribute("season"  , productService.selectGetCommonCode(param));
+		
+		BMap param2 = new BMap();
+		param2.put("HEAD_CD", 500000);
+		model.addAttribute("hdng"  , productService.selectGetCommonCode(param2));
+		
+		BMap param3 = new BMap();
+		String code = reqData.getParameter("code");
+		System.out.println("★★★★★★★★★★★★★★");
+		System.out.println(code);
+		param3.put("code", code);
+		model.addAttribute("cond", productService.selectCond(param3));
+		
 		return "/popup/ProductDetailPopUp";
 	}
 	
@@ -51,7 +70,10 @@ public class ProductController {
 	
 	@RequestMapping(value = "/popup/ProductPeriodDetailPopUp.do")
 	public String ProductPeriodDetailPopUp(ModelMap model) throws Exception {
-		model.addAttribute("season", productService.selectSeason(null));
+		BMap param = new BMap();
+		param.put("HEAD_CD", 500090);
+		param.put("Season", true);
+		model.addAttribute("season"  , productService.selectGetCommonCode(param));
 		return "/popup/ProductPeriodDetailPopUp";
 	}
 	
@@ -73,7 +95,7 @@ public class ProductController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/common/selectProductInfo.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/product/selectProductInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData selectProductInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = new BMap();
@@ -93,7 +115,7 @@ public class ProductController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/common/saveProductInfo.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/product/saveProductInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData saveProductInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
@@ -113,7 +135,7 @@ public class ProductController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/common/deleteProductInfo.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/product/deleteProductInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData deleteProductInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
@@ -132,7 +154,7 @@ public class ProductController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/common/selectPeriodInfo.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/product/selectPeriodInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData selectPeriodInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = new BMap();
@@ -151,7 +173,7 @@ public class ProductController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/common/savePeriodInfo.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/product/savePeriodInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData savePeriodInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
@@ -171,7 +193,7 @@ public class ProductController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/common/deletePeriodInfo.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/product/deletePeriodInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData deletePeriodInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
@@ -189,7 +211,7 @@ public class ProductController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/common/saveCopyInfo.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/product/saveCopyInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData saveCopyInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
@@ -198,7 +220,6 @@ public class ProductController {
 		if(!productService.saveCopyInfo(param)){
 			respData.put("SAVE", "N");
 		}
-		
 		return respData;
 	}
 	
@@ -209,7 +230,7 @@ public class ProductController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/common/selectPeriodPopUp.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/product/selectPeriodPopUp.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData selectPeriodPopUp(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = new BMap();
@@ -222,4 +243,44 @@ public class ProductController {
 		return respData;
 	}
 	
+	/**
+	 * 미리보기 팝업 호출
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/popup/ProductPreView.do")
+	public String ProductPreView(ModelMap model) throws Exception {
+		return "/popup/ProductPreView";
+	}
+	
+	/**
+	 * 미리보기 내용 호출
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/product/selectPreView.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData selectPreView(@RequestBody BReqData reqData, HttpServletRequest req, Model model) throws Exception{
+		String year = (String) reqData.get("year");
+		String ssnGbn = (String) reqData.get("ssnGbn");
+		System.out.println("ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ");
+		String url = "https://doollee.synology.me:8087/productInfoView.do";
+		
+		url += "?year=" + year + "&ssnGbn=" + ssnGbn;
+		System.out.println(url);
+		
+	    RestTemplate restTemplate = new RestTemplate();
+	    String response1 = restTemplate.getForObject(url, String.class);
+		System.out.println(response1);
+		
+	    
+		BRespData respData = new BRespData();
+		
+		respData.put("result", response1);
+		return respData;
+	}
 }

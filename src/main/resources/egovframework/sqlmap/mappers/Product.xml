@@ -43,6 +43,7 @@
 	LEFT JOIN TB_PROD_INFO B
 		    ON A.BAS_YY_SEQ = B.BAS_YY_SEQ
 		   AND A.BAS_YY = B.BAS_YY
+           AND A.SSN_GBN = B.SSN_GBN
 		 WHERE 1 = 1
 		 <if test='SSN_GBN != "3"'>
 		   AND A.SSN_GBN = #{SSN_GBN}
@@ -58,26 +59,33 @@
      ORDER BY BAS_YY desc
 	</select>
 	
-	<select id="selectSeason" parameterType="Bmap" resultType="Bmap">
-	/* Product.xml -> selectSeason */
-		SELECT CODE, CODE_NM
-		  FROM bc_comm_l
-		 WHERE HEAD_CD = 500090
-	  ORDER BY FIELD(CODE, 3, 1, 2)
-	</select>
-	
-	<select id="selectHdng" parameterType="Bmap" resultType="Bmap">
-	/* Product.xml -> selectHdng */
-		SELECT CODE, CODE_NM
-		  FROM bc_comm_l
-		 WHERE HEAD_CD = 500000
+	<select id="selectGetCommonCode" parameterType="Bmap" resultType="Bmap">
+	    SELECT A.CODE , A.CODE_NM
+          FROM BC_COMM_L A
+          JOIN BC_COMM_H B ON B.HEAD_CD = /**/ A.HEAD_CD
+         WHERE 1 = 1
+           AND A.HEAD_CD = #{HEAD_CD}
+	   <if test="Season == true">
+		 ORDER BY FIELD(CODE, 3, 1, 2)
+	   </if>
 	</select>
 	
 	<select id="selectCond" parameterType="Bmap" resultType="Bmap">
 	/* Product.xml -> selectProdCond */
-		SELECT CODE, CODE_NM
-		  FROM bc_comm_l
-		 WHERE HEAD_CD = 500220
+		 SELECT CODE, CODE_NM
+		   FROM bc_comm_l
+	 	  WHERE HEAD_CD = 500220
+		    AND REF_CHR1 = 00
+		  UNION
+		 SELECT CODE, CODE_NM
+		   FROM bc_comm_l
+		  WHERE HEAD_CD = 500220
+		    AND REF_CHR1 = (
+							SELECT REF_CHR1
+							  FROM bc_comm_l
+							 WHERE HEAD_CD = 500000
+							   AND CODE = #{code}
+				  			)
 	</select>
 	
 	<insert id="insertProductInfo" parameterType="BMAP">
@@ -248,7 +256,7 @@
 	<insert id="insertProductCopyInfo" parameterType="BMAP">
 	/* Product.xml -> insertProductCopyInfo */
 		INSERT INTO TB_PROD_INFO
-		SELECT #{BAS_YY_PASTE}				
+		SELECT #{BAS_YY_PASTE}			
 			 , PROD_SEQ						
 			 , HDNG_GBN				
 			 , PROD_COND	
