@@ -25,8 +25,20 @@
 			,T2.DEP_AMT /* 예약금 금액 */
 			,T2.BAL_IN_DT /* 잔금 입금 일자 */
 			,T2.BAL_AMT /* 잔금 금액 */
-			,T1.PICK_IN /* 픽업 차량 도착 */
-			,T1.PICK_OUT /* 픽업 차량 출발 */
+			,(
+				SELECT CODE_NM
+				FROM BC_COMM_L
+				WHERE 1=1
+				AND HEAD_CD = '500110'
+				AND CODE = T1.PICK_IN
+			) AS PICK_IN /* 픽업 차량 도착 */
+			,(
+				SELECT CODE_NM
+				FROM BC_COMM_L
+				WHERE 1=1
+				AND HEAD_CD = '500110'
+				AND CODE = T1.PICK_OUT
+			) AS PICK_OUT /* 픽업 차량 출발  */
 			,T1.FLIGHT_IN /* 항공편 도착 */
 			,T1.FLIGHT_OUT /* 항공편 출발 */
 			,T1.TOT_PERSON /* 예약 인원 */
