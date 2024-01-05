@@ -22,4 +22,35 @@ public class ReserveReportDao extends DBAbstractMapper {
 		return list("ReserveReportMapper.reserveReportSelectList", param);
 	}
 	
+	/**
+	 * 예약현황 일자별 인원수 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> selectListNumberOfReserveInMonth(BMap param) throws Exception {
+		return list("ReserveReportMapper.selectListNumberOfReserveInMonth", param);
+	}
+	
+	/**
+	 * 예약현황 특정일자 인원수 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> selectInfoNumberOfReserve(BMap param) throws Exception {
+		return list("ReserveReportMapper.selectInfoNumberOfReserve", param);
+	}
+	
+	/**
+	 * 예약현황 특정일자 정보 수정
+	 * @param param
+	 * @throws Exception
+	 */
+	public void updateReserveInfo(BMap param) throws Exception{
+		update("ReserveReportMapper.updateReserveInfo", param);
+	}
+	
 }

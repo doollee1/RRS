@@ -69,12 +69,12 @@
 	//초기 로드
 	$(function() {
 		fn_Init();
+		
 	});
 	
 	function fn_Init(){
 		var toDay = getToday();
 		$("#SEARCH_DT").val(Util.converter.dateFormat1(Util.converter.dateFormat3(toDay)));
-        
 		// createreserveReportGrid();
         // setsetGroupHeadersGrid();
 		cSearch();
@@ -106,6 +106,8 @@
 			'토(오후)',
 			'일(오전)',
 			'일(오후)',
+			'REQ_DT',
+			'SEQ',
 		];
 				
 		var defaultColModel = [
@@ -133,6 +135,8 @@
 			{name: 'ROUNDING_SAT_AFTERNOON', width: 100, align: 'center'},
 			{name: 'ROUNDING_SUN_MORNING', width: 100, align: 'center'},
 			{name: 'ROUNDING_SUN_AFTERNOON', width: 100, align: 'center'},
+			{name: 'REQ_DT', hidden: true},
+			{name: 'SEQ', hidden: true},
 		];
 		
 		const search_dt_arr = SEARCH_DT.split(".");
@@ -145,6 +149,7 @@
 					name: 'day'+(i+1),
 					width: 50,
 					align: 'center',
+					editable: true,
 			};
 			dayColName[i] = (i+1);
 		}
@@ -162,7 +167,7 @@
 			shrinkToFit: false,
 			autowidth: true,
 			queryPagingGrid : true, // 쿼리 페이징 처리 여부
-			height : 600
+			height : 600,
 		};
 		
 		// 그리드 생성 및 초기화
@@ -225,22 +230,30 @@
 		var SEARCH_DT = $("#SEARCH_DT").val();
 		var formData = {"SEARCH_DT": SEARCH_DT.replaceAll(/\./gi, '').substr(0,6)};
 		var param = {"param":formData};
-		console.log('param: ', param)
 		
 		$.jgrid.gridUnload("#reserveReportGrid");	// grid 초기화
 		createreserveReportGrid(SEARCH_DT);
 		setGroupHeadersGrid(SEARCH_DT);
 		const weekendOfMonth = getWeekendOfMonth(SEARCH_DT);
-		console.log('weekendOfMonth: ', weekendOfMonth);
 		
 		fn_ajax(url, true, param, function(data, xhr) {
-			console.log('result data: ', data)
 		    reloadGrid("reserveReportGrid", fn_dataSet(data.result));
 			btGrid.gridQueryPaging($('#reserveReportGrid'), 'cSearch', data.result);
 			
 			for(let i=0; i<data.result.length; i++) {
+				// 주말 음영 처리
 				for(let j=0; j<weekendOfMonth.length; j++) {
 					$('#reserveReportGrid').jqGrid('setCell', i+1, "day"+weekendOfMonth[j], "", {'background-color':'#FFCB9E'});
+				}
+				
+				// 일자별 현황값 추가
+				const reservationDayList = data.result[i].dayOfReservation;
+				if(reservationDayList.length > 0) {
+					for(let j=0; j<reservationDayList.length; j++) {
+						const day = Number(reservationDayList[j].DD);
+						const numOfPerson = reservationDayList[j].PER_STR;
+						$('#reserveReportGrid').jqGrid('setCell', i+1, "day"+day, numOfPerson);
+					}
 				}
 			}
 			
@@ -249,6 +262,27 @@
 			// for (var i = 0; i < data.result.length; i++) {
 			// 	jQuery("#reserveReportGrid").setCell(i + 1);
 			// }
+		});
+	}
+	
+	function cSave() {
+		btGrid.gridSaveRow('reserveReportGrid');
+		
+		const ids = $("#reserveReportGrid").jqGrid("getDataIDs");
+		const gridData = [];
+		for(let i=0; i<ids.length; i++) {
+			gridData.push($("#reserveReportGrid").getRowData(ids[i]));
+		}
+		
+		const url = '/reserve/saveReserveList.do';
+		const param = {
+			"param": {
+				"gridData": gridData,
+				"SEARCH_DT": $("#SEARCH_DT").val().replaceAll(/\./gi, ''),
+			}
+		};
+		fn_ajax(url, false, param, function(data, xhr){
+			cSearch();
 		});
 	}
 	

@@ -59,7 +59,7 @@
 <div id="main_left_menu" class="left_wrap">
 <!-- ---좌측메뉴 토글버튼 -->
 <div class="left_wrap_ztree_title" style="color:#ccc; font-size:13px; font-weight:500; margin:3px 0px 5px 35px; position:absolute;">
-Order Management System
+Resort Reservation System
 </div>
 <div>
 <button class="tg_menu_close" href="#" onclick=""><i class="fa fa-bars"></i></font></button>

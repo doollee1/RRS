@@ -25,8 +25,20 @@
 			,T2.DEP_AMT /* 예약금 금액 */
 			,T2.BAL_IN_DT /* 잔금 입금 일자 */
 			,T2.BAL_AMT /* 잔금 금액 */
-			,T1.PICK_IN /* 픽업 차량 도착 */
-			,T1.PICK_OUT /* 픽업 차량 출발 */
+			,(
+				SELECT CODE_NM
+				FROM BC_COMM_L
+				WHERE 1=1
+				AND HEAD_CD = '500110'
+				AND CODE = T1.PICK_IN
+			) AS PICK_IN /* 픽업 차량 도착 */
+			,(
+				SELECT CODE_NM
+				FROM BC_COMM_L
+				WHERE 1=1
+				AND HEAD_CD = '500110'
+				AND CODE = T1.PICK_OUT
+			) AS PICK_OUT /* 픽업 차량 출발  */
 			,T1.FLIGHT_IN /* 항공편 도착 */
 			,T1.FLIGHT_OUT /* 항공편 출발 */
 			,T1.TOT_PERSON /* 예약 인원 */
@@ -36,6 +48,8 @@
 			,T1.CNT_P2 /* 숙박 프리미엄킹 */
 			,T1.BAS_YY
 			,T1.PROD_SEQ
+			,T1.CHK_IN_DT 
+			,T1.CHK_OUT_DT 
 			,T3.HDNG_GBN /* 상품 항목 구분 */
 			,IFNULL((
 				SELECT REF_NUM1
@@ -69,5 +83,38 @@
 		WHERE DATE_FORMAT(T1.CHK_IN_DT,'%Y%m') = #{SEARCH_DT}
     <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
+	
+	<select id="selectListNumberOfReserveInMonth" parameterType="BMap" resultType="BMap">
+		SELECT
+			REQ_DT
+			,REQ_SEQ
+			,BAS_YM
+			,DD
+			,PER_STR
+		FROM TB_REQ_R_PLAN
+		WHERE REQ_DT = #{REQ_DT}
+		AND REQ_SEQ = #{REQ_SEQ}
+	</select>
+	
+	<select id="selectInfoNumberOfReserve" parameterType="BMap" resultType="BMap">
+		SELECT
+			PER_STR
+		FROM TB_REQ_R_PLAN
+		WHERE REQ_DT = #{REQ_DT}
+		AND REQ_SEQ = #{REQ_SEQ}
+		AND BAS_YM = #{BAS_YM}
+		AND DD = LPAD(#{DD}, 2 , '0')
+	</select>
+	
+	<update id="updateReserveInfo" parameterType="BMap">
+		UPDATE TB_REQ_R_PLAN
+			SET PER_STR = #{PER_STR}
+				,UPD_DTM = NOW()
+				,UPD_ID = #{LOGIN_USER}
+		WHERE REQ_DT = #{REQ_DT}
+			AND REQ_SEQ = #{REQ_SEQ}
+			AND BAS_YM = #{BAS_YM}
+			AND DD = #{DD}
+	</update>
 	
 </mapper>
