@@ -195,7 +195,7 @@ function reservePopup(param) {
 
 	popupOpen(url, pid, param, function(data) {
 		console.log(url);
-		//cSearch();
+		cSearch();
 	});
 }
 </script>

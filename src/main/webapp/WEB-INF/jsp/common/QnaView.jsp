@@ -170,6 +170,11 @@ $(function() {
 	}
 	
 	function savePickInfo(){
+		var str = document.getElementById("ANSWER").value;
+		str = str.replace(/(?:\r\n|\r|\n)/g, '<br/>');
+		$('#ANSWER').val(str);
+
+
 		var formData = formIdAllToMap('answerInsert');
 		console.log(formData);
 		var param = {};

@@ -164,7 +164,7 @@
 		fn_pageMove("/common/NoticeView.do", param);
 	}
 	
-	function cUser1(){
+	function cAdd(){
 		fn_pageMove("/common/NoticeWrite.do");
 	}
 </script>

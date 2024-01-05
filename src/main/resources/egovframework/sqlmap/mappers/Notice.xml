@@ -26,10 +26,10 @@
 			ON A.REG_ID = B.USER_ID
 		 WHERE 1 = 1
 		<if test='S_TITLE != null and S_TITLE != ""'>
-		   AND A.TITLE LIKE '%' + SetParam(#{S_TITLE}) + '%'
+		   AND A.TITLE LIKE CONCAT('%',SetParam(#{S_TITLE}),'%')
 		</if>
 		<if test='S_CONTENT != null and S_CONTENT != ""'>
-		   AND A.CONTENTS LIKE '%' + SetParam(#{S_CONTENT}) + '%'
+		   AND A.TITLE LIKE CONCAT('%',SetParam(#{S_CONTENT}),'%')
 		</if>
 		<if test='S_NOTICE_NO != null and S_NOTICE_NO != ""'>
 		   AND A.NOTICE_NO = #{S_NOTICE_NO}
