@@ -59,7 +59,7 @@
 				<tr>
 				    <th><s:message code='meetSanding.fee'/></th>
 					<td>
-						<input type="text" class="cmc_txt fee withComma" id="USE_AMT1" value="0" name="USE_AMT1" style="width:51.5%;" readonly/>원
+						<input type="text" class="cmc_txt fee" id="USE_AMT1" value="0" name="USE_AMT1" style="width:51.5%;" readonly/>원
 					</td>	
 					<th><s:message code='meetSanding.addFee'/></th>
 					<td>
@@ -86,7 +86,7 @@
 				<tr class="doubleCnt">
 				    <th><s:message code='meetSanding.fee'/></th>
 					<td>
-						<input type="text" class="cmc_txt fee withComma" id="USE_AMT2" value="0" name="USE_AMT2" style="width:51.5%;" readonly/>원
+						<input type="text" class="cmc_txt fee" id="USE_AMT2" value="0" name="USE_AMT2" style="width:51.5%;" readonly/>원
 					</td>	
 					<th><s:message code='meetSanding.addFee'/></th>
 					<td>
@@ -164,8 +164,8 @@ $(function() {
 		$('#PROD_SEQ2 option[data='+thisVal+']').show();
 		$('#PROD_SEQ2 option').not('[data='+thisVal+']').hide();
 		
-		$("#USE_AMT1").val($('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').attr("com_amt"));
-		$("#USE_AMT2").val($('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').attr("com_amt"));
+		$("#USE_AMT1").val(fn_comma($('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').attr("com_amt")));
+		$("#USE_AMT2").val(fn_comma($('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').attr("com_amt")));
 		
 	});
 	
@@ -201,6 +201,12 @@ $(function() {
 	    $(this).val(numberWithCommas(tmpValue));
 	});
 	
+	// 천단위 콤마 (소수점포함)
+	function numberWithCommas(num) {
+	    var parts = num.toString().split(".");	
+	    return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? "." + parts[1] : "");
+	}
+	
 	function fn_readonly (temp){
 		$("#PRD_CNT"  ).attr("disabled" , temp);
 		$("#PROD_SEQ1").attr("disabled" , temp);
@@ -218,7 +224,6 @@ $(function() {
 		var url = "/reserve/selectPrdInfo.do";
 		var param = {"CHK_IN_DT"     : recevicedData.CHK_IN_DT // 연도
 		            };
-		console.log(param);
 		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
 				alert("ajax 통신 error!");
@@ -278,6 +283,8 @@ $(function() {
 								$("#PROD_SEQ" + parseInt(i+1) + ' option[dataDetail = '+ v +']').prop("selected", true);
 							}else if(k == "PROD_SEQ"){
 								$("#HD_"+k+parseInt(i+1)).val(v); 
+							}else if(k == "USE_AMT" || k == "ADD_AMT"){
+								$("#"+k+parseInt(i+1)).val(fn_comma(v));
 							}else{
 								$("#"+k+parseInt(i+1)).val(v);
 							}
@@ -311,10 +318,10 @@ $(function() {
 		var array = new Array();
 		for (var i = 1; i < parseInt(formData.PRD_CNT) + 1	; i++) {
 			var obj = new Object();
-			obj.ADD_AMT     = parseInt($("#ADD_AMT"+i).val());
+			obj.ADD_AMT     = parseInt($("#ADD_AMT"+i).val().replaceAll(",", ""));
 			obj.CAR_NUM     = parseInt($("#CAR_NUM"+i).val());
 			obj.PER_NUM     = parseInt($("#PER_NUM"+i).val());
-			obj.USE_AMT     = parseInt($("#USE_AMT"+i).val());
+			obj.USE_AMT     = parseInt($("#USE_AMT"+i).val().replaceAll(",", ""));
 			obj.PROD_SEQ    = parseInt($('#PROD_SEQ'+i+' option:selected').attr("prod_seq"))
 			obj.PICK_GBN    = $('#PROD_SEQ'+i+' option:selected').attr("data");
 			obj.HD_PROD_SEQ = parseInt($('#HD_PROD_SEQ'+i).val());

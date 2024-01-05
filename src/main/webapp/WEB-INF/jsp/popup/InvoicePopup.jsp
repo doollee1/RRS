@@ -29,7 +29,10 @@
 	<!-- 그리드 시작 -->
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
 		<div class="pop_grid_top_wrap">
-			<div class="ct_grid_top_left"><h4><s:message code="invoice.invoiceTitle"/></h4></div>
+			<div class="ct_grid_top_left">
+			    예약기한<input type="text" class="cmc_txt" id="POP_EXP_DT" name="POP_EXP_DT" data-type="date" style="width:20 .5%;"/>
+			    예약금<input type="text" id="POP_DEP_AMT" name="POP_DEP_AMT" style="text-align: right" value="0" class="withComma" >
+			</div>
 			<div class="ct_grid_top_right">
 				<button class="btn btn-default" id="btn_addRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.addRow'/></button>
             	<button class="btn btn-default" id="btn_delRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.delRow'/></button>
@@ -49,6 +52,10 @@ $(function() {
 	var req_dt;
 	var mem_gbn;
 	var email;
+	var chk_in_dt;
+	var chk_out_dt;
+	var min_date;
+	var prc_sts;
 	
 	$('#p_invoicePopup').dialog({
 		title :'<s:message code='invoice.invoiceTitle'/>',
@@ -60,22 +67,38 @@ $(function() {
 			popupClose($(this).attr('id')); /* 필수로 들어가야함 */
 		},
 		open : function() {
-			seq     = $(this).data("SEQ");
-			req_dt  = $(this).data("REQ_DT");
-			mem_gbn = $(this).data("MEM_GBN");
-			email   = $(this).data("EMAIL");
-			chk_in_dt 	= $(this).data("CHK_IN_DT");
-			chk_out_dt  = $(this).data("CHK_OUT_DT");
-			createGrid();
-
-			//gridColspan();
-			cSearch();
+			fn_init($(this).data());
 		}
 	});
 	
+	function fn_init(recevicedData) {
+		seq        = recevicedData.SEQ;
+		req_dt     = recevicedData.REQ_DT;
+		mem_gbn    = recevicedData.MEM_GBN;
+		email      = recevicedData.EMAIL;
+		chk_in_dt  = recevicedData.CHK_IN_DT;
+		chk_out_dt = recevicedData.CHK_OUT_DT;
+		prc_sts    = recevicedData.PRC_STS;
+		
+		if(prc_sts == "05"){
+			$("#POP_EXP_DT,#POP_DEP_AMT , #btn_send, #btn_preview").attr("disabled",true);
+		}else if(prc_sts == "06" || prc_sts == "07" || prc_sts == "08" || prc_sts == "09" || prc_sts == "96"){
+			$("#POP_EXP_DT,#POP_DEP_AMT , #btn_send, #btn_preview ,#btn_save , #btn_del , #btn_addRow , #btn_delRow").attr("disabled",true);
+		}
+		
+		$("#POP_DEP_AMT").val(fn_comma(recevicedData.DEP_AMT));
+		if(!fn_empty(recevicedData.EXP_DT)){
+			$("#POP_EXP_DT").val(Util.converter.dateFormat1(Util.converter.dateFormat3(recevicedData.EXP_DT)));
+		}
+		
+		createGrid();
+		cSearch();
+	}
+		
 	function cSearch(currentPage){
 		var url = "/reserve/invoiceSelectList.do";
 		var formData = formIdAllToMap('frmSearch');
+		var sum_tot = 0;
 		var param = {"SEQ"     : seq
 				   , "REQ_DT"  : req_dt
 				   , "MEM_GBN" : mem_gbn
@@ -83,22 +106,42 @@ $(function() {
 				   , "CHK_OUT_DT" : chk_out_dt
 				   };
 		fn_ajax(url, true, param, function(data, xhr){
-			
 			$.each(data.result , function(i , val){
 				//val.TOT_AMT = parseInt(val.TOT_AMT).toLocaleString();
 				//val.PER_AMT = parseInt(val.PER_AMT).toLocaleString();
 				val.STATUS_V = "R";
+				sum_tot += val.TOT_AMT;
 			});
-			
 			reloadGrid("invoiceGrid", data.result);
-
+			
 			var colModel = $("#invoiceGrid").jqGrid('getGridParam', 'colModel'); 
 			for(var i =0; i < data.result.length; i++){
 				jQuery("#invoiceGrid").setCell(i+1);
 			}
 
 			btGrid.gridResizing('invoiceGrid');
+		    $("#PartnerSchGrid_pager_right").append('<div dir="ltr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(sum_tot)+'</div>');
 	    });
+		
+		$('#POP_EXP_DT').datepicker({
+	        dateFormat : 'yy.mm.dd',
+		    showOn : 'both'
+		 }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
+		     function(e) {
+		 });
+	}
+	
+	$(".withComma").on("keyup" , function(){
+		var tmpValue = $(this).val().replace(/[^0-9,]/g,'');
+		tmpValue = tmpValue.replace(/[,]/g,'');
+		// 천단위 콤마 처리 후 값 강제변경
+	    $(this).val(numberWithCommas(tmpValue));
+	});
+	
+	// 천단위 콤마 (소수점포함)
+	function numberWithCommas(num) {
+	    var parts = num.toString().split(".");	
+	    return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? "." + parts[1] : "");
 	}
 	
 	function gridColspan(){
@@ -264,6 +307,17 @@ $(function() {
 		for(var i = 0; i < ids.length; i++){
 			gridDataChk.push($("#invoiceGrid").getRowData(ids[i]));
 		}
+		
+		var exp_dt = $("#POP_EXP_DT").val().replaceAll(".","");
+        var dep_amt = parseInt($("#POP_DEP_AMT").val().replaceAll(",",""));
+       /*  if(fn_empty(exp_dt)){
+        	alert("예약기한을 확인해주세요.");
+			return false;
+        }
+		if(exp_dt > chk_in_dt){
+			alert("예약기한이 체크인날짜 이후입니다. 예약기한을 확인해주세요.");
+			return false;
+		} */
 
 		var args = '';
 		$.each(gridData , function(i , json){
@@ -331,10 +385,12 @@ $(function() {
 		}
 
 		var url = '/reserve/saveInvoiceManager.do';
-		var param = {"detail"   : gridDataChk
-				   , "SEQ"      : seq 
-				   , "REQ_DT"   : req_dt
+		var param = {"detail"      : gridDataChk
+				   , "SEQ"         : seq 
+				   , "REQ_DT"      : req_dt
 				   };
+		if(!fn_empty(exp_dt)) param.EXP_DT  = exp_dt;
+		if(dep_amt != 0)      param.DEP_AMT = dep_amt;
 		if(confirm("<s:message code='confirm.save'/>")){
 			fn_ajax(url, false, param, function(data, xhr){
 				if(data.dup == 'Y'){
@@ -372,8 +428,7 @@ $(function() {
 		popupClose($('#p_invoicePopup').data('pid'));
 	});
 	$("#btn_del").on("click" , function(){
-		var rowId   = $('#invoiceGrid').jqGrid('getGridParam', 'selrow');
-		var rowData = $("#invoiceGrid").getRowData(rowId);
+		var rowId =$("#invoiceGrid").jqGrid('getGridParam','selrow');
 		var args    = "";
 		if(rowId == "" || rowId == null){
     		alert("<s:message code='errors.selectdel' arguments='행(을)' javaScriptEscape='false'/>");
@@ -408,15 +463,27 @@ $(function() {
 	
 	//공통버튼 - 엑셀 다운 클릭
 	window.cExcelSample = function(data) {
+		var exp_dt = $("#POP_EXP_DT").val().replaceAll(".","");
+        var dep_amt = parseInt($("#POP_DEP_AMT").val().replaceAll(",",""));
 		var param = { "REQ_DT"  : req_dt
 				    , "SEQ"     : seq
 				    , "EMAIL"   : email
 				    , "MEM_GBN" : mem_gbn
 				    , "WK_GBN"	: ""
 		}
-		
 		if(data.id == "btn_preview") param.WK_GBN = "R";
+		if(!fn_empty(exp_dt)) param.EXP_DT  = exp_dt;
+		if(dep_amt != 0)      param.DEP_AMT = dep_amt;
 		else {
+	        if(fn_empty(exp_dt)){
+	        	alert("예약기한을 확인해주세요.");
+				return false;
+	        }
+			if(exp_dt > chk_in_dt){
+				alert("예약기한이 체크인날짜 이후입니다. 예약기한을 확인해주세요.");
+				return false;
+			}
+			
 			if(!confirm("<s:message code='confirm.send'/>")){
 				return false;
 			}
@@ -425,11 +492,9 @@ $(function() {
 		
 		if(!(data.id == "btn_preview"))
 		{
-			
 			var url = "/report/retrieveCustomerReportSend.do";
 			fn_ajax(url, false, param, function(data, xhr){
-			    
-			    if(data.resultCd == "-1"){
+			    if(!data.resultCd){
 					alert("<s:message code='error.sendmail' javaScriptEscape='false'/>"); 
 				}else{
 					alert("<s:message code='success.sendemail'/>");
@@ -441,7 +506,11 @@ $(function() {
 	}
 	
 	$("#invoiceGrid").bind("change , keyup" , function(){
-		var changeRowId = $('#invoiceGrid').jqGrid('getGridParam', 'selrow');
+		var changeRowId  = $('#invoiceGrid').jqGrid('getGridParam', 'selrow');
+		var rowCnt       = $('#invoiceGrid').getGridParam('reccount');
+		var ids          = $('#invoiceGrid').jqGrid('getDataIDs');
+		var full_tot_amt = 0;
+		
 		if($('#invoiceGrid').jqGrid('getRowData', changeRowId).STATUS_V != "I"){
 			$("#invoiceGrid").jqGrid('setCell',changeRowId , 'STATUS_V', 'U');
 		}
@@ -454,6 +523,12 @@ $(function() {
 		}else{
 			$(this).jqGrid('setCell' , changeRowId , 'TOT_AMT' , 0);
 		}
+    
+		for(var i = 0 ; i < ids.length ; i ++ ){
+			full_tot_amt += parseInt(fn_uncomma($(this).jqGrid('getCell', ids[i] ,'TOT_AMT')));
+		}
+		$("#sumtot_amt").text('Total Price: '+fn_comma(full_tot_amt));
+	    $("#sumtot_amt").append('<div dir="ltr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(full_tot_amt)+'</div>');
 	});
 });
 

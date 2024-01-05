@@ -68,14 +68,18 @@ public class ReserveController {
 		BMap param8 = new BMap();
 		param8.put("HEAD_CD" , 500190);
 
-		model.addAttribute("mgn_gbn"    , reserveService.selectGetCommonCode(param));
-		model.addAttribute("region"     , reserveService.selectGetCommonCode(param2));
-		model.addAttribute("roomtype"   , reserveService.selectGetCommonCode(param3));
-		model.addAttribute("agency"     , reserveService.selectGetCommonCode(param4));
-		model.addAttribute("prod_cd"    , reserveService.selectGetCommonCode(param5));
-		model.addAttribute("cartype"    , reserveService.selectGetCommonCode(param6));
-		model.addAttribute("flight_in"  , reserveService.selectGetCommonCode(param7));
-		model.addAttribute("flight_out" , reserveService.selectGetCommonCode(param8));
+		BMap param9 = new BMap();
+		param9.put("HEAD_CD" , 500160);
+
+		model.addAttribute("mgn_gbn"     , reserveService.selectGetCommonCode(param));
+		model.addAttribute("region"      , reserveService.selectGetCommonCode(param2));
+		model.addAttribute("roomtype"    , reserveService.selectGetCommonCode(param3));
+		model.addAttribute("agency"      , reserveService.selectGetCommonCode(param4));
+		model.addAttribute("prod_cd"     , reserveService.selectGetCommonCode(param5));
+		model.addAttribute("cartype"     , reserveService.selectGetCommonCode(param6));
+		model.addAttribute("flight_in"   , reserveService.selectGetCommonCode(param7));
+		model.addAttribute("flight_out"  , reserveService.selectGetCommonCode(param8));
+		model.addAttribute("late_flight" , reserveService.selectGetCommonCode(param9));
 			
 		return "/popup/ReserveRegiPopup";
 	}

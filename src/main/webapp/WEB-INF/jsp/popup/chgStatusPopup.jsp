@@ -121,7 +121,7 @@ $(function() {
 		var url = "/reserve/updateReserveStatus.do";
 		var param = {"REQ_DT"      : req_dt
 				   , "SEQ"         : parseInt(seq)
-				   , "PRC_STS"     : prc_sts
+				   , "PRC_STS"     : prc_sts 
 				   , "CHG_PRC_STS" : $("#CHG_PRC_STS option:selected").val()
 				    };
 		if(confirm("<s:message code='confirm.save'/>")){

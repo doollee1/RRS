@@ -483,7 +483,6 @@
 		                 WHEN A.MAX_ED = A.ED_DT1 THEN ABS(TIMESTAMPDIFF(DAY,date_format(B.CHK_OUT_DT,'%Y-%m-%d'), date_format(A.ST_DT1,'%Y-%m-%d')))    -- 마지막
 		                 ELSE ABS(TIMESTAMPDIFF(DAY,date_format(A.ED_DT1,'%Y-%m-%d'), date_format(A.ST_DT1,'%Y-%m-%d')))+1 
                          END
-
 				            AS USE_DAY
 		                     , B.REQ_DT                              /* 예약일자              */
 		                     , B.SEQ                                 /* 일련번호              */
@@ -856,6 +855,7 @@
              ( REQ_DT     /* 예약일자       */
              , REQ_SEQ	  /* 순번           */
              , DEP_IN_DT  /* 예약금입금일자 */
+             , EXP_DT     /* 예약기한       */
              , DEP_AMT	  /* 예약금액       */
              , BAL_AMT	  /* 잔금           */
              , DCT_AMT	  /* 할인금액       */
@@ -869,6 +869,7 @@
       VALUES ( #{REQ_DT  }
              , #{SEQ     }
              , NULL
+             , #{EXP_DT}
              , 0
              , #{TOT_AMT}
              , 0
@@ -917,6 +918,8 @@
 	    UPDATE TB_REQ_FEE
            SET TOT_AMT = #{TOT_AMT}
              , BAL_AMT = #{TOT_AMT} - NVL(DEP_AMT,0)
+             , EXP_DT  = #{EXP_DT}
+             , DEP_AMT = #{DEP_AMT}
              , UPD_DTM  = NOW()
              , UPD_ID   = #{LOGIN_USER}
          WHERE REQ_DT   = #{REQ_DT}
@@ -1052,7 +1055,9 @@
 		                                  OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
 		                                  OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
 		                              )                  
-		               AND HDNG_GBN = #{PROD_SEQ}
+		                AND HDNG_GBN = #{PROD_CD}
+		                AND PROD_COND IN ((CASE WHEN ABS(TIMESTAMPDIFF(DAY,date_format(#{CHK_IN_DT},'%Y-%m-%d'), date_format(#{CHK_IN_DT},'%Y-%m-%d'))) >= 10 THEN 'DU10' -- 10일이상
+		                                                ELSE 'DD10' END), '0') -- 10일이상 , 10일미만, 조건없음
 		             )
 		          , '01'
 		          , #{ADD_R_S_PER     }
@@ -1090,7 +1095,6 @@
 		     , REQ_TEL_NO     = #{REQ_TEL_NO      }
 		     , MEM_GBN        = #{MEM_GBN         }
 		     , AGN_CD         = #{AGN_CD          }
-		     , PRC_STS        = (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' ELSE NULL END )
 		     , CHK_IN_DT      = #{CHK_IN_DT       }
 		     , CHK_OUT_DT     = #{CHK_OUT_DT      }
 		     , ROOM_TYPE      = #{ROOM_TYPE       }
@@ -1127,8 +1131,11 @@
 		                                                 OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
 		                                         )                  
 		                           AND HDNG_GBN = #{PROD_CD}
-		                           AND PROD_COND IN ((CASE WHEN ABS(TIMESTAMPDIFF(DAY,date_format('20240102','%Y-%m-%d'), date_format('20240102','%Y-%m-%d'))) >= 10 THEN 'DU10' -- 10일이상
-		                                                ELSE 'DD10' END), '0') -- 10일이상 , 10일미만, 조건없음
+		                           AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
+						                                THEN 'DU10'
+						                                WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
+						                                THEN 'DD10'
+						                                END
 		                         )
 		     , PICK_GBN       = #{PICK_GBN}
 		     , ADD_R_S_PER    = #{ADD_R_S_PER     }
@@ -1181,7 +1188,7 @@
         SELECT NVL(MAX(T1.SEQ),0) + 1 AS SEQ FROM TB_REQ_BOOKING_M T1 WHERE T1.REQ_DT = #{REQ_DT} 
     </selectKey>
 	
-	<![CDATA[
+	<![CDATA[ 
 		INSERT INTO TB_REQ_BOOKING_M
            ( REQ_DT
            , SEQ
@@ -1190,6 +1197,7 @@
            , REQ_ENG_NM
            , REQ_TEL_NO
            , MEM_GBN
+           , PRC_STS
            , PICK_GBN
            , REG_DTM
            , REG_ID
@@ -1203,6 +1211,7 @@
            , #{REQ_ENG_NM}
            , #{REQ_TEL_NO}
            , #{MEM_GBN   }
+           , (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' ELSE NULL END )
            , '01'
            , NOW()
            , #{LOGIN_USER}
@@ -1215,15 +1224,16 @@
 	<update id="depositComplete" parameterType="BMap">
 		UPDATE TB_REQ_FEE
 		   SET DEP_AMT   = #{PAY_AMT}
+		     , PAY_AMT   = #{PAY_AMT}
 		     , DEP_IN_DT = date_format(NOW(),'%Y%m%d')
-		     , BAL_AMT   = BAL_AMT - #{PAY_AMT}
+		     , DCT_AMT   = #{DCT_AMT}
+		     , BAL_AMT   = BAL_AMT - #{PAY_AMT} - #{DCT_AMT}
+		     , BAL_IN_DT = date_format(NOW(),'%Y%m%d')
 		     , UPD_DTM = NOW()
 		     , UPD_ID  = #{LOGIN_USER}
 		 WHERE REQ_DT  = #{REQ_DT}
 		   AND REQ_SEQ = #{REQ_SEQ}
 	</update>
-	
-	
 	
 	<select id="checkBasYy" parameterType="BMap" resultType="BMap">
 	   SELECT T1.BAS_YY     AS BAS_YY
@@ -1232,5 +1242,86 @@
 		WHERE #{CHK_IN_DT} BETWEEN T1.ST_DT1 AND T1.ED_DT1
 		   OR #{CHK_IN_DT} BETWEEN T1.ST_DT2 AND T1.ED_DT2
 		   OR #{CHK_IN_DT} BETWEEN T1.ST_DT3 AND T1.ED_DT3
+	</select>
+	
+	<insert id="insertRplan" parameterType="BMap">
+		INSERT INTO TB_REQ_R_PLAN
+           ( REQ_DT
+           , REQ_SEQ
+           , BAS_YM
+           , DD
+           , PER_STR
+           , REG_DTM
+           , REG_ID
+           , UPD_DTM
+           , UPD_ID
+           )
+    VALUES ( #{REQ_DT  }
+           , #{REQ_SEQ }
+           , #{BAS_YM  }
+           , #{DD      }
+           , #{PER_STR }
+           , NOW()
+           , #{REG_ID  }
+           , NOW()
+           , #{UPD_ID  }
+           )
+	</insert>
+	
+	<update id="depositRefund" parameterType="BMap">
+		UPDATE TB_REQ_FEE
+		   SET BAL_AMT   = BAL_AMT + PAY_AMT
+		     , DEP_IN_DT  = NULL
+		     , PAY_AMT    = 0
+		     , BAL_IN_DT = NULL
+		     , UPD_DTM = NOW()
+		     , UPD_ID  = #{LOGIN_USER}
+		 WHERE REQ_DT  = #{REQ_DT}
+		   AND REQ_SEQ = #{REQ_SEQ}
+	</update>
+	
+	<update id="updateReserveResortNum" parameterType="BMap">
+		UPDATE TB_REQ_BOOKING_M
+		   SET CONFIRM_NO   = #{CONFIRM_NO}
+		     , UPD_DTM = NOW()
+		     , UPD_ID  = #{LOGIN_USER}
+		 WHERE REQ_DT  = #{REQ_DT}
+		   AND SEQ = #{REQ_SEQ}
+	</update>
+	
+	<update id="updateInvoiceDetailItem" parameterType="BMap">
+		UPDATE TB_REQ_FEE
+		   SET EXP_DT   = #{EXP_DT}
+		     , DEP_AMT = #{DEP_AMT}
+		     , UPD_DTM = NOW()
+		     , UPD_ID  = #{LOGIN_USER}
+		 WHERE REQ_DT  = #{REQ_DT}
+		   AND REQ_SEQ = #{SEQ}
+	</update>
+	
+	<select id="selectProdSeq" parameterType="BMap" resultType="BMap" >
+	<![CDATA[ 
+	    SELECT PROD_SEQ
+		  FROM TB_PROD_INFO
+		 WHERE 1 = 1
+		  AND BAS_YY_SEQ = (SELECT BAS_YY_SEQ
+		                      FROM TB_BAS_YY_INFO
+		                     WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
+		                        OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
+		                        OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
+		                   )
+		  AND BAS_YY     = (SELECT BAS_YY
+		                      FROM TB_BAS_YY_INFO
+		                     WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
+		                        OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
+		                        OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
+		                   )
+		  AND HDNG_GBN = #{PROD_CD}
+		  AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
+		                  THEN 'DU10'
+		                  WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
+		                  THEN 'DD10'
+		                  END
+	]]>	                  
 	</select>
 </mapper>

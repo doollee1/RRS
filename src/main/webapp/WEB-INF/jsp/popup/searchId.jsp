@@ -69,7 +69,6 @@ $(function() {
 			popupClose($(this).attr('id')); /* 필수로 들어가야함 */
 		},
 		open : function() {
-			//fn_init($(this).data());
 			cSearch();
 		}
 	});
@@ -84,7 +83,6 @@ $(function() {
 				alert("ajax 통신 error!");
 			}else{
 				fn_dataSet(data.result);
-				console.log(data.result);
 			}
 		});
 	}
@@ -93,12 +91,13 @@ $(function() {
 		var vhtml;
 		vhtml = '<option value="00" >--<s:message code="system.select"/>--</option>';
 		if(!fn_empty(data)){
-			console.log(data);
 			$.each(data , function( i , v){
 				vhtml += '<option value = '+v.USER_ID+' mem_gbn = '+v.MEM_GBN+' eng_name = '+v.ENG_NAME+' han_name = '+v.HAN_NAME+' tel_no = '+v.TEL_NO+'>'+v.USER_ID+'</option>';
 			});
 		}
 		$("#SEL_USER_ID").append(vhtml);
+		$("#SEL_USER_ID option").hide();
+		$("#SEL_USER_ID option[value='00']").show();
 	}
 	
 	function saveSetId(){
@@ -147,8 +146,9 @@ $(function() {
 	$("#POP_MEM_GBN").on("change", function(){
 		var val = $(this).val();
 		if(!fn_empty(val)){
+			$('#SEL_USER_ID option').hide();
+			$('#SEL_USER_ID option[mem_gbn='+ val +']').show();
 			$('#SEL_USER_ID option[mem_gbn='+ val +']:eq(0)').prop("selected" , true);
-			$('#SEL_USER_ID option').not('[mem_gbn='+ val +']').hide();
 			
 		}else{
 			$('#SEL_USER_ID option').hide();

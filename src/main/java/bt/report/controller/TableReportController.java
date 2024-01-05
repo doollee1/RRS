@@ -383,9 +383,11 @@ public class TableReportController {
 	@RequestMapping(value = "/retrieveCustomerReportSend.do", method = RequestMethod.POST)
     public BRespData emailSend(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 	    BMap param = new BMap();
-        param.put("SEQ"   , (String) reqData.get("SEQ"));
-        param.put("REQ_DT", (String) reqData.get("REQ_DT"));
-        param.put("LOGIN_USER", LoginInfo.getUserId());
+        param.put("SEQ"        , (String) reqData.get("SEQ"));
+        param.put("REQ_DT"     , (String) reqData.get("REQ_DT"));
+        param.put("LOGIN_USER" , LoginInfo.getUserId());
+        param.put("DEP_AMT"    , reqData.get("DEP_AMT"));
+        param.put("EXP_DT"     , (String) reqData.get("EXP_DT"));
         
         BMap resultDeptDetail = reserveService.reserveSelectDetail(param);
         

@@ -182,7 +182,6 @@
 		var url = "/reserve/reserveSelectList.do";
 		var formData = { "SEARCH"       : $("#SEARCH option:selected").val()
 				       , "RESERVE_STDT" : $("#RESERVE_STDT").val().replaceAll(/\./gi, '')
-				       //, "RESERVE_STDT" : '20230101'
 				       , "RESERVE_EDDT" : $("#RESERVE_EDDT").val().replaceAll(/\./gi, '')
 				       , "MEM_GBN"      : $("#MEM_GBN option:selected").val()
 				       , "PRC_STS"      : $("#PRC_STS option:selected").val()

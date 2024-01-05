@@ -54,6 +54,7 @@ public class ReserveDao extends DBAbstractMapper {
 		return (BMap) selectByPk("ReserveMapper.reserveSelectDetail", param);
 	}
 	
+	
 	/**
 	 * 인보이스 현황 리스트 조회
 	 * @param param
@@ -367,4 +368,52 @@ public class ReserveDao extends DBAbstractMapper {
 	public BMap selectDayDiffChk(BMap param) throws Exception {
 		return (BMap) selectByPk("ReserveMapper.selectDayDiffChk", param);
 	}
+	
+	/**
+	 * Rplan 테이블 insert
+	 * @param param
+	 * @throws Exception
+	 */
+	
+	public int insertRplan(BMap param) throws Exception{
+		return insert("ReserveMapper.insertRplan", param);
+	}
+	
+	/**
+	 * 환불시 Fee 데이터초기화
+	 * @param param
+	 * @throws Exception
+	 */
+	public void depositRefund(BMap param) throws Exception{
+		update("ReserveMapper.depositRefund", param);
+	}
+	
+	/**
+	 * 멤버및 일반 리조트컨펌번호 업데이트
+	 * @param param
+	 * @throws Exception
+	 */
+	public void updateReserveResortNum(BMap param) throws Exception{
+		update("ReserveMapper.updateReserveResortNum", param);
+	}
+	
+	/**
+	 * 인보이스 - 메일전송시 예약기한, 예약금 업데이트
+	 * @param param
+	 * @throws Exception
+	 */
+	public void updateInvoiceDetailItem(BMap param) throws Exception{
+		update("ReserveMapper.updateInvoiceDetailItem", param);
+	}
+	
+	/**
+	 * 상품정보 선조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap selectProdSeq(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.selectProdSeq", param);
+	}
+	
 }

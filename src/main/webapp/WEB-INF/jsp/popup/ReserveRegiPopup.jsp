@@ -13,7 +13,6 @@
 	<form id="frmReserveInfo" action="#">
 		<div id="pop_ct_form_wrap">
 			<input type="hidden" name="PRC_STS"      id="PRC_STS"    value="" />
-			<input type="hidden" name="PRC_STS_NM"   id="PRC_STS_NM" value="" />
 			<input type="hidden" name="EMAIL"        id="EMAIL"      value="" />  
 			<input type="hidden" name="PAY_AMT"  id="PRV_PAY_AMT"      value="" />  
 			<input type="hidden" name="DCT_AMT"  id="PRV_DCT_AMT"      value="" />  
@@ -166,9 +165,10 @@
 					</td>
 				    <th><s:message code='reservation.lateCheckout'/></th>
 					<td>
-						<input type="radio"  name="LATE_CHECK_OUT" value="1">여
-						<input type="radio"  name="LATE_CHECK_OUT" value="2">부
-					</td>
+						<input type="radio"  name="LATE_CHECK_OUT" value="1">6시까지 
+						<input type="radio"  name="LATE_CHECK_OUT" value="2">6시이후 
+						<input type="radio"  name="LATE_CHECK_OUT" value="3">부
+				    </td>
 				</tr>
 				<tr>
 					<th><s:message code='reservation.addSingle'/></th>
@@ -283,6 +283,13 @@
 					</div>
 					</td>
 				</tr>
+				<tr style="display: none;">
+					<td>
+						<c:forEach var="i" items="${late_flight}" varStatus="status">
+						    <input type="text" value= "${i.CODE}" name="LATE_FLIGHT" seq = ${status.index }></input>
+						</c:forEach>
+					</td>
+				</tr>
 			</table>
 		</div>
 	</form>	
@@ -337,7 +344,14 @@ $(function() {
 		}else{
 			isDisabled(false);
 		}
-		
+	});
+	
+	$('#AGN_CD').change(function() {
+		if(!fn_empty($(this).val())){
+			isDisabled(true);
+		}else{
+			isDisabled(false);
+		}
 	});
 	
 	function fn_init(receivedData){
@@ -346,37 +360,36 @@ $(function() {
 		$('#REQ_DT').val($.datepicker.formatDate('yy.mm.dd', new Date())).attr("readonly" , true);
 		seq    = receivedData.SEQ;
 		req_dt = receivedData.REQ_DT;
-		 if(fn_empty(seq || req_dt)){ //신규
-		     $(".ui-dialog-title").text('<s:message code='reservation.registration'/>');
-			 $("#CHK_IN_DT"      ).val(Util.converter.dateFormat1(today));
-			 $("#CHK_OUT_DT"     ).val(Util.converter.dateFormat1(today));
-		     $(".image"          ).hide();
-		     $(".status"         ).hide();
-		     vflag = "new";
-		     $("#TOT_AMT , #PAY_AMT , #DCT_AMT , #BAL_AMT , #DEP_IN_DT , #DEP_AMT , #EXP_DT , #INV_REG_DT").attr("disabled", true);
-		 }else{ // 상세
-			 $("#USER_ID , #MEM_GBN").attr("disabled", true);
-		     $(".ui-dialog-title").text('<s:message code='reservation.detail'/>');
-		     $("#btn_search").hide();
-		     initSelect();
-		     vflag = "detail";
-		 }
-		 
-		 $('#DEP_IN_DT, #INV_REG_DT , #EXP_DT').datepicker({
-		     dateFormat : 'yy.mm.dd',
-		     showOn : 'both'
-		 }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
-		     function(e) {
-		 });
-		 
-		 $('#CHK_OUT_DT, #CHK_IN_DT').datepicker({
-		     dateFormat : 'yy.mm.dd',
-		     showOn  : 'both',
-		     minDate : 0,
-		     maxDate : '+1y'
-		 }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
-		     function(e) {
-		 });
+		if(fn_empty(seq || req_dt)){ //신규
+		    $(".ui-dialog-title").text('<s:message code='reservation.registration'/>');
+		    $("#CHK_IN_DT"      ).val(Util.converter.dateFormat1(today));
+		    $("#CHK_OUT_DT"     ).val(Util.converter.dateFormat1(today));
+		    $(".image"          ).hide();
+		    vflag = "new";
+		    $("#TOT_AMT , #PAY_AMT , #DCT_AMT , #BAL_AMT , #DEP_IN_DT , #DEP_AMT , #EXP_DT , #INV_REG_DT").attr("disabled", true);
+		}else{ // 상세
+		    $("#USER_ID , #MEM_GBN").attr("disabled", true);
+		    $(".ui-dialog-title").text('<s:message code='reservation.detail'/>');
+		    $("#btn_search").hide();
+		    initSelect();
+		    vflag = "detail";
+		}
+		
+		$('#DEP_IN_DT, #INV_REG_DT , #EXP_DT').datepicker({
+		    dateFormat : 'yy.mm.dd',
+		    showOn : 'both'
+		}).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
+		    function(e) {
+		});
+		
+		$('#CHK_OUT_DT, #CHK_IN_DT').datepicker({
+		    dateFormat : 'yy.mm.dd',
+		    showOn  : 'both',
+		    minDate : 0,
+		    maxDate : '+1y'
+		}).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
+		    function(e) {
+		});
 	
 	}
 	
@@ -401,6 +414,8 @@ $(function() {
     			}else{
     				$('[name='+ key +']').val("");
     			}
+    		}else if(key == "LATE_CHECK_OUT"){
+    			// radio 
     		}else{
     			$('[name='+ key +']').val(val);
     		}
@@ -423,13 +438,18 @@ $(function() {
     	
         //LATE 체크아웃 셋팅
     	if(!fn_empty(data.LATE_CHECK_OUT)){
-    		$('[name=LATE_CHECK_OUT][value='+data.LATE_CHECK_OUT+']').prop("checked", true);
+    		$("input:radio[name='LATE_CHECK_OUT'][value='" + data.LATE_CHECK_OUT + "']").prop("checked", true);
     	}
         
     	//멤버구분 disabled 셋팅
     	if(!fn_empty(data.MEM_GBN)){
-    		if(data.MEM_GBN == "03" || data.MEM_GBN == "04"){
+    		if(data.MEM_GBN == "03" || (data.MEM_GBN == "02" && !fn_empty($("#AGN_CD").val()))){
     			isDisabled(true);
+    			if(data.MEM_GBN == "03"){
+    				$("#TOT_AMT").attr("disabled", false).attr("readonly", false);
+    				$("#DCT_AMT").attr("disabled", true);
+    				$("#PAY_AMT").attr("disabled", true);
+    			}
     		}else{
     			isDisabled(false);
     		}
@@ -439,9 +459,12 @@ $(function() {
      	if(!fn_empty(data.PRC_STS)){
      		if(data.PRC_STS == "05"){
      			$("#btn_deposit").attr("disabled", false);
+     		}else if(data.PRC_STS == "06" || data.PRC_STS == "08" || data.PRC_STS == "09" || data.PRC_STS == "96"){
+     			$("#frmReserveInfo").find("input,select,radio,textarea").attr("disabled" , true);
+     		}else if(data.PRC_STS == "07" ){
+     			$("#frmReserveInfo").find("input,select,radio,textarea").attr("disabled" , true);
      		}
      	}
-     	
     	// 날짜세팅
      	if(fn_empty(data.CHK_IN_DT) && fn_empty(data.CHK_OUT_DT)){
      		var day = new Date();
@@ -450,7 +473,10 @@ $(function() {
     		$("#CHK_OUT_DT"     ).val(Util.converter.dateFormat1(today));
      	}
     	
-    	
+        // 날짜세팅
+     	if(fn_empty(data.DEP_IN_DT)){
+     		$("#DEP_IN_DT").val("");
+     	}
     }
 	
 	function initSelect(){
@@ -462,7 +488,7 @@ $(function() {
 			if(data.MESSAGE != "OK"){
 				alert("ajax 통신 error!");
 			}else{
-				fn_dataSet(data.result)
+				fn_dataSet(data.result);
 				fn_imageSet(data.image);
 			}
 		});
@@ -514,7 +540,6 @@ $(function() {
 	
 	function isDisabled(temp){
 	    $("[name='LATE_CHECK_OUT']").attr("disabled",temp);
-		$("#AGN_CD"     ).attr("disabled",temp);
 	    $("#ROOM_TYPE"  ).attr("disabled",temp);
 	    $("#FLIGHT_IN"  ).attr("disabled",temp);
 	    $("#FLIGHT_OUT" ).attr("disabled",temp);
@@ -528,6 +553,8 @@ $(function() {
 	    $("#CNT_D2"     ).attr("disabled",temp);
 	    $("#CNT_P1"     ).attr("disabled",temp);
 	    $("#CNT_P2"     ).attr("disabled",temp);
+	    $("#DEP_IN_DT"  ).attr("disabled",temp);
+	    if($("#MEM_GBN").val() == "03") $("#AGN_CD"     ).attr("disabled",temp);
 	}
 	
 	function autoHypenTel(str) {
@@ -636,6 +663,20 @@ $(function() {
 		var param = {"reserveInfo"   : obj
 				   , "V_FLAG" : vflag};
 		if(confirm("<s:message code='confirm.save'/>")){
+			// 상품이 있는지 선조회
+			var prodYn = false;
+			var url2 = '/reserve/selectProdSeq.do';
+			fn_ajax(url2, false, param, function(data, xhr){
+				if(!fn_empty(data.result)){
+					prodYn = true;
+				}else{
+					alert("상품이없습니다. 관리자페이지에서 등록후 이용해주세요.");
+					return false;
+				}
+			});
+			
+			if(!prodYn) return false;
+			
 			var url = '/reserve/ReserveManager.do';
 			fn_ajax(url, false, param, function(data, xhr){
 				if(data.dup == 'Y'){
@@ -670,12 +711,34 @@ $(function() {
 		return true;
 	}
 	
+	function lateYn(){
+		var flight_in  = $("#FLIGHT_IN").val();
+		var flight_out = $("#FLIGHT_OUT").val();
+		var booleanIn  = false;
+		var booleanOut = false;
+		
+		for(var i =0; i < parseInt($("[name='LATE_FLIGHT']").length); i++){
+			if( flight_in == $('[name=LATE_FLIGHT][seq = '+i+']').val()){
+				booleanIn = true;
+			}
+			
+			if( flight_out == $('[name=LATE_FLIGHT][seq = '+i+']').val()){
+				booleanOut = true;
+			}
+		}
+		var obj = {
+		    "booleanIn" : booleanIn 
+		  , "booleanOut": booleanOut
+		}
+		return obj;
+	}
+	
 	
 	function isValidation(){ 
 		if(vflag == "new"){
 			var usrId = $("#USER_ID").val();
 			if(fn_empty(usrId)){
-				alert("id를 입력해주세요.");
+				alert("ID찾기 팝업에서 ID를 입력해주세요.");
 				return false;
 			}
 		}
@@ -720,8 +783,8 @@ $(function() {
 			alert("체크아웃 날짜보다 체크인 날짜가 큽니다.")
 			return false;
 		}
-		
-		if(mem_gbn == "01" || mem_gbn == "02"){
+		var agn_cd = $("#AGN_CD").val();
+		if(mem_gbn == "01" || (mem_gbn == "02" && fn_empty(agn_cd))){
 			var roomtype = $("#ROOM_TYPE").val();
 			if(fn_empty(roomtype)){
 				alert("객실타입을 선택해주세요.");
@@ -776,7 +839,7 @@ $(function() {
 			return false;
 		}
         
-		if(mem_gbn == "01" || mem_gbn == "02"){
+		if(mem_gbn == "01" || (mem_gbn == "02" && fn_empty(agn_cd))){
 			
 			var late_check_out = $("[name='LATE_CHECK_OUT']:checked").val();
 			if(fn_empty(late_check_out)){
@@ -805,6 +868,14 @@ $(function() {
 			var pick_out = $("#PICK_OUT").val();
 			if(fn_empty(pick_out)){
 				alert("픽업차량-출발을 선택해주세요.");
+				return false;
+			}
+		}
+		
+		var tot_amt = parseInt($("#TOT_AMT").val().replaceAll(",",""));
+		if(mem_gbn == "03" && prc_sts == "11"){
+			if(tot_amt == 0){
+				alert("총금액을 입력해주세요.");
 				return false;
 			}
 		}
@@ -843,39 +914,23 @@ $(function() {
 		$("#BAL_AMT").val(fn_comma(bal_amt));
 	});
 	
-	/* $("#PAY_AMT").on("keyup", function(){
-		var prv_bal_amt = $("#PRV_BAL_AMT").val();
-		var prv_pay_amt = $("#PRV_PAY_AMT").val();
-		var prv_amt = $(this).val();
-		var dct_amt = fn_uncomma($("#DCT_AMT").val());
-		var tot_amt = fn_uncomma($("#TOT_AMT").val());
-		var pay_amt = fn_uncomma($(this).val());
-		var dep_amt = fn_uncomma($("#DEP_AMT").val());
-		var bal_amt;
-		bal_amt = tot_amt - dct_amt - pay_amt - dep_amt;
-		if(bal_amt < 0 ){
-			$(this      ).val(prv_pay_amt);
-			$("#BAL_AMT").val(prv_bal_amt);
-			alert("금액을 확인해주세요.");
-			return false;
-		}
-		$("#BAL_AMT").val(fn_comma(bal_amt));
-	}); */
-	
 	$("#btn_create").click(function() {
 		//if(!openPopVali($(this))) return;
 		var url = "/reserve/InvoicePopup.do";
 		var pid = "p_invoicePopup";
 		var param = {
-			"SEQ" : seq,
-			"REQ_DT" : req_dt,
-			"MEM_GBN" : $("#MEM_GBN option:selected").val(),
-			"EMAIL" : $("#EMAIL").val(),
-			"CHK_IN_DT" : $("#CHK_IN_DT").val().replaceAll(".", ""),
+			"SEQ"        : seq,
+			"REQ_DT"     : req_dt,
+			"MEM_GBN"    : $("#MEM_GBN option:selected").val(),
+			"EMAIL"      : $("#EMAIL").val(),
+			"CHK_IN_DT"  : $("#CHK_IN_DT").val().replaceAll(".", ""),
 			"CHK_OUT_DT" : $("#CHK_OUT_DT").val().replaceAll(".", ""),
 			"TOT_PERSON" : $("#TOT_PERSON").val(),
-			"TOT_DAY" : "",
-			"INV_REG_DT" :  $("#INV_REG_DT").val()
+			"TOT_DAY"    : "",
+			"INV_REG_DT" : $("#INV_REG_DT").val(),
+			"PRC_STS"    : $("#PRC_STS").val(),
+			"DEP_AMT"    : parseInt($("#DEP_AMT").val().replaceAll(",", "")),
+			"EXP_DT"     : $("#EXP_DT").val().replaceAll(".", "")
 		};
 		if (fn_empty(param.MEM_GBN) || param.MEM_GBN == "03") {
 			alert("교민은 인보이스생성을 할수 없습니다.");
@@ -930,8 +985,8 @@ $(function() {
 				$("#PICK_GBN"   ).val(data.PICK_GBN);
 				
 				if(data.PICK_GBN == "01"){
-					$("#PICK_GBN"     ).attr("disabled", false);
-					$("#PER_NUM_CNT"  ).attr("readonly", false);
+					$("#PICK_GBN"     ).attr("disabled", true);
+					$("#PER_NUM_CNT"  ).attr("readonly", true);
 					$("#insertPickGbn").text("등록");
 				}else{
 					$("#PICK_GBN"     ).attr("disabled", true);
@@ -974,15 +1029,42 @@ $(function() {
 	
 	$("#btn_deposit").on("click", function(){
 		//if(!openPopVali($(this))) return;($(this));
+		var confirm_no = $("#CONFIRM_NO").val();
+		var mem_gbn = $("#MEM_GBN").val();
+		var agn_cd = $("#AGN_CD").val();
+		if((mem_gbn == "02" && fn_empty(agn_cd)) || mem_gbn == "01"){ // 일반고객이거나, 멤버고객
+		    if(fn_empty(confirm_no)){
+		    	alert("리조트 컨펌번호를 입력해주세요.");
+		    	return false;
+		    }
+		}
+		
 		var pay_amt = parseInt($("#PAY_AMT").val().replaceAll(",", ""));
+		var tot_amt = parseInt($("#TOT_AMT").val().replaceAll(",", ""));
+		var dep_amt = parseInt($("#DEP_AMT").val().replaceAll(",", ""));
+		var val_amt = parseInt($("#BAL_AMT").val().replaceAll(",", ""));
+		var dct_amt = parseInt($("#DCT_AMT").val().replaceAll(",", ""));
 		if(pay_amt == 0 ){
-			alert("예약금액과 예약기한은 인보이스에서 등록하세요.");
+			alert("예약금액을 입력하세요.");
 			return false;
 		}
+		
+		if(tot_amt == 0 || dep_amt == 0 || val_amt == 0){
+			return false;
+		}
+		
 		var url = "/reserve/deposit.do";
 	    var param = { "REQ_SEQ"      : parseInt(seq)
 			        , "REQ_DT"       : req_dt
 			        , "PAY_AMT"      : pay_amt
+			        , "MEM_GBN"      : $("#MEM_GBN").val()
+			        , "R_PERSON"     : $("#R_PERSON").val()
+			        , "booleanIn"    : lateYn().booleanIn  == true ? "IN" : $("#R_PERSON").val()
+			        , "booleanOut"   : lateYn().booleanOut == true ? "OUT": $("#R_PERSON").val()
+			        , "CHK_IN_DT"    : $("#CHK_IN_DT").val().replaceAll(".", "")
+			        , "CHK_OUT_DT"   : $("#CHK_OUT_DT").val().replaceAll(".", "")
+			        , "CONFIRM_NO"   : confirm_no
+			        , "DCT_AMT"      : dct_amt
 	                };
 	    if(confirm("<s:message code='confirm.deposit'/>")){
 			fn_ajax(url, false, param, function(data, xhr){

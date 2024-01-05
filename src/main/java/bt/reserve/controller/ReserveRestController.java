@@ -131,6 +131,8 @@ public class ReserveRestController {
 		BMap paramData = new BMap();
 		paramData.put("SEQ"        , (String) reqData.get("SEQ"));
 		paramData.put("REQ_DT"     , (String) reqData.get("REQ_DT"));
+		paramData.put("DEP_AMT"    , reqData.get("DEP_AMT"));
+		paramData.put("EXP_DT"     , (String) reqData.get("EXP_DT"));
 		paramData.put("LOGIN_USER" , LoginInfo.getUserId());
 		
 		if(!reserveService.saveInvoiceManager(paramData , detail)){
@@ -366,11 +368,19 @@ public class ReserveRestController {
 	public BRespData depositComplete(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
 		BRespData respData = new BRespData();
 		BMap param = new BMap();
+		
 		param.put("REQ_DT"     , (String)reqData.get("REQ_DT"));
 		param.put("REQ_SEQ"    , reqData.get("REQ_SEQ"));
 		param.put("PAY_AMT"    , reqData.get("PAY_AMT"));
+		param.put("MEM_GBN"    , (String)reqData.get("MEM_GBN"));
+		param.put("CHK_IN_DT"  , (String)reqData.get("CHK_IN_DT"));
+		param.put("CHK_OUT_DT" , (String)reqData.get("CHK_OUT_DT"));
+		param.put("booleanIn"  , (String)reqData.get("booleanIn"));
+		param.put("booleanOut" , (String)reqData.get("booleanOut"));
+		param.put("R_PERSON"   , (String)reqData.get("R_PERSON"));
+		param.put("CONFIRM_NO" , (String)reqData.get("CONFIRM_NO"));	
+		param.put("DCT_AMT"    , reqData.get("DCT_AMT"));	
 		param.put("LOGIN_USER" , LoginInfo.getUserId());
-	
 		respData.put("result", reserveService.depositComplete(param));
 		return respData;
 	}
@@ -418,6 +428,21 @@ public class ReserveRestController {
 			dataMap.put("resultCd", "9999");
 			respData.put("result",dataMap);
 		}
+		return respData;
+	}
+	
+	/**
+	 * 예약 상품 선조회
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/selectProdSeq.do", method = RequestMethod.POST)
+	public BRespData selectProdSeq(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BMap reserveInfo = reqData.getParamDataMap("reserveInfo");
+		BRespData respData = new BRespData();
+		respData.put("result", reserveService.selectProdSeq(reserveInfo));
 		return respData;
 	}
 	

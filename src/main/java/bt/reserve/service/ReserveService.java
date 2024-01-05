@@ -1,12 +1,20 @@
 package bt.reserve.service;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
 import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+
 import bt.btframework.common.vo.CodeVO;
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.LoginInfo;
@@ -157,10 +165,11 @@ public class ReserveService {
 			
 			BMap paramMap = new BMap();
 			paramMap.put("SEQ"       , (String) param.get("SEQ"));      
-			
 			paramMap.put("REQ_DT"    , (String) param.get("REQ_DT"));   
 			paramMap.put("LOGIN_USER", LoginInfo.getUserId());          
 			paramMap.put("TOT_AMT"   , sum_tot);
+			paramMap.put("EXP_DT"    , (String) param.get("EXP_DT"));      
+			paramMap.put("DEP_AMT"   , param.get("DEP_AMT"));      
 			
 			if(feeCnt == 0){ //fee table insert
 				reserveDao.insertFeeInfo(paramMap);
@@ -208,6 +217,7 @@ public class ReserveService {
 	public List<BMap> selectPrdInfo(BMap param) throws Exception {
 		return reserveDao.selectPrdInfo(param);
 	}
+	
 	
 	/**
 	 * 인보이스 데이터 삽입 및 수정
@@ -321,6 +331,10 @@ public class ReserveService {
 
         try {
 		    reserveDao.updateReserveStatus(param);
+		    if(param.getString("CHG_PRC_STS").equals("08")){ //환불완료시
+		    	param.put("REQ_SEQ", param.getInt("SEQ"));
+		    	reserveDao.depositRefund(param);
+		    }
 		} catch (Exception e) {
 		    // TODO: handle exception
 			e.printStackTrace();
@@ -349,6 +363,7 @@ public class ReserveService {
 		Boolean isValid = true;
         try {
 		    reserveDao.updateInvRegDt(param);
+		    reserveDao.updateInvoiceDetailItem(param);
 		} catch (Exception e) {
 		    // TODO: handle exception
 			e.printStackTrace();
@@ -393,14 +408,50 @@ public class ReserveService {
 	 * @return
 	 * @throws Exception
 	 */
-	public BMap depositComplete(BMap param) throws Exception{
-		BMap result = new BMap();
+	public BMap depositComplete(BMap param) throws Exception{ 
+		BMap result = new BMap(); 
 		try {
-        	reserveDao.depositComplete(param);
-        	
-        	param.put("CHG_PRC_STS", "06");
+        	//요금테이블 변경
+			reserveDao.depositComplete(param);
+        	if(param.getString("MEM_GBN").equals("01") || param.getString("MEM_GBN").equals("02")){ // 일반 , 멤버
+        		param.put("CHG_PRC_STS", "06");
+        	}else if(param.getString("MEM_GBN").equals("03")){
+        		param.put("CHG_PRC_STS", "96");
+        	}
         	param.put("SEQ", param.getInt("REQ_SEQ"));
+        	
+        	//예약 리조트컨펌번호(없을시)
+        	reserveDao.updateReserveResortNum(param);
+        	
+        	//예약 상태변경
         	reserveDao.updateReserveStatus(param);
+        	
+        	//두날짜사이의 데이터 array 
+        	ArrayList<String> data = calcDate(param.getString("CHK_IN_DT") , param.getString("CHK_OUT_DT"));
+        	
+        	int firstIndex = 0; 
+        	int lastIndex = data.size() -1;
+        	
+        	for (int i = 0; i < data.size(); i++) {
+        		BMap paramMap = new BMap();
+        		paramMap.put("REQ_DT"  , param.get("REQ_DT"));
+        		paramMap.put("REQ_SEQ" , param.get("REQ_SEQ"));
+        		paramMap.put("BAS_YM"  , data.get(i).substring(0,6));
+        		paramMap.put("DD"      , data.get(i).substring(6));
+        		paramMap.put("REG_ID"  , param.get("LOGIN_USER"));
+        		paramMap.put("UPD_ID"  , param.get("LOGIN_USER"));
+        		
+        		if(i == firstIndex){
+        			paramMap.put("PER_STR" , param.getString("booleanIn"));
+        		}else if( i == lastIndex){
+        			paramMap.put("PER_STR" , param.getString("booleanOut"));
+        		}else{
+        			paramMap.put("PER_STR" , param.get("R_PERSON"));
+        		}
+        		reserveDao.insertRplan(paramMap);
+        		paramMap.clear();
+			}
+        	
         	result.put("resultCd", "0000");
 		} catch (Exception e) {
 		    // TODO: handle exception
@@ -433,6 +484,12 @@ public class ReserveService {
 		return result;
 	}
 	
+	/**
+	 * 기준년도 체크로직
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
 	public boolean checkBasYy(BMap param) throws Exception{
 		boolean result = false;
 		BMap dataMap = reserveDao.reserveSelectDetail(param);
@@ -451,6 +508,23 @@ public class ReserveService {
 		return result;
 	}
 	
+
+	/**
+	 * 상품정보 선조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap selectProdSeq(BMap param) throws Exception {
+		return reserveDao.selectProdSeq(param);
+	}
+	
+	/**
+	 * 날짜간 데이터 어레이
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
 	public BMap selectDayDiffChk(BMap param) throws Exception{
 		BMap dataMap = reserveDao.selectDayDiffChk(param);
 		
@@ -464,6 +538,33 @@ public class ReserveService {
 		}
 		return dataMap;
 	}
+	
+	public ArrayList<String> calcDate(String chk_in_dt , String chk_out_dt) throws ParseException{
+		DateFormat df = new SimpleDateFormat("yyyyMMdd");
+        ArrayList<String> array = new ArrayList<>();
+		//Date타입으로 변경
+		java.util.Date d1 = df.parse( chk_in_dt );
+		java.util.Date d2 = df.parse( chk_out_dt );
+
+		Calendar c1 = Calendar.getInstance();
+		Calendar c2 = Calendar.getInstance();
+
+		//Calendar 타입으로 변경 add()메소드로 1일씩 추가해 주기위해 변경
+		c1.setTime( d1 );
+		c2.setTime( d2 );
+
+		//시작날짜와 끝 날짜를 비교해, 시작날짜가 작거나 같은 경우 출력
+			while( c1.compareTo( c2 ) !=1 ){
+			    //출력
+			    //시작날짜 + 1 일
+			    c1.add(Calendar.DATE, 1);
+			    array.add(df.format(c1.getTime()));
+			}
+			
+			return array;
+	}
+	
+	
 	
 	
 	
