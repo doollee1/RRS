@@ -1,4 +1,6 @@
 package bt.reserve.controller;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -48,4 +50,19 @@ public class ReserveReportController {
 		return respData;
 	}
 	
+	/**
+	 * 예약 현황 저장
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/reserve/saveReserveList.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData saveReserveList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BMap param = reqData.getParamDataMap("param");
+		BRespData respData = new BRespData();
+		respData.put("result", reserveReportService.saveReserveList(param)) ;
+		return respData;
+	}
 }

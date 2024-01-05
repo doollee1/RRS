@@ -48,6 +48,8 @@
 			,T1.CNT_P2 /* 숙박 프리미엄킹 */
 			,T1.BAS_YY
 			,T1.PROD_SEQ
+			,T1.CHK_IN_DT 
+			,T1.CHK_OUT_DT 
 			,T3.HDNG_GBN /* 상품 항목 구분 */
 			,IFNULL((
 				SELECT REF_NUM1
@@ -89,10 +91,30 @@
 			,BAS_YM
 			,DD
 			,PER_STR
-		FROM tb_req_r_plan
+		FROM TB_REQ_R_PLAN
 		WHERE REQ_DT = #{REQ_DT}
 		AND REQ_SEQ = #{REQ_SEQ}
 	</select>
 	
+	<select id="selectInfoNumberOfReserve" parameterType="BMap" resultType="BMap">
+		SELECT
+			PER_STR
+		FROM TB_REQ_R_PLAN
+		WHERE REQ_DT = #{REQ_DT}
+		AND REQ_SEQ = #{REQ_SEQ}
+		AND BAS_YM = #{BAS_YM}
+		AND DD = LPAD(#{DD}, 2 , '0')
+	</select>
+	
+	<update id="updateReserveInfo" parameterType="BMap">
+		UPDATE TB_REQ_R_PLAN
+			SET PER_STR = #{PER_STR}
+				,UPD_DTM = NOW()
+				,UPD_ID = #{LOGIN_USER}
+		WHERE REQ_DT = #{REQ_DT}
+			AND REQ_SEQ = #{REQ_SEQ}
+			AND BAS_YM = #{BAS_YM}
+			AND DD = #{DD}
+	</update>
 	
 </mapper>
