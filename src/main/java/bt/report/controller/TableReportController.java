@@ -663,7 +663,7 @@ public class TableReportController {
 			System.out.println(e);
 		}
 		try {
-			out.writeTo(fileOut);
+			fileOut.write(out.toByteArray());
 			fileOut.close();
 		} catch (IOException e) {
 			System.out.println(e);
