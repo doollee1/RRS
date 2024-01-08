@@ -685,8 +685,7 @@ $(function() {
 		var chk_out_dt     = $("#CHK_OUT_DT").val().replaceAll(".","");
 		var prv_chk_out_dt = $("#PRV_CHK_OUT_DT").val().replaceAll(".","");
 		var chgCheckIn     = true;
-		
-		if((chk_in_dt != prv_chk_in_dt) || (chk_out_dt != prv_chk_out_dt)){
+		if((!fn_empty(prv_chk_in_dt) && chk_in_dt != prv_chk_in_dt) || (!fn_empty(prv_chk_out_dt)  && chk_out_dt != prv_chk_out_dt)){
 			if(confirm("체크인, 체크아웃날짜가 변경되면 상품이 바뀌므로 예약정보가 초기화됩니다. 그래도 변경하시겠습니까?")){
 				var url3 = '/reserve/deleteEtcAll.do';
 				fn_ajax(url3, false, param, function(data, xhr){
