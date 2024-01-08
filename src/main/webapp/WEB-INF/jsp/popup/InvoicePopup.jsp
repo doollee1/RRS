@@ -471,7 +471,7 @@ $(function() {
 				    , "MEM_GBN" : mem_gbn
 				    , "WK_GBN"	: ""
 		}
-		if(data.id == "btn_preview") param.WK_GBN = "R";
+
 		if(!fn_empty(exp_dt)) param.EXP_DT  = exp_dt;
 		if(dep_amt != 0)      param.DEP_AMT = dep_amt;
 		else {
@@ -483,15 +483,16 @@ $(function() {
 				alert("예약기한이 체크인날짜 이후입니다. 예약기한을 확인해주세요.");
 				return false;
 			}
-			
+		}
+		
+		if(data.id == "btn_preview")
+		{
+			param.WK_GBN = "R";
+			fn_formSubmit('/report/retrieveCustomerReportAll.do', param);
+		} else {
 			if(!confirm("<s:message code='confirm.send'/>")){
 				return false;
 			}
-		}
-		fn_formSubmit('/report/retrieveCustomerReportAll.do', param);
-		
-		if(!(data.id == "btn_preview"))
-		{
 			var url = "/report/retrieveCustomerReportSend.do";
 			fn_ajax(url, false, param, function(data, xhr){
 			    if(!data.resultCd){
@@ -501,8 +502,23 @@ $(function() {
 					cSearch();
 				}
 			});
-			
 		}
+		
+		
+		/* setTimeout(function() { 
+			if(!(data.id == "btn_preview"))
+			{
+				var url = "/report/retrieveCustomerReportSend.do";
+				fn_ajax(url, false, param, function(data, xhr){
+				    if(!data.resultCd){
+						alert("<s:message code='error.sendmail' javaScriptEscape='false'/>"); 
+					}else{
+						alert("<s:message code='success.sendemail'/>");
+						cSearch();
+					}
+				});
+			}
+		}, 1500); */
 	}
 	
 	$("#invoiceGrid").bind("change , keyup" , function(){
@@ -531,5 +547,15 @@ $(function() {
 	    $("#sumtot_amt").append('<div dir="ltr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(full_tot_amt)+'</div>');
 	});
 });
+
+function fn_formSubmit2(url, data) {
+	var form = '<form action="' + url + '" id="form" method="post">';
+	$.each(data, function(key, value) {
+		form += '<input type="hidden" name="' + key + '" value="' + value + '" />';
+	});
+	form += '</form>';
+	alert(2);
+	//$(form).appendTo('body').submit().remove();
+}
 
 </script>

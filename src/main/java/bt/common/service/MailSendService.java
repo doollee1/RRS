@@ -40,11 +40,13 @@ public class MailSendService {
 		    String fileNm = (String) param.get("FILE_NM");
 		    String fileFullNm = (String) param.get("FILE_FULL_NM");
 		    String toEmail = (String) param.get("TO_EMAIL");
+		    String msg = (String) param.get("MSG");
+		    String subject = (String) param.get("SUBJECT");
 		    
 		    EmailAttachment attachment = new EmailAttachment();
 		    attachment.setPath(fileFullNm);
 		    attachment.setDisposition(EmailAttachment.ATTACHMENT);
-		    attachment.setDescription("첨부 관련 TEST입니다");
+		    attachment.setDescription(subject);
 		    attachment.setName(fileNm); // 
 
 		    // 기본 메일 정보를 생성합니다
@@ -59,8 +61,8 @@ public class MailSendService {
 		    email.addTo(toEmail);
 		    email.setFrom(env.getProperty("EMAIL.FROM"));
 		    
-		    email.setSubject("인보이스 첨부 파일 TEST입니다");
-		    email.setMsg("인보이스 첨부...");
+		    email.setSubject(subject);
+		    email.setMsg(msg);
 		    //email.setContent(aObject, aContentType);
 
 		    // 생성한 attachment를 추가합니다
