@@ -621,8 +621,8 @@ public class TableReportController {
         }
         worksheet.calculate();
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        workbook.save(out, SaveOptions.getXlsxDefault());
+        //ByteArrayOutputStream out = new ByteArrayOutputStream();
+        //workbook.save(out, SaveOptions.getXlsxDefault());
 
         String filenm = resultDeptDetail.get("REQ_HAN_NM")+"_"+resultDeptDetail.get("REQ_DT")+".xlsx";
 
@@ -653,10 +653,10 @@ public class TableReportController {
 	    }
 	   // path = path.replace("\\\\","\\");
         System.out.println("================1:"+path);
-        workbook.save(path  + filenm);
+        workbook.save(path  +"/"+ filenm);
 
         BMap sendEmailparam = new BMap();
-        sendEmailparam.put("FILE_FULL_NM", path  +  filenm);
+        sendEmailparam.put("FILE_FULL_NM", path  + "\\"+ filenm);
         sendEmailparam.put("FILE_NM"     	, filenm);
         sendEmailparam.put("TO_EMAIL"   	, resultDeptDetail.get("EMAIL"));
         sendEmailparam.put("MSG"     		, msg);
