@@ -1,7 +1,9 @@
 package bt.report.controller;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
@@ -621,11 +623,12 @@ public class TableReportController {
         }
         worksheet.calculate();
 
-        //ByteArrayOutputStream out = new ByteArrayOutputStream();
-        //workbook.save(out, SaveOptions.getXlsxDefault());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.save(out, SaveOptions.getXlsxDefault());
+		FileOutputStream fileOut = null;
 
         String filenm = resultDeptDetail.get("REQ_HAN_NM")+"_"+resultDeptDetail.get("REQ_DT")+".xlsx";
-
+       
 	    BMap paramPath = new BMap();
 	    paramPath.put("REF_CHR1"        ,  "PATH");
 	    
@@ -653,10 +656,21 @@ public class TableReportController {
 	    }
 	   // path = path.replace("\\\\","\\");
         System.out.println("================1:"+path);
-        workbook.save(path  +"/"+ filenm);
+        //workbook.save(path  +"/"+ filenm);
+        try {
+			fileOut = new FileOutputStream(path + filenm);
+		} catch (FileNotFoundException e) {
+			System.out.println(e);
+		}
+		try {
+			out.writeTo(fileOut);
+			fileOut.close();
+		} catch (IOException e) {
+			System.out.println(e);
+		}
 
         BMap sendEmailparam = new BMap();
-        sendEmailparam.put("FILE_FULL_NM", path  + "\\"+ filenm);
+        sendEmailparam.put("FILE_FULL_NM", path  + filenm);
         sendEmailparam.put("FILE_NM"     	, filenm);
         sendEmailparam.put("TO_EMAIL"   	, resultDeptDetail.get("EMAIL"));
         sendEmailparam.put("MSG"     		, msg);
