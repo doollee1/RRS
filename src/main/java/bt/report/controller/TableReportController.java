@@ -661,7 +661,7 @@ public class TableReportController {
        // System.out.println("================1:"+path);
         //workbook.save(path  +"/"+ filenm);
         try {
-        	File f2 = new File(path+"\\"+filenm);
+        	File f2 = new File(path+filenm);
 			fileOut = new FileOutputStream(f2, false);
 		} catch (FileNotFoundException e) {
 			System.out.println(e);
