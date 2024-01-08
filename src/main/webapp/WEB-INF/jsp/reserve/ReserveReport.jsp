@@ -240,6 +240,7 @@
 		var param = {"param":formData};
 		
 		if(origin_SEARCH_DT.substr(0,7) !== SEARCH_DT.substr(0,7)) {
+			origin_SEARCH_DT = SEARCH_DT;
 			$.jgrid.gridUnload("#reserveReportGrid");	// grid 초기화
 			viewGrid(SEARCH_DT);
 		}
