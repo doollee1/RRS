@@ -1037,7 +1037,6 @@
 		          , #{N_PERSON        }
 		          , #{NR_PERSON       }
 		          , #{K_PERSON        }
-		          <![CDATA[
 		          , (SELECT BAS_YY
 		               FROM TB_BAS_YY_INFO
 		              WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
@@ -1064,11 +1063,15 @@
 		                                  OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
 		                              )                  
 		                AND HDNG_GBN = #{PROD_CD}
+		                <if test="MEM_GBN != null and MEM_GBN != '' and !'01'.equals(MEM_GBN)">
+		                <![CDATA[
 		                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
-						                                THEN 'DU10'
-						                                WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
-						                                THEN 'DD10'
-						                                END
+						                     THEN 'DU10'
+						                     WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
+						                     THEN 'DD10'
+						                     END
+						]]>  
+		                </if>
 		             )
 		          , '01'
 		          , #{ADD_R_S_PER     }
@@ -1094,11 +1097,9 @@
 		          , NOW()
 		          , #{LOGIN_USER      }
 		          )
-          ]]>  
 	</insert>
 	
 	<update id="updateReserveInfo" parameterType="BMap">
-	<![CDATA[
 	    UPDATE TB_REQ_BOOKING_M
 		   SET USER_ID        = #{USER_ID         }
 		     , REQ_HAN_NM     = #{REQ_HAN_NM      }
@@ -1142,11 +1143,15 @@
 		                                                 OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
 		                                         )                  
 		                           AND HDNG_GBN = #{PROD_CD}
+		                           <if test="MEM_GBN != null and MEM_GBN != '' and !'01'.equals(MEM_GBN)">
+		                           <![CDATA[
 		                           AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
 						                                THEN 'DU10'
 						                                WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
 						                                THEN 'DD10'
 						                                END
+						           ]]>  
+		                           </if>
 		                         )
 		     , PICK_GBN       = #{PICK_GBN}
 		     , ADD_R_S_PER    = #{ADD_R_S_PER     }
@@ -1172,9 +1177,6 @@
 		 WHERE REQ_DT   = #{REQ_DT}
 		   AND SEQ      = #{SEQ}
 		
-		   ]]>  
-		
-
 	</update>
 	
 	<update id="updateReserveFee" parameterType="BMap">
@@ -1311,7 +1313,6 @@
 	</update>
 	
 	<select id="selectProdSeq" parameterType="BMap" resultType="BMap" >
-	<![CDATA[ 
 	    SELECT PROD_SEQ
 		  FROM TB_PROD_INFO
 		 WHERE 1 = 1
@@ -1328,12 +1329,15 @@
 		                        OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
 		                   )
 		  AND HDNG_GBN = #{PROD_CD}
+		  <if test="MEM_GBN != null and MEM_GBN != '' and !'01'.equals(MEM_GBN)">
+		  <![CDATA[
 		  AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
-		                  THEN 'DU10'
-		                  WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
-		                  THEN 'DD10'
-		                  END
-	]]>	                  
+		                     THEN 'DU10'
+		                     WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
+		                     THEN 'DD10'
+		                     END
+		  ]]>  
+		  </if>               
 	</select>
 	
 	<select id="selectRplanCnt" parameterType="BMap" resultType="int">

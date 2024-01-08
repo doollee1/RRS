@@ -812,6 +812,18 @@ $(function() {
 			return false;
 		}
 		
+		if(mem_gbn != "01"){ //일반이거나, 교민이면
+			if(prod_cd == "28"){
+				alert("해당상품은 멤버전용 상품입니다.");
+				return false;
+			}
+		}else{ // 멤버
+			if(prod_cd == "01" || prod_cd == "02" || prod_cd == "03" || prod_cd == "04" || prod_cd == "05" || prod_cd == "06" || prod_cd == "07" ){
+				alert("해당상품은 일반전용 상품입니다.");
+				return false;
+			}
+		}
+		
 		var tot_person = parseInt($("#TOT_PERSON").val().replaceAll("," , ""));
 		if(tot_person == 0){
 			alert("총인원을 입력해주세요.");
