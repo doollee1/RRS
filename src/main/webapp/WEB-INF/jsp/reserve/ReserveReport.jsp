@@ -17,6 +17,8 @@
 		</div>
 	</div>
 	<form id="frmSearch" action="#" >
+		<input type="hidden"  name="CURRENT_PAGE"  id="CURRENT_PAGE" />
+		<input type="hidden"  name="ROWS_PER_PAGE"  id="ROWS_PER_PAGE" />
 		<div class="tab_top_search2">
 			<table>
 				<tbody>
@@ -66,18 +68,27 @@
   * 버튼 표시/숨김 : setCommBtn('ret', true) : Search,Add,Del,Save,Print,Upload,Excel,Pdf,Cancel,User1,2,3,4,5
   * ===============================
 --%>
-	//초기 로드
+	var origin_SEARCH_DT = '';	// 초기 날짜 세팅값
 	$(function() {
-		fn_Init();
-		
+		fn_Init(); //초기 로드
 	});
 	
 	function fn_Init(){
 		var toDay = getToday();
-		$("#SEARCH_DT").val(Util.converter.dateFormat1(Util.converter.dateFormat3(toDay)));
-		// createreserveReportGrid();
-        // setsetGroupHeadersGrid();
-		cSearch();
+		origin_SEARCH_DT = Util.converter.dateFormat1(Util.converter.dateFormat3(toDay));
+		$("#SEARCH_DT").val(origin_SEARCH_DT);
+		viewGrid();	// 초기 grid 생성
+	}
+	
+	function viewGrid(vSEARCH_DT) {
+		let SEARCH_DT = '';
+		if(fn_empty(vSEARCH_DT)) {
+			SEARCH_DT = $("#SEARCH_DT").val();
+		} else {
+			SEARCH_DT = vSEARCH_DT;
+		}
+		createreserveReportGrid(SEARCH_DT);
+		setGroupHeadersGrid(SEARCH_DT);
 	}
 	
 	function createreserveReportGrid(SEARCH_DT) {
@@ -174,6 +185,7 @@
 		btGrid.createGrid('reserveReportGrid', colName, colModel, gSetting);
 	}
 	
+	// 그리드 헤더 세팅
 	function setGroupHeadersGrid(SEARCH_DT) {
 		const defaultGroupHeader = [
 			{startColumnName: 'REQ_HAN_NM', numberOfColumns: 2, titleText: '예약자'},
@@ -195,7 +207,6 @@
 					titleText: getDayOfWeek(search_dt_arr[0]+'.'+search_dt_arr[1]+'.'+(i+1)),
 			};
 		}
-		
 		const groupHeaders = defaultGroupHeader.concat(dayGroupHeader);
 		
 		$('#reserveReportGrid').jqGrid('setGroupHeaders', {
@@ -204,37 +215,32 @@
 		});
 	}
 	
-	function getDayOfWeek(yyyyMMdd) { //ex) getDayOfWeek('2022-06-13')
-	    const week = ['일', '월', '화', '수', '목', '금', '토'];
-	    const dayOfWeek = week[new Date(yyyyMMdd).getDay()];
-	    return dayOfWeek;
-	}
-	
-	function getWeekendOfMonth(SEARCH_DT) {
-		const search_dt_arr = SEARCH_DT.split(".");
-		const dayOfMonth = new Date(search_dt_arr[0],search_dt_arr[1],0).getDate();
-		
-		const weekendOfMonth = [];
-		for(let i=1; i<=dayOfMonth; i++) {
-			const dayOfWeek = getDayOfWeek(search_dt_arr[0]+'.'+search_dt_arr[1]+'.'+i);
-			if(dayOfWeek == '토' || dayOfWeek == '일') {
-				weekendOfMonth.push(i);
-			}
-		}
-		
-		return weekendOfMonth;
-	}
-	
+	// 조회
 	function cSearch(currentPage) {
-		var url = "/reserve/reserveReportSelectList.do";
+		// paging
+		var vCurrentPage = 1;
+		var vRowsPerPage;
+		if(!fn_empty(currentPage)){
+			vCurrentPage = currentPage;
+		} else if(!fn_empty($('#CURRENT_PAGE').val())) {
+			vCurrentPage = $('#CURRENT_PAGE').val();
+		} else {
+			vCurrentPage = 1;
+		}
+		vRowsPerPage = btGrid.getGridRowSel('reserveReportGrid_pager');
+		$('#CURRENT_PAGE').val(vCurrentPage);
+		$('#ROWS_PER_PAGE').val(vRowsPerPage);
+		
 		var SEARCH_DT = $("#SEARCH_DT").val();
-		var formData = {"SEARCH_DT": SEARCH_DT.replaceAll(/\./gi, '').substr(0,6)};
+		var url = "/reserve/reserveReportSelectList.do";
+		var formData = formIdAllToMap('frmSearch');
+		formData.SEARCH_DT = formData.SEARCH_DT.replaceAll(/\./gi, '').substr(0,6)
 		var param = {"param":formData};
 		
-		$.jgrid.gridUnload("#reserveReportGrid");	// grid 초기화
-		createreserveReportGrid(SEARCH_DT);
-		setGroupHeadersGrid(SEARCH_DT);
-		const weekendOfMonth = getWeekendOfMonth(SEARCH_DT);
+		if(origin_SEARCH_DT.substr(0,7) !== SEARCH_DT.substr(0,7)) {
+			$.jgrid.gridUnload("#reserveReportGrid");	// grid 초기화
+			viewGrid(SEARCH_DT);
+		}
 		
 		fn_ajax(url, true, param, function(data, xhr) {
 		    reloadGrid("reserveReportGrid", fn_dataSet(data.result));
@@ -242,6 +248,7 @@
 			
 			for(let i=0; i<data.result.length; i++) {
 				// 주말 음영 처리
+				const weekendOfMonth = getWeekendOfMonth(SEARCH_DT);
 				for(let j=0; j<weekendOfMonth.length; j++) {
 					$('#reserveReportGrid').jqGrid('setCell', i+1, "day"+weekendOfMonth[j], "", {'background-color':'#FFCB9E'});
 				}
@@ -256,12 +263,6 @@
 					}
 				}
 			}
-			
-			// var colModel = $("#reserveReportGrid").jqGrid('getGridParam','colModel');
-			// var colName = $("#reserveReportGrid").jqGrid('getGridParam','colNames');
-			// for (var i = 0; i < data.result.length; i++) {
-			// 	jQuery("#reserveReportGrid").setCell(i + 1);
-			// }
 		});
 	}
 	
@@ -302,6 +303,29 @@
 	        array.push(obj);
 		}
 		return array;
+	}
+	
+	// 무슨 요일인지 체크
+	function getDayOfWeek(yyyyMMdd) { //ex) getDayOfWeek('2022-06-13')
+	    const week = ['일', '월', '화', '수', '목', '금', '토'];
+	    const dayOfWeek = week[new Date(yyyyMMdd).getDay()];
+	    return dayOfWeek;
+	}
+	
+	// 주말인 날짜 리턴
+	function getWeekendOfMonth(SEARCH_DT) {
+		const search_dt_arr = SEARCH_DT.split(".");
+		const dayOfMonth = new Date(search_dt_arr[0],search_dt_arr[1],0).getDate();
+		
+		const weekendOfMonth = [];
+		for(let i=1; i<=dayOfMonth; i++) {
+			const dayOfWeek = getDayOfWeek(search_dt_arr[0]+'.'+search_dt_arr[1]+'.'+i);
+			if(dayOfWeek == '토' || dayOfWeek == '일') {
+				weekendOfMonth.push(i);
+			}
+		}
+		
+		return weekendOfMonth;
 	}
 </script>
 <c:import url="../import/frameBottom.jsp" />
