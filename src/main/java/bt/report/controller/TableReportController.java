@@ -625,6 +625,9 @@ public class TableReportController {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         workbook.save(out, SaveOptions.getXlsxDefault());
+        
+        byte[] byteArray = out.toByteArray();
+        
 		FileOutputStream fileOut = null;
 
         String filenm = resultDeptDetail.get("REQ_HAN_NM")+"_"+resultDeptDetail.get("REQ_DT")+".xlsx";
@@ -649,26 +652,28 @@ public class TableReportController {
         String subject = pathList.get(0).getValue();
         
 	    File f = new File(path);
-	    
+	   
 	    if(!f.exists())
 	    {
 	        f.mkdir();
 	    }
 	   // path = path.replace("\\\\","\\");
-        System.out.println("================1:"+path);
+       // System.out.println("================1:"+path);
         //workbook.save(path  +"/"+ filenm);
         try {
-			fileOut = new FileOutputStream(path + filenm);
+        	File f2 = new File(path+"\\"+filenm);
+			fileOut = new FileOutputStream(f2, false);
 		} catch (FileNotFoundException e) {
 			System.out.println(e);
 		}
 		try {
-			fileOut.write(out.toByteArray());
+			fileOut.write(out.toByteArray(), 0, out.toByteArray().length);
+			fileOut.flush();
 			fileOut.close();
 		} catch (IOException e) {
 			System.out.println(e);
 		}
-
+		
         BMap sendEmailparam = new BMap();
         sendEmailparam.put("FILE_FULL_NM", path  + filenm);
         sendEmailparam.put("FILE_NM"     	, filenm);
