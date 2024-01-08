@@ -75,11 +75,13 @@
 				<tr>
 				    <th><s:message code='reservation.checkInDt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="CHK_IN_DT" name="CHK_IN_DT" data-type="date" style="width:51.5%;"/>
+						<input type="text" class="cmc_txt" id="CHK_IN_DT"     name="CHK_IN_DT" data-type="date" style="width:51.5%;"/>
+						<input type="text" class="cmc_txt" id="PRV_CHK_IN_DT" name="CHK_IN_DT" data-type="date" style="width:51.5%; display: none;"/>
 					</td>
 					<th><s:message code='reservation.checkOutDt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="CHK_OUT_DT" name="CHK_OUT_DT" data-type="date" style="width:51.5%;"/>
+						<input type="text" class="cmc_txt" id="CHK_OUT_DT"     name="CHK_OUT_DT" data-type="date" style="width:51.5%;"/>
+						<input type="text" class="cmc_txt" id="PRV_CHK_OUT_DT" name="CHK_OUT_DT" data-type="date" style="width:51.5%; display: none;"/>
 					</td>
 				</tr>
 				<tr>
@@ -625,6 +627,8 @@ $(function() {
 				    , "AGN_CD"          : $("#AGN_CD").val()
 				    , "CHK_IN_DT"       : $("#CHK_IN_DT").val().replaceAll(".","")
 				    , "CHK_OUT_DT"      : $("#CHK_OUT_DT").val().replaceAll(".","")
+				    , "PRV_CHK_IN_DT"   : $("#PRV_CHK_IN_DT").val().replaceAll(".","")
+				    , "PRV_CHK_OUT_DT"  : $("#PRV_CHK_OUT_DT").val().replaceAll(".","")
 				    , "ROOM_TYPE"       : $("#ROOM_TYPE").val()
 				    , "FLIGHT_IN"       : $("#FLIGHT_IN").val()
 				    , "FLIGHT_OUT"      : $("#FLIGHT_OUT").val()
@@ -662,21 +666,40 @@ $(function() {
 		}
 		var param = {"reserveInfo"   : obj
 				   , "V_FLAG" : vflag};
-		if(confirm("<s:message code='confirm.save'/>")){
-			// 상품이 있는지 선조회
-			var prodYn = false;
-			var url2 = '/reserve/selectProdSeq.do';
-			fn_ajax(url2, false, param, function(data, xhr){
-				if(!fn_empty(data.result)){
-					prodYn = true;
-				}else{
-					alert("상품이없습니다. 관리자페이지에서 등록후 이용해주세요.");
-					return false;
-				}
-			});
-			
-			if(!prodYn) return false;
-			
+		// 상품이 있는지 선조회
+		var prodYn = false;
+		var url2 = '/reserve/selectProdSeq.do';
+		fn_ajax(url2, false, param, function(data, xhr){
+			if(!fn_empty(data.result)){
+				prodYn = true;
+			}else{
+				alert("상품이없습니다. 관리자페이지에서 등록후 이용해주세요.");
+				return false;
+			}
+		});
+		
+		if(!prodYn)     return false;
+		
+		var chk_in_dt      = $("#CHK_IN_DT").val().replaceAll(".","");
+		var prv_chk_in_dt  = $("#PRV_CHK_IN_DT").val().replaceAll(".","");
+		var chk_out_dt     = $("#CHK_OUT_DT").val().replaceAll(".","");
+		var prv_chk_out_dt = $("#PRV_CHK_OUT_DT").val().replaceAll(".","");
+		var chgCheckIn     = true;
+		
+		if((chk_in_dt != prv_chk_in_dt) || (chk_out_dt != prv_chk_out_dt)){
+			if(confirm("체크인, 체크아웃날짜가 변경되면 상품이 바뀌므로 예약정보가 초기화됩니다. 그래도 변경하시겠습니까?")){
+				var url3 = '/reserve/deleteEtcAll.do';
+				fn_ajax(url3, false, param, function(data, xhr){
+				    if(data.result.resultCd == "0000"){
+				    	initSelect();
+				    }
+				});
+			}
+			chgCheckIn = false;
+		}
+		
+		if(!chgCheckIn) return false;
+		if(confirm("<s:message code='confirm.save'/>")){	
 			var url = '/reserve/ReserveManager.do';
 			fn_ajax(url, false, param, function(data, xhr){
 				if(data.dup == 'Y'){
@@ -688,27 +711,6 @@ $(function() {
 				}
 			});
 		}
-	}
-	
-	function openPopVali(data){
-		var chk_in_dt  = $("#CHK_IN_DT").val().replaceAll(".","");
-		var chk_out_dt = $("#CHK_OUT_DT").val().replaceAll(".","");
-		if(vflag == "new"){ // 신규
-			alert("해당기능은 상세페이지에서 진행가능합니다.");
-			return false;
-		}else { //상세
-			var url = '/reserve/checkBasYy.do';
-			var param = {"CHK_IN_DT" : chk_in_dt
-					    ,"SEQ"       : seq
-			            ,"REQ_DT"    : req_dt};
-			fn_ajax(url, false, param, function(data, xhr){
-				if(!data.result){
-				}else{ //같을때
-				}
-			});
-		}
-		
-		return true;
 	}
 	
 	function lateYn(){
@@ -915,7 +917,6 @@ $(function() {
 	});
 	
 	$("#btn_create").click(function() {
-		//if(!openPopVali($(this))) return;
 		var url = "/reserve/InvoicePopup.do";
 		var pid = "p_invoicePopup";
 		var param = {
@@ -967,7 +968,6 @@ $(function() {
 	});
 	
 	$("#insertPickGbn").click(function() {
-		//if(!openPopVali($(this))) return;
 	    var url = "/reserve/pickUpGbnPopup.do";
 	    var pid = "p_pickUpGbnPopup";
 	    var param = { "PICK_GBN"     : $("#PICK_GBN").val()
@@ -1028,7 +1028,6 @@ $(function() {
 	});
 	
 	$("#btn_deposit").on("click", function(){
-		//if(!openPopVali($(this))) return;($(this));
 		var confirm_no = $("#CONFIRM_NO").val();
 		var mem_gbn = $("#MEM_GBN").val();
 		var agn_cd = $("#AGN_CD").val();

@@ -963,7 +963,7 @@
 	</select>
 	
 	<insert id="insertReserveInfo" parameterType="BMap"> 
-	<![CDATA[
+	
 		INSERT INTO TB_REQ_BOOKING_M
 		          ( REQ_DT
 		          , SEQ
@@ -1012,7 +1012,14 @@
 		          , UPD_ID
 		          )
 		   VALUES ( #{REQ_DT          }
+		   <choose>
+		       <when test="PREV_SEQ != null and PREV_SEQ != ''">
+		          , #{PREV_SEQ}
+		       </when>
+		       <otherwise>
 		          , (SELECT NVL(MAX(T1.SEQ),0) AS SEQ FROM TB_REQ_BOOKING_M T1 WHERE T1.REQ_DT = #{REQ_DT}) + 1
+		       </otherwise>
+		   </choose>
 		          , #{USER_ID         }
 		          , #{REQ_HAN_NM      }
 		          , #{REQ_ENG_NM      }
@@ -1030,6 +1037,7 @@
 		          , #{N_PERSON        }
 		          , #{NR_PERSON       }
 		          , #{K_PERSON        }
+		          <![CDATA[
 		          , (SELECT BAS_YY
 		               FROM TB_BAS_YY_INFO
 		              WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
@@ -1056,8 +1064,11 @@
 		                                  OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
 		                              )                  
 		                AND HDNG_GBN = #{PROD_CD}
-		                AND PROD_COND IN ((CASE WHEN ABS(TIMESTAMPDIFF(DAY,date_format(#{CHK_IN_DT},'%Y-%m-%d'), date_format(#{CHK_IN_DT},'%Y-%m-%d'))) >= 10 THEN 'DU10' -- 10일이상
-		                                                ELSE 'DD10' END), '0') -- 10일이상 , 10일미만, 조건없음
+		                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
+						                                THEN 'DU10'
+						                                WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
+						                                THEN 'DD10'
+						                                END
 		             )
 		          , '01'
 		          , #{ADD_R_S_PER     }
@@ -1324,4 +1335,43 @@
 		                  END
 	]]>	                  
 	</select>
+	
+	<select id="selectRplanCnt" parameterType="BMap" resultType="int">
+	    SELECT COUNT(1) AS CNT
+		  FROM TB_REQ_R_PLAN
+		 WHERE 1 = 1
+		   AND REQ_DT  = #{REQ_DT}
+		   AND REQ_SEQ = #{REQ_SEQ} 
+	</select>
+	
+	<delete id="deleteRplanCnt" parameterType="BMap">
+	    DELETE
+	      FROM TB_REQ_R_PLAN
+	     WHERE 1 = 1
+	       AND REQ_DT  = #{REQ_DT}
+	       AND REQ_SEQ = #{REQ_SEQ}
+	</delete>
+	
+	<delete id="deleteEtcAll" parameterType="BMap">
+	    DELETE FROM T1,T2,T3,T4,T5,T6
+		 USING TB_REQ_BOOKING_M AS T1
+		  LEFT JOIN TB_REQ_FEE AS T2
+		    ON T2.REQ_DT  = T1.REQ_DT
+		   AND T2.REQ_SEQ = T1.SEQ
+		  LEFT JOIN TB_REQ_INVOICE T3
+		    ON T3.REQ_DT  = T1.REQ_DT
+		   AND T3.SEQ     = T1.SEQ
+		  LEFT JOIN TB_REQ_PICKUP T4
+		    ON T4.REQ_DT  = T1.REQ_DT
+		   AND T4.REQ_SEQ = T1.SEQ
+		  LEFT JOIN TB_REQ_R_PLAN T5
+		    ON T5.REQ_DT  = T1.REQ_DT
+		   AND T5.REQ_SEQ = T1.SEQ
+		  LEFT JOIN TB_REQ_ADD_FILE T6
+		    ON T6.REQ_DT  = T1.REQ_DT
+		   AND T6.REQ_SEQ = T1.SEQ 
+		 WHERE 1 = 1
+		   AND T1.REQ_DT = #{REQ_DT}
+		   AND T1.SEQ    = #{SEQ}
+	</delete>
 </mapper>

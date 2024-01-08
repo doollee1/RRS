@@ -331,9 +331,14 @@ public class ReserveService {
 
         try {
 		    reserveDao.updateReserveStatus(param);
+		    param.put("REQ_SEQ", param.getInt("SEQ"));
 		    if(param.getString("CHG_PRC_STS").equals("08")){ //환불완료시
-		    	param.put("REQ_SEQ", param.getInt("SEQ"));
 		    	reserveDao.depositRefund(param);
+		    }else if(param.getString("CHG_PRC_STS").equals("07") || param.getString("CHG_PRC_STS").equals("09")){ //환불요청 or 예약취소
+		    	int rPlanCnt = reserveDao.selectRplanCnt(param);
+		    	if(rPlanCnt > 0 ){
+		    		reserveDao.deleteRplanCnt(param);
+		    	}
 		    }
 		} catch (Exception e) {
 		    // TODO: handle exception
@@ -519,12 +524,6 @@ public class ReserveService {
 		return reserveDao.selectProdSeq(param);
 	}
 	
-	/**
-	 * 날짜간 데이터 어레이
-	 * @param param
-	 * @return
-	 * @throws Exception
-	 */
 	public BMap selectDayDiffChk(BMap param) throws Exception{
 		BMap dataMap = reserveDao.selectDayDiffChk(param);
 		
@@ -539,6 +538,12 @@ public class ReserveService {
 		return dataMap;
 	}
 	
+	/**
+	 * 날짜간 데이터 어레이
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
 	public ArrayList<String> calcDate(String chk_in_dt , String chk_out_dt) throws ParseException{
 		DateFormat df = new SimpleDateFormat("yyyyMMdd");
         ArrayList<String> array = new ArrayList<>();
@@ -564,6 +569,27 @@ public class ReserveService {
 			return array;
 	}
 	
+	/**
+	 * 기타 테이블삭제 및 최초등록(다시)
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap deleteEtcAll(BMap param) throws Exception{
+		BMap resultMap = new BMap();
+		try {
+        	 int delCnt = reserveDao.deleteEtcAll(param);
+             if(delCnt > 0 ){
+            	 param.put("PREV_SEQ", param.get("SEQ"));
+            	 reserveDao.insertReserveInfo(param);
+             }
+             resultMap.put("resultCd", "0000");
+		} catch (Exception e) {
+		    // TODO: handle exception
+			e.printStackTrace();
+		}
+		return resultMap;
+	}
 	
 	
 	

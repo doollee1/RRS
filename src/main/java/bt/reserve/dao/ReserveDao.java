@@ -416,4 +416,33 @@ public class ReserveDao extends DBAbstractMapper {
 		return (BMap) selectByPk("ReserveMapper.selectProdSeq", param);
 	}
 	
+	/**
+	 * 라운딩계획테이블 개수조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public int selectRplanCnt(BMap param) throws Exception{
+		return(int)selectByPk("ReserveMapper.selectRplanCnt", param);
+	}
+	
+	/**
+	 * 라운딩계획테이블 삭제
+	 * @param param
+	 * @throws Exception
+	 */
+	public int deleteRplanCnt(BMap param) throws Exception{
+		return delete("ReserveMapper.deleteRplanCnt", param);
+	}
+
+	/**
+	 * 기타테이블 삭제
+	 * @param param
+	 * @throws Exception
+	 */
+	public int deleteEtcAll(BMap param) throws Exception{
+		return delete("ReserveMapper.deleteEtcAll", param);
+	}
+	
+	
 }

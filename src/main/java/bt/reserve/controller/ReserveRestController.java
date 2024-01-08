@@ -446,4 +446,19 @@ public class ReserveRestController {
 		return respData;
 	}
 	
+	/**
+	 * 예약 상품 선조회
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/deleteEtcAll.do", method = RequestMethod.POST)
+	public BRespData deleteEtcAll(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BMap reserveInfo = reqData.getParamDataMap("reserveInfo");
+		BRespData respData = new BRespData();
+		respData.put("result", reserveService.deleteEtcAll(reserveInfo));
+		return respData;
+	}
+	
 }
