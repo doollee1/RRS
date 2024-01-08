@@ -164,6 +164,8 @@
 			};
 			dayColName[i] = (i+1);
 		}
+		dayColModel.push({name: 'REMARK', width: 100, align: 'center'});
+		dayColName.push('비고');
 		
 		const colName = defaultColName.concat(dayColName);
 		const colModel = defaultColModel.concat(dayColModel);
