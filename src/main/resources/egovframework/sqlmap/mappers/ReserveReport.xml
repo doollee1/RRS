@@ -41,7 +41,7 @@
 			) AS PICK_OUT /* 픽업 차량 출발  */
 			,T1.FLIGHT_IN /* 항공편 도착 */
 			,T1.FLIGHT_OUT /* 항공편 출발 */
-			,T1.TOT_PERSON /* 예약 인원 */
+			,T1.R_PERSON /* 라운딩 인원 */
 			,T1.CNT_D1 /* 숙박 트윈 */
 			,T1.CNT_D2 /* 숙박 더블 */
 			,T1.CNT_P1 /* 숙박 프리미엄트윈 */

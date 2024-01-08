@@ -125,7 +125,7 @@
 			{name: 'PICK_OUT', width: 100, align: 'center'},
 			{name: 'FLIGHT_IN', width: 100, align: 'center'},
 			{name: 'FLIGHT_OUT', width: 100, align: 'center'},
-			{name: 'TOT_PERSON', width: 100, align: 'center'},
+			{name: 'R_PERSON', width: 100, align: 'center'},
 			{name: 'CNT_D1', width: 100, align: 'center'},
 			{name: 'CNT_D2', width: 100, align: 'center'},
 			{name: 'CNT_P1', width: 100, align: 'center'},
