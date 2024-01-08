@@ -100,9 +100,11 @@
 				    , COM_AMT 	 				<!-- 일반금액 -->
 					, COM_BAS_PER 	 			<!-- 일반 기준인원수 -->
 					, COM_BAS_DAY 	 			<!-- 일반 기준일수 -->
+					, COM_CNTN					<!-- 일반 기타내용 -->
 					, AGN_AMT 					<!-- 에이전시금액 -->
 					, AGN_BAS_PER 				<!-- 에이전시 기준인원수 -->
 					, AGN_BAS_DAY 				<!-- 에이전시 기준일수 -->
+					, AGN_CNTN					<!-- 에이전시 기타내용 -->
 					, REG_DTM					<!-- 작성일 -->
 					, REG_ID					<!-- 작성자 -->
 					, UPD_DTM					<!-- 수정일 -->
@@ -118,9 +120,11 @@
 					, #{COM_AMT}
 					, #{COM_BAS_PER}
 					, #{COM_BAS_DAY}
+					, #{COM_CNTN}
 					, #{AGN_AMT}
 					, #{AGN_BAS_PER}
 					, #{AGN_BAS_DAY}
+					, #{AGN_CNTN}
 					, current_date()
             		, #{LOGIN_USER}
             		, current_date()

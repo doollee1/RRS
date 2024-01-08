@@ -40,7 +40,7 @@ public class ProductController {
 	}
 	
 	@RequestMapping(value = "/popup/ProductDetailPopUp.do")
-	public String ProductDetailPopUp(ModelMap model, HttpServletRequest reqData) throws Exception {
+	public String ProductDetailPopUp(ModelMap model) throws Exception {
 		model.addAttribute("basyy", productService.selectBasYY(null));
 
 		BMap param = new BMap();
@@ -52,14 +52,22 @@ public class ProductController {
 		param2.put("HEAD_CD", 500000);
 		model.addAttribute("hdng"  , productService.selectGetCommonCode(param2));
 		
-		BMap param3 = new BMap();
-		String code = reqData.getParameter("code");
-		System.out.println("★★★★★★★★★★★★★★");
-		System.out.println(code);
-		param3.put("code", code);
-		model.addAttribute("cond", productService.selectCond(param3));
+//		BMap param3 = new BMap();
+//		model.addAttribute("cond", productService.selectCond(param3));
 		
 		return "/popup/ProductDetailPopUp";
+	}
+	
+	@RequestMapping(value = "/popup/ProductSelectCond.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData ProductSelectCond(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BMap param = new BMap();
+		param.put("code", reqData.get("code"));
+		
+		BRespData respData = new BRespData();
+		respData.put("cond", productService.selectCond(param));
+		
+		return respData;
 	}
 	
 	@RequestMapping(value = "/popup/ProductPeriodPopUp.do")
@@ -240,47 +248,6 @@ public class ProductController {
 		BRespData respData = new BRespData();
 		
 		respData.put("result", productService.selectPeriodPopUp(param));
-		return respData;
-	}
-	
-	/**
-	 * 미리보기 팝업 호출
-	 * @param reqData
-	 * @param req
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/popup/ProductPreView.do")
-	public String ProductPreView(ModelMap model) throws Exception {
-		return "/popup/ProductPreView";
-	}
-	
-	/**
-	 * 미리보기 내용 호출
-	 * @param reqData
-	 * @param req
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/product/selectPreView.do", method = RequestMethod.POST)
-	@ResponseBody
-	public BRespData selectPreView(@RequestBody BReqData reqData, HttpServletRequest req, Model model) throws Exception{
-		String year = (String) reqData.get("year");
-		String ssnGbn = (String) reqData.get("ssnGbn");
-		System.out.println("ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ");
-		String url = "https://doollee.synology.me:8087/productInfoView.do";
-		
-		url += "?year=" + year + "&ssnGbn=" + ssnGbn;
-		System.out.println(url);
-		
-	    RestTemplate restTemplate = new RestTemplate();
-	    String response1 = restTemplate.getForObject(url, String.class);
-		System.out.println(response1);
-		
-	    
-		BRespData respData = new BRespData();
-		
-		respData.put("result", response1);
 		return respData;
 	}
 }

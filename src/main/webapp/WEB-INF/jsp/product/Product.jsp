@@ -66,7 +66,7 @@
 				</div>	
 				<div class="ct_grid_top_right">
 					<span style="text-align:right; font-size: 10px; font-weight: bold">※ 시즌구분 <font color="red">'전체'</font> 로 조회 후 복사등록이 가능합니다.</span>
-					<button class='cBtnclass cBtnCopy_style' id='cBtnCopy' type='button' onclick='cCopy()' disabled='disabled'>복사등록</button>
+					<button class='cBtnclass cBtnCopy_style' id='cBtnCopy' type='button' style="align:right" onclick='cCopy()' disabled='disabled'>복사등록</button>
 				</div>
 			</div>
 			<table id="grid1"></table>
@@ -282,6 +282,10 @@ function productDetailPopUp(param){
 	var pid = "productDetailPopUp";  //팝업 페이지의 최상위 div ID
 	
 	popupOpen(url, pid, param, function(data) {
+		if(data.BAS_YY != "" && data.SSN_GBN != ""){
+			$("#BAS_YY").val(data.BAS_YY);
+			$("#SSN_GBN").val(data.SSN_GBN);
+		}
 		cSearch();
 	});
 }
@@ -296,23 +300,19 @@ function cCopy(param){
 	}
 	
 	popupOpen(url, pid, param, function(data){
+		if(data.BAS_YY != ""){
+			$("#BAS_YY").val(data.BAS_YY);
+			$("#SSN_GBN").val(3);
+		}
 		cSearch();
 	});
 }
 
 //미리보기
 function cUser1(){
-	var url = "/popup/ProductPreView.do";
-    var pid = "productPreView";
-    var param = { 
-    		"year"        : $("#BAS_YY").val(),
-	        "ssnGbn"      : $("#SSN_GBN").val()
-	};
-
-	popupOpen(url, pid, param, function(data) {
-	});
-
-// 	var url = "https://doollee.synology.me:8087/productInfoView.do?"+v_year+"&"+v_ssn;
+	var year = "year=" + $("#BAS_YY").val();
+	var season = "&ssnGbn=" + $("#SSN_GBN").val();
+	window.open("https://doollee.synology.me:8087/productInfoView.do?" + year + season);
 }
 
 //기준년도 관리 팝업

@@ -20,6 +20,7 @@
 			<input type="hidden" name="BAS_YY_SEQ_UP" id="BAS_YY_SEQ_UP" value="" />
 			<input type="hidden" name="PROD_SEQ_UP" id="PROD_SEQ_UP" value="" />
 			<input type="hidden" name="modify" id="modify" value="" />
+			<input type="hidden" name="P_SAVE" id="P_SAVE" />
 			
 			<table class="pop_tblForm">
 			<colgroup>
@@ -63,9 +64,9 @@
 					<th style="text-align:center;"><s:message code="product.condition"/></th>
 					<td colspan=3>&nbsp;
 						<select id="PROD_COND" name="PROD_COND" class="cmc_combo" style="width:604px;">
-							<c:forEach var="i" items="${cond}">
-								<option value="${i.CODE}">${i.CODE_NM}</option>
-							</c:forEach>
+<%-- 							<c:forEach var="i" items="${cond}"> --%>
+<%-- 								<option value="${i.CODE}">${i.CODE_NM}</option> --%>
+<%-- 							</c:forEach> --%>
 						</select>
 					</td>
 				</tr>
@@ -87,17 +88,17 @@
 				<tr>
 					<th style="text-align:center;">일반<s:message code="product.etc"/></th>
 					<td colspan=3>&nbsp;
-						기준인원 <input type="text" class="check" name="COM_BAS_PER" id="COM_BAS_PER" style="width:50px; text-align:right" value="0">&nbsp;명 &emsp;&emsp;&emsp;
-						기준일 <input type="text" class="check" name="COM_BAS_DAY" id="COM_BAS_DAY" style="width:50px; text-align:right" value="0">&nbsp;일 &emsp;&emsp;&emsp;&emsp;
-						<input type="text" name="COM_CNTN" id="COM_CNTN" style="width:251px" readonly>
+						기준인원 <input type="text" class="check" name="COM_BAS_PER" id="COM_BAS_PER" style="width:50px; text-align:right" value="0">&nbsp;명 &emsp;&emsp;
+						기준일 <input type="text" class="check" name="COM_BAS_DAY" id="COM_BAS_DAY" style="width:50px; text-align:right" value="0">&nbsp;일 &emsp;&emsp;&emsp;
+						내용 <input type="text" name="COM_CNTN" id="COM_CNTN" style="width:248px">
 					</td>
 				</tr>
 				<tr>
 					<th style="text-align:center;">에이전시<s:message code="product.etc"/></th>
 					<td colspan=3>&nbsp;
-						기준인원 <input type="text" class="check" name="AGN_BAS_PER" id="AGN_BAS_PER" style="width:50px; text-align:right" value="0">&nbsp;명 &emsp;&emsp;&emsp;
-						기준일 <input type="text" class="check" name="AGN_BAS_DAY" id="AGN_BAS_DAY" style="width:50px; text-align:right" value="0">&nbsp;일 &emsp;&emsp;&emsp;&emsp;
-						<input type="text" name="AGN_CNTN" id="AGN_CNTN" style="width:251px" readonly>
+						기준인원 <input type="text" class="check" name="AGN_BAS_PER" id="AGN_BAS_PER" style="width:50px; text-align:right" value="0">&nbsp;명 &emsp;&emsp;
+						기준일 <input type="text" class="check" name="AGN_BAS_DAY" id="AGN_BAS_DAY" style="width:50px; text-align:right" value="0">&nbsp;일 &emsp;&emsp;&emsp;
+						내용 <input type="text" name="AGN_CNTN" id="AGN_CNTN" style="width:248px">
 					</td>
 				</tr>
 			</table>
@@ -136,17 +137,9 @@ $(function(){
 	})
 	
 	$("#HDNG_GBN").on("change", function(e){
-        $.ajax({
-    		url  : "/popup/ProductDetailPopUp.do",
-            type : "POST",
-            data : {code : $("#HDNG_GBN").val()},
-            success : function (data) {
-            },
-            error : function(){
-            	alert("error");
-            }
+		condFilter();
 	})
-	})
+
 // 	// 유효성 검사
 // 	$(".check").on('change', function(){
 //         var scriptTag2 = /[~^&()|<>?]/; 
@@ -162,9 +155,11 @@ $(function(){
 	$('#productDetailPopUp').dialog({
 		title: '<s:message code="product.reg_product"/>',
 		autoOpen: false,
-		width: 750,
+		width: 755,
 		modal: true,
 		open: function() {
+			condFilter();
+			$("#P_SAVE").val("");
 			if($(this).data("modify") == true){
 				$("#cReset").hide();
 				$("#cDel").show();
@@ -206,6 +201,17 @@ $(function(){
 		},
 		close: function() {
 			/* 필수로 들어가야함 */
+			if($("#P_SAVE").val() == "Y"){
+				p_rtnData = {
+						"BAS_YY" : ($("#BAS_YY_UP").val() != "") ? $("#BAS_YY_UP").val() : $("#BAS_YY_IN").val(),
+						"SSN_GBN" : ($("#SSN_GBN").val() != "") ? $("#SSN_GBN").val() : $("#SSN_GBN_mod").val()
+				};
+			} else {
+				p_rtnData = {
+						"BAS_YY" : "",
+						"SSN_GBN" : ""
+				};
+			}
 			popupClose($(this).attr('id'));
 		}
 	});
@@ -240,7 +246,8 @@ function saveProductInfo(){
 				alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
 			}else{
 				alert("<s:message code='info.save'/>");
-				popupClose($('#productDetailPopUp').data('pid'));			
+				$("#P_SAVE").val("Y");
+				$('#productDetailPopUp').dialog('close');
 			}
 		});
 	}
@@ -260,7 +267,8 @@ function deleteProductInfo(){
 	if(confirm("<s:message code='confirm.delete'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
 			alert("<s:message code='product.info.delete'/>");
-			popupClose($('#productDetailPopUp').data('pid'));			
+			$("#P_SAVE").val("Y");
+			$('#productDetailPopUp').dialog('close');		
 		});
 	}
 }
@@ -285,9 +293,29 @@ function validation(){
 	if(seldt.value.length == 0){
 		alert("기간선택을 해주세요.");
 		seldt.focus();
-		return false;
+		return;
+	}
+	if($("#COM_AMT").val() + $("#AGN_AMT").val() == 0){
+		alert("일반금액과 에이전시 금액의 합은 0이 될 수 없습니다.");
+		$("#COM_AMT").focus();
+		return;
 	}
 	saveProductInfo();
+}
+
+//조건 필터링
+function condFilter(){
+	var url = "/popup/ProductSelectCond.do";
+	
+	var formData = formIdAllToMap('frmProductDetail');
+	var param = {"code" :formData.HDNG_GBN};
+	
+	fn_ajax(url, false, param, function(data, xhr){
+		$("#PROD_COND").empty();
+		for (var i = 0; i < data.cond.length; i++) {
+			$("#PROD_COND").append("<option value="+data.cond[i].CODE+">"+data.cond[i].CODE_NM+"</option>");
+		}
+	});
 }
 
 </script>

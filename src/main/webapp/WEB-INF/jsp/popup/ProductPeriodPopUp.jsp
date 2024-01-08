@@ -84,6 +84,9 @@ $(function(){
 			createGrid();
 			cSearch();
 			
+			if($(this).data("BAS_YY_PP") != null){
+				$('#BAS_YY_PP').val($(this).data("BAS_YY_PP"));
+			}
 			/* grid1 Event */
 			$('#grid1').jqGrid('setGridParam', {
 				ondblClickRow: function(rowid, iRow, iCol, e) {
@@ -211,7 +214,16 @@ function cCopy(param){
 	}
 	
 	popupOpen(url, pid, param, function(data){
-		cSearch();
+		if(data.BAS_YY != ""){
+			$('#productPeriodPopUp').dialog('close');
+
+			var url = "/popup/ProductPeriodPopUp.do";
+			var pid = "productPeriodPopUp";	//팝업 페이지의 최상위 div ID
+			var param = {"BAS_YY_PP" : data.BAS_YY};
+			
+			popupOpen(url, pid, param, function(data){
+			});
+		}
 	});
 }
 

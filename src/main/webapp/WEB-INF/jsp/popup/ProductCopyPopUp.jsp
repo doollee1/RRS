@@ -7,6 +7,7 @@
 	<form id="frmSearch" action="#">
 		<input type="hidden" name="branch" id="branch" />
 		<input type="hidden" name="BAS_YY_PASTE" id="BAS_YY_PASTE" />
+		<input type="hidden" name="C_SAVE" id="C_SAVE" />
 	</form>
 </div>
 
@@ -14,7 +15,7 @@
 	<!--- 검색버튼 ---->
 	<div id="divBtns">
 		<div id="divBtn">
-			<button class='btn btn-default ' id='cSave' type='button' onclick='' disabled>등록</button>
+			<button class='btn btn-default ' id='cSave' type='button' onclick=''>등록</button>
 			<button class='btn btn-default ' id='cCancel' type='button' onclick=''>닫기</button>
 		</div>
 	</div>
@@ -47,7 +48,6 @@
 
 //초기 로드
 $(function(){
-	
 	// 입력값 없을 경우 등록 안되게
 	$("#ST_DT1_Period").keyup(function(){
 		if($("#ST_DT1_Period").val() != ""){
@@ -64,19 +64,13 @@ $(function(){
 	
 	// 닫기 버튼
 	$("#cCancel").click(function(e){
-		$('#productCopyPopUp').dialog('close')
+		$('#productCopyPopUp').dialog('close');
 	});
 	
 	// 복사년도 변경 시
 	$("#ST_DT1_Normal").on("change", function(e){
 		$("#BAS_YY_PASTE").val(parseInt($("#ST_DT1_Normal").val()) + 1);
-		if($("#ST_DT1_Normal ").val() != $("#ST_DT1_Normal option:eq(0)").val()){
-			$('#cSave').attr('disabled', false);
-		} else {
-			$('#cSave').attr('disabled', true);
-		}
 		$('#noticeCopy').text("선택한 복사년도가 " + $("#BAS_YY_PASTE").val() + "년도 에 복사 됩니다.");
-		
 	})
 	$("#ST_DT1_Period").on("keyup", function(e){
 		if($("#ST_DT1_Period").val().length == 4){
@@ -100,9 +94,8 @@ $(function(){
 				periodPopUp();
 			}
 			$('#branch').val($(this).data("branch"));
-// 			$("#ST_DT1_Normal").val($(this).data("ST_DT1"));
 			if($(this).data("branch") == "period"){
-				$("#ST_DT1_Normal").hide();
+				$("#ST_DT1_Normal").val(0).hide();
 				$("#ST_DT1_Period").show();
 				$("#cSave").attr("disabled", true);
 				$('#productCopyPopUp').dialog({title : '<s:message code="product.copy_basyy"/>'});
@@ -110,9 +103,15 @@ $(function(){
 				$("#BAS_YY_PASTE").val(parseInt($("#ST_DT1_Normal").val()) + 1);
 				$('#noticeCopy').text("선택한 복사년도가 " + $("#BAS_YY_PASTE").val() + "년도 에 복사 됩니다.");
 			}
+			$("#C_SAVE").val("");
 		},
 		close: function() {
 			/* 필수로 들어가야함 */
+			if($("#C_SAVE").val() == "Y"){
+				p_rtnData = {"BAS_YY" : $("#BAS_YY_PASTE").val()};
+			} else {
+				p_rtnData = {"BAS_YY" : ""};
+			}
 			popupClose($(this).attr('id'));
 		}
 	});
@@ -120,26 +119,30 @@ $(function(){
 
 //복사 저장
 function saveProductCopy(){
-	var formData = formIdAllToMap('frmProductCopy');
-	var formData2 = formIdAllToMap('frmSearch');
-	var param = { "param" : 
-					{"BAS_YY_COPY" 	: (formData.ST_DT1_Period != "") ? formData.ST_DT1_Period : formData.ST_DT1_Normal
-				   , "BAS_YY_PASTE" : formData2.BAS_YY_PASTE
-				   , "branch"		: formData2.branch
+	if($("#ST_DT1_Normal").val() == $("#ST_DT1_Normal option:eq(0)").val()){
+		alert("기준년도에 (" + $("#BAS_YY_PASTE").val() + ")년도를 먼저 등록해주세요.");
+	} else {	
+		var formData = formIdAllToMap('frmProductCopy');
+		var formData2 = formIdAllToMap('frmSearch');
+		var param = { "param" : 
+						{"BAS_YY_COPY" 	: (formData.ST_DT1_Period != "") ? formData.ST_DT1_Period : formData.ST_DT1_Normal
+					   , "BAS_YY_PASTE" : formData2.BAS_YY_PASTE
+					   , "branch"		: formData2.branch
+						}
 					}
+		var url = "/product/saveCopyInfo.do"
+		
+		if(confirm("<s:message code='confirm.save'/>")){
+			fn_ajax(url, false, param, function(data, xhr){
+				if(data.SAVE == 'N'){
+					alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
+				}else{
+					alert("<s:message code='info.save'/>");
+					$("#C_SAVE").val("Y");
+					$('#productCopyPopUp').dialog('close');
 				}
-	var url = "/product/saveCopyInfo.do"
-	
-	if(confirm("<s:message code='confirm.save'/>")){
-		fn_ajax(url, false, param, function(data, xhr){
-			if(data.SAVE == 'N'){
-				alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
-			}else{
-				alert("<s:message code='info.save'/>");
-				parent.$("#BAS_YY").val($("#BAS_YY_PASTE").val());
-				popupClose($('#productCopyPopUp').data('pid'));	
-			}
-		});
+			});
+		}
 	}
 }
 
