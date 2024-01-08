@@ -160,7 +160,7 @@
 		var gSetting = {
 			pgflg : true,
 			exportflg : true, //엑셀, pdf 출력 버튼 노출여부
-			colsetting : true,
+			colsetting : false,
 			searchInit : false,
 			resizeing : true,
 			rownumbers : false,
