@@ -17,10 +17,13 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +45,7 @@ import com.gembox.spreadsheet.SaveOptions;
 import com.gembox.spreadsheet.SpreadsheetColor;
 import com.gembox.spreadsheet.SpreadsheetInfo;
 
+import bt.btframework.common.FileManager;
 import bt.btframework.common.vo.CodeVO;
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
@@ -71,9 +75,11 @@ public class TableReportController {
 	@Resource
     private CommonService commonService;
 	
-	
 	@Resource
     private MailSendService mailSendService;
+	
+	 @Autowired
+	 private Environment env;
 	
 	@RequestMapping(value = "/customer.do")
 	public ModelAndView customer() throws Exception {
@@ -650,35 +656,25 @@ public class TableReportController {
         pathList = commonService.selectCommonCode("500200", paramPath);
         
         String subject = pathList.get(0).getValue();
-        System.out.println("================0:"+path);
-	    File f = new File(path);
-	    
-	    if(!f.exists())
-	    {
-	        f.mkdir();
-	    }
-	   // path = path.replace("\\\\","\\");
-        System.out.println("================1:"+path);
-        //workbook.save(path  +"/"+ filenm);
+       
         try {
-        	File f2 = new File(path+filenm);
-        	 System.out.println("================2:"+f2.canExecute());
-        	 System.out.println("================3:"+f2.canWrite());
-        	 f2.setWritable(true);
-			fileOut = new FileOutputStream(f2, false);
-		} catch (FileNotFoundException e) {
-			System.out.println(e);
-		}
-		try {
+        	 // 임시로 파일 저장
+        	//FileManager.mkDir(env.getProperty("TEMPPATH"));	    	
+        	File temfile = new File(env.getProperty("TEMPPATH") + filenm);
+          
+			fileOut = new FileOutputStream(temfile, false);
+			
 			fileOut.write(out.toByteArray(), 0, out.toByteArray().length);
 			fileOut.flush();
 			fileOut.close();
+		} catch (FileNotFoundException e) {
+			System.out.println(e);
 		} catch (IOException e) {
 			System.out.println(e);
 		}
 		
         BMap sendEmailparam = new BMap();
-        sendEmailparam.put("FILE_FULL_NM", path  + filenm);
+        sendEmailparam.put("FILE_FULL_NM", env.getProperty("TEMPPATH")  + filenm);
         sendEmailparam.put("FILE_NM"     	, filenm);
         sendEmailparam.put("TO_EMAIL"   	, resultDeptDetail.get("EMAIL"));
         sendEmailparam.put("MSG"     		, msg);
