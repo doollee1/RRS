@@ -650,18 +650,21 @@ public class TableReportController {
         pathList = commonService.selectCommonCode("500200", paramPath);
         
         String subject = pathList.get(0).getValue();
-        
+        System.out.println("================0:"+path);
 	    File f = new File(path);
-	   
+	    
 	    if(!f.exists())
 	    {
 	        f.mkdir();
 	    }
 	   // path = path.replace("\\\\","\\");
-       // System.out.println("================1:"+path);
+        System.out.println("================1:"+path);
         //workbook.save(path  +"/"+ filenm);
         try {
         	File f2 = new File(path+filenm);
+        	 System.out.println("================2:"+f2.canExecute());
+        	 System.out.println("================3:"+f2.canWrite());
+        	 f2.setWritable(true);
 			fileOut = new FileOutputStream(f2, false);
 		} catch (FileNotFoundException e) {
 			System.out.println(e);
