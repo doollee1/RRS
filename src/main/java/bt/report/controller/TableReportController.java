@@ -636,7 +636,7 @@ public class TableReportController {
         
 		FileOutputStream fileOut = null;
 
-        String filenm = resultDeptDetail.get("REQ_HAN_NM")+"_"+resultDeptDetail.get("REQ_DT")+".xlsx";
+        String filenm = resultDeptDetail.get("REQ_HAN_NM")+ "_"+resultDeptDetail.get("REQ_DT")+".xlsx";
        
 	    BMap paramPath = new BMap();
 	    paramPath.put("REF_CHR1"        ,  "PATH");
@@ -672,11 +672,11 @@ public class TableReportController {
 
         	boolean ie = (userAgent.indexOf("MSIE") > -1 || userAgent.indexOf("Trident") > -1);
         	
-			if(ie) {
+			/*if(ie) {
 				filenm = URLEncoder.encode( filenm, "utf-8" ).replaceAll("\\+", "%20");
 			} else {
 				filenm = new String( String.valueOf(filenm).getBytes("utf-8"), "iso-8859-1");
-			}
+			}*/
 
         	File temfile = new File(env.getProperty("TEMPPATH") + filenm);
         	
