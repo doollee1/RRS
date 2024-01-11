@@ -659,9 +659,27 @@ public class TableReportController {
        
         try {
         	 // 임시로 파일 저장
-        	//FileManager.mkDir(env.getProperty("TEMPPATH"));	    	
+        	//FileManager.mkDir(env.getProperty("TEMPPATH"));	    
+        	
+        	
+        	/*
+        	 * 파일 org.
         	File temfile = new File(env.getProperty("TEMPPATH") + filenm);
           
+            */
+        	
+        	String userAgent = req.getHeader("User-Agent");
+
+        	boolean ie = (userAgent.indexOf("MSIE") > -1 || userAgent.indexOf("Trident") > -1);
+        	
+			if(ie) {
+				filenm = URLEncoder.encode( filenm, "utf-8" ).replaceAll("\\+", "%20");
+			} else {
+				filenm = new String( String.valueOf(filenm).getBytes("utf-8"), "iso-8859-1");
+			}
+
+        	File temfile = new File(env.getProperty("TEMPPATH") + filenm);
+        	
 			fileOut = new FileOutputStream(temfile, false);
 			
 			fileOut.write(out.toByteArray(), 0, out.toByteArray().length);
