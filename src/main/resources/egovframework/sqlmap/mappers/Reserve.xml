@@ -150,7 +150,7 @@
 	         , T1.REQ_DT                               AS REQ_DT           /* 예약일자               */
 	         , T1.SEQ                                  AS SEQ              /* 일련번호               */
 	         , T1.USER_ID                              AS USER_ID          /* 사용자ID               */
-	         , T1.REQ_HAN_NM                           AS REQ_HAN_NM       /* 예약자한글명           */
+	         , CONVERT(T1.REQ_HAN_NM USING 'utf8mb4')  AS REQ_HAN_NM       /* 예약자한글명           */
 	         , T1.REQ_ENG_NM                           AS REQ_ENG_NM       /* 예약자영문명           */
 	         , T1.REQ_TEL_NO                           AS REQ_TEL_NO       /* 예약자전화번호         */
 	         , T1.MEM_GBN                              AS MEM_GBN          /* 회원구분               */
@@ -1088,6 +1088,14 @@
 		          , #{PICK_OUT        }
 		          , #{LATE_CHECK_OUT  }
 		          , #{REMARK          }
+		  <choose>
+		      <when test="PREV_SEQ != null and PREV_SEQ != ''">
+		          , #{PREV_SEQ}
+		      </when>
+		      <otherwise>
+		          , (SELECT NVL(MAX(T1.SEQ),0) AS SEQ FROM TB_REQ_BOOKING_M T1 WHERE T1.REQ_DT = #{REQ_DT}) + 1
+		      </otherwise>
+		  </choose>
 		          , #{INV_REG_DT      }
 		          , #{CONFIRM_NO      }
 		          , #{RND_CHG_YN1     }
