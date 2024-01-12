@@ -132,20 +132,20 @@
 			{name: 'DEP_AMT', width: 100, align: 'center'},
 			{name: 'BAL_IN_DT', width: 100, align: 'center'},
 			{name: 'BAL_AMT', width: 100, align: 'center'},
-			{name: 'PICK_IN', width: 100, align: 'center'},
-			{name: 'PICK_OUT', width: 100, align: 'center'},
-			{name: 'FLIGHT_IN', width: 100, align: 'center'},
-			{name: 'FLIGHT_OUT', width: 100, align: 'center'},
-			{name: 'R_PERSON', width: 100, align: 'center'},
-			{name: 'CNT_D1', width: 100, align: 'center'},
-			{name: 'CNT_D2', width: 100, align: 'center'},
-			{name: 'CNT_P1', width: 100, align: 'center'},
-			{name: 'CNT_P1', width: 100, align: 'center'},
-			{name: 'ROUNDING_WEEK', width: 100, align: 'center'},
-			{name: 'ROUNDING_SAT_MORNING', width: 100, align: 'center'},
-			{name: 'ROUNDING_SAT_AFTERNOON', width: 100, align: 'center'},
-			{name: 'ROUNDING_SUN_MORNING', width: 100, align: 'center'},
-			{name: 'ROUNDING_SUN_AFTERNOON', width: 100, align: 'center'},
+			{name: 'PICK_IN', width: 70, align: 'center'},
+			{name: 'PICK_OUT', width: 70, align: 'center'},
+			{name: 'FLIGHT_IN', width: 70, align: 'center'},
+			{name: 'FLIGHT_OUT', width: 70, align: 'center'},
+			{name: 'R_PERSON', width: 70, align: 'center'},
+			{name: 'CNT_D1', width: 80, align: 'center'},
+			{name: 'CNT_D2', width: 80, align: 'center'},
+			{name: 'CNT_P1', width: 80, align: 'center'},
+			{name: 'CNT_P1', width: 80, align: 'center'},
+			{name: 'ROUNDING_WEEK', width: 70, align: 'center'},
+			{name: 'ROUNDING_SAT_MORNING', width: 70, align: 'center'},
+			{name: 'ROUNDING_SAT_AFTERNOON', width: 70, align: 'center'},
+			{name: 'ROUNDING_SUN_MORNING', width: 70, align: 'center'},
+			{name: 'ROUNDING_SUN_AFTERNOON', width: 70, align: 'center'},
 			{name: 'REQ_DT', hidden: true},
 			{name: 'SEQ', hidden: true},
 		];
@@ -164,8 +164,8 @@
 			};
 			dayColName[i] = (i+1);
 		}
-		dayColModel.push({name: 'REMARK', width: 100, align: 'center'});
-		dayColName.push('비고');
+		dayColModel.push({name: 'REMARK', width: 600, align: 'center'});
+		dayColName.push('추가사항');
 		
 		const colName = defaultColName.concat(dayColName);
 		const colModel = defaultColModel.concat(dayColModel);
@@ -196,7 +196,7 @@
 			{startColumnName: 'PICK_IN', numberOfColumns: 2, titleText: '픽업차량'},
 			{startColumnName: 'FLIGHT_IN', numberOfColumns: 2, titleText: '항공편'},
 			{startColumnName: 'CNT_D1', numberOfColumns: 4, titleText: '리조트(숙박)'},
-			{startColumnName: 'weekday', numberOfColumns: 5, titleText: '골프(라운딩)'},
+			{startColumnName: 'ROUNDING_WEEK', numberOfColumns: 5, titleText: '골프(라운딩)'},
 		];
 		
 		const search_dt_arr = SEARCH_DT.split(".");
