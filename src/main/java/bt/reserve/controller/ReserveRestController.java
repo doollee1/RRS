@@ -379,6 +379,8 @@ public class ReserveRestController {
 		param.put("booleanOut" , (String)reqData.get("booleanOut"));
 		param.put("R_PERSON"   , (String)reqData.get("R_PERSON"));
 		param.put("CONFIRM_NO" , (String)reqData.get("CONFIRM_NO"));	
+		param.put("PICK_IN"    , (String)reqData.get("PICK_IN"));	
+		param.put("PICK_OUT"   , (String)reqData.get("PICK_OUT"));	
 		param.put("DCT_AMT"    , reqData.get("DCT_AMT"));	
 		param.put("LOGIN_USER" , LoginInfo.getUserId());
 		respData.put("result", reserveService.depositComplete(param));

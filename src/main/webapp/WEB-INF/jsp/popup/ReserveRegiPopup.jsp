@@ -367,6 +367,7 @@ $(function() {
 		    $("#CHK_IN_DT"      ).val(Util.converter.dateFormat1(today));
 		    $("#CHK_OUT_DT"     ).val(Util.converter.dateFormat1(today));
 		    $(".image"          ).hide();
+		    $(".status"         ).hide();
 		    vflag = "new";
 		    $("#TOT_AMT , #PAY_AMT , #DCT_AMT , #BAL_AMT , #DEP_IN_DT , #DEP_AMT , #EXP_DT , #INV_REG_DT").attr("disabled", true);
 		}else{ // 상세
@@ -990,6 +991,10 @@ $(function() {
 			        , "TOT_PERSON"   : $("#TOT_PERSON"  ).val().replaceAll("," , "")
 			        , "CHK_IN_DT"    : $("#CHK_IN_DT"   ).val().replaceAll(".","")
 	                };
+	    if(fn_empty(seq) || fn_empty(req_dt)) {
+	    	alert("미팅샌딩등록은 상세화면에서 가능합니다.");
+	    	return false;
+	    }
 		popupOpen(url, pid, param, function(data) {
 			if(!fn_empty(data)){
 				$("#PER_NUM_CNT").val(data.PER_NUM);
@@ -1039,6 +1044,7 @@ $(function() {
 	});
 	
 	$("#btn_deposit").on("click", function(){
+		if(!isValidation())return;
 		var confirm_no = $("#CONFIRM_NO").val();
 		var mem_gbn = $("#MEM_GBN").val();
 		var agn_cd = $("#AGN_CD").val();
@@ -1054,12 +1060,13 @@ $(function() {
 		var dep_amt = parseInt($("#DEP_AMT").val().replaceAll(",", ""));
 		var val_amt = parseInt($("#BAL_AMT").val().replaceAll(",", ""));
 		var dct_amt = parseInt($("#DCT_AMT").val().replaceAll(",", ""));
-		if(pay_amt == 0 ){
-			alert("예약금액을 입력하세요.");
+		console.log(pay_amt);
+		if(pay_amt == 0 || pay_amt == ""){
+			alert("입금금액을 입력하세요.");
 			return false;
 		}
 		
-		if(tot_amt == 0 || dep_amt == 0 || val_amt == 0){
+		if(tot_amt == 0 || dep_amt == 0 || val_amt == 0 || pay_amt == ""){
 			return false;
 		}
 		
@@ -1075,7 +1082,9 @@ $(function() {
 			        , "CHK_OUT_DT"   : $("#CHK_OUT_DT").val().replaceAll(".", "")
 			        , "CONFIRM_NO"   : confirm_no
 			        , "DCT_AMT"      : dct_amt
-	                };
+			        , "PICK_IN"      : $("#PICK_IN").val()
+			        , "PICK_OUT"     : $("#PICK_OUT").val()
+ 	                };
 	    if(confirm("<s:message code='confirm.deposit'/>")){
 			fn_ajax(url, false, param, function(data, xhr){
 				if(data.result.resultCd == "0000"){

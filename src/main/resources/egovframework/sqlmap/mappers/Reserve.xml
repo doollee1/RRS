@@ -1304,6 +1304,8 @@
 	<update id="updateReserveResortNum" parameterType="BMap">
 		UPDATE TB_REQ_BOOKING_M
 		   SET CONFIRM_NO   = #{CONFIRM_NO}
+		     , PICK_IN      = #{PICK_IN}
+		     , PICK_OUT     = #{PICK_OUT}
 		     , UPD_DTM = NOW()
 		     , UPD_ID  = #{LOGIN_USER}
 		 WHERE REQ_DT  = #{REQ_DT}
