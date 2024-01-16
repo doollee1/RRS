@@ -173,4 +173,15 @@ public class ProductDao extends DBAbstractMapper {
 		return list("ProductMapper.selectPeriodPopUp", param);
 	}
 	
+	/**
+	 * 예약테이블 취소상태 확인
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> selectReserveStatus(BMap param )throws Exception{
+		return list("ProductMapper.selectReserveStatus", param);
+	}
+	
 }

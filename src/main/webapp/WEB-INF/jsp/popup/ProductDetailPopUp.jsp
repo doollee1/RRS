@@ -21,6 +21,7 @@
 			<input type="hidden" name="PROD_SEQ_UP" id="PROD_SEQ_UP" value="" />
 			<input type="hidden" name="modify" id="modify" value="" />
 			<input type="hidden" name="P_SAVE" id="P_SAVE" />
+			<input type="hidden" name="reserveStatus" id="reserveStatus" value=""/>
 			
 			<table class="pop_tblForm">
 			<colgroup>
@@ -81,24 +82,24 @@
 				<tr>
 					<th style="text-align:center;"><s:message code="product.amount"/></th>
 					<td colspan=3>&nbsp;
-						일반 <input type="text" class="check" name="COM_AMT" id="COM_AMT" style="width:170px; text-align:right" value="0">&nbsp;원 &emsp;&emsp;&emsp;
-						에이전시 <input type="text" class="check" name="AGN_AMT" id="AGN_AMT" style="width:170px; text-align:right" value="0">&nbsp;원
+						일반 <input type="text" class="check" name="COM_AMT" id="COM_AMT" style="width:170px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='9' >&nbsp;원 &emsp;&emsp;&emsp;
+						에이전시 <input type="text" class="check" name="AGN_AMT" id="AGN_AMT" style="width:170px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='9' >&nbsp;원
 					</td>
 				</tr>
 				<tr>
 					<th style="text-align:center;">일반<s:message code="product.etc"/></th>
 					<td colspan=3>&nbsp;
-						기준인원 <input type="text" class="check" name="COM_BAS_PER" id="COM_BAS_PER" style="width:50px; text-align:right" value="0">&nbsp;명 &emsp;&emsp;
-						기준일 <input type="text" class="check" name="COM_BAS_DAY" id="COM_BAS_DAY" style="width:50px; text-align:right" value="0">&nbsp;일 &emsp;&emsp;&emsp;
-						내용 <input type="text" name="COM_CNTN" id="COM_CNTN" style="width:248px">
+						기준인원 <input type="text" class="check" name="COM_BAS_PER" id="COM_BAS_PER" style="width:50px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='3'>&nbsp;명 &emsp;&emsp;
+						기준일 <input type="text" class="check" name="COM_BAS_DAY" id="COM_BAS_DAY" style="width:50px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='3'>&nbsp;일 &emsp;&emsp;&emsp;
+						내용 <input type="text" name="COM_CNTN" id="COM_CNTN" style="width:248px" maxlength='50'>
 					</td>
 				</tr>
 				<tr>
 					<th style="text-align:center;">에이전시<s:message code="product.etc"/></th>
 					<td colspan=3>&nbsp;
-						기준인원 <input type="text" class="check" name="AGN_BAS_PER" id="AGN_BAS_PER" style="width:50px; text-align:right" value="0">&nbsp;명 &emsp;&emsp;
-						기준일 <input type="text" class="check" name="AGN_BAS_DAY" id="AGN_BAS_DAY" style="width:50px; text-align:right" value="0">&nbsp;일 &emsp;&emsp;&emsp;
-						내용 <input type="text" name="AGN_CNTN" id="AGN_CNTN" style="width:248px">
+						기준인원 <input type="text" class="check" name="AGN_BAS_PER" id="AGN_BAS_PER" style="width:50px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='3'>&nbsp;명 &emsp;&emsp;
+						기준일 <input type="text" class="check" name="AGN_BAS_DAY" id="AGN_BAS_DAY" style="width:50px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='3'>&nbsp;일 &emsp;&emsp;&emsp;
+						내용 <input type="text" name="AGN_CNTN" id="AGN_CNTN" style="width:248px" maxlength='50'>
 					</td>
 				</tr>
 			</table>
@@ -196,6 +197,27 @@ $(function(){
 				$('#SSN_GBN_mod').show();
 				$('#HDNG_GBN').hide();
 				$('#HDNG_GBN_mod').show();
+				
+				var url = "/product/selectReserveStatus.do"
+				var param = {"BAS_YY"      : $(this).data("BAS_YY")
+						   , "BAS_YY_SEQ"  : $(this).data("BAS_YY_SEQ")
+						   , "PROD_SEQ"    : $(this).data("PROD_SEQ")
+						   };
+				
+				fn_ajax(url, false, param, function(data, xhr){
+					$("#reserveStatus").val(data.result.length);
+				});
+				
+				if($("#reserveStatus").val() > 1){
+					$("#pop_ct_form_wrap").find("input, select, button").prop("disabled",true);
+					$("[id$=_BAS_PER]").prop("disabled", false);
+					$("[id$=_BAS_DAY]").prop("disabled", false);
+					$("[id$=_CNTN]").prop("disabled", false);
+					$("#cDel").prop("disabled", true);
+				} else {
+					
+					
+				}
 			};
 
 		},
@@ -289,16 +311,21 @@ function openSeldtPopUp(){
 
 //유효성 검사
 function validation(){
-	var seldt = document.getElementById("seldt_I");
-	if(seldt.value.length == 0){
+	if($("#seldt_I").val() == ""){
 		alert("기간선택을 해주세요.");
-		seldt.focus();
+		$("#seldt_I").focus();
 		return;
 	}
-	if($("#COM_AMT").val() + $("#AGN_AMT").val() == 0){
-		alert("일반금액과 에이전시 금액의 합은 0이 될 수 없습니다.");
+	if($("#COM_AMT").val() == ""  || $("#AGN_AMT").val() == ""){
+		alert("금액을 입력해 주세요.")
 		$("#COM_AMT").focus();
 		return;
+	} else {
+		if($("#COM_AMT").val() + $("#AGN_AMT").val() == 0){
+			alert("일반금액과 에이전시 금액의 합은 0이 될 수 없습니다.");
+			$("#COM_AMT").focus();
+			return;
+		}
 	}
 	saveProductInfo();
 }

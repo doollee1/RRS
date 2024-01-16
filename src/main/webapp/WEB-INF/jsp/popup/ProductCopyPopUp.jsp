@@ -6,6 +6,7 @@
 <div id="ctu_no_resize">
 	<form id="frmSearch" action="#">
 		<input type="hidden" name="branch" id="branch" />
+		<input type="hidden" name="P_BAS_YY" id="P_BAS_YY" />
 		<input type="hidden" name="BAS_YY_PASTE" id="BAS_YY_PASTE" />
 		<input type="hidden" name="C_SAVE" id="C_SAVE" />
 	</form>
@@ -75,7 +76,7 @@ $(function(){
 	$("#ST_DT1_Period").on("keyup", function(e){
 		if($("#ST_DT1_Period").val().length == 4){
 			$("#BAS_YY_PASTE").val(parseInt($("#ST_DT1_Period").val()) + 1);
-			$('#noticeCopy').text("선택한 복사년도가 " + $("#BAS_YY_PASTE").val() + "년도 에 복사 됩니다.");
+			$('#noticeCopy').text("입력한 복사년도가 " + $("#BAS_YY_PASTE").val() + "년도 에 복사 됩니다.");
 		} else { 
 			$('#noticeCopy').text("");
 		}
@@ -98,6 +99,7 @@ $(function(){
 				$("#ST_DT1_Normal").val(0).hide();
 				$("#ST_DT1_Period").show();
 				$("#cSave").attr("disabled", true);
+				$("#P_BAS_YY").val($(this).data("P_BAS_YY"));
 				$('#productCopyPopUp').dialog({title : '<s:message code="product.copy_basyy"/>'});
 			} else {
 				$("#BAS_YY_PASTE").val(parseInt($("#ST_DT1_Normal").val()) + 1);
@@ -121,7 +123,11 @@ $(function(){
 function saveProductCopy(){
 	if($("#ST_DT1_Normal").val() == $("#ST_DT1_Normal option:eq(0)").val()){
 		alert("기준년도에 (" + $("#BAS_YY_PASTE").val() + ")년도를 먼저 등록해주세요.");
-	} else {	
+	} else {
+		if($("#ST_DT1_Period").val() > $("#P_BAS_YY").val()){
+			alert($("#ST_DT1_Period").val() + "년도 복사 데이터가 없습니다.")
+			return;
+		}
 		var formData = formIdAllToMap('frmProductCopy');
 		var formData2 = formIdAllToMap('frmSearch');
 		var param = { "param" : 

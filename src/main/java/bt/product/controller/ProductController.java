@@ -1,24 +1,24 @@
 package bt.product.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestTemplate;
 
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
+import bt.btframework.utils.LoginInfo;
 import bt.product.service.ProductService;
 
 @Controller
@@ -42,7 +42,7 @@ public class ProductController {
 	@RequestMapping(value = "/popup/ProductDetailPopUp.do")
 	public String ProductDetailPopUp(ModelMap model) throws Exception {
 		model.addAttribute("basyy", productService.selectBasYY(null));
-
+		
 		BMap param = new BMap();
 		param.put("HEAD_CD", 500090);
 		param.put("Season", true);
@@ -51,9 +51,6 @@ public class ProductController {
 		BMap param2 = new BMap();
 		param2.put("HEAD_CD", 500000);
 		model.addAttribute("hdng"  , productService.selectGetCommonCode(param2));
-		
-//		BMap param3 = new BMap();
-//		model.addAttribute("cond", productService.selectCond(param3));
 		
 		return "/popup/ProductDetailPopUp";
 	}
@@ -184,10 +181,16 @@ public class ProductController {
 	@RequestMapping(value = "/product/savePeriodInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData savePeriodInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
-		BMap param = reqData.getParamDataMap("param");
+		List<BMap> detail = reqData.getParamDataList("detail");
+		BMap param = new BMap();
 		BRespData respData = new BRespData();
-
-		if(!productService.savePeriodInfo(param)){
+		
+		param.put("BAS_YY", reqData.get("BAS_YY"));
+		param.put("LOGIN_USER" , LoginInfo.getUserId());
+		
+		System.out.println("ㅁㅁㅁㅁㅁ" + detail);
+		
+		if(!productService.savePeriodInfo(param, detail)){
 			respData.put("SAVE", "N");
 		}
 		
@@ -204,7 +207,11 @@ public class ProductController {
 	@RequestMapping(value = "/product/deletePeriodInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData deletePeriodInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
-		BMap param = reqData.getParamDataMap("param");
+		
+		BMap param = new BMap();
+		param.put("BAS_YY", reqData.get("BAS_YY"));
+		param.put("BAS_YY_SEQ", reqData.get("BAS_YY_SEQ"));
+		
 		BRespData respData = new BRespData();
 		
 		productService.deletePeriodInfo(param);
@@ -248,6 +255,47 @@ public class ProductController {
 		BRespData respData = new BRespData();
 		
 		respData.put("result", productService.selectPeriodPopUp(param));
+		return respData;
+	}
+	
+	/**
+	 * 예약테이블 취소상태 확인
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/product/selectReserveStatus.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData selectReserveStatus(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BMap param = new BMap();
+		param.put("BAS_YY", reqData.get("BAS_YY"));
+		param.put("BAS_YY_SEQ", reqData.get("BAS_YY_SEQ"));
+		param.put("PROD_SEQ", reqData.get("PROD_SEQ"));
+		
+		BRespData respData = new BRespData();
+		respData.put("result", productService.selectReserveStatus(param));
+		
+		return respData;
+	}
+	
+	/**
+	 * 시즌 조회
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/product/productSeasonList.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData productSeasonList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BRespData respData = new BRespData();
+	
+		BMap param = new BMap();
+		param.put("HEAD_CD", 500090);
+		param.put("Season", true);
+		
+		respData.put("selectList"   , productService.selectGetCommonCode(param));
 		return respData;
 	}
 }

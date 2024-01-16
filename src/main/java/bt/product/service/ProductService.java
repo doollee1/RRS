@@ -119,14 +119,26 @@ public class ProductService {
 	 * @return 
 	 * @throws Exception
 	 */
-	public Boolean savePeriodInfo(BMap param) throws Exception{
+	public Boolean savePeriodInfo(BMap param, List<BMap> detail) throws Exception{
 		Boolean isValid = true;
-		param.put("LOGIN_USER", LoginInfo.getUserId());
-		if(param.getString("modify").equals("1")){
-			productDao.updatePeriodInfo(param); // 상품 수정
-		} else {
-			productDao.insertPeriodInfo(param); //상품 등록
+		
+		try {
+			for(int i = 0; i < detail.size(); i++){
+				BMap detailMap = new BMap(detail.get(i));
+				detailMap.put("LOGIN_USER", LoginInfo.getUserId());
+				
+				if(detailMap.getString("STATUS_P").equals("I")){
+					productDao.insertPeriodInfo(detailMap);
+				}else if(detailMap.getString("STATUS_P").equals("U")){
+					productDao.updatePeriodInfo(detailMap); // 상품 수정
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			isValid = false;
 		}
+				
 		return isValid;
 	}
 	
@@ -166,5 +178,15 @@ public class ProductService {
 	 */
 	public List<BMap> selectPeriodPopUp(BMap param) throws Exception{
 		return productDao.selectPeriodPopUp(param);
+	}
+	
+	/**
+	 * 예약테이블 취소상태 확인
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> selectReserveStatus(BMap param) throws Exception{
+		return productDao.selectReserveStatus(param);
 	}
 }

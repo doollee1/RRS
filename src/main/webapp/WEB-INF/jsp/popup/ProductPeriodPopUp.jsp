@@ -1,6 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <div class="top_button_h_margin"></div>
 <div id="ctu_no_resize">
@@ -15,18 +16,19 @@
 	<!--- 검색버튼 ---->
 	<div id="divBtns">
 		<div id="divBtn">
-			<button class='btn btn-default ' id='cBtnSearch' type='button' onclick='cSearch()'>조회</button>
-			<button class='btn btn-default ' id='cBtnAdd' type='button' onclick='cAdd()'>등록</button>
-			<button class='btn btn-default ' id='cBtnCancel' type='button' onclick='cCancel()'>닫기</button>
+			<button class='btn btn-default ' id='cBtnSearch' type='button' onclick=''>조회</button>
+			<button class="btn btn-default" id="btn_save"><s:message code='button.save'/></button>
+			<button class="btn btn-default" id="btn_del"><s:message code='button.delete'/></button>
+<!-- 			<button class='btn btn-default ' id='cBtnAdd' type='button' onclick='cAdd()'>등록</button> -->
+			<button class='btn btn-default ' id='cBtnCancel' type='button' onclick=''>닫기</button>
 		</div>
 	</div>
 	
 	<!---------->
-	<form id="frmProductPeriod" action="#">
-		<div class="ct_grid_top_left">
-			<h4>조회조건</h4>
-		</div>	
-		<div class="tab_top_search">
+	<div class="ct_grid_top_left">
+		<h4>조회조건</h4>
+	</div>	
+	<div class="tab_top_search">
 		<table>
 			<colgroup>
 				<col width="100px" />
@@ -46,154 +48,422 @@
 				</tr>
 			</tbody>
 		</table>
-		</div> 
-		
-		<!-- grid start -->
-		<div id="ctm_mg_wrap">
-			<div class="ct_grid_top_wrap">
-				<div class="ct_grid_top_left">
-					<h4>조회내역</h4>
-				</div>	
-				<div class="ct_grid_top_right">
-					<button class='cBtnclass cBtnCopy_style' id='cBtnCopy' type='button' onclick='cCopy()' disabled='disabled'>복사등록</button>
-				</div>
+	</div> 
+	
+	<!-- grid start -->
+	<div id="ctm_mg_wrap">
+		<div class="ct_grid_top_wrap">
+			<div class="ct_grid_top_left">
+				<h4>조회내역</h4>
+			</div>	
+			<div class="ct_grid_top_right">
+				<button class='btn btn-default cBtnclass cBtnCopy_style' id='cBtnCopy' style="align:right" type='button' onclick='cCopy()'>복사등록</button>
+				<button class="btn btn-default" id="btn_addRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.addRow'/></button>
+           		<button class="btn btn-default" id="btn_delRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.delRow'/></button>
 			</div>
-			<table id="grid1"></table>
 		</div>
-		<!-- grid end -->
-		<br>
-	</form>
+		<table id="periodGrid"></table>
+	</div>
+	<!-- grid end -->
+	<br>
 </div>
-<script type="text/javascript">
 
-//초기 로드
+<script type="text/javascript">
 $(function(){
-	
-	//조회조건 변경 시 복사등록 비활성화 처리
-	$("#BAS_YY_PP").change(function(){
-		$("#cBtnCopy").attr("disabled", true);
-		$("#cBtnSearch").attr("disabled", false);
-	})
-	
 	$('#productPeriodPopUp').dialog({
 		title: '<s:message code="product.pop_period"/>',
 		autoOpen: false,
+		height: 'auto',
 		width: 750,
 		modal: true,
-		open: function() {
-			createGrid();
-			cSearch();
-			
-			if($(this).data("BAS_YY_PP") != null){
-				$('#BAS_YY_PP').val($(this).data("BAS_YY_PP"));
-			}
-			/* grid1 Event */
-			$('#grid1').jqGrid('setGridParam', {
-				ondblClickRow: function(rowid, iRow, iCol, e) {
-					grid1_ondblClickRow(rowid, iRow, iCol, e);
-				}
-			});
-			
-			//조회결과 없을 시 비활성화 및 alert
-			if($("#BAS_YY_PP").val() == ""){
-				$("#BAS_YY_PP").attr("disabled", true);
-				$("#cBtnCopy").attr("disabled", true);
-				$("#cBtnSearch").attr("disabled", true);
-				alert("년도별 기간관리를 마저 등록해 주세요.");
-			}
-		},
 		close: function() {
 			/* 필수로 들어가야함 */
 			popupClose($(this).attr('id'));
+		},
+		open: function() {
+			createGrid();
+			cSearch();
+			/*
+			$('#periodGrid').jqGrid('setGridParam', {
+				ondblClickRow: function(rowid, iRow, iCol, e) {
+					periodGrid_ondblClickRow(rowid, iRow, iCol, e);
+				}
+			});
+			*/
+		},
+	});
+	
+	//조회
+	function cSearch(currentPage){
+		var url = "/product/selectPeriodInfo.do";
+		
+		var formData = formIdAllToMap('frmProductPeriod');
+		var param = {"BAS_YY" : $("#BAS_YY_PP").val()};
+		
+		fn_ajax(url, false, param, function(data, xhr){
+			$.each(data.result , function(i , val){
+				val.STATUS_P = "R";
+			});
+			reloadGrid("periodGrid", data.result);
+			
+			var colModel = $("#periodGrid").jqGrid('getGridParam', 'colModel'); 
+			for(var i =0; i < data.result.length; i++){
+				jQuery("#periodGrid").setCell(i+1);
+			};
+			
+			btGrid.gridResizing('periodGrid');
+		});
+		
+		//조회결과 없을 시 비활성화 및 alert
+		if($("#BAS_YY_PP").val() == ""){
+			$("#BAS_YY_PP").attr("disabled", true);
+			$("#cBtnSearch").attr("disabled", true);
+			alert("년도별 기간관리를 마저 등록해 주세요.");
+		};
+	};
+	
+	$("#BAS_YY_PP").change(function(){
+		$("#cBtnSearch").attr("disabled", false);
+	});
+	
+	//그리드 그리기
+	function createGrid(){
+		var url = "/product/productSeasonList.do";
+		var param = {};
+		var obj = new Object();
+		fn_ajax(url, true, param, function(data, xhr){
+			$.each(data.selectList , function(i , v){
+				if (!v.CODE) {
+					return;
+				}
+				if (v.CODE == "3"){
+					return;
+				} else {
+				obj += v.CODE + ':'+ v.CODE_NM + ';';
+				}
+			});
+			obj = obj.substr(0, obj.length-1);
+			alert()
+			
+			$("#periodGrid").setColProp('SSN_GBN', {formatter : "select", editoptions: { value:obj}});
+	    });
+		
+	 	var colName = ['<s:message code="product.season"/>',
+					   '<s:message code="product.stdt1"/>',
+					   '<s:message code="product.eddt1"/>',
+					   '<s:message code="product.stdt2"/>',
+					   '<s:message code="product.eddt2"/>',
+					   '<s:message code="product.stdt3"/>',
+					   '<s:message code="product.eddt3"/>',
+					   'BAS_YY',
+					   'BAS_YY_SEQ',
+					   'STATUS_P'
+					   ];
+		
+		var colModel = [
+	 		{ name: 'SSN_GBN', width: 5, align: 'center', editable:true, edittype:"select", formatter : "select"},
+// 			{ name: 'SSN_GBN', width: 5, align: 'center', editable:true,},
+			{ name: 'ST_DT1', width: 7, align: 'center', editable:true, 
+				editoptions:{
+					dataInit: function(element){
+						$(element).keyup(function(){
+							var val1 = element.value;
+							var num = new Number(val1);
+							if(isNaN(num)){
+								alert("숫자만 입력 가능합니다.");
+								element.value = ''; 
+							}
+		                })
+					}, maxlength:8
+				}
+			},
+			{ name: 'ED_DT1', width: 7, align: 'center', editable:true,
+				editoptions:{
+					dataInit: function(element){
+						$(element).keyup(function(){
+							var val1 = element.value;
+							var num = new Number(val1);
+							if(isNaN(num)){
+								alert("숫자만 입력 가능합니다.");
+								element.value = ''; 
+							}
+		                })
+					}, maxlength:8
+				}
+			},
+			{ name: 'ST_DT2', width: 7, align: 'center', editable:true,
+				editoptions:{
+					dataInit: function(element){
+						$(element).keyup(function(){
+							var val1 = element.value;
+							var num = new Number(val1);
+							if(isNaN(num)){
+								alert("숫자만 입력 가능합니다.");
+								element.value = ''; 
+							}
+		                })
+					}, maxlength:8
+				}
+			},
+			{ name: 'ED_DT2', width: 7, align: 'center', editable:true,
+				editoptions:{
+					dataInit: function(element){
+						$(element).keyup(function(){
+							var val1 = element.value;
+							var num = new Number(val1);
+							if(isNaN(num)){
+								alert("숫자만 입력 가능합니다.");
+								element.value = ''; 
+							}
+		                })
+					}, maxlength:8
+				}
+			},
+			{ name: 'ST_DT3', width: 7, align: 'center', editable:true,
+				editoptions:{
+					dataInit: function(element){
+						$(element).keyup(function(){
+							var val1 = element.value;
+							var num = new Number(val1);
+							if(isNaN(num)){
+								alert("숫자만 입력 가능합니다.");
+								element.value = ''; 
+							}
+		                })
+					}, maxlength:8
+				}
+			},
+			{ name: 'ED_DT3', width: 7, align: 'center', editable:true,
+				editoptions:{
+					dataInit: function(element){
+						$(element).keyup(function(){
+							var val1 = element.value;
+							var num = new Number(val1);
+							if(isNaN(num)){
+								alert("숫자만 입력 가능합니다.");
+								element.value = ''; 
+							}
+		                })
+					}, maxlength:8
+				}
+			},
+			{ name: 'BAS_YY', width : 100, align: 'center', hidden:true, editoptions:{readonly: true}},
+			{ name: 'BAS_YY_SEQ', width : 100, align: 'center', hidden:true, editoptions:{readonly: true}},
+			{ name: 'STATUS_P', width : 100, align: 'center', hidden:true, editoptions:{readonly: true}}
+	  	];
+		
+		var gSetting = {
+				height:200,
+				pgflg:false,
+				exportflg : false,  //엑셀, pdf 출력 버튼 노출여부
+				colsetting : false,  // 컬럼 설정 버튼 노출여부
+				searchInit : false,  // 데이터 검색 버튼 노출여부
+				resizeing : true,
+				rownumbers:false,
+				shrinkToFit: true,
+				autowidth: true,
+				queryPagingGrid:false // 쿼리 페이징 처리 여부				
+		};
+		btGrid.createGrid('periodGrid', colName, colModel, gSetting);
+	}
+
+	//조회 버튼
+	$("#cBtnSearch").on("click", function(){
+		cSearch();
+	});
+	
+	//닫기 버튼
+	$("#cBtnCancel").on("click", function(){
+		$('#productPeriodPopUp').dialog('close');
+	});
+	
+	//행추가
+	$("#btn_addRow").on("click" , function(){
+		btGrid.gridSaveRow('periodGrid');
+		var rowId = $('#periodGrid').jqGrid('getGridParam', 'selrow');
+		var rowData = $("#periodGrid").getRowData(rowId);
+		var data = {
+				"BAS_YY" : $("#BAS_YY_PP").val(),
+				"BAS_YY_SEQ" : rowData["BAS_YY_SEQ"],
+				"STATUS_P" : "I"
+			};
+		btGrid.gridAddRow("periodGrid", "last", data);
+	});
+	
+	//행삭제
+	$("#btn_delRow").on("click" , function(){
+		var rowId =$("#periodGrid").jqGrid('getGridParam','selrow');
+		var args = "";
+		if (rowId == null) {
+			args = '<s:message code='title.row'/>';
+		   	alert("<s:message code='errors.selectdel' arguments='" + args + "' javaScriptEscape='false'/>");
+		   	return;
+		}else{
+			var grdData = $("#periodGrid").jqGrid("getCell", rowId, "STATUS_P");
+			if(grdData != 'I'){
+				alert("<s:message code='errors.statusR' javaScriptEscape='false'/>"); 
+				return;
+			} else {
+		   		$("#periodGrid").jqGrid("delRowData",rowId);
+			}
+		}
+	});
+	
+	//저장버튼
+	$("#btn_save").on("click" , function(){
+		btGrid.gridSaveRow('periodGrid');
+		var gridData  = $("#periodGrid").getRowData();
+		var ids = $("#periodGrid").jqGrid("getDataIDs");
+		var gridDataChk = [];
+		var cnt = 0;
+		
+		for(var i = 0; i < ids.length; i++){
+			gridDataChk.push($("#periodGrid").getRowData(ids[i]));
+		}
+
+		var args = '';
+		$.each(gridData , function(i , json){
+			$.each(json, function(k , value){
+				if(k == "STATUS_P" && json[k] !='R'){
+					cnt++;
+					return;
+				}
+				
+// 				if(k == "ST_DT1" || k == "ED_DT1" || k == "ST_DT2" || k == "ED_DT2" || k == "ST_DT3" || k == "ED_DT3"){
+// 					json[k] = parseInt(value.replaceAll("-", ""));
+// 				}
+				
+			});
+		});
+		
+		if(cnt == 0){
+			alert("<s:message code='errors.noChange' javaScriptEscape='false'/>"); 
+			return;
+		}
+		
+		for(var i = 0; i < gridDataChk.length; i++){
+			if(fn_empty(gridDataChk[i]["SSN_GBN"])){
+				args = '<s:message code="product.season"/>';
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				return;
+			}
+			if(fn_empty(gridDataChk[i]["ST_DT1"]) ){
+				args = '<s:message code="product.stdt1"/>';
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				return;
+			}
+			if(fn_empty(gridDataChk[i]["ED_DT1"])){
+				args = '<s:message code="product.eddt1"/>';
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				return;
+			}
+			
+			if((fn_empty(gridDataChk[i]["ST_DT2"]) && !fn_empty(gridDataChk[i]["ED_DT2"])) ||
+			   (!fn_empty(gridDataChk[i]["ST_DT2"]) && fn_empty(gridDataChk[i]["ED_DT2"]))){
+				alert("시작일 및 종료일을 입력해주세요.");
+				return;
+			} 
+			
+			if((fn_empty(gridDataChk[i]["ST_DT3"]) && !fn_empty(gridDataChk[i]["ED_DT3"])) ||
+			   (!fn_empty(gridDataChk[i]["ST_DT3"]) && fn_empty(gridDataChk[i]["ED_DT3"]))){
+				alert("시작일 및 종료일을 입력해주세요.");
+				return;
+			} 
+			
+		}
+
+		var url = '/product/savePeriodInfo.do';
+		var param = {"detail"      : gridDataChk
+				   , "BAS_YY"      : $("#BAS_YY_PP").val()
+				   };
+		if(confirm("<s:message code='confirm.save'/>")){
+			fn_ajax(url, false, param, function(data, xhr){
+				if(data.SAVE == 'N'){
+					alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
+				}else{
+					alert("<s:message code='info.save'/>");
+					cSearch();
+				}
+			});
+		}
+	});
+	
+	//삭제 버튼
+	$("#btn_del").on("click" , function(){
+		var rowId =$("#periodGrid").jqGrid('getGridParam','selrow');
+		var args    = "";
+		if(rowId == "" || rowId == null){
+    		alert("<s:message code='errors.selectdel' arguments='행(을)' javaScriptEscape='false'/>");
+			return;
+		}
+		var grdData = $("#periodGrid").jqGrid("getCell", rowId, "STATUS_P");
+		var selBas = $("#periodGrid").jqGrid("getCell", rowId, "BAS_YY");
+		var selSeq = $("#periodGrid").jqGrid("getCell", rowId, "BAS_YY_SEQ");
+		
+		if(grdData == 'I'){
+			alert("<s:message code='errors.statusI' javaScriptEscape='false'/>"); 
+    		return;
+    	}
+		
+		var param = {
+					  "BAS_YY" 		: selBas
+					 ,"BAS_YY_SEQ" 	: selSeq
+					}
+		var url = "/product/deletePeriodInfo.do"
+		
+		if(confirm("<s:message code='confirm.delete'/>")){
+			fn_ajax(url, false, param, function(data, xhr){
+				alert("<s:message code='product.info.delete'/>");
+				cSearch();		
+			});
+		}
+	});
+	
+	$("#periodGrid").bind("change , keyup" , function(){
+		var changeRowId  = $('#periodGrid').jqGrid('getGridParam', 'selrow');
+		var rowCnt       = $('#periodGrid').getGridParam('reccount');
+		var ids          = $('#periodGrid').jqGrid('getDataIDs');
+		
+		if($('#periodGrid').jqGrid('getRowData', changeRowId).STATUS_P != "I"){
+			$("#periodGrid").jqGrid('setCell',changeRowId , 'STATUS_P', 'U');
 		}
 	});
 });
 
-//그리드 그리기
-function createGrid(){
-	var colName = ['<s:message code='product.season'/>',
-				'<s:message code='product.stdt1'/>',
-				'<s:message code='product.eddt1'/>',
-				'<s:message code='product.stdt2'/>',
-				'<s:message code='product.eddt2'/>',
-				'<s:message code='product.stdt3'/>',
-				'<s:message code='product.eddt3'/>',
-				'BAS_YY',
-				'BAS_YY_SEQ',
-				]
-	var colModel = [
-		{ name: 'SSN_GBN', width: 5, align: 'center'},
-		{ name: 'ST_DT1', width: 7, align: 'center'},
-		{ name: 'ED_DT1', width: 7, align: 'center'},
-		{ name: 'ST_DT2', width: 7, align: 'center'},
-		{ name: 'ED_DT2', width: 7, align: 'center'},
-		{ name: 'ST_DT3', width: 7, align: 'center'},
-		{ name: 'ED_DT3', width: 7, align: 'center'},
-		{ name: 'BAS_YY', hidden:true},
-		{ name: 'BAS_YY_SEQ', hidden:true},
-  	];
-	
-	var gSetting = {
-			height:200,
-			pgflg:true,
-			exportflg : false,  //엑셀, pdf 출력 버튼 노출여부
-			colsetting : false,  // 컬럼 설정 버튼 노출여부
-			searchInit : false,  // 데이터 검색 버튼 노출여부
-			resizeing : true,
-			rownumbers:false,
-			shrinkToFit: true,
-			autowidth: true,
-			queryPagingGrid:false // 쿼리 페이징 처리 여부				
-	};
-	btGrid.createGrid('grid1', colName, colModel, gSetting);
-}
-
-//조회
-function cSearch(){
-	var url = "/product/selectPeriodInfo.do";
-	
-	var formData = formIdAllToMap('frmProductPeriod');
-	var param = {"BAS_YY" :formData.BAS_YY_PP};
-	
-	fn_ajax(url, false, param, function(data, xhr){
-		reloadGrid("grid1", data.result);
-		btGrid.gridQueryPaging($('#grid1'), 'cSearch', data.result);
-	});
-	btGrid.gridResizing('grid1');
-	
-	//복사등록 비활성화 여부 설정
-	$("#cBtnCopy").attr("disabled", false);
-}
-
+/*
 //그리드 더블클릭 - 상세조회
-function grid1_ondblClickRow(rowid, iRow, iCol, e){
-	var gridData = $("#grid1").getRowData(rowid);
-	var formData = formIdAllToMap('frmProductPeriod');
-	var param = {
-		"modify" : true,
-		"BAS_YY" : gridData["BAS_YY"],				// 기준년도
-		"BAS_YY_SEQ" : gridData["BAS_YY_SEQ"],		// 기준년도 순번
-		"SSN_GBN" : gridData["SSN_GBN"],			// 시즌구분
-		"ST_DT1" : gridData["ST_DT1"],				// 시작일1
-		"ED_DT1" : gridData["ED_DT1"],				// 종료일1
-		"ST_DT2" : gridData["ST_DT2"],				// 시작일2
-		"ED_DT2" : gridData["ED_DT2"],				// 종료일2
-		"ST_DT3" : gridData["ST_DT3"],				// 시작일3
-		"ED_DT3" : gridData["ED_DT3"],				// 종료일3
-	};
-	productPeriodDetailPopUp(param);
+function periodGrid_ondblClickRow(rowid, iRow, iCol, e){
+	var rowId =$("#periodGrid").jqGrid('getGridParam','selrow');
+	var grdData = $("#periodGrid").jqGrid("getCell", rowId, "STATUS_P");
+	
+	if(grdData != 'I'){
+		var gridData = $("#periodGrid").getRowData(rowid);
+		var formData = formIdAllToMap('frmProductPeriod');
+		var param = {
+			"modify" : true,
+			"BAS_YY" : gridData["BAS_YY"],				// 기준년도
+			"BAS_YY_SEQ" : gridData["BAS_YY_SEQ"],		// 기준년도 순번
+			"SSN_GBN" : gridData["SSN_GBN"],			// 시즌구분
+			"ST_DT1" : gridData["ST_DT1"],				// 시작일1
+			"ED_DT1" : gridData["ED_DT1"],				// 종료일1
+			"ST_DT2" : gridData["ST_DT2"],				// 시작일2
+			"ED_DT2" : gridData["ED_DT2"],				// 종료일2
+			"ST_DT3" : gridData["ST_DT3"],				// 시작일3
+			"ED_DT3" : gridData["ED_DT3"],				// 종료일3
+		};
+		productPeriodDetailPopUp(param);
+	}
 }
+*/
 
+/*
 //등록 버튼
 function cAdd(){
 	productPeriodDetailPopUp();
 }
+*/
 
-//닫기 버튼
-function cCancel(){
-	$('#productPeriodPopUp').dialog('close');
-};
-	
+/*
 //상세조회 및 등록 팝업
 function productPeriodDetailPopUp(param){
 	var url = "/popup/ProductPeriodDetailPopUp.do";
@@ -203,6 +473,7 @@ function productPeriodDetailPopUp(param){
 		cSearch();
 	});
 }
+*/
 
 //복사등록 팝업
 function cCopy(param){
@@ -210,8 +481,9 @@ function cCopy(param){
 	var pid = "productCopyPopUp";	//팝업 페이지의 최상위 div ID
 	var formData = formIdAllToMap('frmProductPeriod');
 	var param = { 
-			"branch" : "period"
-	}
+			"branch" : "period",
+			"P_BAS_YY" : $("#BAS_YY_PP option:eq(0)").val()
+	};
 	
 	popupOpen(url, pid, param, function(data){
 		if(data.BAS_YY != ""){
@@ -220,11 +492,11 @@ function cCopy(param){
 			var url = "/popup/ProductPeriodPopUp.do";
 			var pid = "productPeriodPopUp";	//팝업 페이지의 최상위 div ID
 			var param = {"BAS_YY_PP" : data.BAS_YY};
-			
+
 			popupOpen(url, pid, param, function(data){
 			});
-		}
+		};
 	});
-}
+};
 
 </script>

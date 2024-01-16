@@ -161,17 +161,14 @@
 	/* Product.xml -> selectPeriodInfo */
 		SELECT BAS_YY					<!-- 기준년도 -->
 			 , BAS_YY_SEQ				<!-- 기준년도 순번 -->
-			 , (SELECT CODE_NM 
-				  FROM bc_comm_l B
-				 WHERE HEAD_CD = 500090
-				   AND A.SSN_GBN = B.CODE) SSN_GBN			<!-- 시즌구분 -->
-		     , date_format(A.ST_DT1, '%Y-%m-%d') ST_DT1		<!-- 시작일1 -->
-		     , date_format(A.ED_DT1, '%Y-%m-%d') ED_DT1		<!-- 종료일1 -->
-			 , date_format(A.ST_DT2, '%Y-%m-%d') ST_DT2		<!-- 시작일2 -->
-		     , date_format(A.ED_DT2, '%Y-%m-%d') ED_DT2		<!-- 종료일2 -->
-			 , date_format(A.ST_DT3, '%Y-%m-%d') ST_DT3		<!-- 시작일3 -->
-		     , date_format(A.ED_DT3, '%Y-%m-%d') ED_DT3		<!-- 종료일3 -->
-		  FROM TB_BAS_YY_INFO A
+			 , SSN_GBN					<!-- 시즌구분 -->
+		     , ST_DT1		<!-- 시작일1 -->
+		     , ED_DT1		<!-- 종료일1 -->
+			 , ST_DT2		<!-- 시작일2 -->
+		     , ED_DT2		<!-- 종료일2 -->
+			 , ST_DT3		<!-- 시작일3 -->
+		     , ED_DT3		<!-- 종료일3 -->
+		  FROM TB_BAS_YY_INFO
 		 WHERE 1 = 1
 		   AND BAS_YY = #{BAS_YY}
 	</select>
@@ -302,7 +299,17 @@
 		   AND SSN_GBN = #{SSN_GBN}
 	</select>
 	
-
-		     
-		     
+    <select id="selectReserveStatus" parameterType="BMap" resultType="BMap">
+	/* Product.xml -> selectReserveStatus */
+		SELECT B.PRC_STS
+		  FROM TB_PROD_INFO A
+		  JOIN TB_REQ_BOOKING_M B
+		    ON A.BAS_YY = B.BAS_YY
+	       AND A.BAS_YY_SEQ = B.BAS_YY_SEQ
+		   AND A.PROD_SEQ = B.PROD_SEQ
+		 WHERE A.BAS_YY = #{BAS_YY}
+		   AND A.BAS_YY_SEQ = #{BAS_YY_SEQ}
+		   AND A.PROD_SEQ = #{PROD_SEQ}
+		   AND B.PRC_STS != 09
+	</select>	     
 </mapper>

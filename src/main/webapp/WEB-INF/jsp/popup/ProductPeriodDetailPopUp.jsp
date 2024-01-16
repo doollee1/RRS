@@ -55,25 +55,25 @@
 				<tr>
 					<th style="text-align:center;"><s:message code="product.stdt2"/></th>
 					<td >&nbsp;
-						<input type="text" name="ST_DT2_I" id="ST_DT2_I" style="width:250px">
+						<input type="text" name="ST_DT2_IC" id="ST_DT2_IC" style="width:250px">
 					</td>
 				</tr>
 				<tr>
 					<th style="text-align:center;"><s:message code="product.eddt2"/></th>
 					<td >&nbsp;
-						<input type="text" name="ED_DT2_I" id="ED_DT2_I" style="width:250px">
+						<input type="text" name="ED_DT2_IC" id="ED_DT2_IC" style="width:250px">
 					</td>
 				</tr>
 				<tr>
 					<th style="text-align:center;"><s:message code="product.stdt3"/></th>
 					<td >&nbsp;
-						<input type="text" name="ST_DT3_I" id="ST_DT3_I" style="width:250px">
+						<input type="text" name="ST_DT3_IC" id="ST_DT3_IC" style="width:250px">
 					</td>
 				</tr>
 				<tr>
 					<th style="text-align:center;"><s:message code="product.eddt3"/></th>
 					<td >&nbsp;
-						<input type="text" name="ED_DT3_I" id="ED_DT3_I" style="width:250px">
+						<input type="text" name="ED_DT3_IC" id="ED_DT3_IC" style="width:250px">
 					</td>
 				</tr>
 			</table>
@@ -129,10 +129,10 @@ $(function(){
 				}
 				$('#ST_DT1_I').val($(this).data("ST_DT1").replaceAll("-",""));			//시작일1
 				$('#ED_DT1_I').val($(this).data("ED_DT1").replaceAll("-",""));			//종료일1
-				$('#ST_DT2_I').val($(this).data("ST_DT2").replaceAll("-",""));			//시작일2
-				$('#ED_DT2_I').val($(this).data("ED_DT2").replaceAll("-",""));			//종료일2
-				$('#ST_DT3_I').val($(this).data("ST_DT3").replaceAll("-",""));			//시작일3
-				$('#ED_DT3_I').val($(this).data("ED_DT3").replaceAll("-",""));			//종료일3
+				$('#ST_DT2_IC').val($(this).data("ST_DT2").replaceAll("-",""));			//시작일2
+				$('#ED_DT2_IC').val($(this).data("ED_DT2").replaceAll("-",""));			//종료일2
+				$('#ST_DT3_IC').val($(this).data("ST_DT3").replaceAll("-",""));			//시작일3
+				$('#ED_DT3_IC').val($(this).data("ED_DT3").replaceAll("-",""));			//종료일3
 				
 				$('#BAS_YY_UP').val($(this).data("BAS_YY"));			//기준년도
 			}
@@ -153,10 +153,10 @@ function savePeriodInfo(){
 					,"SSN_GBN"		: formData.SSN_GBN_I
 					,"ST_DT1" 		: formData.ST_DT1_I
 					,"ED_DT1" 		: formData.ED_DT1_I
-					,"ST_DT2" 		: formData.ST_DT2_I
-					,"ED_DT2" 		: formData.ED_DT2_I
-					,"ST_DT3" 		: formData.ST_DT3_I
-					,"ED_DT3" 		: formData.ED_DT3_I
+					,"ST_DT2" 		: formData.ST_DT2_IC
+					,"ED_DT2" 		: formData.ED_DT2_IC
+					,"ST_DT3" 		: formData.ST_DT3_IC
+					,"ED_DT3" 		: formData.ED_DT3_IC
 					,"modify" 		: formData.modify
 					}
 				}
@@ -198,23 +198,57 @@ function validation(){
 	var ST_DT1_I = document.getElementById("ST_DT1_I");
 	var ED_DT1_I = document.getElementById("ED_DT1_I");
 	
-	if(BAS_YY_I.value.length == 0){
-		alert("기준년도를 입력해주세요.");
-		BAS_YY_I.focus();
-		return false;
-	}
-
-	if(ST_DT1_I.value.length == 0){
-		alert("시작일1을 입력해주세요.");
-		ST_DT1_I.focus();
-		return false;
+	if($("#BAS_YY_I").val().length != 4){
+		alert("4자리의 기준년도를 입력해주세요.");
+		$("#BAS_YY_I").focus();
+		return;
 	}
 	
-	if(ED_DT1_I.value.length == 0){
-		alert("종료일1을 입력해주세요.");
-		ED_DT1_I.focus();
-		return false;
+	if($("#ST_DT1_I").val().length == 0){
+		alert("시작일1을 입력해주세요.");
+		$("#ST_DT1_I").focus();
+		return;
 	}
+	
+	if($("#ED_DT1_I").val().length == 0){
+		alert("종료일1을 입력해주세요.");
+		$("#ED_DT1_I").focus();
+		return;
+	}
+
+	if(
+		($("#ST_DT2_IC").val().length == 0 && $("#ED_DT2_IC").val().length != 0) || 
+		($("#ST_DT2_IC").val().length != 0 && $("#ED_DT2_IC").val().length == 0)
+	){
+		alert("시작일 및 종료일을 입력해주세요.");
+		return;
+	} else if($("#ST_DT2_IC").val().length != 0 && $("#ED_DT2_IC").val().length != 0){
+		if ($("#ST_DT2_IC").val() <= $("#ED_DT1_I").val()) {
+			alert("시작일 종료일의 기간은 서로 중복되어선 안됩니다.")
+			return;
+		} else if ($("#ST_DT2_IC").val() >= $("#ED_DT2_IC").val()) {
+			alert("종료일은 시작일과 같거나 과거일 수 없습니다.")
+			return;
+		}
+	}
+
+	
+	if(
+		($("#ST_DT3_IC").val().length == 0 && $("#ED_DT3_IC").val().length != 0) || 
+		($("#ST_DT3_IC").val().length != 0 && $("#ED_DT3_IC").val().length == 0)
+	){
+		alert("시작일 및 종료일을 입력해주세요.");
+		return;
+	} else if($("#ST_DT3_IC").val().length != 0 && $("#ED_DT3_IC").val().length != 0){
+		if ($("#ST_DT3_IC").val() <= $("#ED_DT2_IC").val()) {
+			alert("시작일 종료일의 기간은 서로 중복되어선 안됩니다.")
+			return;
+		} else if ($("#ST_DT3_IC").val() >= $("#ED_DT3_IC").val()) {
+			alert("종료일은 시작일과 같거나 과거일 수 없습니다.")
+			return;
+		}
+	}
+
 	savePeriodInfo();
 }
 </script>
