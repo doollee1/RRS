@@ -129,8 +129,10 @@ public class ProductService {
 				
 				if(detailMap.getString("STATUS_P").equals("I")){
 					productDao.insertPeriodInfo(detailMap);
+					System.out.println("ㅁㅁㅁㅁㅁ" + detailMap);
 				}else if(detailMap.getString("STATUS_P").equals("U")){
 					productDao.updatePeriodInfo(detailMap); // 상품 수정
+					System.out.println("ㄴㄴㄴㄴ" + detailMap);
 				}
 			}
 		} catch (Exception e) {

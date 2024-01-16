@@ -188,8 +188,6 @@ public class ProductController {
 		param.put("BAS_YY", reqData.get("BAS_YY"));
 		param.put("LOGIN_USER" , LoginInfo.getUserId());
 		
-		System.out.println("ㅁㅁㅁㅁㅁ" + detail);
-		
 		if(!productService.savePeriodInfo(param, detail)){
 			respData.put("SAVE", "N");
 		}

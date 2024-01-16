@@ -67,7 +67,7 @@ $(function(){
 		open: function() {
 			$("#BAS_YY_SEL").val($(this).data("BAS_YY"));
 			$("#SSN_GBN_SEL").val($(this).data("SSN_GBN"));
-			$("#BAS_YY_PS_T").text($(this).data("BAS_YY") + "-" + $(this).data("SSN_GBN"));
+			$("#BAS_YY_PS_T").text($(this).data("BAS_YY") + "-" + (($(this).data("SSN_GBN") == 1) ? "시즌" : "비시즌"));
 			
 			createGrid();
 			cSearch();

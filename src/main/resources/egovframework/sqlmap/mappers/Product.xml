@@ -161,16 +161,19 @@
 	/* Product.xml -> selectPeriodInfo */
 		SELECT BAS_YY					<!-- 기준년도 -->
 			 , BAS_YY_SEQ				<!-- 기준년도 순번 -->
-			 , SSN_GBN					<!-- 시즌구분 -->
-		     , ST_DT1		<!-- 시작일1 -->
-		     , ED_DT1		<!-- 종료일1 -->
-			 , ST_DT2		<!-- 시작일2 -->
-		     , ED_DT2		<!-- 종료일2 -->
-			 , ST_DT3		<!-- 시작일3 -->
-		     , ED_DT3		<!-- 종료일3 -->
-		  FROM TB_BAS_YY_INFO
+			 , (SELECT CODE_NM 
+				  FROM bc_comm_l B
+				 WHERE HEAD_CD = 500090
+				   AND A.SSN_GBN = B.CODE) SSN_GBN			<!-- 시즌구분 -->
+		     , ST_DT1					<!-- 시작일1 -->
+		     , ED_DT1					<!-- 종료일1 -->
+			 , ST_DT2					<!-- 시작일2 -->
+		     , ED_DT2					<!-- 종료일2 -->
+			 , ST_DT3					<!-- 시작일3 -->
+		     , ED_DT3					<!-- 종료일3 -->
+		  FROM TB_BAS_YY_INFO A
 		 WHERE 1 = 1
-		   AND BAS_YY = #{BAS_YY}
+		   AND A.BAS_YY = #{BAS_YY}
 	</select>
 	
 	<insert id="insertPeriodInfo" parameterType="BMAP">
@@ -197,10 +200,10 @@
 					, #{SSN_GBN}
 					, #{ST_DT1}
 					, #{ED_DT1}
-					, #{ST_DT2}
-					, #{ED_DT2}
-					, #{ST_DT3}
-					, #{ED_DT3}
+					, IF(#{ST_DT2} = '', NULL, #{ST_DT2}) 
+					, IF(#{ED_DT2} = '', NULL, #{ED_DT2}) 
+					, IF(#{ST_DT3} = '', NULL, #{ST_DT3}) 
+					, IF(#{ED_DT3} = '', NULL, #{ED_DT3}) 
 					, current_date()
 					, #{LOGIN_USER}
 					, current_date()
@@ -241,10 +244,18 @@
 			 , SSN_GBN
 			 , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ST_DT1, 5)))
 			 , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ED_DT1, 5)))
+			 <if test='ST_DT2 != ""'>
 			 , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ST_DT2, 5))) 
+			 </if>
+			 <if test='ED_DT2 != ""'>
 		     , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ED_DT2, 5))) 
+		     </if>
+		     <if test='ST_DT3 != ""'>
 		     , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ST_DT3, 5))) 
+		     </if>
+		     <if test='ED_DT3 != ""'>
 		     , CONCAT(#{BAS_YY_PASTE}, (SUBSTR(ED_DT3, 5))) 
+		     </if>
 			 , current_date()
 			 , #{LOGIN_USER}
 			 , current_date()
