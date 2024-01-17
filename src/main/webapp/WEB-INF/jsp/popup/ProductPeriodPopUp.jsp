@@ -84,14 +84,13 @@ $(function(){
 			createGrid();
 			cSearch();
 			
-			/* 그리드 이벤트 */
+			/* 그리드 이벤트
 			$('#periodGrid').jqGrid('setGridParam', {
-				  onSelectRow: function(rowid, status, e) {
-					  periodGrid_onSelRow(rowid, status, e);
+				  onSelectRow: function(rowid, iRow, iCol, e) {
+					  periodGrid_onSelRow(rowid, iRow, iCol, e);
 				  }
 			}); 
 			
-			/*
 			$('#periodGrid').jqGrid('setGridParam', {
 				ondblClickRow: function(rowid, iRow, iCol, e) {
 					periodGrid_ondblClickRow(rowid, iRow, iCol, e);
@@ -331,7 +330,6 @@ $(function(){
    
 	//저장버튼
 	$("#btn_save").on("click" , function(){
-		validation();
 		btGrid.gridSaveRow('periodGrid');
 		var gridData  = $("#periodGrid").getRowData();
 		var ids = $("#periodGrid").jqGrid("getDataIDs");
@@ -357,15 +355,6 @@ $(function(){
 				if(k == "STATUS_P" && json[k] != 'R'){
 					cnt++;
 					return;
-				}
-				
-				if(k == "STATUS_P" && json[k] == 'I'){
-					var tmp = json["ST_DT1"];
-					alert(tmp);
-					return;
-				}
-				if(tmp < json["ST_DT1"]){
-					alert(1);
 				}
 				
 			});
@@ -498,9 +487,7 @@ $(function(){
 	});
 });
 
-function periodGrid_onSelRow(rowid, status, e){
-	var rowId = $("#periodGrid").jqGrid('getGridParam','selrow');
-	var selStdt1 = $("#periodGrid").jqGrid("getCell", rowId, "ST_DT1");
+function periodGrid_onSelRow(rowid, iRow, iCol, e){
 }
 
 /*
