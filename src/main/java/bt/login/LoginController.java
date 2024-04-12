@@ -33,6 +33,7 @@ import bt.btframework.utils.LoginInfo;
 import bt.common.service.CommonService;
 import bt.login.service.LoginService;
 import egovframework.com.utl.sim.service.EgovClntInfo;
+import egovframework.com.utl.sim.service.EgovFileScrty;
 import egovframework.com.utl.slm.EgovMultiLoginPreventor;
 
 @Controller
@@ -97,13 +98,11 @@ public class LoginController {
 	        PrivateKey privateKey = (PrivateKey) session.getAttribute(LoginController.RSA_WEB_KEY);
 	 
 	        // 복호화
-	        // param.put("PASSWORD", decryptRsa(privateKey, param.getString("PASSWORD")));
+	         param.put("PASSWORD", decryptRsa(privateKey, param.getString("PASSWORD")));
 	        
 	        // 다시 암호화
-	        // param.put("PASSWORD", EgovFileScrty.encryptPassword(param.getString("PASSWORD"), param.getString("USER_ID")));
+	         param.put("PASSWORD", EgovFileScrty.encryptPassword(param.getString("PASSWORD"), param.getString("USER_ID")));
 	        
-	        param.put("PASSWORD", "Tzobb92c73rPD/768CoaUjNm6YYsfnIDdXAhuF7z9ag=");
-
 			LoginVO loginVO = loginService.selectCmUserForContractReq(param);
 			
 			// 사용자 그리드 정보 가져오기
