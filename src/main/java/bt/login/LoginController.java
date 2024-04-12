@@ -79,6 +79,8 @@ public class LoginController {
 	
 	@RequestMapping(value = "/login/login.do")
 	public String login(ModelMap model, HttpServletRequest request) throws Exception{
+		
+		logger.info("======== 로그인화면 =======");
 		initRsa(request);
 				
 		return "/login/login";
@@ -234,6 +236,9 @@ public class LoginController {
      * @param request
      */
     public void initRsa(HttpServletRequest request) {
+    	
+    	logger.info("======= RSA 공개키, 개인키 생성 =========");
+    	
         HttpSession session = request.getSession();
  
         KeyPairGenerator generator;
