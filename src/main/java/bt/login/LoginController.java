@@ -237,7 +237,7 @@ public class LoginController {
      */
     public void initRsa(HttpServletRequest request) {
     	
-    	logger.info("======= RSA 공개키, 개인키 생성 =========");
+    	logger.info("======= RSA 공개키, 개인키 생성 123 =========");
     	
         HttpSession session = request.getSession();
  
