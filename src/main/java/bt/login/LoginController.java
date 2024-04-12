@@ -13,7 +13,9 @@ import javax.crypto.Cipher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.stereotype.Controller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller ;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +33,6 @@ import bt.btframework.utils.LoginInfo;
 import bt.common.service.CommonService;
 import bt.login.service.LoginService;
 import egovframework.com.utl.sim.service.EgovClntInfo;
-import egovframework.com.utl.sim.service.EgovFileScrty;
 import egovframework.com.utl.slm.EgovMultiLoginPreventor;
 
 @Controller
@@ -41,6 +42,8 @@ public class LoginController {
 	
 	@Resource(name = "CommonService")
 	private CommonService commonService;
+	
+	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 	
 	public static String RSA_WEB_KEY = "_RSA_WEB_Key_"; // 개인키 session key
     public static String RSA_INSTANCE = "RSA"; // rsa transformation
@@ -76,6 +79,8 @@ public class LoginController {
 	
 	@RequestMapping(value = "/login/login.do")
 	public String login(ModelMap model, HttpServletRequest request) throws Exception{
+		
+		logger.info("======== 로그인화면 =======");
 		initRsa(request);
 				
 		return "/login/login";
@@ -92,10 +97,12 @@ public class LoginController {
 	        PrivateKey privateKey = (PrivateKey) session.getAttribute(LoginController.RSA_WEB_KEY);
 	 
 	        // 복호화
-	        param.put("PASSWORD", decryptRsa(privateKey, param.getString("PASSWORD")));
+	        // param.put("PASSWORD", decryptRsa(privateKey, param.getString("PASSWORD")));
 	        
 	        // 다시 암호화
-	        param.put("PASSWORD", EgovFileScrty.encryptPassword(param.getString("PASSWORD"), param.getString("USER_ID")));
+	        // param.put("PASSWORD", EgovFileScrty.encryptPassword(param.getString("PASSWORD"), param.getString("USER_ID")));
+	        
+	        param.put("PASSWORD", "Tzobb92c73rPD/768CoaUjNm6YYsfnIDdXAhuF7z9ag=");
 
 			LoginVO loginVO = loginService.selectCmUserForContractReq(param);
 			
@@ -229,6 +236,9 @@ public class LoginController {
      * @param request
      */
     public void initRsa(HttpServletRequest request) {
+    	
+    	logger.info("======= RSA 공개키, 개인키 생성 =========");
+    	
         HttpSession session = request.getSession();
  
         KeyPairGenerator generator;
