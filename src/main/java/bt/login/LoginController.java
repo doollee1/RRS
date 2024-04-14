@@ -174,6 +174,9 @@ public class LoginController {
 	 */
 	@RequestMapping(value = "/login/logout.do")
 	public String getDeptBalanceStatusList(HttpServletRequest req) throws Exception {
+		
+		logger.info("======== 로그아웃 =======");
+		
 		BMap mapCmSysConect = new BMap();
 		mapCmSysConect.put("USER_ID", LoginInfo.getUserId());
 		mapCmSysConect.put("USER_IP", EgovClntInfo.getClntIP(req));
