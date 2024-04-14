@@ -30,6 +30,9 @@ public class ProductController {
 
 	@RequestMapping(value = "/product/Product.do")
 	public String product(ModelMap model) throws Exception {
+		
+		logger.info("====== 상품추가=======");
+		
 		model.addAttribute("basyy", productService.selectBasYY(null));
 		
 		BMap param = new BMap();
