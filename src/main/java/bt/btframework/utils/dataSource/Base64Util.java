@@ -1,7 +1,7 @@
 package bt.btframework.utils.dataSource;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+
+import java.util.Base64;
 
 /** <PRE>
  * Base64유틸리티 클래스
@@ -22,8 +22,9 @@ public final class Base64Util {
 			byte[] plainText = null;
 			plainText = str.getBytes();
 			
-			BASE64Encoder encoder = new BASE64Encoder();
-			rtnVal = encoder.encode(plainText);
+			//BASE64Encoder encoder = new BASE64Encoder();
+			//rtnVal encoder.encode(plainText);
+			rtnVal = Base64.getEncoder().encodeToString(plainText);
 		}catch(Exception e){
 			return "";
 		}
@@ -38,8 +39,9 @@ public final class Base64Util {
 			byte[] plainText = null;
 			plainText = str;
 
-			BASE64Encoder encoder = new BASE64Encoder();
-			rtnVal = encoder.encode(plainText);
+			//BASE64Encoder encoder = new BASE64Encoder();
+			//rtnVal = encoder.encode(plainText);
+			rtnVal = Base64.getEncoder().encodeToString(plainText);
 		}catch(Exception e){
 			return "";
 		}
@@ -57,8 +59,10 @@ public final class Base64Util {
 		try{
 			byte[] plainText = null;
 
-			BASE64Decoder decoder = new BASE64Decoder();
-			plainText = decoder.decodeBuffer(str);
+			//BASE64Decoder decoder = new BASE64Decoder();
+			//plainText = decoder.decodeBuffer(str);
+			
+			plainText = Base64.getDecoder().decode(str);
 			rtnVal = new String(plainText);
 		}catch(Exception e){
 			return "";
@@ -72,8 +76,10 @@ public final class Base64Util {
 		String rtnVal = null;
 		try{
 
-			BASE64Decoder decoder = new BASE64Decoder();
-			plainText = decoder.decodeBuffer(str);
+			//BASE64Decoder decoder = new BASE64Decoder();
+			//plainText = decoder.decodeBuffer(str);
+			
+			plainText = Base64.getDecoder().decode(str);
 			rtnVal = new String(plainText);
 		}catch(Exception e){
 			return plainText;
