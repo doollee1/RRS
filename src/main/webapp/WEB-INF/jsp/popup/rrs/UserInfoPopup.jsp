@@ -172,7 +172,7 @@ function saveUserInfo(){
 		return;
 	}
 	if(formData.USER_ID === "") {
-		alert("전화번호를 입력해주세요.");
+		alert("사용자ID를 입력해주세요.");
 		return;
 	}
 	if(!validChk_email(formData.EMAIL)) {
