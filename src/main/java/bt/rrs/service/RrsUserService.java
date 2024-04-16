@@ -1,5 +1,6 @@
 package bt.rrs.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -12,8 +13,9 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import bt.btframework.excel.POIExcelRRS;
 import bt.btframework.utils.BMap;
+import bt.btframework.utils.BRespData;
+import bt.btframework.utils.ResponseStatus;
 import bt.rrs.dao.RrsUserDao;
-import egovframework.com.utl.sim.service.EgovFileScrty;
 
 @Service("RrsUserService")
 public class RrsUserService {
@@ -63,7 +65,7 @@ public class RrsUserService {
 		if(isNew.equals("Y")) {
 			// 신규 입력인 경우
 			if(cnt == 0) {
-				param.put("PASSWD", EgovFileScrty.encryptPassword("1234", param.getString("USER_ID")));   //"1234"
+				param.put("PASSWD", "1234");
 				rrsUserDao.insertUserInfo(param); //등록되지 않았을 때 등록
 			} else {
 				bMap.put("result", "isExistUser");
