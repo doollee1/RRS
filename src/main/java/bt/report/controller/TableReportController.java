@@ -391,6 +391,9 @@ public class TableReportController {
 	
 	@RequestMapping(value = "/retrieveCustomerReportSend.do", method = RequestMethod.POST)
     public BRespData emailSend(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		
+		logger.info("=============== 인보이스 메일전송 =============");
+		
 	    BMap param = new BMap();
         param.put("SEQ"        , (String) reqData.get("SEQ"));
         param.put("REQ_DT"     , (String) reqData.get("REQ_DT"));
@@ -698,6 +701,8 @@ public class TableReportController {
         sendEmailparam.put("MSG"     		, msg);
         sendEmailparam.put("SUBJECT"   	, subject);
        
+        logger.info("=========== sendEmailparam : "+sendEmailparam.toString());
+        
         boolean res = mailSendService.sendMail(sendEmailparam);
         
         System.out.println("================"+res);

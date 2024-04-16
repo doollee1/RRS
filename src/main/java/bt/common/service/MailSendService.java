@@ -2,7 +2,12 @@ package bt.common.service;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.mail.*;
+import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.EmailAttachment;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.MultiPartEmail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -20,6 +25,8 @@ public class MailSendService {
 
     @Autowired
     private Environment env;
+    
+    private static final Logger logger = LoggerFactory.getLogger(MailSendService.class);
 
 	/**
 	 * Send Mail
@@ -78,7 +85,8 @@ public class MailSendService {
 //			email.setMsg(emailContents);
 
 		} catch (EmailException  ex) {
-			System.err.println("System Exception ::::: " + ex.getMessage());
+			logger.info("EmailException ::::: " + ex.getMessage());
+			ex.printStackTrace();
 			return false;
 		}
 		
