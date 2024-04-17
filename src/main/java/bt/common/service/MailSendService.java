@@ -62,7 +62,7 @@ public class MailSendService {
 		    email.setHostName(env.getProperty("EMAIL.HOST"));
             email.setSmtpPort(Integer.parseInt(env.getProperty("EMAIL.PORT")));
             email.setSslSmtpPort(env.getProperty("EMAIL.PORT"));
-            email.setAuthenticator(new DefaultAuthenticator(env.getProperty("EMAIL.FROM"), "skEnffl!2#4")); // common.properties 
+            email.setAuthenticator(new DefaultAuthenticator(env.getProperty("EMAIL.FROM"), env.getProperty("EMAIL.PW"))); // common.properties, "skEnffl!2#4" 
             email.setSSLOnConnect(true);
             
 		    email.addTo(toEmail);

@@ -322,11 +322,14 @@ $(function() {
 		var args = '';
 		$.each(gridData , function(i , json){
 			$.each(json, function(k , value){
+				
+				//console.log("json[STATUS_V] : "+json["STATUS_V"]);
 				if(k == "STATUS_V" && json[k] !='R'){
 					cnt++;
 					return;
 				}
 			
+				//console.log("json[ITEM_CD] : "+json["ITEM_CD"]);
 				if(k == "ITEM_CD" && json[k].indexOf("Object") >-1 ){
 					errChk++;
 					return;

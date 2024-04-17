@@ -366,6 +366,9 @@ public class ReserveRestController {
 	 */
 	@RequestMapping(value = "/deposit.do", method = RequestMethod.POST)
 	public BRespData depositComplete(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		
+		logger.info("========= 입금금액 UPDATE =========");
+		
 		BRespData respData = new BRespData();
 		BMap param = new BMap();
 		
@@ -383,6 +386,9 @@ public class ReserveRestController {
 		param.put("PICK_OUT"   , (String)reqData.get("PICK_OUT"));	
 		param.put("DCT_AMT"    , reqData.get("DCT_AMT"));	
 		param.put("LOGIN_USER" , LoginInfo.getUserId());
+		
+		logger.info("입금금액 업데이트 param : "+param.toString());
+		
 		respData.put("result", reserveService.depositComplete(param));
 		return respData;
 	}

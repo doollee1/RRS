@@ -1060,7 +1060,13 @@ $(function() {
 		var dep_amt = parseInt($("#DEP_AMT").val().replaceAll(",", ""));
 		var val_amt = parseInt($("#BAL_AMT").val().replaceAll(",", ""));
 		var dct_amt = parseInt($("#DCT_AMT").val().replaceAll(",", ""));
-		console.log(pay_amt);
+		
+		console.log("pay_amt(입금금액) : "+pay_amt);
+		console.log("tot_amt(총금액)  : "+tot_amt);
+		console.log("dep_amt(예약금액) : "+dep_amt);
+		console.log("val_amt(잔금액)  : "+val_amt);
+		console.log("dct_amt(할인금액) : "+dct_amt);
+		
 		if(pay_amt == 0 || pay_amt == ""){
 			alert("입금금액을 입력하세요.");
 			return false;
