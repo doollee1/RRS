@@ -152,15 +152,29 @@
 	function cDel(){
 		
 		console.log("===== 공지사항 삭제 =====");
+		console.log("notice_no : "+$("#hNoticeNo").val());
+		
+		if ($("#hNoticeNo").val() == "") return;
 		
 		if(confirm("삭제하시겠습니까?")){
 			var url = '/common/deleteNoticeInfo.do';
-			var param = {
-					"NOTICE_NO" : "${param.NOTICE_NO}"
-				};
+			var param = {"param" : {
+					"NOTICE_NO" : $("#hNoticeNo").val()
+				}
+			};
+			
 			fn_ajax(url, false, param, function(data, xhr){
-				alert("삭제하였습니다.");
-				cSearch();
+				
+				console.log("data  : "+JSON.stringify(data));
+				if(data.result == "success"){
+					
+					alert("삭제 성공하였습니다.");
+					cSearch();
+				} else {
+					
+					alert("삭제 실패하였습니다.");
+				}
+				
 			});
 		}
 	}

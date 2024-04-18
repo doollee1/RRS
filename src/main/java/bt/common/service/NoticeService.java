@@ -293,10 +293,10 @@ public class NoticeService {
 	 * @param param
 	 * @throws Exception
 	 */
-	public void deleteNoticeInfo(BMap param) throws Exception{
+	public int deleteNoticeInfo(BMap param) throws Exception{
 		
 		logger.info("============= 공지사항 삭제처리 서비스=============");
 		
-		noticeDao.deleteNoticeInfo(param);
+		return noticeDao.deleteNoticeInfo(param);
 	}
 }

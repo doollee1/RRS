@@ -52,7 +52,7 @@ public class NoticeDao extends DBAbstractMapper {
 	 * @param param
 	 * @throws Exception
 	 */
-	public void deleteNoticeInfo(BMap param) throws Exception{
-		delete("NoticeMapper.deleteNoticeInfo", param);
+	public int deleteNoticeInfo(BMap param) throws Exception{
+		return delete("NoticeMapper.deleteNoticeInfo", param);
 	}
 }

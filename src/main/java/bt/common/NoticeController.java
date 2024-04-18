@@ -231,11 +231,20 @@ public class NoticeController {
 		logger.info("============= 공지사항 삭제처리 Controller =============");
 		
 		BMap param = reqData.getParamDataMap("param");
+		logger.info("param : "+param);
+		
 		BRespData respData = new BRespData();
 
 		//공지사항 삭제
-		noticeService.deleteNoticeInfo(param); 
+		int result = noticeService.deleteNoticeInfo(param); 
+		logger.info("삭제결과 : "+result);
 		
+		if(result < 1) {
+			respData.put("result", "fail");
+			return respData;
+		}
+		
+		respData.put("result", "success");		
 		return respData;
 	}
 	
