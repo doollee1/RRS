@@ -145,7 +145,7 @@ public class NoticeService {
 			BMap map = new BMap();
 			CommonsMultipartFile cmf = (CommonsMultipartFile) file;			
 			String filename = cmf.getOriginalFilename();			
-//			System.out.println(filename+": fname");
+			logger.info("원본 filename : "+filename);
 			
 			long filesize = cmf.getSize();
 //			System.out.println(filesize+": filesize");
@@ -215,8 +215,8 @@ public class NoticeService {
         //String filename = new String(fname.getBytes("iso-8859-1"),"UTF-8");
         String of = req.getParameter("of"); //인코딩 서버 기본값 ("iso-8859-1")
         
-        System.out.println("filename="+filename);
-        System.out.println("uploadedFilneName="+of);
+        logger.info("NEW_FILE_NM(f)="+filename);
+        logger.info("SRC_FILE_NM(of)="+of);
         
         String dirid = req.getParameter("dirid");
 		if(dirid == null || "".equals(dirid)){

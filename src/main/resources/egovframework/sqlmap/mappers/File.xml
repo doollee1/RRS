@@ -37,7 +37,7 @@
 	</select>
 	
 	<delete id="deleteFileInfo" parameterType="BMap">
-		DELETE BC_FILE
+		DELETE FROM BC_FILE
 		 WHERE FILE_UID = #{FILE_UID}
 		   AND NEW_FILE_NM = #{NEW_FILE_NM}
 	</delete>

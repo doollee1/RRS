@@ -131,7 +131,7 @@
 	function output(data){
 		$.each(data, function(index, item){
 			var link = "/common/downloadNoticeAttach.do?f=" + item.NEW_FILE_NM + "&of=" + item.SRC_FILE_NM;
-			$("#noticeAttach").append("<a href='#' onclick=\"fileDownload('" + link + "');\">" + item.SRC_FILE_NM + "</a>");
+			$("#noticeAttach").append("<a href='#' onclick=\"fileDownload('" + link + "');\">" + item.NEW_FILE_NM + "</a>");  //item.SRC_FILE_NM
 			$("#noticeAttach").append("<br/>");
 		});
 	}
