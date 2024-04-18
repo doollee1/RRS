@@ -6,6 +6,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +32,8 @@ public class NoticeController {
 	
 	@Resource(name = "CommonService")
 	private CommonService commonService;
+	
+	private static final Logger logger = LoggerFactory.getLogger(NoticeController.class);
 	
 	/**
 	 * 공지사항 리스트 페이지 호출
@@ -207,6 +211,30 @@ public class NoticeController {
 		BRespData respData = new BRespData();
 
 		noticeService.updateNoticeCnt(param);
+		
+		return respData;
+	}
+	
+	
+	/**
+	 * 공지사항 삭제
+	 * 
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/common/deleteNoticeInfo.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData deleteNoticeInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		
+		logger.info("============= 공지사항 삭제처리 Controller =============");
+		
+		BMap param = reqData.getParamDataMap("param");
+		BRespData respData = new BRespData();
+
+		//공지사항 삭제
+		noticeService.deleteNoticeInfo(param); 
 		
 		return respData;
 	}

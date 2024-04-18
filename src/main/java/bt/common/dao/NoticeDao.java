@@ -46,4 +46,13 @@ public class NoticeDao extends DBAbstractMapper {
 	public void updateNoticeCnt(BMap param) throws Exception{
 		update("NoticeMapper.updateNoticeCnt", param);
 	}
+	
+	/**
+	 * 공지사항 삭제
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deleteNoticeInfo(BMap param) throws Exception{
+		delete("NoticeMapper.deleteNoticeInfo", param);
+	}
 }

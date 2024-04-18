@@ -112,4 +112,10 @@
 				  FROM BC_NOTICE)A
 		  WHERE ROWNUM <![CDATA[ < ]]> 11
 	</select>
+	
+	<!-- 공지사항 삭제 -->
+	<delete id="deleteNoticeInfo" parameterType="BMap">
+		DELETE FROM BC_NOTICE
+		 WHERE NOTICE_NO = #{NOTICE_NO}
+	</delete>
 </mapper>

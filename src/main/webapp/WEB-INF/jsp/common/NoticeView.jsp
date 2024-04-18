@@ -148,6 +148,23 @@
 		fn_pageMove("/common/NoticeWrite.do", param);
 	}
 	
+	//공지사항 삭제
+	function cDel(){
+		
+		console.log("===== 공지사항 삭제 =====");
+		
+		if(confirm("삭제하시겠습니까?")){
+			var url = '/common/deleteNoticeInfo.do';
+			var param = {
+					"NOTICE_NO" : "${param.NOTICE_NO}"
+				};
+			fn_ajax(url, false, param, function(data, xhr){
+				alert("삭제하였습니다.");
+				cSearch();
+			});
+		}
+	}
+	
 	function updateNoticeCnt() {
 		if ($("#hNoticeNo").val() == "") return;
 		

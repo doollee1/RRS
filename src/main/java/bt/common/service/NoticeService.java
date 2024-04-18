@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.util.Streams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -45,6 +47,8 @@ public class NoticeService {
 
     @Autowired
     private Environment env;
+    
+    private static final Logger logger = LoggerFactory.getLogger(NoticeService.class);
     
 	/**
 	 * 공지사항 리스트 조회
@@ -280,5 +284,19 @@ public class NoticeService {
 	 */
 	public void updateNoticeCnt(BMap param) throws Exception{
 		noticeDao.updateNoticeCnt(param);
+	}
+	
+	
+	/**
+	 * 공지사항 삭제 
+	 * 
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deleteNoticeInfo(BMap param) throws Exception{
+		
+		logger.info("============= 공지사항 삭제처리 서비스=============");
+		
+		noticeDao.deleteNoticeInfo(param);
 	}
 }
