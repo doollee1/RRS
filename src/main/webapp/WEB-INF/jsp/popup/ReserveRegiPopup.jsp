@@ -910,6 +910,21 @@ $(function() {
 	    $(this).val(numberWithCommas(tmpValue));
 	});
 	
+	$("#PAY_AMT").on("keyup", function(){
+		var dct_amt = parseFloat(fn_uncomma($("#DCT_AMT").val()));
+		var tot_amt = parseFloat(fn_uncomma($("#TOT_AMT").val()));
+		var pay_amt = parseFloat(fn_uncomma($(this).val()));
+		var bal_amt;
+		
+		if (dct_amt > 0){
+			bal_amt = tot_amt - dct_amt - pay_amt;    //잔금 = 총금액 - 할인금액 - 입금금액
+		}else{
+			bal_amt = tot_amt - pay_amt;    //잔금 = 총금액 - 할인금액
+		}
+		
+		$("#BAL_AMT").val(fn_comma(bal_amt));
+	});
+	
 	$("#DCT_AMT").on("keyup", function(){
 		var prv_dct_amt = $("#PRV_DCT_AMT").val();
 		var prv_bal_amt = $("#PRV_BAL_AMT").val();
@@ -920,9 +935,9 @@ $(function() {
 		var bal_amt;
 		
 		if (pay_amt > 0){
-			bal_amt = tot_amt - dct_amt - dep_amt;    //잔금 = 총금액 - 할인금액 - 예약금액
+			bal_amt = tot_amt - dct_amt - pay_amt;    //잔금 = 총금액 - 할인금액 - 입금금액
 		}else{
-			bal_amt = tot_amt - dct_amt;    //잔금 = 총금액
+			bal_amt = tot_amt - dct_amt;    //잔금 = 총금액 - 할인금액
 		}
 		
 		if(dct_amt > tot_amt){
