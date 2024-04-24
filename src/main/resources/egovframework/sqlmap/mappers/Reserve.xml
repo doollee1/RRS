@@ -243,7 +243,9 @@
 	         , T3.DEP_IN_DT                           AS DEP_IN_DT         /* 예약금입금일자         */
 	         , T3.EXP_DT                              AS EXP_DT            /* 예약 기한              */
 	         , NVL(T3.DEP_AMT,0)                      AS DEP_AMT           /* 예약금액               */
-	         , NVL(T3.BAL_AMT,0)                      AS BAL_AMT           /* 잔금                   */
+	         , CASE WHEN NVL(T3.PAY_AMT,0) = '0'
+	           THEN NVL(T3.TOT_AMT,0) - NVL(T3.DCT_AMT,0)
+	           ELSE NVL(T3.BAL_AMT,0) END               AS BAL_AMT           /* 잔금                   */
 	         , NVL(T3.DCT_AMT,0)                      AS DCT_AMT           /* 할인금액               */
 	         , NVL(T3.PAY_AMT,0)                      AS PAY_AMT           /* 입금금액               */
 	         , NVL(T3.TOT_AMT,0)                      AS TOT_AMT           /* 총액                   */
@@ -1248,7 +1250,7 @@
 		     , PAY_AMT   = #{PAY_AMT}
 		     , DEP_IN_DT = date_format(NOW(),'%Y%m%d')
 		     , DCT_AMT   = #{DCT_AMT}
-		     , BAL_AMT   = BAL_AMT - #{PAY_AMT} - #{DCT_AMT}
+		     , BAL_AMT   = TOT_AMT - #{PAY_AMT} - #{DCT_AMT}
 		     , BAL_IN_DT = date_format(NOW(),'%Y%m%d')
 		     , UPD_DTM = NOW()
 		     , UPD_ID  = #{LOGIN_USER}

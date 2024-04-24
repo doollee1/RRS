@@ -248,12 +248,21 @@ public class TableReportController {
 
                 if(DList.get(i).getCode().equals("D04") || DList.get(i).getCode().equals("D32"))
                 {
-                    codeNm = codeNm.replace("[0]", numFormatter.format(resultDeptDetail.get("TOT_AMT"))); //총액
-                    codeNm = codeNm.replace("[1]", numFormatter.format(resultDeptDetail.get("DEP_AMT")));  //예약금
+                	String expDt = (String) resultDeptDetail.get("EXP_DT");
+                    codeNm = codeNm.replace("[0]", numFormatter.format(resultDeptDetail.get("DEP_AMT")));  //예약금
+                    codeNm = codeNm.replace("[1]", expDt.substring(4, 6) + "월 "+expDt.substring(6, 8) + "일");  //예약기한
                 }
                 else if(DList.get(i).getCode().equals("D05") || DList.get(i).getCode().equals("D33"))
                 {
-                    codeNm = codeNm.replace("[0]", numFormatter.format(resultDeptDetail.get("BAL_AMT")) ); //잔금
+                	long reportBalAmt        = 0;
+                	long reportTotAmt        = 0;
+                	long reportDepAmt        = 0;
+                	
+                	reportTotAmt = (long)Double.parseDouble(String.valueOf(resultDeptDetail.get("TOT_AMT")));
+                	reportDepAmt = (long)Double.parseDouble(String.valueOf(resultDeptDetail.get("DEP_AMT")));
+                	
+                	reportBalAmt = reportTotAmt - reportDepAmt;
+                    codeNm = codeNm.replace("[0]", numFormatter.format(reportBalAmt)); //인보이스 잔금 = 총금액 - 팝업 예약금
                 }           
                 currentRow.getCell(1).setValue(codeNm);
             }
@@ -539,12 +548,21 @@ public class TableReportController {
 
                 if(DList.get(i).getCode().equals("D04") || DList.get(i).getCode().equals("D32"))
                 {
-                    codeNm = codeNm.replace("[0]", numFormatter.format(resultDeptDetail.get("TOT_AMT"))); //총액
-                    codeNm = codeNm.replace("[1]", numFormatter.format(resultDeptDetail.get("DEP_AMT")));  //예약금
+                	String expDt = (String) resultDeptDetail.get("EXP_DT");
+                    codeNm = codeNm.replace("[0]", numFormatter.format(resultDeptDetail.get("DEP_AMT")));  //예약금
+                    codeNm = codeNm.replace("[1]", expDt.substring(4, 6) + "월 "+expDt.substring(6, 8) + "일");  //예약기한
                 }
                 else if(DList.get(i).getCode().equals("D05") || DList.get(i).getCode().equals("D33"))
                 {
-                    codeNm = codeNm.replace("[0]", numFormatter.format(resultDeptDetail.get("BAL_AMT")) ); //잔금
+                	long reportBalAmt        = 0;
+                	long reportTotAmt        = 0;
+                	long reportDepAmt        = 0;
+                	
+                	reportTotAmt = (long)Double.parseDouble(String.valueOf(resultDeptDetail.get("TOT_AMT")));
+                	reportDepAmt = (long)Double.parseDouble(String.valueOf(resultDeptDetail.get("DEP_AMT")));
+                	
+                	reportBalAmt = reportTotAmt - reportDepAmt;
+                    codeNm = codeNm.replace("[0]", numFormatter.format(reportBalAmt)); //인보이스 잔금 = 총금액 - 팝업 예약금
                 }           
                 currentRow.getCell(1).setValue(codeNm);
             }

@@ -913,18 +913,27 @@ $(function() {
 	$("#DCT_AMT").on("keyup", function(){
 		var prv_dct_amt = $("#PRV_DCT_AMT").val();
 		var prv_bal_amt = $("#PRV_BAL_AMT").val();
-		var dct_amt = fn_uncomma($(this).val());
-		var tot_amt = fn_uncomma($("#TOT_AMT").val());
-		var dep_amt = fn_uncomma($("#DEP_AMT").val());
+		var dct_amt = parseFloat(fn_uncomma($(this).val()));
+		var tot_amt = parseFloat(fn_uncomma($("#TOT_AMT").val()));
+		var dep_amt = parseFloat(fn_uncomma($("#DEP_AMT").val()));
+		var pay_amt = parseFloat(fn_uncomma($("#PAY_AMT").val()));
 		var bal_amt;
 		
-		bal_amt = tot_amt - dct_amt - dep_amt;
+		if (pay_amt > 0){
+			bal_amt = tot_amt - dct_amt - dep_amt;    //잔금 = 총금액 - 할인금액 - 예약금액
+		}else{
+			bal_amt = tot_amt - dct_amt;    //잔금 = 총금액
+		}
+		
 		if(dct_amt > tot_amt){
 			$(this      ).val(prv_dct_amt);
 			$("#BAL_AMT").val(prv_bal_amt);
+			alert("tot_amt :" + tot_amt);
+			alert("dct_amt :" + dct_amt);
 			alert("금액을 확인해주세요.");
 			return false;
 		}
+		
 		$("#BAL_AMT").val(fn_comma(bal_amt));
 	});
 	
