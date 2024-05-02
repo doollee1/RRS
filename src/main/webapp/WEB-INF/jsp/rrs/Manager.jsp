@@ -102,12 +102,14 @@
 	function createGrid1(){
 		var colName = ['<s:message code='system.UserID'/>',
 					'<s:message code='system.fullname'/>',
-					'텔레그램ID',
+					'텔리그램ID',
+					'텔리그램토큰',
 					'<s:message code='system.compcd'/>']
 		var colModel = [
-			{ name: 'USER_ID', width: 150, align: 'center' },
-			{ name: 'NAME_1ST', width: 200, align: 'center' },
-			{ name: 'CHAT_ID', width: 150, align: 'center'},
+			{ name: 'USER_ID', width: 80, align: 'center' },
+			{ name: 'NAME_1ST', width: 80, align: 'center' },
+			{ name: 'CHAT_ID', width: 80, align: 'center'},
+			{ name: 'TELEGRAM_TOKEN', width: 160, align: 'center'},
 			{ name: 'COMP_CD', width: 100, align: 'center', hidden: true },
 	  	];
 		

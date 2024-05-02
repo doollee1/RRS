@@ -24,7 +24,9 @@
 			        <col width="200px" />
 			        <col width="100px" />
 			        <col width="200px" />
-			        <col width="100px" />
+			        <col width="200px" />
+			        <col width="200px" />
+			        <col width="200px" />
 			        <col width="200px" />
 			    </colgroup>
 		   		<tr>
@@ -42,9 +44,13 @@
 					<td>
 						<input type="text"  id="NAME_1ST" name="NAME_1ST" class="cmc_txt" style="width:150px;" maxlength="40" noSpecial />
 					</td>
-					<th>텔레그램 ID</th>
+					<th>텔리그램 ID</th>
 					<td>
 						<input type="text" id="CHAT_ID" name="CHAT_ID" class="cmc_txt" style="width:150px;" maxlength="20" noSpecial />
+					</td>
+					<th>텔리그램 토큰</th>
+					<td>
+						<input type="text" id="TELEGRAM_TOKEN" name="TELEGRAM_TOKEN" class="cmc_txt" style="width:150px;" maxlength="46" />
 					</td>
 				</tr>
 			</table>

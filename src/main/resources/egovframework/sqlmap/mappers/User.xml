@@ -49,6 +49,7 @@
 			  ,A.UPT_DT
 			  ,A.UPT_ID
 			  ,A.CHAT_ID
+			  ,A.TELEGRAM_TOKEN
 		  FROM BC_USER A 
 	INNER JOIN BC_COMM_L B 
 			ON A.USER_TP = B.CODE
@@ -347,6 +348,7 @@
 			  ,UPT_DT = NOW()
 			  ,UPT_ID = #{LOGIN_USER}
 			  ,CHAT_ID = #{CHAT_ID}
+			  ,TELEGRAM_TOKEN = #{TELEGRAM_TOKEN}
 		 WHERE COMP_CD = #{COMP_CD}
 		   AND USER_ID = #{USER_ID}
 	</update>

@@ -88,6 +88,8 @@ public class ReserveService {
 	 * @throws Exception
 	 */
 	public List<BMap> invoiceSelectList(BMap param) throws Exception {
+		
+		logger.info("======= 인보이스 현황 리스트 조회 ==========");
 	    List<BMap> result = null; 
 		int detailCnt = reserveDao.selectInvoiceListCnt(param);
 		if(detailCnt == 0){
