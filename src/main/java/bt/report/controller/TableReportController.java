@@ -39,6 +39,7 @@ import com.gembox.spreadsheet.SpreadsheetColor;
 import com.gembox.spreadsheet.SpreadsheetInfo;
 
 import bt.btframework.common.vo.CodeVO;
+import bt.btframework.pdf.ExcelToPdf.ExcelToPdf;
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
@@ -658,6 +659,7 @@ public class TableReportController {
 		FileOutputStream fileOut = null;
 
         String filenm 	 = resultDeptDetail.get("REQ_HAN_NM")+ "_"+resultDeptDetail.get("REQ_DT")+".xlsx";
+        String filenmPdf = resultDeptDetail.get("REQ_HAN_NM")+ "_"+resultDeptDetail.get("REQ_DT")+".pdf";
         
 	    BMap paramPath = new BMap();
 	    paramPath.put("REF_CHR1"        ,  "PATH");
@@ -712,11 +714,13 @@ public class TableReportController {
 			System.out.println(e);
 		}
 		
-                
+        
+        //엑셀을 pdf로 변환
+        ExcelToPdf.simpleDocxConvert(env.getProperty("TEMPPATH") + filenm, env.getProperty("TEMPPATH") + filenmPdf);
         
         BMap sendEmailparam = new BMap();
-        sendEmailparam.put("FILE_FULL_NM", env.getProperty("TEMPPATH")  + filenm);
-        sendEmailparam.put("FILE_NM"     	, filenm);
+        sendEmailparam.put("FILE_FULL_NM", env.getProperty("TEMPPATH")  + filenmPdf);
+        sendEmailparam.put("FILE_NM"     	, filenmPdf);
         sendEmailparam.put("TO_EMAIL"   	, resultDeptDetail.get("EMAIL"));
         sendEmailparam.put("MSG"     		, msg);
         sendEmailparam.put("SUBJECT"   	, subject);
