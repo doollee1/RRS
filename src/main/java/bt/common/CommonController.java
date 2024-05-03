@@ -57,6 +57,9 @@ public class CommonController {
 	@RequestMapping(value = "/common/saveGridPdf.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData saveGridPdf(@RequestBody BReqData reqData, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+		
+		logger.info("============ 그리드 PDF 저장 ==========");
+		
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("colModel", reqData.getParamDataList("colModel"));
 		param.put("gridData", reqData.getParamDataList("gridData"));
