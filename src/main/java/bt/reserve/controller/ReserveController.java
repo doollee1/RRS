@@ -182,4 +182,57 @@ public class ReserveController {
 	public String searchId(ModelMap model,HttpServletRequest request) throws Exception{
 		return "/popup/searchId";
 	}
+	
+
+	/**
+	 * 예약등록 팝업 호출
+	 * @param model
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/reserve/reserveListRegi.do")
+	public String ReserveListRegiPopup(ModelMap model,HttpServletRequest request) throws Exception{
+		BMap param = new BMap();
+		param.put("HEAD_CD", 500030);
+
+		BMap param2 = new BMap();
+		param2.put("HEAD_CD" , 500210);
+		
+		BMap param3 = new BMap();
+		param3.put("HEAD_CD" , 500070);
+		
+		BMap param4 = new BMap();
+		param4.put("HEAD_CD" , 500120);
+		
+		BMap param5 = new BMap();
+		param5.put("HEAD_CD" , 500000);
+		param5.put("REF_CHR1", 01);
+		
+		BMap param6 = new BMap();
+		param6.put("HEAD_CD" , 500110);
+
+		BMap param7 = new BMap();
+		param7.put("HEAD_CD" , 500180);
+
+		BMap param8 = new BMap();
+		param8.put("HEAD_CD" , 500190);
+
+		BMap param9 = new BMap();
+		param9.put("HEAD_CD" , 500160);
+
+		model.addAttribute("mgn_gbn"     , reserveService.selectGetCommonCode(param));
+		model.addAttribute("region"      , reserveService.selectGetCommonCode(param2));
+		model.addAttribute("roomtype"    , reserveService.selectGetCommonCode(param3));
+		model.addAttribute("agency"      , reserveService.selectGetCommonCode(param4));
+		model.addAttribute("prod_cd"     , reserveService.selectGetCommonCode(param5));
+		model.addAttribute("cartype"     , reserveService.selectGetCommonCode(param6));
+		model.addAttribute("flight_in"   , reserveService.selectGetCommonCode(param7));
+		model.addAttribute("flight_out"  , reserveService.selectGetCommonCode(param8));
+		model.addAttribute("late_flight" , reserveService.selectGetCommonCode(param9));
+			
+		return "/popup/ReserveListRegiPopup";
+	}
+	
+	
 }
