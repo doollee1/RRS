@@ -23,6 +23,22 @@
 						<td class="small_td">전화번호</td>
 			      		<td><p><input type="text" id="TEL_NO" name="TEL_NO" maxlength="13" oninput="autoHyphen(this)"></p></td>
 			      	</tr>
+					<tr>
+						<td class="small_td">배우자이름</td>
+			      		<td><p><input type="text" id="PARTNER_HAN_NAME" name="PARTNER_HAN_NAME" maxlength="20" onlyKor></p></td>
+			      	</tr>
+					<tr>
+						<td class="small_td">배우자영문이름</td>
+			      		<td><p><input type="text" id="PARTNER_ENG_NAME" name="PARTNER_ENG_NAME" maxlength="20" onlyEng></p></td>
+			      	</tr>
+					<tr>
+						<td class="small_td">배우자성별</td>
+			      		<td><p><input type="text" id="PARTNER_GENDER" name="PARTNER_GENDER" maxlength="1" ></p></td>
+			      	</tr>
+					<tr>
+						<td class="small_td">멤버번호</td>
+			      		<td><p><input type="text" id="MEMBERSHIP_NO" name="MEMBERSHIP_NO" maxlength="20" ></p></td>
+			      	</tr>
 				</tbody>
 			</table>
 			<input type="hidden" id="Ex_HAN_NAME" name="Ex_HAN_NAME" />
@@ -39,7 +55,7 @@ $(function() {
 	$('#MemberUserAddPopup').dialog({
 		title:'멤버 회원 정보 등록',
 		autoOpen: false,
-		height: 160,
+		height: 272,
 		width: 400,
 		modal: true,
 		buttons: {
@@ -60,6 +76,10 @@ $(function() {
 			$('#HAN_NAME').val($(this).data('HAN_NAME'));
 			$('#ENG_NAME').val($(this).data('ENG_NAME'));
 			$('#TEL_NO').val($(this).data('TEL_NO'));
+			$('#PARTNER_HAN_NAME').val($(this).data('PARTNER_HAN_NAME'));
+			$('#PARTNER_ENG_NAME').val($(this).data('PARTNER_ENG_NAME'));
+			$('#PARTNER_GENDER').val($(this).data('PARTNER_GENDER'));
+			$('#MEMBERSHIP_NO').val($(this).data('MEMBERSHIP_NO'));
 			$('#Ex_HAN_NAME').val($(this).data('HAN_NAME'));
 			$('#Ex_ENG_NAME').val($(this).data('ENG_NAME'));
 			$('#Ex_TEL_NO').val($(this).data('TEL_NO'));

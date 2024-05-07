@@ -27,7 +27,7 @@
 	</div>
 
 	<!-- 그리드 시작 -->
-	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
+	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px; padding-bottom:0px; margin-bottom:0px;">
 		<div class="pop_grid_top_wrap">
 			<div class="ct_grid_top_left">
 			    예약기한<input type="text" class="cmc_txt" id="POP_EXP_DT" name="POP_EXP_DT" data-type="date" style="width:20 .5%;"/>
@@ -42,8 +42,44 @@
 			<table id="invoiceGrid"></table>
 			<div id="PartnerSchGrid_pager"></div>
 		</div>
+		<table class="pop_tblForm">
+					<colgroup>
+						<col width="13%" />
+				        <col width="20%" />
+				        <col width="13%" />
+				        <col width="20%" />
+				        <col width="13%" />
+				        <col width="20%" />
+				    </colgroup>	
+					<tr>
+					    <th><s:message code='reservation.moreDetail'/></th>
+					    <td colspan="5">
+					        <textarea id="REMARK" name="REMARK" rows="5" style="width: 99%"></textarea>
+					    </td>
+					</tr>
+		</table>
+		<table class="pop_tblForm">
+					<colgroup>
+						<col width="13%" />
+				        <col width="20%" />
+				        <col width="13%" />
+				        <col width="20%" />
+				        <col width="13%" />
+				        <col width="20%" />
+				    </colgroup>	
+					<tr>
+					    <th><s:message code='reservation.moreDetail'/></th>
+					    <td colspan="5">
+					        <textarea id="REMARK2" name="REMARK2" rows="5" style="width: 99%"></textarea>
+					    </td>
+					</tr>
+		</table>
 	</div>
 	<!-- 그리드 끝 -->
+	
+	
+			    
+			    
 </div>
 
 <script type="text/javascript">
@@ -60,7 +96,7 @@ $(function() {
 	$('#p_invoicePopup').dialog({
 		title :'<s:message code='invoice.invoiceTitle'/>',
 		autoOpen : false,
-		height: 'auto',
+		height: 566,
 		width: 1076.4,
 		modal : true,
 		close : function() {
