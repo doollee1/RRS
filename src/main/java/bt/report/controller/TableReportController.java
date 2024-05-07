@@ -17,27 +17,20 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-
 import com.gembox.spreadsheet.ColorName;
 import com.gembox.spreadsheet.ExcelFile;
-
-
 import com.gembox.spreadsheet.ExcelRow;
 import com.gembox.spreadsheet.ExcelWorksheet;
 import com.gembox.spreadsheet.RowColumn;
@@ -45,7 +38,6 @@ import com.gembox.spreadsheet.SaveOptions;
 import com.gembox.spreadsheet.SpreadsheetColor;
 import com.gembox.spreadsheet.SpreadsheetInfo;
 
-import bt.btframework.common.FileManager;
 import bt.btframework.common.vo.CodeVO;
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
@@ -665,8 +657,8 @@ public class TableReportController {
         
 		FileOutputStream fileOut = null;
 
-        String filenm = resultDeptDetail.get("REQ_HAN_NM")+ "_"+resultDeptDetail.get("REQ_DT")+".xlsx";
-       
+        String filenm 	 = resultDeptDetail.get("REQ_HAN_NM")+ "_"+resultDeptDetail.get("REQ_DT")+".xlsx";
+        
 	    BMap paramPath = new BMap();
 	    paramPath.put("REF_CHR1"        ,  "PATH");
 	    
@@ -719,7 +711,8 @@ public class TableReportController {
 		} catch (IOException e) {
 			System.out.println(e);
 		}
-		
+		                
+        
         BMap sendEmailparam = new BMap();
         sendEmailparam.put("FILE_FULL_NM", env.getProperty("TEMPPATH")  + filenm);
         sendEmailparam.put("FILE_NM"     	, filenm);

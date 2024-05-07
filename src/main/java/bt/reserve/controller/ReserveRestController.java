@@ -1,7 +1,9 @@
 package bt.reserve.controller;
 import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,10 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
 import bt.btframework.utils.LoginInfo;
+import bt.common.service.MailSendService;
 import bt.reserve.service.ReserveService;
 import bt.rrs.dao.RrsUserDao;
 
@@ -26,6 +30,9 @@ public class ReserveRestController {
 	
 	@Resource(name = "RrsUserDao")
 	private RrsUserDao rrsUserDao;
+	
+	@Resource
+    private MailSendService mailSendService; //메일전송서비스
 	
 	/**
 	 * 예약 현황 리스트 조회
@@ -285,6 +292,9 @@ public class ReserveRestController {
 	@RequestMapping(value = "/updateReserveStatus.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData updateReserveStatus(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		
+		logger.info("=========== 예약상태변경 ===========");
+		
 		BRespData respData = new BRespData();
 		
 		BMap paramData = new BMap();
@@ -296,6 +306,39 @@ public class ReserveRestController {
 		if(!reserveService.updateReserveStatus(paramData)){
 			respData.put("dup", "Y");
 		};
+		
+		
+		logger.info("========== 일반(02),예약가능(03) 메일전송 ======= ");
+		
+		String memGbn = reqData.get("MEM_GBN").toString();
+		logger.info("========== 회원구분 : "+memGbn);
+		
+		String chgPrcSts = reqData.get("CHG_PRC_STS").toString();
+		logger.info("========== 변경상태 : "+chgPrcSts);
+		
+		if("02".equals(memGbn)  && "03".equals(chgPrcSts)) {
+		
+			
+	        BMap resultDeptDetail = reserveService.reserveSelectDetail(paramData);
+	        
+	        String toEmail = resultDeptDetail.get("EMAIL").toString();
+	        logger.info("TO_EMAIL : "+toEmail);
+	        
+	        String msg = "예약가능 상태로 변경";
+		    String subject = "예약가능 알림";
+		    
+		    BMap sendEmailparam = new BMap();
+	        sendEmailparam.put("TO_EMAIL"   	, toEmail);
+	        sendEmailparam.put("MSG"     		, msg);
+	        sendEmailparam.put("SUBJECT"   	, subject);
+	        
+		    boolean res = mailSendService.sendMailNoAttach(sendEmailparam);
+		    
+		    if(res) {
+		    	logger.info("이메일전송 완료");
+		    }
+		}
+		
 		return respData;
 	}
 	
