@@ -43,6 +43,28 @@ public class ReserveRestController {
 	}
 	
 	/**
+	 * 예약자와 동반자 리스트
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/reserveSelectAddList.do", method = RequestMethod.POST)
+	public BRespData reserveSelectAddList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+
+		BMap paramData = new BMap();
+		paramData.put("SEQ"  			 , (String) reqData.get("SEQ"));
+		paramData.put("REQ_DT"		 , (String) reqData.get("REQ_DT"));
+		
+		List<BMap> resultDeptDetail = reserveService.reserveSelectAddList(paramData);
+
+		BRespData respData = new BRespData();
+		respData.put("result", resultDeptDetail);
+		
+		return respData;
+	}
+	
+	/**
 	 * 예약 현황 상세 조회
 	 * @param reqData
 	 * @param req
@@ -468,5 +490,8 @@ public class ReserveRestController {
 		respData.put("result", reserveService.deleteEtcAll(reserveInfo));
 		return respData;
 	}
+	
+
+	
 	
 }
