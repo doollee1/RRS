@@ -41,22 +41,6 @@ public class ReserveService {
 	}
 	
 	/**
-	 * 예약자와 동반자 리스트
-	 * @param param
-	 * @return
-	 * @throws Exception
-	 */
-	public List<BMap> reserveSelectAddList(BMap param) throws Exception {
-		
-		logger.info("======= 예약자와 동반자 리스트 ==========");
-	    List<BMap> result = null; 
-		    
-	    result = reserveDao.reserveSelectAddList(param);
-		
-		return result;
-	}
-	
-	/**
 	 * 공통코드 리스트 조회
 	 * @param param
 	 * @return
