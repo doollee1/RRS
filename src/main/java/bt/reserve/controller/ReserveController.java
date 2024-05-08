@@ -1,6 +1,9 @@
 package bt.reserve.controller;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +17,9 @@ public class ReserveController {
 	@Resource	
 	private ReserveService reserveService;
 	
+	private static final Logger logger = LoggerFactory.getLogger(ReserveController.class);
+	
+	
 	/**
 	 * 예약리스트 화면 호출
 	 * @param model
@@ -23,6 +29,9 @@ public class ReserveController {
 	 */
 	@RequestMapping(value = "/reserve/reserveList.do")
 	public String reserveList(ModelMap model,HttpServletRequest request) throws Exception {
+		
+		logger.info("====== 예약리스트화면출력=======");
+		
 		BMap param = new BMap();
 		param.put("HEAD_CD", 500030);
 		
