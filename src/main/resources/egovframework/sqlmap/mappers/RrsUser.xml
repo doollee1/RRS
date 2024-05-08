@@ -115,10 +115,6 @@
 			  ,ENG_NAME
 			  ,TEL_NO
 			  ,RET_YN
-			  ,PARTNER_HAN_NAME
-			  ,PARTNER_ENG_NAME
-			  ,PARTNER_GENDER
-			  ,MEMBERSHIP_NO
 			  ,REG_DTM
 			  ,UPD_DTM
 		FROM tb_admin_reg_member
@@ -167,10 +163,6 @@
 					,ENG_NAME
 					,TEL_NO
 					,RET_YN
-					,PARTNER_HAN_NAME
-					,PARTNER_ENG_NAME
-					,PARTNER_GENDER
-					,MEMBERSHIP_NO
 					,REG_DTM
 					,UPD_DTM
 					)
@@ -178,10 +170,6 @@
 					,#{ENG_NAME}
 					,#{TEL_NO}
 					,'N'
-					,#{PARTNER_HAN_NAME}
-					,#{PARTNER_ENG_NAME}
-					,#{PARTNER_GENDER}
-					,#{MEMBERSHIP_NO}
 					,NOW()
 					,NOW()
 					)
@@ -192,10 +180,6 @@
 		   SET HAN_NAME = #{HAN_NAME}
 			  ,ENG_NAME = #{ENG_NAME}
 			  ,TEL_NO = #{TEL_NO}
-			  ,PARTNER_HAN_NAME = #{PARTNER_HAN_NAME}
-			  ,PARTNER_ENG_NAME = #{PARTNER_ENG_NAME}
-			  ,PARTNER_GENDER = #{PARTNER_GENDER}
-			  ,MEMBERSHIP_NO = #{MEMBERSHIP_NO}
 			  ,RET_YN = #{RET_YN}
 			  ,UPD_DTM = NOW()
 		WHERE HAN_NAME = #{Ex_HAN_NAME}
