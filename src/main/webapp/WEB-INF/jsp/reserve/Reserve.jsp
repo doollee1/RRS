@@ -43,14 +43,6 @@
 							    </c:forEach>
 						    </select>
 						</td>
-						<td class="small_td"><p>인보이스  발행유무</p></td>
-						<td class="medium_td">
-						    <select id="INV_REG_DT" name="INV_REG_DT" class="">
-						        <option value="">전체</option>
-							    <option value="Y">Y</option>
-							    <option value="N">N</option>
-						    </select>
-						</td>
 					</tr>
 					<tr>
 					    <td class="small_td"><p><s:message code="reservation.division"/></p></td>
@@ -128,14 +120,7 @@
 				param = {};                       
 				param.SEQ    = selRowData.SEQ;    
 				param.REQ_DT = selRowData.REQ_DT.replaceAll(".",""); 
-
-				var selColData = rowid;
-				if(selColData < 3){
-					reservePopup(param);
-				}else{
-					reservePopup2(param);
-				}
-				
+				reservePopup(param);              
 			}
 		}); 
 		cSearch();
@@ -157,9 +142,6 @@
 	        '<s:message code="reservation.totAmount"/>',
 	        '<s:message code="reservation.flight"/>',
 	        '<s:message code="reservation.state"/>', 
-	        
-	        '인보이스 발행일자', 
-	        
 	        '<s:message code="reservation.prodCnt"/>',
 		];
 		var colModel = [ 
@@ -177,7 +159,6 @@
 		    {name : 'TOT_AMT'   , width : 100 , align : 'center'}, 
 		    {name : 'FLIGHT_OUT', width : 100 , align : 'center'}, 
 		    {name : 'STATE_NM'  , width : 100 , align : 'center', ref : 'linkq'}, 
-		    {name : 'INV_REG_DT' , width : 110  , align : 'center'}, 
 		    {name : 'PROD_SEQ'  , width : 100 , align : 'center', ref : 'linkq', hidden : true} 
 		    ];
 		var gSetting = {
@@ -204,7 +185,6 @@
 				       , "RESERVE_EDDT" : $("#RESERVE_EDDT").val().replaceAll(/\./gi, '')
 				       , "MEM_GBN"      : $("#MEM_GBN option:selected").val()
 				       , "PRC_STS"      : $("#PRC_STS option:selected").val()
-				       , "INV_REG_DT"      : $("#INV_REG_DT option:selected").val()
 		               };
 		var param = {"param":formData};
 		fn_ajax(url, true, param, function(data, xhr) {
@@ -266,14 +246,6 @@
 	function reservePopup(param) {
 		var url = "/reserve/reserveRegi.do";
 		var pid = "p_reserveRegi"; //팝업 페이지의 취상위 div ID
-
-		popupOpen(url, pid, param, function(data) {
-			cSearch();
-		});
-	}
-	function reservePopup2(param) {
-		var url = "/reserve/reserveListRegi.do";
-		var pid = "p_reserveListRegi"; //팝업 페이지의 취상위 div ID
 
 		popupOpen(url, pid, param, function(data) {
 			cSearch();

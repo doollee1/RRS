@@ -83,23 +83,15 @@ function grid_MemberUser_Load() {
 		'이름',
 		'영문이름',
 		'전화번호',
-		'배우자이름',
-		'배우자영문이름',
-		'배우자성별',
-		'멤버번호',
 		''
 	];
 	
 	var colModel = [
-		{ name: 'ROWNUM', width: 35, align: 'center' },
-		{ name: 'HAN_NAME', width: 110, align: 'center' },
-		{ name: 'ENG_NAME', width: 110, align: 'center' },
-		{ name: 'TEL_NO', width: 110, align: 'center' },
-		{ name: 'PARTNER_HAN_NAME', width: 110, align: 'center' },
-		{ name: 'PARTNER_ENG_NAME', width: 110, align: 'center' },
-		{ name: 'PARTNER_GENDER', width: 80, align: 'center' },
-		{ name: 'MEMBERSHIP_NO', width: 110, align: 'center' },
-		{ name: 'CHK', index: 'CHK', width: 35, align: 'center', formatter: gridCboxFormat, sortable: false }
+		{ name: 'ROWNUM', width: 100, align: 'center' },
+		{ name: 'HAN_NAME', width: 100, align: 'center' },
+		{ name: 'ENG_NAME', width: 100, align: 'center' },
+		{ name: 'TEL_NO', width: 100, align: 'center' },
+		{ name: 'CHK', index: 'CHK', width: 50, align: 'center', formatter: gridCboxFormat, sortable: false }
 	];
 
 	var gSetting = {
