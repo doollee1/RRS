@@ -40,7 +40,7 @@
 		<id>com.gembox</id>
 		<name>GemBox API</name>
 		<url>https://gemboxsoftware.com/repo/</url>
-	</repository>	
+	</repository>
 	</repositories>
 
 	<dependencies>
