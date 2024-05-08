@@ -962,6 +962,7 @@
 		 WHERE 1 = 1
 		   AND REQ_DT   = #{REQ_DT}
 		   AND REQ_SEQ  = #{SEQ}
+		   AND ADD_FILE_SEQ = 1
 	</select>
 	
 	<insert id="insertReserveInfo" parameterType="BMap"> 
