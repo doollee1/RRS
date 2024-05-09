@@ -1096,7 +1096,7 @@ $(function() {
 			return false;
 		}
 		
-		if(tot_amt == 0 || dep_amt == 0 || val_amt == 0 || pay_amt == ""){
+		if(tot_amt == 0 || dep_amt == 0 || pay_amt == ""){
 			return false;
 		}
 		
