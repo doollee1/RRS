@@ -203,6 +203,7 @@
 					,UPT_DT
 					,UPT_ID
 					,CHAT_ID
+					,TELEGRAM_TOKEN
 					)
 			 VALUES (#{COMP_CD}
 					,#{USER_ID}
@@ -240,6 +241,7 @@
 					,NOW()
 					,#{LOGIN_USER}
 					,#{CHAT_ID}
+					,#{TELEGRAM_TOKEN}
 					)
 	</insert>
 	
