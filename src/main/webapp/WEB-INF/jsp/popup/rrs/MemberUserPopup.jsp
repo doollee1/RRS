@@ -80,17 +80,27 @@ $(function() {
 function grid_MemberUser_Load() {
 	var colName = [
 		'순번',
+		'맴버ID',
 		'이름',
 		'영문이름',
 		'전화번호',
+		'배우자한글이름',
+		'배우자영문이름',
+		'배우자성별',
+		'탈퇴여부',
 		''
 	];
 	
 	var colModel = [
 		{ name: 'ROWNUM', width: 100, align: 'center' },
+		{ name: 'MEMBER_ID', width: 100, align: 'center' },
 		{ name: 'HAN_NAME', width: 100, align: 'center' },
 		{ name: 'ENG_NAME', width: 100, align: 'center' },
 		{ name: 'TEL_NO', width: 100, align: 'center' },
+		{ name: 'PARTNER_HAN_NAME', width: 100, align: 'center' },
+		{ name: 'PARTNER_ENG_NAME', width: 100, align: 'center' },
+		{ name: 'PARTNER_GENDER', width: 70, align: 'center' },
+		{ name: 'RET_YN', width: 50, align: 'center' },
 		{ name: 'CHK', index: 'CHK', width: 50, align: 'center', formatter: gridCboxFormat, sortable: false }
 	];
 
@@ -203,9 +213,14 @@ function setTelNoHypen() {
 function grid1_ondblClickRow(rowid, iRow, iCol, e){
 	var gridData = $("#grid_MemberUser").getRowData(rowid);
 	var param = {
-		"HAN_NAME" : gridData["HAN_NAME"],
-		"ENG_NAME" : gridData["ENG_NAME"],
-		"TEL_NO" : gridData["TEL_NO"],
+		"MEMBER_ID" : gridData["MEMBER_ID"],
+		"HAN_NAME"  : gridData["HAN_NAME"],
+		"ENG_NAME"  : gridData["ENG_NAME"],
+		"TEL_NO"    : gridData["TEL_NO"],
+		"PARTNER_HAN_NAME" : gridData["PARTNER_HAN_NAME"],
+		"PARTNER_ENG_NAME" : gridData["PARTNER_ENG_NAME"],
+		"PARTNER_GENDER"   : gridData["PARTNER_GENDER"],
+		"RET_YN"    : gridData["RET_YN"],
 	};
 	memberUserPopup(param);
 }

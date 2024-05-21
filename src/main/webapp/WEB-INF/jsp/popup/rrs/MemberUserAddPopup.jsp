@@ -12,6 +12,10 @@
 			<table class="tab_top_search" width="100%">
 				<tbody>
 					<tr>
+						<td class="small_td">맴버ID</td>
+			      		<td><p><input type="text" id="MEMBER_ID" name="MEMBER_ID" maxlength="30" onlyEngNum></p></td>
+			      	</tr>
+					<tr>
 						<td class="small_td">이름</td>
 			      		<td><p><input type="text" id="HAN_NAME" name="HAN_NAME" maxlength="20" onlyKor></p></td>
 			      	</tr>
@@ -23,6 +27,36 @@
 						<td class="small_td">전화번호</td>
 			      		<td><p><input type="text" id="TEL_NO" name="TEL_NO" maxlength="13" oninput="autoHyphen(this)"></p></td>
 			      	</tr>
+			      	<tr>
+						<td class="small_td">배우자한글이름</td>
+			      		<td><p><input type="text" id="PARTNER_HAN_NAME" name="PARTNER_HAN_NAME" maxlength="20" onlyKor></p></td>
+			      	</tr>
+			      	<tr>
+						<td class="small_td">배우자영문이름</td>
+			      		<td><p><input type="text" id="PARTNER_ENG_NAME" name="PARTNER_ENG_NAME" maxlength="30" onlyEng></p></td>
+			      	</tr>
+			      	<tr>
+						<td class="small_td">배우자성별</td>
+						<td>
+							<select id="PARTNER_GENDER" name="PARTNER_GENDER" class="cmc_combo" style="width:150px;">
+						    	<!-- <c:forEach var="i" items="${partner_gender}">
+									<option value="${i.CODE}">${i.CODE_NM}</option>
+								</c:forEach> -->
+								<option value="1">남</option>
+							</select>
+						</td>
+			      	</tr>
+			      	<tr>
+						<td class="small_td">탈퇴여부</td>
+						<td>
+							<select id="RET_YN" name="RET_YN" class="cmc_combo" ${ret_yn} style="width:150px;">
+						    	<!-- <c:forEach var="i" items="${ret_yn}">
+									<option value="${i.CODE}">${i.CODE_NM}</option>
+								</c:forEach> -->
+								<option value="N">N</option>
+							</select>
+						</td>
+			      	</tr>
 				</tbody>
 			</table>
 			<input type="hidden" id="Ex_HAN_NAME" name="Ex_HAN_NAME" />
@@ -32,14 +66,14 @@
 	</div>
 </div>
 <script type="text/javascript">
-$(document).on("keyup", "input[onlyKor]", function() {$(this).val( $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"'\\]/g,"") );});
-$(document).on("keyup", "input[onlyEng]", function() {$(this).val( $(this).val().replace(/[^A-Za-z]/ig,"") );});
+$(document).on("keyup", "input[onlyKor]",    function() {$(this).val( $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"'\\]/g,"") );});
+$(document).on("keyup", "input[onlyEng]",    function() {$(this).val( $(this).val().replace(/[^A-Za-z]/ig,"") );});
 
 $(function() {
 	$('#MemberUserAddPopup').dialog({
 		title:'멤버 회원 정보 등록',
 		autoOpen: false,
-		height: 160,
+		height: 300,
 		width: 400,
 		modal: true,
 		buttons: {
@@ -57,9 +91,14 @@ $(function() {
 			}
 		},
 		open: function() {
+			$('#MEMBER_ID').val($(this).data('MEMBER_ID'));
 			$('#HAN_NAME').val($(this).data('HAN_NAME'));
 			$('#ENG_NAME').val($(this).data('ENG_NAME'));
 			$('#TEL_NO').val($(this).data('TEL_NO'));
+			$('#PARTNER_HAN_NAME').val($(this).data('PARTNER_HAN_NAME'));
+			$('#PARTNER_ENG_NAME').val($(this).data('PARTNER_ENG_NAME'));
+			$('#PARTNER_GENDER').val($(this).data('PARTNER_GENDER'));
+			$('#RET_YN').val($(this).data('RET_YN'));
 			$('#Ex_HAN_NAME').val($(this).data('HAN_NAME'));
 			$('#Ex_ENG_NAME').val($(this).data('ENG_NAME'));
 			$('#Ex_TEL_NO').val($(this).data('TEL_NO'));
@@ -79,6 +118,14 @@ function saveMemberUserInfo(){
 	var formData = formIdAllToMap('frmMemberUserInfo');
 	
 	// validation check
+	if(formData.MEMBER_ID === "") {
+		alert("맴버ID를 입력해주세요.");
+		return;
+	}
+	if(!(/^[a-zA-Z]+[0-9]{4}$/).test(formData.MEMBER_ID)) {
+		alert("멤버번호는 알파벳 1자리+숫자 4자리로 입력해주세요.");
+		return;
+	}
 	if(formData.HAN_NAME === "") {
 		alert("이름을 입력해주세요.");
 		return;
@@ -89,6 +136,10 @@ function saveMemberUserInfo(){
 	}
 	if(formData.TEL_NO === "") {
 		alert("전화번호를 입력해주세요.");
+		return;
+	}
+	if(formData.RET_YN === "") {
+		alert("탈퇴여부를 입력해주세요.");
 		return;
 	}
 	

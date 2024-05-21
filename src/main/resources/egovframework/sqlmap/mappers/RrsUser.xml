@@ -114,6 +114,9 @@
 			  ,HAN_NAME
 			  ,ENG_NAME
 			  ,TEL_NO
+			  ,PARTNER_HAN_NAME
+			  ,PARTNER_ENG_NAME
+			  ,PARTNER_GENDER
 			  ,RET_YN
 			  ,REG_DTM
 			  ,UPD_DTM
@@ -151,6 +154,7 @@
 		   SET HAN_NAME = #{HAN_NAME}
 			  ,ENG_NAME = #{ENG_NAME}
 			  ,TEL_NO = #{TEL_NO}
+			  ,RET_YN = #{RET_YN}
 		 WHERE MEM_GBN = "01"
 		   AND HAN_NAME = #{Ex_HAN_NAME}
 		   AND ENG_NAME = #{Ex_ENG_NAME}
@@ -159,16 +163,24 @@
 	
 	<insert id="insertMemberUserInfo" parameterType="BMap">
 		INSERT INTO tb_admin_reg_member
-					(HAN_NAME
+					(MEMBER_ID
+					,HAN_NAME
 					,ENG_NAME
 					,TEL_NO
+					,PARTNER_HAN_NAME
+					,PARTNER_ENG_NAME
+					,PARTNER_GENDER
 					,RET_YN
 					,REG_DTM
 					,UPD_DTM
 					)
-			 VALUES (#{HAN_NAME}
+			 VALUES (#{MEMBER_ID}
+			 		,#{HAN_NAME}
 					,#{ENG_NAME}
 					,#{TEL_NO}
+					,#{PARTNER_HAN_NAME}
+					,#{PARTNER_ENG_NAME}
+					,#{PARTNER_GENDER}
 					,'N'
 					,NOW()
 					,NOW()
@@ -177,9 +189,13 @@
 	
 	<update id="updateMemberUserInfo" parameterType="BMap">
 		UPDATE tb_admin_reg_member
-		   SET HAN_NAME = #{HAN_NAME}
+		   SET MEMBER_ID= #{MEMBER_ID}
+			  ,HAN_NAME = #{HAN_NAME}
 			  ,ENG_NAME = #{ENG_NAME}
 			  ,TEL_NO = #{TEL_NO}
+			  ,PARTNER_HAN_NAME = #{PARTNER_HAN_NAME}
+			  ,PARTNER_ENG_NAME = #{PARTNER_ENG_NAME}
+			  ,PARTNER_GENDER = #{PARTNER_GENDER}
 			  ,RET_YN = #{RET_YN}
 			  ,UPD_DTM = NOW()
 		WHERE HAN_NAME = #{Ex_HAN_NAME}

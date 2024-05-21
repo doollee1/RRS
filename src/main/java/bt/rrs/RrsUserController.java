@@ -133,7 +133,7 @@ public class RrsUserController {
 	@RequestMapping(value = "/rrs/selectMemberUserInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData selectMemberUserInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
-		BMap param = reqData.getParamDataMap("param");
+		BMap param  = reqData.getParamDataMap("param"); 
 		BRespData respData = new BRespData();
 		respData.put("result", rrsUserService.selectMemberUserInfo(param));
 		
@@ -149,6 +149,15 @@ public class RrsUserController {
 	 */
 	@RequestMapping(value = "/rrs/MemberUserAddPopup.do")
 	public String MemberUserAddPopup(ModelMap model,HttpServletRequest request) throws Exception{
+		BMap param  = new BMap();
+		BMap param2 = new BMap();
+		
+		param.put("HEAD_CD", 100100);
+		param2.put("HEAD_CD", 100100);
+		
+		model.addAttribute("ret_yn"         , rrsUserService.selectGetCommonCode(param));
+		model.addAttribute("partner_gender" , rrsUserService.selectGetCommonCode(param2));
+		
 		return "/popup/rrs/MemberUserAddPopup";
 	}
 	
