@@ -2,7 +2,6 @@ package bt.common;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -53,25 +52,43 @@ public class CommonController {
 		return respData;
 	}
 	
-	//그리드 PDF 저장
+	
+	/**
+	 * 그리드 PDF 저장
+	 * 
+	 * @param reqData
+	 * @param req
+	 * @param resp
+	 * @return
+	 */
 	@RequestMapping(value = "/common/saveGridPdf.do", method = RequestMethod.POST)
 	@ResponseBody
-	public BRespData saveGridPdf(@RequestBody BReqData reqData, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	public BRespData saveGridPdf(@RequestBody BReqData reqData, HttpServletRequest req, HttpServletResponse resp) {
 		
 		logger.info("============ 그리드 PDF 저장 ==========");
 		
-		HashMap<String, Object> param = new HashMap<String, Object>();
-		param.put("colModel", reqData.getParamDataList("colModel"));
-		param.put("gridData", reqData.getParamDataList("gridData"));
-		param.put("title", reqData.getParamDataVal("title"));
-
-		PdfCreate pdf = new PdfCreate();
-		PdfPageEvent pdfEvent = new PdfPageEvent(param, req);
-		byte[] binary = pdf.setPDF(req, resp, pdfEvent);
-		String binaryStr = DatatypeConverter.printBase64Binary(binary);
-		
 		BRespData respData = new BRespData();
-		respData.put("pdfdata", binaryStr);
+		
+		try {
+		
+			HashMap<String, Object> param = new HashMap<String, Object>();
+			param.put("colModel", reqData.getParamDataList("colModel"));
+			param.put("gridData", reqData.getParamDataList("gridData"));
+			param.put("title", reqData.getParamDataVal("title"));
+	
+			PdfCreate pdf = new PdfCreate();
+			PdfPageEvent pdfEvent = new PdfPageEvent(param, req);
+			byte[] binary = pdf.setPDF(req, resp, pdfEvent);
+			String binaryStr = DatatypeConverter.printBase64Binary(binary);
+			
+			
+			respData.put("pdfdata", binaryStr);
+		
+		}catch(Exception e) {
+			
+			logger.info("===== 그리드 PDF 저장 예외발생 =====");
+			e.printStackTrace();
+		}
 		
 		return respData;
 	}
