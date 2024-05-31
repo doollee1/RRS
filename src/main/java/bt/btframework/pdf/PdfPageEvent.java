@@ -1,5 +1,6 @@
 package bt.btframework.pdf;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -37,10 +38,11 @@ public class PdfPageEvent extends PdfPageEventHelper {
 			gridDataList = (List<HashMap<String, Object>>) param.get("gridData");
 			title = StringUtils.NULL(param.get("title"));
 			
-			//String path = req.getSession().getServletContext().getRealPath(File.separator) + File.separator + "css" + File.separator + "font" + File.separator + "NanumGothic.ttf";
-			//objBaseFont = BaseFont.createFont(path, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+			//맑은고딕
+			String path = req.getSession().getServletContext().getRealPath(File.separator) + File.separator + "css" + File.separator + "font" + File.separator + "malgun.ttf";
+			objBaseFont = BaseFont.createFont(path, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
-			objBaseFont = BaseFont.createFont("C:/Windows/Fonts/malgun.TTF", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+			//objBaseFont = BaseFont.createFont("C:/Windows/Fonts/malgun.TTF", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 			this.objFont10 = new Font(objBaseFont, 10, Font.NORMAL, new CMYKColor(0, 0, 0, 240));
 			this.objFont16 = new Font(objBaseFont, 16, Font.BOLD, new CMYKColor(0, 0, 0, 250));
 		} catch (Exception e) {

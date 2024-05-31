@@ -1,5 +1,6 @@
 package bt.btframework.pdf;
 
+import java.io.File;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 
@@ -52,11 +53,11 @@ public class PdfCreate {
 		//CssFile cssFile = helper.getCSS(new FileInputStream("C:/pdf.css"));
 		//cssResolver.addCss(cssFile);
 		
-		// HTML, 폰트 설정
+		// HTML, 폰트 설정(맑은고딕)
 		XMLWorkerFontProvider fontProvider = new XMLWorkerFontProvider(XMLWorkerFontProvider.DONTLOOKFORFONTS);
-		//String path = req.getSession().getServletContext().getRealPath(File.separator) + File.separator + "css" + File.separator + "font" + File.separator + "NanumGothic.ttf";
-		//fontProvider.register(path, "NanumGothic");
-		fontProvider.register("C:/Windows/Fonts/malgun.TTF", "malgun");
+		String path = req.getSession().getServletContext().getRealPath(File.separator) + File.separator + "css" + File.separator + "font" + File.separator + "malgun.ttf";
+		fontProvider.register(path, "malgun");
+		//fontProvider.register("C:/Windows/Fonts/malgun.TTF", "malgun");
 		CssAppliers cssAppliers = new CssAppliersImpl(fontProvider);
 		
 		HtmlPipelineContext htmlContext = new HtmlPipelineContext(cssAppliers);
