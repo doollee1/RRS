@@ -149,7 +149,7 @@ $(function(){
 		var obj = new Object();
 		fn_ajax(url, true, param, function(data, xhr){
 			$.each(data.selectList , function(i , v){
-				if (v.CODE == "3"){
+				if (v.CODE == "9"){
 					return;
 				} else {
 					obj[v.CODE] = v.CODE_NM;
@@ -339,10 +339,13 @@ $(function(){
 		for(var i = 0; i < ids.length; i++){
 			var saveSsn = $("#periodGrid").jqGrid('getCell', ids[i] ,'SSN_GBN');
 			
-			if(saveSsn == "시즌"){
-				$("#periodGrid").jqGrid('setCell' , ids[i] , 'SSN_GBN' , 1);
-			} else if (saveSsn == "비시즌"){
+			//alert(saveSsn);
+			if(saveSsn == "비수기"){
+				$("#periodGrid").jqGrid('setCell' , ids[i] , 'SSN_GBN' , 3);
+			} else if (saveSsn == "준성수기"){
 				$("#periodGrid").jqGrid('setCell' , ids[i] , 'SSN_GBN' , 2);
+			} else if (saveSsn == "성수기"){
+				$("#periodGrid").jqGrid('setCell' , ids[i] , 'SSN_GBN' , 1);
 			}
 			
 			gridDataChk.push($("#periodGrid").getRowData(ids[i]));
@@ -383,19 +386,19 @@ $(function(){
 				return;
 			}
 			
-			if((fn_empty(gridDataChk[i]["ST_DT2"]) && !fn_empty(gridDataChk[i]["ED_DT2"])) ||
-				(!fn_empty(gridDataChk[i]["ST_DT2"]) && fn_empty(gridDataChk[i]["ED_DT2"]))){
-				alert("시작일2 및 종료일2를 입력해주세요.");
-				cSearch();
-				return;
-			} 
+// 			if((fn_empty(gridDataChk[i]["ST_DT2"]) && !fn_empty(gridDataChk[i]["ED_DT2"])) ||
+// 				(!fn_empty(gridDataChk[i]["ST_DT2"]) && fn_empty(gridDataChk[i]["ED_DT2"]))){
+// 				alert("시작일2 및 종료일2를 입력해주세요.");
+// 				cSearch();
+// 				return;
+// 			} 
 			
-			if((fn_empty(gridDataChk[i]["ST_DT3"]) && !fn_empty(gridDataChk[i]["ED_DT3"])) ||
-				(!fn_empty(gridDataChk[i]["ST_DT3"]) && fn_empty(gridDataChk[i]["ED_DT3"]))){
-				alert("시작일3 및 종료일3을 입력해주세요.");
-				cSearch();
-				return;
-			} 
+// 			if((fn_empty(gridDataChk[i]["ST_DT3"]) && !fn_empty(gridDataChk[i]["ED_DT3"])) ||
+// 				(!fn_empty(gridDataChk[i]["ST_DT3"]) && fn_empty(gridDataChk[i]["ED_DT3"]))){
+// 				alert("시작일3 및 종료일3을 입력해주세요.");
+// 				cSearch();
+// 				return;
+// 			} 
 			
 			if(gridDataChk[i]["ST_DT1"] >= gridDataChk[i]["ED_DT1"]){
 				alert("종료일은 시작일과 같거나 과거일 수 없습니다.");

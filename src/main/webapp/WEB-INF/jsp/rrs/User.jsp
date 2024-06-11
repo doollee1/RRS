@@ -23,6 +23,15 @@
 			<table>
 				<tbody>
 					<tr>
+						<td class="small_td"><p>회원구분</p></td>
+						<td class="medium_td">
+							<select id="S_MEM_GBN" name="S_MEM_GBN" class="cmc_combo" style="width:80px;">
+								<option value="">전체</option>
+								<c:forEach var="i" items="${mem_gbn}">
+							    	<option value="${i.CODE}">${i.CODE_NM}</option>
+						    	</c:forEach>
+							</select>
+						</td>
 						<td class="small_td"><p><s:message code='system.UserID'/></p></td>
 						<td class="medium_td"><input type="text" id="S_USER_ID" name="S_USER_ID" class="cmc_txt" maxlength="20" noSpecial /></td>
 						<td class="small_td"><p><s:message code='system.Username'/></p></td>
@@ -43,7 +52,7 @@
 			</div>	
 			<div class="ct_grid_top_right"></div>
 		</div>
-		<table id="grid1"></table>
+		<table id="grid1" class="user_info_table"></table>
 		<div id="grid1_pager"></div>
 	</div>
 	<!-- grid end -->
@@ -77,7 +86,9 @@
 		
 		initLayout();
 		createGrid1();
-		cSearch();
+		//cSearch();
+		
+		
 		
 		/* grid1 Event */
 		$('#grid1').jqGrid('setGridParam', {
@@ -103,7 +114,7 @@
 	function createGrid1(){
 		var colName = [
 			'순번',
-			'회원타입',
+			'회원구분',
 			'이름',
 			'영문이름',
 			'전화번호',
@@ -125,7 +136,7 @@
 		var gSetting = {
 				height:632,
 				pgflg:true,
-				exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
+				exportflg : false,  //엑셀, pdf 출력 버튼 노출여부, td 태그안에 체크박스가 들어가 있어 pdf 생성시 에러발생
 				colsetting : false,  // 컬럼 설정 버튼 노출여부
 				searchInit : false,  // 데이터 검색 버튼 노출여부
 				resizeing : true,
@@ -190,6 +201,7 @@
 		var pid = "p_User";  //팝업 페이지의 취상위 div ID
 
 		popupOpen(url, pid, param, function(data) {
+			
 			cSearch();
 		});
 	}
@@ -200,6 +212,7 @@
 		var pid = "p_MemberUser";  //팝업 페이지의 취상위 div ID
 
 		popupOpen(url, pid, param, function(data) {
+			$( 'input' ).remove('#SEARCH_MEMBER_ID');
 			cSearch();
 		});
 	}

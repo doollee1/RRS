@@ -6,6 +6,7 @@
 	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
 		SELECT ROW_NUMBER() OVER(ORDER BY HAN_NAME asc) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
 			  ,USER_ID
+			  ,MEMBER_ID
 			  ,MEM_GBN
 			  ,HAN_NAME
 			  ,ENG_NAME
@@ -13,7 +14,9 @@
 			  ,EMAIL
 			  ,PASSWD
 			  ,RET_YN
+			  ,REG_ID
 			  ,REG_DTM
+			  ,UPD_ID
 			  ,UPD_DTM
 			  ,(
 					SELECT CODE_NM
@@ -29,6 +32,9 @@
 		</if>
 		<if test='S_USER_NM != null and S_USER_NM != ""'>
 		   AND (HAN_NAME LIKE CONCAT('%',#{S_USER_NM},'%')) OR (ENG_NAME LIKE CONCAT('%',#{S_USER_NM},'%'))
+		</if>
+		<if test='S_MEM_GBN != null and S_MEM_GBN != ""'>
+		   AND MEM_GBN = #{S_MEM_GBN}
 		</if>
 		<if test='USER_ID != null and USER_ID != ""'>
 		   AND USER_ID = #{USER_ID}
@@ -71,10 +77,13 @@
 					,HAN_NAME
 					,ENG_NAME
 					,TEL_NO
+					,MEMBER_ID
 					,EMAIL
 					,PASSWD
 					,RET_YN
+					,REG_ID
 					,REG_DTM
+					,UPD_ID
 					,UPD_DTM
 					)
 			 VALUES (#{USER_ID}
@@ -82,24 +91,29 @@
 					,#{HAN_NAME}
 					,#{ENG_NAME}
 					,#{TEL_NO}
+					,#{MEMBER_ID}
 					,#{EMAIL}
 					,#{PASSWD}
 					,'N'
+					,#{LOGIN_USER}
 					,NOW()
+					,#{LOGIN_USER}
 					,NOW()
 					)
 	</insert>
 	
 	<update id="updateUserInfo" parameterType="BMap">
 		UPDATE TB_MEMBER
-		   SET HAN_NAME = #{HAN_NAME}
-			  ,ENG_NAME = #{ENG_NAME}
-			  ,TEL_NO = #{TEL_NO}
-			  ,EMAIL = #{EMAIL}
-			  ,PASSWD = #{PASSWD}
-			  ,RET_YN = #{RET_YN}
-			  ,UPD_DTM = NOW()
-		WHERE USER_ID = #{USER_ID}
+		   SET HAN_NAME  = #{HAN_NAME}
+			  ,ENG_NAME  = #{ENG_NAME}
+			  ,TEL_NO    = #{TEL_NO}
+			  ,MEMBER_ID = #{MEMBER_ID}
+			  ,EMAIL     = #{EMAIL}
+			  ,PASSWD    = #{PASSWD}
+			  ,RET_YN    = #{RET_YN}
+			  ,UPD_ID    = #{LOGIN_USER}
+			  ,UPD_DTM   = NOW()
+		WHERE USER_ID    = #{USER_ID}
 	</update>
 	
 	<delete id="deleteUserInfo" parameterType="BMap">
@@ -111,12 +125,15 @@
 	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
 	/* User.xml -> selectMemberUserInfo */
 		SELECT ROW_NUMBER() OVER(ORDER BY HAN_NAME asc) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,MEMBER_ID
 			  ,HAN_NAME
 			  ,ENG_NAME
 			  ,TEL_NO
+			  ,EMAIL
 			  ,PARTNER_HAN_NAME
 			  ,PARTNER_ENG_NAME
 			  ,PARTNER_GENDER
+			  ,PARTNER_TEL_NO
 			  ,RET_YN
 			  ,REG_DTM
 			  ,UPD_DTM
@@ -132,33 +149,52 @@
 		   AND TEL_NO = #{TEL_NO}
 	</select>
 	
+	<select id="selectMemberIDCnt" parameterType="BMap" resultType="int">
+		SELECT COUNT(1)
+		  FROM tb_admin_reg_member 
+		 WHERE MEMBER_ID = #{MEMBER_ID}
+	</select>
+	
+	<select id="selectMemberUserIDCnt" parameterType="BMap" resultType="int">
+		SELECT COUNT(1)
+		  FROM tb_admin_reg_member 
+		 WHERE MEMBER_ID = #{MEMBER_ID}
+	</select>
+	
 	<select id="selectMemberUserInfoCnt" parameterType="BMap" resultType="int">
 		SELECT COUNT(1)
 		  FROM tb_admin_reg_member 
-		 WHERE HAN_NAME = #{Ex_HAN_NAME}
-		   AND ENG_NAME = #{Ex_ENG_NAME}
-		   AND TEL_NO = #{Ex_TEL_NO}
+		 WHERE MEMBER_ID = #{Ex_MEMBER_ID}
+		   AND HAN_NAME  = #{Ex_HAN_NAME}
+		   AND ENG_NAME  = #{Ex_ENG_NAME}
+		   AND TEL_NO    = #{Ex_TEL_NO}
 	</select>
 	
 	<select id="selectMemberUserInfoCntAfterMemberUpdate" parameterType="BMap" resultType="int">
 		SELECT COUNT(1)
 		  FROM TB_MEMBER
-		 WHERE MEM_GBN = "01"
-		   AND HAN_NAME = #{Ex_HAN_NAME}
-		   AND ENG_NAME = #{Ex_ENG_NAME}
-		   AND TEL_NO = #{Ex_TEL_NO}
+		 WHERE MEM_GBN   = "01"
+		   AND MEMBER_ID = #{Ex_MEMBER_ID}
+		   AND HAN_NAME  = #{Ex_HAN_NAME}
+		   AND ENG_NAME  = #{Ex_ENG_NAME}
+		   AND TEL_NO    = #{Ex_TEL_NO}
 	</select>
 	
 	<update id="updateUserInfoAfterMemberUpdate" parameterType="BMap">
 		UPDATE TB_MEMBER
-		   SET HAN_NAME = #{HAN_NAME}
-			  ,ENG_NAME = #{ENG_NAME}
-			  ,TEL_NO = #{TEL_NO}
-			  ,RET_YN = #{RET_YN}
-		 WHERE MEM_GBN = "01"
-		   AND HAN_NAME = #{Ex_HAN_NAME}
-		   AND ENG_NAME = #{Ex_ENG_NAME}
-		   AND TEL_NO = #{Ex_TEL_NO}
+		   SET HAN_NAME  = #{HAN_NAME}
+			  ,ENG_NAME  = #{ENG_NAME}
+			  ,TEL_NO    = #{TEL_NO}
+			  ,EMAIL     = #{EMAIL}
+			  ,RET_YN    = #{RET_YN}
+			  ,MEMBER_ID = #{MEMBER_ID}
+			  ,UPD_ID    = #{LOGIN_USER}
+			  ,UPD_DTM   = #{UPD_DTM}
+		 WHERE MEM_GBN   = "01"
+		   AND MEMBER_ID = #{Ex_MEMBER_ID}
+		   AND HAN_NAME  = #{Ex_HAN_NAME}
+		   AND ENG_NAME  = #{Ex_ENG_NAME}
+		   AND TEL_NO    = #{Ex_TEL_NO}
 	</update>
 	
 	<insert id="insertMemberUserInfo" parameterType="BMap">
@@ -167,48 +203,71 @@
 					,HAN_NAME
 					,ENG_NAME
 					,TEL_NO
+					,EMAIL
 					,PARTNER_HAN_NAME
 					,PARTNER_ENG_NAME
 					,PARTNER_GENDER
+					,PARTNER_TEL_NO
 					,RET_YN
+					,REG_ID
 					,REG_DTM
+					,UPD_ID
 					,UPD_DTM
 					)
 			 VALUES (#{MEMBER_ID}
 			 		,#{HAN_NAME}
 					,#{ENG_NAME}
 					,#{TEL_NO}
+					,#{EMAIL}
 					,#{PARTNER_HAN_NAME}
 					,#{PARTNER_ENG_NAME}
 					,#{PARTNER_GENDER}
+					,#{PARTNER_TEL_NO}
 					,'N'
+					,#{LOGIN_USER}
 					,NOW()
+					,#{LOGIN_USER}
 					,NOW()
 					)
 	</insert>
 	
 	<update id="updateMemberUserInfo" parameterType="BMap">
 		UPDATE tb_admin_reg_member
-		   SET MEMBER_ID= #{MEMBER_ID}
-			  ,HAN_NAME = #{HAN_NAME}
-			  ,ENG_NAME = #{ENG_NAME}
-			  ,TEL_NO = #{TEL_NO}
+		   SET MEMBER_ID = #{MEMBER_ID}
+		      ,HAN_NAME  = #{HAN_NAME}
+			  ,ENG_NAME  = #{ENG_NAME}
+			  ,TEL_NO    = #{TEL_NO}
+			  ,EMAIL     = #{EMAIL}
 			  ,PARTNER_HAN_NAME = #{PARTNER_HAN_NAME}
 			  ,PARTNER_ENG_NAME = #{PARTNER_ENG_NAME}
-			  ,PARTNER_GENDER = #{PARTNER_GENDER}
-			  ,RET_YN = #{RET_YN}
+			  ,PARTNER_TEL_NO   = #{PARTNER_TEL_NO}
+			  ,PARTNER_GENDER   = #{PARTNER_GENDER}
+			  ,RET_YN  = #{RET_YN}
+			  ,UPD_ID  = #{LOGIN_USER}
 			  ,UPD_DTM = NOW()
-		WHERE HAN_NAME = #{Ex_HAN_NAME}
-		  AND ENG_NAME = #{Ex_ENG_NAME}
-		  AND TEL_NO = #{Ex_TEL_NO}
+		WHERE MEMBER_ID = #{Ex_MEMBER_ID}
+		  AND HAN_NAME  = #{Ex_HAN_NAME}
+		  AND ENG_NAME  = #{Ex_ENG_NAME}
+		  AND TEL_NO    = #{Ex_TEL_NO}
 	</update>
 	
 	<delete id="deleteMemberUserInfo" parameterType="BMap">
 		DELETE FROM tb_admin_reg_member
-		 WHERE HAN_NAME = #{HAN_NAME}
-		   AND ENG_NAME = #{ENG_NAME}
-		   AND TEL_NO = #{TEL_NO}
+		 WHERE MEMBER_ID = #{MEMBER_ID}
+		   AND HAN_NAME  = #{HAN_NAME}
+		   AND ENG_NAME  = #{ENG_NAME}
+		   AND TEL_NO    = #{TEL_NO}
 	</delete>
+	
+	<select id="selectMemberUserInfoCntAfterMemberdelete" parameterType="BMap" resultType="int">
+		SELECT COUNT(1)
+		  FROM TB_MEMBER
+		 WHERE MEM_GBN   = "01"
+		   AND MEMBER_ID = #{MEMBER_ID}
+		   AND HAN_NAME  = #{HAN_NAME}
+		   AND ENG_NAME  = #{ENG_NAME}
+		   AND TEL_NO    = #{TEL_NO}
+	</select>
 	
 	<update id="updatePassword" parameterType="BMap">
 		UPDATE BC_USER
@@ -240,5 +299,28 @@
 		       WRONG_CNT = 0
 		 WHERE COMP_CD = #{COMP_CD}
 		   AND USER_ID = #{USER_ID}
+	</select>
+	
+	<select id="selectSearchUserInfo" parameterType="BMap" resultType="BMap">
+		SELECT MEMBER_ID
+			 , HAN_NAME
+			 , ENG_NAME
+     		 , TEL_NO
+     		 , EMAIL
+     		 , REG_ID
+     		 , REG_DTM
+     		 , UPD_ID
+     		 , UPD_DTM
+  		  FROM tb_admin_reg_member
+ 		 WHERE 1=1
+ 		   <if test='SELECT_INFO == "haName"'>
+ 		   AND HAN_NAME LIKE CONCAT('%',#{MEMBER_SEARCH_TEXT},'%')
+ 		   </if>
+ 		   <if test='SELECT_INFO == "tNo"'>
+ 		   AND TEL_NO LIKE CONCAT('%',#{MEMBER_SEARCH_TEXT},'%')
+ 		   </if>	  
+ 		   <if test='MEMBER_ID != null and MEMBER_ID != ""'>
+ 		   AND MEMBER_ID = #{MEMBER_ID}
+ 		   </if>
 	</select>
 </mapper>

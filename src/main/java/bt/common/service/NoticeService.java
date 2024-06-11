@@ -130,6 +130,9 @@ public class NoticeService {
 	 * @throws Exception
 	 */
 	public List<BMap> noticeFileUpload(HttpServletRequest req) throws Exception{
+		
+		logger.info("========= 공지사항 첨부파일 업로드 ==========");
+		
 		String fuid = req.getParameter("fileuid");
 		if (!StringUtils.isNotEmpty(fuid)) {
 			fuid = StringUtils.getUUID();
@@ -144,8 +147,8 @@ public class NoticeService {
 			cnt++;
 			BMap map = new BMap();
 			CommonsMultipartFile cmf = (CommonsMultipartFile) file;			
-			String filename = cmf.getOriginalFilename();			
-			logger.info("원본 filename : "+filename);
+			String filename = new String(cmf.getOriginalFilename().getBytes("8859_1"), "UTF-8");	 		
+			logger.info("======= 원본 filename : "+filename);
 			
 			long filesize = cmf.getSize();
 //			System.out.println(filesize+": filesize");

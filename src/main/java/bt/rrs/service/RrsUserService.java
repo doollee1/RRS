@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import bt.btframework.excel.POIExcelRRS;
 import bt.btframework.utils.BMap;
+import bt.btframework.utils.LoginInfo;
 import bt.rrs.dao.RrsUserDao;
 import egovframework.com.utl.sim.service.EgovFileScrty;
 
@@ -41,12 +42,30 @@ public class RrsUserService {
 	}
 	
 	/**
+	 * 회원 ID 중복체크
+	 * @param param
+	 * @throws Exception
+	 */
+	public BMap UserIdCheck(BMap param) throws Exception {
+		BMap bMap = new BMap();
+		int chk = rrsUserDao.selectUserInfoCnt(param);
+		if (chk > 0) {
+			bMap.put("result", "isExistUser");
+		}
+		
+		return bMap;
+	};
+	
+	/**
 	 * 회원 정보 저장
 	 * @param param
 	 * @throws Exception
 	 */
 	public BMap saveUserInfo(BMap param) throws Exception{
 		BMap bMap = new BMap();
+		
+		// 등록, 수정 유저 정보
+		param.put("LOGIN_USER", LoginInfo.getUserId());
 		
 		String MEM_GBN = param.getString("MEM_GBN");
 		if(MEM_GBN.equals("01")) {	// 멤버 회원이면 멤버테이블에 있는지 검사
@@ -57,13 +76,20 @@ public class RrsUserService {
 			}
 		}
 		
+		// 중복되는 맴버ID 있는지 체크
+		int memberIDCnt = rrsUserDao.selectMemberUserInfoCnt(param);
+		if(memberIDCnt > 0) {
+			bMap.put("result", "isExistMemberID");
+			return bMap;			
+		}
+
 		String isNew = param.getString("isNew");
 	
 		int cnt = rrsUserDao.selectUserInfoCnt(param); //현 ID가 등록된 ID인지 카운트
 		if(isNew.equals("Y")) {
 			// 신규 입력인 경우
 			if(cnt == 0) {
-				param.put("PASSWD", EgovFileScrty.encryptPassword("1234", param.getString("USER_ID")));   //"1234"
+				param.put("PASSWD", EgovFileScrty.encryptPassword("fam1!", param.getString("USER_ID")));   //"1234"
 				rrsUserDao.insertUserInfo(param); //등록되지 않았을 때 등록
 			} else {
 				bMap.put("result", "isExistUser");
@@ -73,7 +99,7 @@ public class RrsUserService {
 			// 수정인경우
 			rrsUserDao.updateUserInfo(param); //등록된 사용자 정보 수정
 		}
-		
+
 		bMap.put("result", "success");
 		return bMap;
 	}
@@ -105,6 +131,19 @@ public class RrsUserService {
 	public BMap saveMemberUserInfo(BMap param) throws Exception{
 		BMap bMap = new BMap();
 		
+		// 등록, 수정 유저 정보
+		param.put("LOGIN_USER", LoginInfo.getUserId());
+
+		// 중복되는 맴버ID 있는지 체크
+		int memberIDCnt = rrsUserDao.selectMemberIDCnt(param);
+		if(memberIDCnt > 0) {
+			if(param.get("MEMBER_ID") == param.get("Ex_MEMBER_ID")) {
+				bMap.put("result", "isExistMemberID");
+				return bMap;
+			}
+			
+		}
+				
 		int cnt = rrsUserDao.selectMemberUserInfoCnt(param); //현 ID가 등록된 ID인지 카운트 (Ex_HAN_NAME, Ex_ENG_NAME, Ex_TEL_NO)
 		if(cnt == 0){
 			// 새롭게 입력된 값으로 다시한번 조회
@@ -165,6 +204,9 @@ public class RrsUserService {
 			// 데이터에 문제 없으면 입력
 			for (BMap bMap : list) {
 				if(bMap.size() >= 3) { 
+					// 등록, 수정 유저 정보
+					bMap.put("LOGIN_USER", LoginInfo.getUserId());
+					
 					rrsUserDao.insertMemberUserInfo(bMap);
 				}
 			}
@@ -235,15 +277,29 @@ public class RrsUserService {
 		return resultMap;
 	}
 	
-	/**
-	 * 멤버회원 정보 삭제
-	 * @param param
-	 * @throws Exception
-	 */
-	public void deleteMemberUserInfo(List<BMap> paramList) throws Exception{
+	public BMap deleteMemberUserInfo(List<BMap> paramList) throws Exception{
+		BMap bMap = new BMap();
+		
 		for(int i = 0; i < paramList.size(); i++){
 			BMap param = new BMap(paramList.get(i));
-			rrsUserDao.deleteMemberUserInfo(param);
+			
+			// 회원 테이블에 있는지 검사
+			int memberCnt = rrsUserDao.selectMemberUserInfoCntAfterMemberdelete(param);
+			if (memberCnt > 0) {
+				bMap.put("result", "isExistUserMember");
+			} else {
+				rrsUserDao.deleteMemberUserInfo(param);
+				bMap.put("result", "success");
+			}
 		}
+		
+		return bMap;
+	}
+	
+	/**
+	 * 멤버회원 정보 검색 조회
+	 */
+	public List<BMap> selectSearchUserInfo(BMap param) throws Exception{
+		return rrsUserDao.selectSearchUserInfo(param);
 	}
 }

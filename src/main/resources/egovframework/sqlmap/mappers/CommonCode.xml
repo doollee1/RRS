@@ -134,8 +134,8 @@
 	
 	<select id="selectCommonCodeHead" parameterType="BMap" resultType="String">
 	/* CommonCode.xml -> selectCommonCodeHead */
-		SELECT CONVERT(NVARCHAR, CONVERT(NUMERIC(10, 0), IFNULL(MAX(HEAD_CD), '99900')) + 100) HEAD_CD
-	  	  FROM BC_COMM_H   
+		SELECT CONVERT(IFNULL(MAX(HEAD_CD), '99900') + 10 , CHAR) HEAD_CD
+  		  FROM BC_COMM_H;
 	</select> 
 	
 	<select id="selectCommonCodeDetailInfo" parameterType="BMap" resultType="BMap">

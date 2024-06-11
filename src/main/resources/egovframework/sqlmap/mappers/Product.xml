@@ -27,25 +27,33 @@
 		     , date_format(A.ED_DT2, '%Y-%m-%d') ED_DT2		<!-- 종료일2 -->
 			 , date_format(A.ST_DT3, '%Y-%m-%d') ST_DT3		<!-- 시작일3 -->
 		     , date_format(A.ED_DT3, '%Y-%m-%d') ED_DT3		<!-- 종료일3 -->
-			 , B.COM_AMT					<!-- 일반금액 -->
-			 , B.COM_BAS_PER				<!-- 일반 기준인원수 -->
-			 , B.COM_BAS_DAY				<!-- 일반 기준일수 -->
-			 , B.COM_CNTN					<!-- 일반 기타내용 -->
-      		 , B.AGN_AMT					<!-- 에이전시금액 -->
-			 , B.AGN_BAS_PER				<!-- 에이전시 기준인원수 -->
-      		 , B.AGN_BAS_DAY				<!-- 에이전시 기준일수 -->
-      		 , B.AGN_CNTN					<!-- 에이전시 기타내용 -->
+			 , B.COM_AMT						<!-- 일반금액 -->
+			 , B.COM_BAS_PER					<!-- 일반 기준인원수 -->
+			 , B.COM_BAS_DAY					<!-- 일반 기준일수 -->
+			 , B.COM_CNTN						<!-- 일반 기타내용 -->
+      		 , B.AGN_COM_AMT					<!-- 일반여행사 금액 -->
+			 , B.AGN_COM_BAS_PER				<!-- 일반여행사 기준인원수 -->
+      		 , B.AGN_COM_BAS_DAY				<!-- 일반여행사 기준일수 -->
+      		 , B.AGN_COM_CNTN					<!-- 일반여행사 기타내용 -->
+      		 , B.AGN_DIS_AMT					<!-- 총판여행사 금액 -->
+			 , B.AGN_DIS_BAS_PER				<!-- 총판여행사 기준인원수 -->
+      		 , B.AGN_DIS_BAS_DAY				<!-- 총판여행사 기준일수 -->
+      		 , B.AGN_DIS_CNTN					<!-- 총판여행사 기타내용 -->
       		 , (SELECT CODE
 				  FROM bc_comm_l C
 				 WHERE HEAD_CD = 500220
 				   AND B.PROD_COND = C.CODE) PROD_COND2		<!-- 조건2 -->
+		   , (SELECT CODE
+				  FROM bc_comm_l C
+				 WHERE HEAD_CD = 500000
+				   AND B.HDNG_GBN = C.CODE) HDNG_GBN_CODE	
 		  FROM TB_BAS_YY_INFO A
 	LEFT JOIN TB_PROD_INFO B
 		    ON A.BAS_YY_SEQ = B.BAS_YY_SEQ
 		   AND A.BAS_YY = B.BAS_YY
            AND A.SSN_GBN = B.SSN_GBN
 		 WHERE 1 = 1
-		 <if test='SSN_GBN != "3"'>
+		 <if test='SSN_GBN != "9"'>
 		   AND A.SSN_GBN = #{SSN_GBN}
 		 </if> 
 		   AND A.BAS_YY = #{BAS_YY}
@@ -65,8 +73,9 @@
           JOIN BC_COMM_H B ON B.HEAD_CD = /**/ A.HEAD_CD
          WHERE 1 = 1
            AND A.HEAD_CD = #{HEAD_CD}
+         ORDER BY A.PRIORITY
 	   <if test="Season == true">
-		 ORDER BY FIELD(CODE, 3, 1, 2)
+<!-- 		 ORDER BY A.PRIORITY -->
 	   </if>
 	</select>
 	
@@ -101,10 +110,14 @@
 					, COM_BAS_PER 	 			<!-- 일반 기준인원수 -->
 					, COM_BAS_DAY 	 			<!-- 일반 기준일수 -->
 					, COM_CNTN					<!-- 일반 기타내용 -->
-					, AGN_AMT 					<!-- 에이전시금액 -->
-					, AGN_BAS_PER 				<!-- 에이전시 기준인원수 -->
-					, AGN_BAS_DAY 				<!-- 에이전시 기준일수 -->
-					, AGN_CNTN					<!-- 에이전시 기타내용 -->
+					, AGN_COM_AMT 				<!-- 일반여행사 금액 -->
+					, AGN_COM_BAS_PER 			<!-- 일반여행사 기준인원수 -->
+					, AGN_COM_BAS_DAY 			<!-- 일반여행사 기준일수 -->
+					, AGN_COM_CNTN				<!-- 일반여행사 기타내용 -->
+					, AGN_DIS_AMT 				<!-- 총판여행사 금액 -->
+					, AGN_DIS_BAS_PER 			<!-- 총판여행사 기준인원수 -->
+					, AGN_DIS_BAS_DAY 			<!-- 총판여행사 기준일수 -->
+					, AGN_DIS_CNTN				<!-- 총판여행사 기타내용 -->
 					, REG_DTM					<!-- 작성일 -->
 					, REG_ID					<!-- 작성자 -->
 					, UPD_DTM					<!-- 수정일 -->
@@ -121,10 +134,14 @@
 					, #{COM_BAS_PER}
 					, #{COM_BAS_DAY}
 					, #{COM_CNTN}
-					, #{AGN_AMT}
-					, #{AGN_BAS_PER}
-					, #{AGN_BAS_DAY}
-					, #{AGN_CNTN}
+					, #{AGN_COM_AMT}
+					, #{AGN_COM_BAS_PER}
+					, #{AGN_COM_BAS_DAY}
+					, #{AGN_COM_CNTN}
+					, #{AGN_DIS_AMT}
+					, #{AGN_DIS_BAS_PER}
+					, #{AGN_DIS_BAS_DAY}
+					, #{AGN_DIS_CNTN}
 					, current_date()
             		, #{LOGIN_USER}
             		, current_date()
@@ -135,18 +152,24 @@
 	<update id="updateProductInfo" parameterType="BMap">
 	/* Product.xml -> updateProductInfo */
 		UPDATE TB_PROD_INFO
-		   SET PROD_COND = #{PROD_COND}				<!-- 조건 -->
-  			 , COM_AMT 		= #{COM_AMT}			<!-- 일반금액 -->
-			 , COM_BAS_PER 	= #{COM_BAS_PER}		<!-- 일반 기준인원수 -->
-			 , COM_BAS_DAY 	= #{COM_BAS_DAY}		<!-- 일반 기준일수 -->
-      		 , AGN_AMT 		= #{AGN_AMT}			<!-- 에이전시금액 -->
-			 , AGN_BAS_PER 	= #{AGN_BAS_PER}		<!-- 에이전시 기준인원수 -->
-      		 , AGN_BAS_DAY 	= #{AGN_BAS_DAY}		<!-- 에이전시 기준일수 -->
-		 	 , UPD_DTM		= current_date()		<!-- 수정일 -->
-			 , UPD_ID		= #{LOGIN_USER}			<!-- 수정자 -->
-		 WHERE BAS_YY 		= #{BAS_YY}				<!-- 기준년도 -->
-		   AND BAS_YY_SEQ 	= #{BAS_YY_SEQ}			<!-- 기간년도순번 -->
-		   AND PROD_SEQ 	= #{PROD_SEQ}			<!-- 상품순번 -->
+		   SET PROD_COND = #{PROD_COND}					<!-- 조건 -->
+  			 , COM_AMT 		= #{COM_AMT}				<!-- 일반금액 -->
+			 , COM_BAS_PER 	= #{COM_BAS_PER}			<!-- 일반 기준인원수 -->
+			 , COM_BAS_DAY 	= #{COM_BAS_DAY}			<!-- 일반 기준일수 -->
+			 , COM_CNTN 	= #{COM_CNTN}				<!-- 일반 기타내용 -->
+      		 , AGN_COM_AMT 		= #{AGN_COM_AMT}		<!-- 일반여행사 금액 -->
+			 , AGN_COM_BAS_PER 	= #{AGN_COM_BAS_PER}	<!-- 일반여행사 기준인원수 -->
+      		 , AGN_COM_BAS_DAY 	= #{AGN_COM_BAS_DAY}	<!-- 일반여행사 기준일수 -->
+			 , AGN_COM_CNTN 	= #{AGN_COM_CNTN}		<!-- 일반여행사 기타내용 -->
+      		 , AGN_DIS_AMT 		= #{AGN_DIS_AMT}		<!-- 총판여행사 금액 -->
+			 , AGN_DIS_BAS_PER 	= #{AGN_DIS_BAS_PER}	<!-- 총판여행사 기준인원수 -->
+      		 , AGN_DIS_BAS_DAY 	= #{AGN_DIS_BAS_DAY}	<!-- 총판여행사 기준일수 -->
+			 , AGN_DIS_CNTN 	= #{AGN_DIS_CNTN}		<!-- 총판여행사 기타내용 -->
+		 	 , UPD_DTM		= current_date()			<!-- 수정일 -->
+			 , UPD_ID		= #{LOGIN_USER}				<!-- 수정자 -->
+		 WHERE BAS_YY 		= #{BAS_YY}					<!-- 기준년도 -->
+		   AND BAS_YY_SEQ 	= #{BAS_YY_SEQ}				<!-- 기간년도순번 -->
+		   AND PROD_SEQ 	= #{PROD_SEQ}				<!-- 상품순번 -->
 	</update>
 
 	<delete id="deleteProductInfo" parameterType="BMap">
@@ -218,9 +241,9 @@
 			 , ST_DT1 		= #{ST_DT1}				<!-- 시작일1 -->
 			 , ED_DT1 		= #{ED_DT1}				<!-- 종료일1 -->
 			 , ST_DT2 		= #{ST_DT2}				<!-- 시작일2 -->
-			 , ED_DT1 		= #{ED_DT1}				<!-- 종료일2 -->
+			 , ED_DT2 		= #{ED_DT2}				<!-- 종료일2 -->
 			 , ST_DT3 		= #{ST_DT3}				<!-- 시작일3 -->
-			 , ED_DT1 		= #{ED_DT1}				<!-- 종료일3 -->
+			 , ED_DT3 		= #{ED_DT3}				<!-- 종료일3 -->
 			 , UPD_DTM		= current_date()		<!-- 수정일 -->
 			 , UPD_ID		= #{LOGIN_USER}			<!-- 수정자 -->
 		 WHERE 1 = 1
@@ -278,10 +301,14 @@
 			 , COM_BAS_PER			
 			 , COM_BAS_DAY				
 			 , COM_CNTN				
-			 , AGN_AMT				
-			 , AGN_BAS_PER			
-			 , AGN_BAS_DAY			
-			 , AGN_CNTN		
+			 , AGN_COM_AMT				
+			 , AGN_COM_BAS_PER			
+			 , AGN_COM_BAS_DAY			
+			 , AGN_COM_CNTN		
+			 , AGN_DIS_AMT				
+			 , AGN_DIS_BAS_PER			
+			 , AGN_DIS_BAS_DAY			
+			 , AGN_DIS_CNTN		
 		     , current_date()
 		     , #{LOGIN_USER}
 		     , current_date()

@@ -1,4 +1,5 @@
 package bt.reserve.controller;
+
 import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
 import bt.btframework.utils.LoginInfo;
+import bt.common.service.FileService;
 import bt.reserve.service.ReserveService;
 import bt.rrs.dao.RrsUserDao;
 
@@ -26,6 +28,9 @@ public class ReserveRestController {
 	
 	@Resource(name = "RrsUserDao")
 	private RrsUserDao rrsUserDao;
+	
+	@Resource(name = "FileService")
+	private FileService fileService;
 	
 	/**
 	 * 예약 현황 리스트 조회
@@ -74,16 +79,20 @@ public class ReserveRestController {
 	public BRespData invoiceSelectList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
 		
 		BMap paramData = new BMap();
-		paramData.put("SEQ"  			 , (String) reqData.get("SEQ"));
-		paramData.put("REQ_DT"		 , (String) reqData.get("REQ_DT"));
-		paramData.put("CHK_IN_DT"	 , (String)reqData.get("CHK_IN_DT"));
+		paramData.put("SEQ"  	   , (String) reqData.get("SEQ"));
+		paramData.put("REQ_DT"	   , (String) reqData.get("REQ_DT"));
+		paramData.put("CHK_IN_DT"  , (String)reqData.get("CHK_IN_DT"));
 		paramData.put("CHK_OUT_DT" , (String)reqData.get("CHK_OUT_DT"));
 		paramData.put("LOGIN_USER" , LoginInfo.getUserId());
 		
 		List<BMap> resultDeptDetail = reserveService.invoiceSelectList(paramData);
-
+		
+		paramData.put("FILE_UID", resultDeptDetail.get(0).getString("FILE_UID"));
+		List<BMap> fileList = fileService.selectFileInfo(paramData);
+		
 		BRespData respData = new BRespData();
 		respData.put("result", resultDeptDetail);
+		respData.put("fileResult", fileList);
 		
 	/*	BMap param = new BMap();
 		param.put("HEAD_CD"   , 500140);
@@ -134,6 +143,7 @@ public class ReserveRestController {
 		paramData.put("DEP_AMT"    , reqData.get("DEP_AMT"));
 		paramData.put("EXP_DT"     , (String) reqData.get("EXP_DT"));
 		paramData.put("LOGIN_USER" , LoginInfo.getUserId());
+		paramData.put("FILE_UID"   , (String) reqData.get("FILE_UID"));
 		
 		if(!reserveService.saveInvoiceManager(paramData , detail)){
 			respData.put("dup", "Y");
@@ -469,4 +479,66 @@ public class ReserveRestController {
 		return respData;
 	}
 	
+	/**
+	 * 객실 풀관리 리스트 호출
+	 * @param model
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/noRoomList.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData reserveNoRoomList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BMap param = reqData.getParamDataMap("param");
+		BRespData respData = new BRespData();
+		BMap param3 = new BMap();
+		param3.put("HEAD_CD" , 500070);
+		
+		respData.put("result"   , reserveService.reserveNoRoomList(param));
+		respData.put("roomtype" , reserveService.selectGetCommonCode(param3));
+		
+		return respData;
+	}
+	
+	/**
+	 * 객식 풀관리 디테일 저장 
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/saveNoRoom.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData saveReserveNoRoom(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		List<BMap> detail = reqData.getParamDataList("detail");
+		
+		BRespData respData = new BRespData();
+
+		if(!reserveService.saveNoRoom(detail)){
+			respData.put("dup", "Y");
+		};
+		return respData;
+	}
+	
+	/**
+	 * 객실 풀관리 삭제
+	 * @param model
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/deleteNoRoom.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData deleteReserveNoRoom(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BRespData respData = new BRespData();
+		
+		BMap param = new BMap();
+		param.put("REQ_NO_DT", reqData.get("DATE"));
+		param.put("ROOM_TYPE", reqData.get("TYPE"));
+	
+		if(!reserveService.deletenoRoomInfo(param)){
+			respData.put("dup", "Y");
+		};
+		return respData;
+	}
 }

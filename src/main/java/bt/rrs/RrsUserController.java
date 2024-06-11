@@ -35,6 +35,11 @@ public class RrsUserController {
 	 */
 	@RequestMapping(value = "/rrs/User.do")
 	public String UserManager(ModelMap model) throws Exception{
+		BMap param = new BMap();
+		
+		param.put( "HEAD_CD", 500030);
+		
+		model.addAttribute("mem_gbn"        , rrsUserService.selectGetCommonCode(param));
 		return "/rrs/User";
 	}
 	
@@ -65,8 +70,13 @@ public class RrsUserController {
 	@RequestMapping(value = "/rrs/UserPopup.do")
 	public String UserPopup(ModelMap model,HttpServletRequest request) throws Exception{
 		BMap param = new BMap();
-		param.put("HEAD_CD", 500030);
-		model.addAttribute("mem_gbn"  , rrsUserService.selectGetCommonCode(param));
+		BMap param2 = new BMap();
+		
+		param.put( "HEAD_CD", 500030);
+		param2.put("HEAD_CD", 500240);
+		
+		model.addAttribute("mem_gbn"        , rrsUserService.selectGetCommonCode(param));
+		model.addAttribute("ret_yn"         , rrsUserService.selectGetCommonCode(param2));
 		
 		return "/popup/rrs/UserInfoPopup";
 	}
@@ -88,6 +98,7 @@ public class RrsUserController {
 		if(!result.getString("result").equals("success")){
 			if(result.getString("result").equals("isExistUser")) respData.put("isExistUser", "Y");
 			if(result.getString("result").equals("isExistMember")) respData.put("isExistMember", "N");
+			if(result.getString("result").equals("isExistMemberID")) respData.put("isExistMemberID", "Y");
 		}
 		
 		return respData;
@@ -109,6 +120,17 @@ public class RrsUserController {
 		rrsUserService.deleteUserInfo(paramList);
 		
 		return respData;
+	}
+	
+	/**
+	 * 관리자 멤버 찾기 팝업
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/rrs/UserInfoSearchPopup.do")
+	public String UserInfoSearchPopup(ModelMap model) throws Exception{
+		return "/popup/rrs/UserInfoSearchPopup";
 	}
 	
 	/**
@@ -134,9 +156,9 @@ public class RrsUserController {
 	@ResponseBody
 	public BRespData selectMemberUserInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param  = reqData.getParamDataMap("param"); 
-		BRespData respData = new BRespData();
+		BRespData respData = new BRespData();		
+
 		respData.put("result", rrsUserService.selectMemberUserInfo(param));
-		
 		return respData;
 	}
 	
@@ -152,8 +174,8 @@ public class RrsUserController {
 		BMap param  = new BMap();
 		BMap param2 = new BMap();
 		
-		param.put("HEAD_CD", 100100);
-		param2.put("HEAD_CD", 100100);
+		param.put("HEAD_CD", 500240);
+		param2.put("HEAD_CD", 500250);
 		
 		model.addAttribute("ret_yn"         , rrsUserService.selectGetCommonCode(param));
 		model.addAttribute("partner_gender" , rrsUserService.selectGetCommonCode(param2));
@@ -177,6 +199,7 @@ public class RrsUserController {
 		BMap result = rrsUserService.saveMemberUserInfo(param);
 		if(!result.getString("result").equals("success")){
 			if(result.getString("result").equals("isExistMember")) respData.put("isExistMember", "Y");
+			if(result.getString("result").equals("isExistMemberID")) respData.put("isExistMemberID", "Y");
 		}
 		
 		return respData;
@@ -251,9 +274,70 @@ public class RrsUserController {
 		List<BMap> paramList = reqData.getParamDataList("gridData");
 		BRespData respData = new BRespData();
 		
-		rrsUserService.deleteMemberUserInfo(paramList);
+		BMap result = rrsUserService.deleteMemberUserInfo(paramList);
+		
+		if(!result.getString("result").equals("success")){
+			if(result.getString("result").equals("isExistUserMember")) {
+				respData.put("isExistUserMember", "Y");
+			}
+		}
 		
 		return respData;
 	}
+	
+	/**
+	 * 공통코드 조회
+	 * @param reqData
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/rrs/selectMemCodeInfo.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData selectMemCodeInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BMap param = reqData.getParamDataMap("param");
+		BRespData respData = new BRespData();		
 
+		respData.put("result", rrsUserService.selectGetCommonCode(param));	
+		return respData;
+	}
+
+	/**
+	 * 멤버회원 정보 조회(팝업)
+	 * @param model
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/rrs/selectSearchUserInfo.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData selectSearchUserInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BMap param  = reqData.getParamDataMap("param"); 
+		BRespData respData = new BRespData();		
+
+		respData.put("result", rrsUserService.selectSearchUserInfo(param));
+		return respData;
+	}
+	
+	/**
+	 * 아이디 중복체크
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/UserIdCheck.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData UserIdCheck(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BMap param = reqData.getParamDataMap("param");
+		BRespData respData = new BRespData();	
+		
+		BMap result = rrsUserService.UserIdCheck(param);
+		
+		if(!result.getString("result").equals("isExistUser")){
+			respData.put("isExistUser", "Y");
+		}
+		
+		return respData;
+	}
 }

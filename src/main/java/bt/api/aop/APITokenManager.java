@@ -27,7 +27,7 @@ public class APITokenManager {
 	private static final Key jwtKey = MacProvider.generateKey();
 	
 	/**
-	 * 
+	 *  
 	 * @param token
 	 * @return
 	 * @throws HttpServerErrorException

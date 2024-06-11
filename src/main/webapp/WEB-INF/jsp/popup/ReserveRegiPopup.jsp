@@ -8,8 +8,9 @@
 %>
 <style>
 .pbtn_default {margin: 0 3px -1px 5px;padding: 3px 10px 3px 10px;border: 1px solid #a9cbeb !important;background: #bdd6ee !important;color: #2269b1;}
+.reserveListRegi_default {top: 0px;}
 </style>
-<div id="p_reserveRegi">
+<div id="p_reserveListRegi" class="reserveListRegi_default">
 	<form id="frmReserveInfo" action="#">
 		<div id="pop_ct_form_wrap">
 			<input type="hidden" name="PRC_STS"      id="PRC_STS"    value="" />
@@ -20,39 +21,27 @@
 			
 			<table class="pop_tblForm">
 				<colgroup>
-					<col width="20%" />
-			        <col width="30%" />
+					<col width="13%" />
 			        <col width="20%" />
-			        <col width="30%" />
+			        <col width="13%" />
+			        <col width="20%" />
+			        <col width="13%" />
+			        <col width="20%" />
 			    </colgroup>
+			    
+			    
 			    <tr class="idTest">
 		   	     	<th>ID</th>
-					<td class="medium_td">
+					<td class="medium_td" colspan="5">
 						<input type="text" id="USER_ID" name="USER_ID" disabled/>
 						<button type="button" class="pbtn_default" id="btn_search">아이디찾기</button>	
 					</td>
 				</tr>
-		   		<tr>
+				<tr>
 		   	     	<th><s:message code='reservation.date'/></th>
 					<td class="medium_td">
 						<input type="text" id="REQ_DT" name="REQ_DT" data-type="date"/>
 					</td>
-					<th><s:message code='reservation.tel'/></th>
-					<td>
-						<input type="text" class="cmc_txt" id="REQ_TEL_NO" name="REQ_TEL_NO" pattern="[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}"  maxlength="13"  placeholder="예) 010-1234-5678"/>
-					</td>
-				</tr>
-				<tr>
-				    <th><s:message code='reservation.Kname'/></th>
-					<td>
-						<input type="text" class="cmc_txt" id="REQ_HAN_NM" name="REQ_HAN_NM"/>
-					</td>
-					<th><s:message code='reservation.Ename'/></th>
-					<td>
-						<input type="text" class="cmc_txt" id="REQ_ENG_NM" name="REQ_ENG_NM"/>
-					</td>
-				</tr>
-				<tr>
 				    <th><s:message code='reservation.mem_gbn'/></th>
 					<td>
 						<select id="MEM_GBN" name="MEM_GBN" class="cmc_combo" style="width:62%;">
@@ -73,30 +62,17 @@
 					</td>
 				</tr>
 				<tr>
-				    <th><s:message code='reservation.checkInDt'/></th>
+				    <th><s:message code='reservation.Kname'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="CHK_IN_DT"     name="CHK_IN_DT" data-type="date" style="width:51.5%;"/>
-						<input type="text" class="cmc_txt" id="PRV_CHK_IN_DT" name="CHK_IN_DT" data-type="date" style="width:51.5%; display: none;"/>
+						<input type="text" class="cmc_txt" id="REQ_HAN_NM" name="REQ_HAN_NM"/>
 					</td>
-					<th><s:message code='reservation.checkOutDt'/></th>
+					<th><s:message code='reservation.Ename'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="CHK_OUT_DT"     name="CHK_OUT_DT" data-type="date" style="width:51.5%;"/>
-						<input type="text" class="cmc_txt" id="PRV_CHK_OUT_DT" name="CHK_OUT_DT" data-type="date" style="width:51.5%; display: none;"/>
+						<input type="text" class="cmc_txt" id="REQ_ENG_NM" name="REQ_ENG_NM"/>
 					</td>
-				</tr>
-				<tr>
-				    <th><s:message code='reservation.roomType'/></th>
+					<th><s:message code='reservation.tel'/></th>
 					<td>
-						<select id="ROOM_TYPE" name="ROOM_TYPE" class="cmc_combo" style="width:62%;">
-						    <option value="">--<s:message code='system.select'/>--</option>
-							<c:forEach var="i" items="${roomtype}">
-								<option value="${i.CODE}">${i.CODE_NM}</option>
-							</c:forEach>
-						</select>
-					</td>
-					<th class="image"><s:message code='reservation.arrImg'/></th>
-					<td class="image">
-						<button type="button" class="pbtn_default" id="ARR_IMG">이미지보기</button>
+						<input type="text" class="cmc_txt" id="REQ_TEL_NO" name="REQ_TEL_NO" pattern="[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}"  maxlength="13"  placeholder="예) 010-1234-5678"/>
 					</td>
 				</tr>
 				<tr>
@@ -108,6 +84,7 @@
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
+						<input type="text" style="width:50PX;" id="FLIGHT_IN_TIME" name="FLIGHT_IN_TIME" />
 					</td>
 				    <th><s:message code='reservation.depFlight'/></th>
 					<td>
@@ -117,53 +94,67 @@
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
+						<input type="text" style="width:50PX;" id="FLIGHT_OUT_TIME" name="FLIGHT_OUT_TIME" />
 					</td>
-				</tr>
+<!-- 					항공이미지 보기 -->
+<%-- 					<th class="image"><s:message code='reservation.arrImg'/></th> --%>
+<!-- 					<td class="image"> -->
+<!-- 						<button type="button" class="pbtn_default" id="ARR_IMG">이미지보기</button> -->
+<!-- 					</td> -->
+				</tr>	
+				<tr>
+				    <th><s:message code='reservation.totalCnt'/></th>
+					<td>
+						<input type="text" class="cmc_txt withComma" id="TOT_PERSON" name="TOT_PERSON" value="0" style="width:60px; text-align: right;" maxlength="5" />명
+					</td>
+				    <th><s:message code='reservation.personalDetail'/></th>
+				    <td colspan="5">
+					    <div style="display:inline-flex;">
+<%-- 						    <s:message code='reservation.roundY'/> --%>&nbsp;&nbsp;멤버
+						    <input type="text" id="R_PERSON" name="R_PERSON" style="width:30px; text-align: right;" value="0" maxlength="5" class="withComma"/>명 &nbsp;
+						    
+<%-- 						    <s:message code='reservation.roundY'/> --%>일반
+						    <input type="text" id="R_PERSON" name="R_PERSON" style="width:30px; text-align: right;" value="0" maxlength="5" class="withComma"/>명 &nbsp;
+						    <s:message code='reservation.roundN'/>
+						    <input type="text" id="N_PERSON" name="N_PERSON" style="width:30px; text-align: right;" value="0" maxlength="5" class="withComma"/>명 &nbsp;
+						    <s:message code='reservation.infant'/>
+						    <input type="text" id="K_PERSON" name="K_PERSON" style="width:30px; text-align: right;" value="0" maxlength="5" class="withComma"/>명 &nbsp;
+						    영유아
+						    <input type="text" id="K_PERSON" name="K_PERSON" style="width:30px; text-align: right;" value="0" maxlength="5" class="withComma"/>명
+						</div>
+					</td>
+		       </tr>
+</table>				
+<table class="pop_tblForm">
+				<colgroup>
+					<col width="13%" />
+			        <col width="21%" />
+			        <col width="13%" />
+			        <col width="19%" />
+			        <col width="13%" />
+			        <col width="20%" />
+			    </colgroup>	
 				<tr>
 				    <th><s:message code='reservation.product_gbn'/></th>
-					<td>
-						<select id="PROD_CD" name="PROD_CD" class="cmc_combo" style="width:150%;">
+					<td colspan="5">
+						<select id="PROD_CD" name="PROD_CD" class="cmc_combo" style="width:50%;">
 						    <option value="">--<s:message code='system.select'/>--</option>
 							<c:forEach var="i" items="${prod_cd}">
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
 					</td>
-				</tr>
-				<tr>
-				    <th><s:message code='reservation.totalCnt'/></th>
-					<td>
-						<input type="text" class="cmc_txt withComma" id="TOT_PERSON" name="TOT_PERSON" value="0" style="width:60px; text-align: right;" maxlength="5" />명
-					</td>	
-				    <th><s:message code='reservation.resortNum'/></th>
-					<td>
-						<input type="text" class="cmc_txt" id="CONFIRM_NO" name="CONFIRM_NO"/>
-					</td>
-		       </tr>
-		       <tr>
-				    <th><s:message code='reservation.personalDetail'/></th>
-				    <td colspan="5">
-					    <div style="display:inline-flex;">
-						    <s:message code='reservation.roundY'/>
-						    <input type="text" id="R_PERSON" name="R_PERSON" style="width:60px; text-align: right;" value="0" maxlength="5" class="withComma"/>명
-						    <s:message code='reservation.roundN'/>
-						    <input type="text" id="N_PERSON" name="N_PERSON" style="width:60px; text-align: right;" value="0" maxlength="5" class="withComma"/>명
-						    <s:message code='reservation.infant'/>
-						    <input type="text" id="K_PERSON" name="K_PERSON" style="width:60px; text-align: right;" value="0" maxlength="5" class="withComma"/>명
-						</div>
-					</td>
 				</tr>	
 				<tr>
-				    <th><s:message code='reservation.meetSanding'/></th>
-				    <td>
-						<select id="PICK_GBN" name="PICK_GBN" class="cmc_combo" style="width:100px;" disabled>
-						    <c:forEach var="i" items="${region}">
-								<option value="${i.CODE}">${i.CODE_NM}</option>
-							</c:forEach>
-						</select>
-						<input type="text" id="PER_NUM_CNT" name="PER_NUM_CNT" style="width:60px; text-align: right;" value="0" disabled>명
-						<input type="hidden" id="PCK_PROD_SEQ" name="PCK_PROD_SEQ">
-						<button type="button" class="pbtn_default openPop" id="insertPickGbn">등록</button>
+				    <th><s:message code='reservation.checkInDt'/></th>
+					<td>
+						<input type="text" class="cmc_txt" id="CHK_IN_DT"     name="CHK_IN_DT" data-type="date" style="width:51.5%;"/>
+						<input type="text" class="cmc_txt" id="PRV_CHK_IN_DT" name="CHK_IN_DT" data-type="date" style="width:51.5%; display: none;"/>
+					</td>
+					<th><s:message code='reservation.checkOutDt'/></th>
+					<td>
+						<input type="text" class="cmc_txt" id="CHK_OUT_DT"     name="CHK_OUT_DT" data-type="date" style="width:51.5%;"/>
+						<input type="text" class="cmc_txt" id="PRV_CHK_OUT_DT" name="CHK_OUT_DT" data-type="date" style="width:51.5%; display: none;"/>
 					</td>
 				    <th><s:message code='reservation.lateCheckout'/></th>
 					<td>
@@ -171,34 +162,29 @@
 						<input type="radio"  name="LATE_CHECK_OUT" value="2">6시이후 
 						<input type="radio"  name="LATE_CHECK_OUT" value="3">부
 				    </td>
-				</tr>
-				<tr>
-					<th><s:message code='reservation.addSingle'/></th>
-					<td>
-						<input type="text" id="ADD_R_S_PER" name="ADD_R_S_PER"  value="0" style="width:60px; text-align: right";" maxlength="3" class="withComma"/>명
-						<input type="text" id="ADD_R_S_DAY" name="ADD_R_S_DAY"  value="0" style="width:60px; text-align: right";" maxlength="3" class="withComma"/>일
-						<input type="text" id="ADD_R_S_CNT" name="ADD_R_S_CNT"  value="0" style="width:60px; text-align: right";" maxlength="3" class="withComma"/>개
-					</td>
-					<th><s:message code='reservation.addPremium'/></th>
-					<td>
-						<input type="text" id="ADD_R_P_PER" name="ADD_R_P_PER" value="0" style="width:60px; text-align: right"; maxlength="3" class="withComma"/>명
-					    <input type="text" id="ADD_R_P_DAY" name="ADD_R_P_DAY" value="0" style="width:60px; text-align: right"; maxlength="3" class="withComma"/>일
-					    <input type="text" id="ADD_R_P_CNT" name="ADD_R_P_CNT" value="0" style="width:60px; text-align: right"; maxlength="3" class="withComma"/>개
-					</td>
-				</tr>
-				<tr>
-				    <th>트윈/더블</th>
-					<td>
-						<input type="text" id="CNT_D1" name="CNT_D1" style="width:60px; text-align: right";" value="0" maxlength="3" class="withComma"/>개
-						<input type="text" id="CNT_D2" name="CNT_D2" style="width:60px; text-align: right";" value="0" maxlength="3" class="withComma"/>개
-					</td>                                                               
-					<th>프리미엄 트윈/더블</th>
-					<td>
-						<input type="text" id="CNT_P1" name="CNT_P1" style="width:60px; text-align: right";" value="0" maxlength="3" class="withComma"/>개
-					    <input type="text" id="CNT_P2" name="CNT_P2" style="width:60px; text-align: right";" value="0" maxlength="3" class="withComma"/>개
-					</td>                                                               
+<!-- 				    객실타입 -->
+<%-- 				    <th><s:message code='reservation.roomType'/></th> --%>
+<!-- 					<td> -->
+<%-- 						<select id="ROOM_TYPE" name="ROOM_TYPE" class="cmc_combo" style="width:62%;"> --%>
+<%-- 						    <option value="">--<s:message code='system.select'/>--</option> --%>
+<%-- 							<c:forEach var="i" items="${roomtype}"> --%>
+<%-- 								<option value="${i.CODE}">${i.CODE_NM}</option> --%>
+<%-- 							</c:forEach> --%>
+<%-- 						</select> --%>
+<!-- 					</td> -->
 				</tr>	
 				<tr>
+				    <th><s:message code='reservation.meetSanding'/></th>
+				    <td>
+						<select id="PICK_GBN" name="PICK_GBN" class="cmc_combo" style="width:70px;" disabled>
+						    <c:forEach var="i" items="${region}">
+								<option value="${i.CODE}">${i.CODE_NM}</option>
+							</c:forEach>
+						</select>
+						<input type="text" id="PER_NUM_CNT" name="PER_NUM_CNT" style="width:30px; text-align: right;" value="0" disabled>명
+						<input type="hidden" id="PCK_PROD_SEQ" name="PCK_PROD_SEQ">
+						<button type="button" class="pbtn_default openPop" id="insertPickGbn">등록</button>
+					</td>
 				    <th><s:message code='reservation.arrPickup'/></th>
 				    <td>
 						<select id="PICK_IN" name="PICK_IN" class="cmc_combo" style="width:62%;">
@@ -216,74 +202,101 @@
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
+					</td>	
+				</tr>
+				<tr>
+				    <th>트윈/더블</th>
+					<td>
+						<input type="text" id="CNT_D1" name="CNT_D1" style="width:30px; text-align: right";" value="0" maxlength="3" class="withComma"/>개 &nbsp;
+						<input type="text" id="CNT_D2" name="CNT_D2" style="width:30px; text-align: right";" value="0" maxlength="3" class="withComma"/>개
+					</td>                                                           
+<!-- 					<th>프리미엄 트윈/더블</th> -->
+<!-- 					<td> -->
+<!-- 						<input type="text" id="CNT_P1" name="CNT_P1" style="width:30px; text-align: right";" value="0" maxlength="3" class="withComma"/>개 &nbsp; -->
+<!-- 					    <input type="text" id="CNT_P2" name="CNT_P2" style="width:30px; text-align: right";" value="0" maxlength="3" class="withComma"/>개 -->
+<!-- 					</td>       -->
+					<th><s:message code='reservation.addSingle'/></th>
+					<td>
+						<input type="text" id="ADD_R_S_PER" name="ADD_R_S_PER"  value="0" style="width:30px; text-align: right";" maxlength="3" class="withComma"/>개 &nbsp;
+						<input type="text" id="ADD_R_S_DAY" name="ADD_R_S_DAY"  value="0" style="width:30px; text-align: right";" maxlength="3" class="withComma"/>일 &nbsp;
+<!-- 						<input type="text" id="ADD_R_S_CNT" name="ADD_R_S_CNT"  value="0" style="width:30px; text-align: right";" maxlength="3" class="withComma"/>개 -->
+					</td>
+					<th><s:message code='reservation.addPremium'/></th>
+					<td>
+						<input type="text" id="ADD_R_P_PER" name="ADD_R_P_PER" value="0" style="width:30px; text-align: right"; maxlength="3" class="withComma"/>개 &nbsp;
+					    <input type="text" id="ADD_R_P_DAY" name="ADD_R_P_DAY" value="0" style="width:30px; text-align: right"; maxlength="3" class="withComma"/>일 &nbsp;
+<!-- 					    <input type="text" id="ADD_R_P_CNT" name="ADD_R_P_CNT" value="0" style="width:30px; text-align: right"; maxlength="3" class="withComma"/>개 -->
 					</td>
 				</tr>
 				<tr>
-				    <th><s:message code='reservation.invoiceDt'/></th>
-				    <td>
-						<input type="text" id="INV_REG_DT" name="INV_REG_DT" data-type="date" readonly="readonly"/>
-					    <button type="button" class="pbtn_default openPop" id="btn_create">생성</button>
-				    </td>
 				     <th class="status"><s:message code='reservation.state'/></th>
-				    <td class="status">
+				    <td class="status" colspan="3">
 						<input type="text" id="PRC_STS_NM" name="PRC_STS_NM" readonly/>
 					    <button type="button" class="pbtn_default" id="changeStatus">상태변경</button>
+				    </td>
+<!-- 				    리조트컨펌번호 -->
+<%-- 				    <th><s:message code='reservation.resortNum'/></th> --%>
+<!-- 					<td> -->
+<!-- 						<input type="text" class="cmc_txt" id="CONFIRM_NO" name="CONFIRM_NO"/> -->
+<!-- 					</td> -->
+				    <th><s:message code='reservation.invoiceDt'/></th>
+				    <td>
+						<input type="text" id="INV_REG_DT" name="INV_REG_DT" data-type="date" readonly="readonly" style="width: 50%"/>
+					    <button type="button" class="pbtn_default openPop" id="btn_create">생성</button>
 				    </td>
 				</tr>
 				<tr>
 				    <th><s:message code='reservation.totalPrice'/></th>
 				    <td>
-				        <input type="text" id="TOT_AMT" name="TOT_AMT" style="text-align: right" value="0" class="withComma" readonly="readonly"/>원
+				        <input type="text" id="TOT_AMT" name="TOT_AMT" style="width:100px; text-align: right" value="0" class="withComma" readonly="readonly"/>원
 				    </td>
 					<th><s:message code='reservation.deposit'/></th>
 				    <td>
-				        <input type="text" id="DEP_AMT" name="DEP_AMT" style="text-align: right" value="0" class="withComma" readonly="readonly"/>원
+				        <input type="text" id="DEP_AMT" name="DEP_AMT" style="width:100px; text-align: right" value="0" class="withComma" readonly="readonly"/>원
+				    </td>
+				    <th><s:message code='reservation.expdt'/></th>
+				    <td>
+				    <input type="text" class="cmc_txt" id="EXP_DT" name="EXP_DT" data-type="date" readonly="readonly" style="width: 50%"/>
 				    </td>
 				</tr>
 				<tr>
-				    <th><s:message code='reservation.disctPrice'/></th>
-				    <td>
-				    	<input type="text" id="DCT_AMT" name="DCT_AMT" style="text-align: right" value="0" class="withComma"/>원
-				    </td>
 				    <th><s:message code='reservation.balancePrice'/></th>
 				    <td>
 				        <div style="display:inline-flex;" >
-					        <input type="text" id="BAL_AMT" name="BAL_AMT" style="text-align: right" value="0" class="withComma" readonly="readonly"/>원
+					        <input type="text" id="BAL_AMT" name="BAL_AMT" style="width:100px; text-align: right" value="0" class="withComma" readonly="readonly"/>원
 			            </div>
 			        </td>
+				    <th><s:message code='reservation.disctPrice'/></th>
+				    <td>
+				    	<input type="text" id="DCT_AMT" name="DCT_AMT" style="width:100px; text-align: right" value="0" class="withComma"/>원
+				    </td>
 				</tr>
 				<tr>
-				    <th><s:message code='reservation.depositDate'/></th>
-				    <td>
-				        <input type="text" class="cmc_txt"  id="DEP_IN_DT" name="DEP_IN_DT" data-type="date"/>
-				    </td>
 				    <th><s:message code='reservation.payAmt'/></th>
 				    <td>
-				        <input type="text" id="PAY_AMT" name="PAY_AMT" style="text-align: right" value="0" class="withComma"/>원
+				        <input type="text" id="PAY_AMT" name="PAY_AMT" style="width:100px; text-align: right" value="0" class="withComma"/>원
 				        <button type="button" class="pbtn_default openPop" id="btn_deposit" disabled>입금완료</button>
 				    </td>
-				</tr>
-				<tr>
-				    <th><s:message code='reservation.expdt'/></th>
-				    <td>
-				    <input type="text" class="cmc_txt" id="EXP_DT" name="EXP_DT" data-type="date" readonly="readonly"/>
-				    </td>
-				</tr>
-				<tr>
-				    <th><s:message code='reservation.moreDetail'/></th>
-				    <td colspan="5">
-				        <textarea id="REMARK" name="REMARK" rows="5" style="width: 100%"></textarea>
+				    <th><s:message code='reservation.depositDate'/></th>
+				    <td colspan="3">
+				        <input type="text" class="cmc_txt"  id="DEP_IN_DT" name="DEP_IN_DT" data-type="date"/>
 				    </td>
 				</tr>
 				<tr>
 				    <th><s:message code='reservation.weekChRound'/></th>
-				    <td colspan="2">
+				    <td colspan="3">
 				    <div style="display:inline-flex;" >
 						<input type="checkbox"  name="RND_CHG_YN1" id="RND_CHG_YN1">토요일 오전
 						<input type="checkbox"  name="RND_CHG_YN2" id="RND_CHG_YN2">일요일 오전
 						※ 미체크시 기본은 오후임.
 					</div>
 					</td>
+				</tr>
+				<tr>
+				    <th><s:message code='reservation.moreDetail'/></th>
+				    <td colspan="5">
+				        <textarea id="REMARK" name="REMARK" rows="5" style="width: 99%"></textarea>
+				    </td>
 				</tr>
 				<tr style="display: none;">
 					<td>
@@ -293,7 +306,27 @@
 					</td>
 				</tr>
 			</table>
+			
+			<!-- 그리드 시작 -->
+			<div class="ctu_g3_wrap" style="width:100%; float:left; padding-top:6px; margin-bottom:6px; ">
+				<div class="pop_grid_top_wrap">
+					<div class="ct_grid_top_right" style="width:100%; float:left; margin-bottom:-6px; padding-top:1px; padding-bottom:-6px; ">
+						<button type="button" class="btn btn-default" id="btn_List_addRow" style="align:right" ><s:message code='button.addRow'/></button>
+		            	<button type="button" class="btn btn-default" id="btn_List_delRow" style="align:right" ><s:message code='button.delRow'/></button>
+		            </div>
+				</div>
+				<div class="pop_grid_wrap">
+					<table id="reserveGrid"  ></table>
+					<div id="reserveGrid_pager"></div>
+				</div>
+			</div>
+			<!-- 그리드 끝 -->
+			   
+			    
 		</div>
+		
+		
+				
 	</form>	
 </div>
 
@@ -302,12 +335,22 @@ $(function() {
 	var seq;
 	var req_dt;
 	var vflag;
-	$('#p_reserveRegi').dialog({
+
+	var list_seq;
+	var list_req_dt;
+	var mem_gbn;
+	var email;
+	var chk_in_dt;
+	var chk_out_dt;
+	var min_date;
+	var prc_sts;
+	
+	$('#p_reserveListRegi').dialog({
 		
 		/* title :'<s:message code='reservation.registration'/>', */
 		autoOpen : false,
-		//height: 400,
-		width: 940,
+		height: 890,
+		width: 1000,
 		modal : true,
 		buttons : {
 			'<s:message code='system.save'/>' : {
@@ -362,6 +405,8 @@ $(function() {
 		$('#REQ_DT').val($.datepicker.formatDate('yy.mm.dd', new Date())).attr("readonly" , true);
 		seq    = receivedData.SEQ;
 		req_dt = receivedData.REQ_DT;
+// 		alert("seq : " + seq);
+// 		alert("req_dt : " + req_dt);
 		if(fn_empty(seq || req_dt)){ //신규
 		    $(".ui-dialog-title").text('<s:message code='reservation.registration'/>');
 		    $("#CHK_IN_DT"      ).val(Util.converter.dateFormat1(today));
@@ -393,6 +438,10 @@ $(function() {
 		}).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
 		    function(e) {
 		});
+		
+		// $("#btn_create").hide(); // 인보이스 발행일자 생성 버튼
+		createGrid();
+ 		cSearch();
 	
 	}
 	
@@ -707,7 +756,7 @@ $(function() {
 				}else{
 					alert("<s:message code='info.save'/>");
 					p_rtnData = {};
-					popupClose($('#p_reserveRegi').data('pid'));
+					popupClose($('#p_reserveListRegi').data('pid'));
 				}
 			});
 		}
@@ -1096,7 +1145,7 @@ $(function() {
 			return false;
 		}
 		
-		if(tot_amt == 0 || dep_amt == 0 || pay_amt == ""){
+		if(tot_amt == 0 || dep_amt == 0 || val_amt == 0 || pay_amt == ""){
 			return false;
 		}
 		
@@ -1126,6 +1175,215 @@ $(function() {
 				}
 			});
 		}
+	});
+	
+	
+	
+	
+	
+
+	function cSearch(currentPage){
+		var url = "/reserve/reserveSelectAddList.do";
+		var formData = formIdAllToMap('frmSearch');
+// 		var reserve_sum_tot = 0;
+		var param = {"SEQ"     : seq
+				   , "REQ_DT"  : req_dt
+				   };
+		fn_ajax(url, true, param, function(data, xhr){
+			$.each(data.result , function(i , val){
+				//val.TOT_AMT = parseInt(val.TOT_AMT).toLocaleString();
+				//val.PER_AMT = parseInt(val.PER_AMT).toLocaleString();
+// 				val.STATUS_V = "R";
+// 				reserve_sum_tot += val.TOT_AMT;
+			});
+			reloadGrid("reserveGrid", data.result);
+			
+			var colModel = $("#reserveGrid").jqGrid('getGridParam', 'colModel'); 
+			for(var i =0; i < data.result.length; i++){
+				jQuery("#reserveGrid").setCell(i+1);
+			}
+
+			btGrid.gridResizing('reserveGrid');
+// 		    $("#reserveGrid_pager_right").append('<div dir="ltr" id="reserve_sumtot_amt" style="text-align:right">Total Price: '+fn_comma(reserve_sum_tot)+'</div>');
+		    $("#reserveGrid_pager_left").hide();
+		     
+		    
+	    });
+		
+		$('#POP_EXP_DT').datepicker({
+	        dateFormat : 'yy.mm.dd',
+		    showOn : 'both'
+		 }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
+		     function(e) {
+		 });
+	}
+	
+	
+
+	function gridColspan(){
+		var newWidth1 = $("#jqgh_reserveGrid_USE_DAY").width() + $("#jqgh_reserveGrid_UNIT_DAY").width();
+		$('#reserveGrid').jqGrid("setLabel", "USE_DAY", "사용 일/횟수", "", {
+		    style: "width: " + newWidth1,
+		    colspan: "2"
+		});
+		$('#reserveGrid').jqGrid("setLabel", "UNIT_DAY", "", "", {style: "display: none"});
+		
+		var newWidth2 = $("#jqgh_reserveGrid_USE_NUM").width() + $("#jqgh_reserveGrid_UNIT_NUM").width();
+		$('#reserveGrid').jqGrid("setLabel",	 "USE_NUM", "사용 명/갯수", "", {
+		    style: "width: " + newWidth2,
+		    colspan: "2"
+		});
+		$('#reserveGrid').jqGrid("setLabel", "UNIT_NUM", "", "", {style: "display: none"});
+		
+		btGrid.gridResizing('grid1');
+	}
+	
+	function createGrid(){
+		var url = "/reserve/invoiceItemList.do";
+		var formData = formIdAllToMap('frmSearch');
+		var param = {"MEM_GBN" : mem_gbn
+				   };
+		var obj = new Object();
+		obj +=":;";
+		
+		fn_ajax(url, true, param, function(data, xhr){
+			$.each(data.selectList , function(i , v){
+				if (!v.CODE) {
+					return;
+				}
+				obj += v.CODE + ':'+ v.CODE_NM + ';';
+			});
+			obj = obj.substr(0, obj.length-1);
+			
+			$("#reserveGrid").setColProp('ITEM_CD', {  formatter : "select", editoptions: { value:obj}});
+	    });
+		
+		var colName = [
+						  '<s:message code="reservation.seq"/>'
+						, '동반자구분'
+						, '인원구분'
+						, '한글명'
+						, '영문명'
+						, '전화번호'
+						, '체크인일자'
+						, '체크아웃일자'
+						, '도착항기편'
+						, '도착시간'
+						, '출발항기편'
+						, '출발시간'
+						, '항공이미지'
+						, '패키지상품'
+						, 'Early체크인'
+						, 'Late체크아웃'
+						, '객실타입'
+						, '리조트confirm번호'
+						, 'STATUS_V'
+					];
+
+		var colModel = [
+						  { name: 'DSEQ',      width : 1 , align: 'center' , hidden : true, editoptions:{readonly: true}}
+						, { name: 'COM_GBN',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'NUM_GBN',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'COM_HAN_NM',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'COM_ENG_NM',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'COM_TEL_NO',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'CHK_IN_DT',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'CHK_OUT_DT',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'FLIGHT_IN',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'FLIGHT_IN_HH',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'FLIGHT_OUT',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'FLIGHT_OUT_HH',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'ADD_FILE_SEQ',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'HDNG_GBN',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'LATE_CHECK_IN',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'LATE_CHECK_OUT',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'ROOM_TYPE',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'CONFIRM_NO',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'STATUS_V',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
+						
+					];
+		
+		var gSetting = {
+		        pgflg:false,
+		        exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
+		        colsetting : false,
+				searchInit : false,
+				resizeing : true,
+				rownumbers:false,
+				shrinkToFit: false,
+				autowidth: true,
+				queryPagingGrid:false, // 쿼리 페이징 처리 여부
+				height : 147
+		};
+		
+		// 그리드 생성 및 초기화
+		btGrid.createGrid('reserveGrid', colName, colModel, gSetting);
+		
+		$('#reserveGrid').jqGrid('setGroupHeaders', {
+			useColSpanStyle: true, 
+			groupHeaders:[
+				{startColumnName: 'USE_DAY', numberOfColumns: 4, titleText: '사용'},
+				]
+		});
+	}
+	
+	
+
+	$("#btn_List_addRow").on("click" , function(){
+		btGrid.gridSaveRow('reserveGrid');
+		var rowId = $('#reserveGrid').jqGrid('getGridParam', 'selrow');
+		var rowData = $("#reserveGrid").getRowData(rowId);
+		var data = {"SEQ" : seq  , "STATUS_V" : "I"};
+		btGrid.gridAddRow("reserveGrid", "last", data);
+	});
+	
+
+
+	$("#btn_List_delRow").on("click" , function(){
+		var rowId =$("#reserveGrid").jqGrid('getGridParam','selrow');
+		var args = "";
+		if (rowId == null) {
+			args = '<s:message code='title.row'/>';
+    		alert("<s:message code='errors.selectdel' arguments='" + args + "' javaScriptEscape='false'/>");
+
+    		//cjy return;
+		}else{
+			var grdData = $("#reserveGrid").jqGrid("getCell", rowId, "STATUS_V");
+			
+			if(grdData != 'I'){
+				alert("<s:message code='errors.statusR' javaScriptEscape='false'/>"); 
+				//cjy return;
+	    	} else {
+	    			$("#reserveGrid").jqGrid("delRowData",rowId);
+	    	}
+		}
+	});
+	
+
+	$("#reserveGrid").bind("change , keyup" , function(){
+		var changeRowId  = $('#reserveGrid').jqGrid('getGridParam', 'selrow');
+// 		var rowCnt       = $('#reserveGrid').getGridParam('reccount');
+// 		var ids          = $('#reserveGrid').jqGrid('getDataIDs');
+// 		var full_tot_amt = 0;
+		
+		if($('#reserveGrid').jqGrid('getRowData', changeRowId).STATUS_V != "I"){
+			$("#reserveGrid").jqGrid('setCell',changeRowId , 'STATUS_V', 'U');
+		}
+// 		var per_amt = $("#"+changeRowId+"_PER_AMT").val();// == undefined ? $(this).jqGrid('getCell', changeRowId ,"PER_AMT") : $("#"+changeRowId+"_PER_AMT").val();
+// 		var use_day = $("#"+changeRowId+"_USE_DAY").val();// == undefined ? $(this).jqGrid('getCell', changeRowId ,"USE_DAY") : $("#"+changeRowId+"_USE_DAY").val();
+// 		var use_num = $("#"+changeRowId+"_USE_NUM").val();// == undefined ? $(this).jqGrid('getCell', changeRowId ,"USE_NUM") : $("#"+changeRowId+"_USE_NUM").val();
+// 		var tot_amt = parseInt(per_amt.replaceAll("," , "")) * parseInt(use_day.replaceAll("," , "")) * parseInt(use_num.replaceAll("," , ""));
+// 		if(per_amt != "" && use_day != "" && use_num != ""){
+// 			$(this).jqGrid('setCell' , changeRowId , 'TOT_AMT' , tot_amt);
+// 		}else{
+// 			$(this).jqGrid('setCell' , changeRowId , 'TOT_AMT' , 0);
+// 		}
+    
+// 		for(var i = 0 ; i < ids.length ; i ++ ){
+// 			full_tot_amt += parseInt(fn_uncomma($(this).jqGrid('getCell', ids[i] ,'TOT_AMT')));
+// 		}
+// 		$("#reserve_sumtot_amt").text('Total Price: '+fn_comma(full_tot_amt));
+// 	    $("#reserve_sumtot_amt").append('<div dir="ltr" id="reserve_sumtot_amt" style="text-align:right">Total Price: '+fn_comma(full_tot_amt)+'</div>');
 	});
 	
 });

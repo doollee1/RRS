@@ -320,7 +320,7 @@
 		$.each(data, function(index, item){
 			var link = "/common/downloadNoticeAttach.do?f=" + item.NEW_FILE_NM + "&of=" + item.SRC_FILE_NM;
 			var deleteLink = "/common/deleteNoticeAttach.do";
-			$("#noticeAttach").append("<a href='#' onclick=\"fileDownload('" + link + "');\">" + item.NEW_FILE_NM + "</a>");   //item.SRC_FILE_NM
+			$("#noticeAttach").append("<a href='#' onclick=\"fileDownload('" + link + "');\">" + item.SRC_FILE_NM + "</a>"); 
 			$("#noticeAttach").append("<span class='clipdel'><a href='#' onclick=\"fileDelete('" + deleteLink + "', '" + item.FILE_UID + "', '" + item.NEW_FILE_NM + "');\"><span class='notice_file_del'>Delete</span></a></span>");
 			$("#noticeAttach").append("<br/>");
 		});

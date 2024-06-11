@@ -24,63 +24,120 @@
 		   			<input type="hidden" name="PASSWD" id="PASSWD" />
 					<th>회원타입</th>
 					<td>
-						<select id="MEM_GBN" name="MEM_GBN" class="cmc_combo" style="width:150px;">
+						<select id="MEM_GBN" name="MEM_GBN" class="cmc_combo" style="width:125px;">
 							<c:forEach var="i" items="${mem_gbn}">
 							    <option value="${i.CODE}">${i.CODE_NM}</option>
 						    </c:forEach>
 						</select>
+						<button class='btn btn-default' id='btn_userSearchPopup' type='button' onclick=''>맴버찾기</button>
 					</td>
 					<th>이름</th>
 					<td>
-						<input type="text"  id="HAN_NAME" name="HAN_NAME" class="cmc_txt" style="width:150px;" maxlength="20" onlyKor />
+						<input type="text"  id="HAN_NAME" name="HAN_NAME" class="onlyKor cmc_txt" style="width:125px;" maxlength="20" />
 					</td>
 					<th>영문이름</th>
 					<td>
-						<input type="text"  id="ENG_NAME" name="ENG_NAME" class="cmc_txt" style="width:150px;" maxlength="30" onlyEng />
+						<input type="text"  id="ENG_NAME" name="ENG_NAME" class="onlyEng cmc_txt" style="width:125px;" maxlength="30" />
 					</td>
 				</tr>
 				<tr>
 					<th>전화번호</th>
 					<td>
-						<input type="text" id="TEL_NO" name="TEL_NO" class="cmc_txt" style="width:150px;" maxlength="13" oninput="autoHyphen(this)"/>
+						<input type="text" id="TEL_NO" name="TEL_NO" class="onlyNum cmc_txt" style="width:125px;" maxlength="13"/>
 					</td>
 					<th>회원 ID</th>
 					<td>
-						<input type="text" id="USER_ID" name="USER_ID" class="cmc_txt" style="width:150px;" maxlength="20" noSpecial />
+						<input type="text" id="USER_ID" name="USER_ID" class="cmc_txt" style="width:125px;" maxlength="10" noSpecial />
+						<button class='btn btn-default' id='btn_idCheck' type='button' onclick=''>중복확인</button>
 					</td>
-					<th>Email</th>
+					<th>멤버 ID</th>
 					<td>
-						<input type="text" id="EMAIL" name="EMAIL" class="cmc_txt" style="width:150px;" maxlength="50"/>
+						<input type="text" id="MEMBER_ID" name="MEMBER_ID" class="cmc_txt" style="width:125px;" maxlength="20" readonly/>
 					</td>
 				</tr>
 				<tr>
+					<th>Email</th>
+					<td>
+						<input type="text" id="EMAIL" name="EMAIL" class="cmc_txt" style="width:150px;" maxlength="50" EMAIL/>
+					</td>
 					<th>탈퇴여부</th>
 					<td>
-						<select id="RET_YN" name="RET_YN" class="cmc_combo" style="width:150px;">
-							<option value="N">N</option>
-							<option value="Y">Y</option>
+						<select id="RET_YN" name="RET_YN" class="cmc_combo" style="width:130px;">
+							<c:forEach var="i" items="${ret_yn}">
+							    <option value="${i.CODE}">${i.CODE_NM}</option>
+						    </c:forEach>
 						</select>
+					</td>
+					<th></th>
+				</tr>
+				<tr>
+					<th>등록자 ID</th>
+					<td>
+						<input type="text" id="REG_ID" name="REG_ID" class="cmc_txt" style="width:125px;" readonly />
 					</td>
 					<th>등록일시</th>
 					<td>
-						<input type="text" id="REG_DTM" name="REG_DTM" class="cmc_txt" style="width:150px;" readonly />
+						<input type="text" id="REG_DTM" name="REG_DTM" class="cmc_txt" style="width:125px;" readonly />
+					</td>
+					<th></th>
+				</tr>
+				<tr>
+					<th>수정자 ID</th>
+					<td>
+						<input type="text" id="UPD_ID" name="UPD_ID" class="cmc_txt" style="width:125px;" readonly />
 					</td>
 					<th>수정일시</th>
 					<td>
-						<input type="text" id="UPD_DTM" name="UPD_DTM" class="cmc_txt" style="width:150px;" readonly />
+						<input type="text" id="UPD_DTM" name="UPD_DTM" class="cmc_txt" style="width:125px;" readonly />
 					</td>
+					<th></th>
 				</tr>
 				<p id="mem_gbn_announce" style="color:#ff7f00; margin-top:4px;"></p>
 			</table>
+			<input type="hidden" id="Ex_MEMBER_ID" name="Ex_MEMBER_ID" />
 		</div>
 	</form>	
 </div>
 
 <script type="text/javascript">
-$(document).on("keyup", "input[noSpecial]", function() {$(this).val( $(this).val().replace(/[^ㄱ-힣a-zA-Z0-9]/gi,"") );});
+$(document).on("keyup", "input[noSpecial]", function() {$(this).val( $(this).val().replace(/[^a-zA-Z0-9]/gi,"") );});
 $(document).on("keyup", "input[onlyNum]", function() {$(this).val( $(this).val().replace(/[^0-9]/gi,"") );});
 $(document).on("keyup", "input[onlyKor]", function() {$(this).val( $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"'\\]/g,"") );});
 $(document).on("keyup", "input[onlyEng]", function() {$(this).val( $(this).val().replace(/[^A-Za-z]/ig,"") );});
+$(document).on("keyup", 'input[EMAIL]', function() {$(this).val($(this).val().replace(/[^a-zA-Z0-9@._-]/g, ''));});
+	
+var idChkYN = false; //아이디 중복확인 여부
+
+$(document).on("focusout", '[class^=onlyKor]', function() {
+	const regExp = /[ㄱ-ㅎㅏ-ㅣ가-힣]/gi; 
+	if($(this).val() != "" && !regExp.test($(this).val())){
+    	alert("한글로 작성해주세요.");
+    	$(this).val("");
+    }
+});
+
+$(document).on("focusout", '[class^=onlyEng]', function() {
+	const regExp =  /^[a-zA-Z]*$/; 
+	if($(this).val() != "" && !regExp.test($(this).val())){
+    	alert("영문으로 작성해주세요.");
+    	$(this).val("");
+    }
+});
+
+$(document).on("focusout", '[class^=onlyNum]', function() {
+	const regExp = /^[0123456789-]*$/;
+	if($(this).val() != "" && !regExp.test($(this).val())){
+    	alert("숫자로 작성해주세요.");
+    	$(this).val("");
+    }else{
+    	$(this).val($(this).val().replace(/^(\d{2,3})(\d{3,4})(\d{4})$/g, "$1-$2-$3"));
+    }
+});
+
+//아이디가 변하면 중복체크 다시하도록 값 초기화
+$('#USER_ID').on("change", function(){
+	idChkYN = false;
+});
 
 $(function() {
 	$('#p_UserInfo').dialog({
@@ -113,26 +170,22 @@ $(function() {
 				// 회원 수정 팝업인 경우
 				selectUserInfo($(this).data("USER_ID"));	// USER_ID로 조회
 				$("#USER_ID").attr("readonly", true);		// USER_ID readonly
-				var reg_dtm = $("#REG_DTM").val();
-				var upd_dtm = $("#UPD_DTM").val();
-				$("#REG_DTM").val(new Date(Number(reg_dtm)).toLocaleDateString());	// 등록일시 readonly
-				$("#UPD_DTM").val(new Date(Number(upd_dtm)).toLocaleDateString());	// 수정일시 readonly
-				
-				// 연락처 하이픈 처리
-				var tel_no = $("#TEL_NO").val();
-				var convert_tel_no = tel_no.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
-				$("#TEL_NO").val(convert_tel_no);
-				
+				$("#btn_idCheck").hide();
 				// 회원 구분 disabled
 				$("#MEM_GBN").attr("disabled", true);
+				$("#btn_userSearchPopup").hide();
 				// 멤버 회원이면 이름, 영문이름, 전화번호 readonly
 				var MEM_GUBUN = $("#MEM_GBN").val();
 				if(MEM_GUBUN == "01") {
 					$("#HAN_NAME").attr("readonly", true);
 					$("#ENG_NAME").attr("readonly", true);
 					$("#TEL_NO").attr("readonly", true);
+					$("#EMAIL").attr("readonly", true);
 					$("#mem_gbn_announce").text("※ 멤버의 이름, 전화번호, 이메일 변경은 멤버정보등록 팝업에서 가능합니다.");
 				}
+				
+				typeChage();
+				idChkYN = true;
 				
 				// 신규 등록 or 수정
 				$("#isNew").val("N");
@@ -152,12 +205,16 @@ function selectUserInfo(userId){
 	fn_ajax(url, false, param, function(data, xhr){
 		fn_dataBind('frmUserInfo', data.result[0]);
 	});
+	
+	$('#Ex_MEMBER_ID').val($(this).data('MEMBER_ID'));
 }
 
 function saveUserInfo(){
 	var formData = formIdAllToMap('frmUserInfo');
 	formData.TEL_NO = formData.TEL_NO.replace(/-/g, '');
 	
+	
+	//alert(formData.MEM_GBN);
 	// validtaion check
 	if(formData.HAN_NAME === "") {
 		alert("이름을 입력해주세요.");
@@ -171,8 +228,8 @@ function saveUserInfo(){
 		alert("연락처를 입력해주세요.");
 		return;
 	}
-	if(formData.USER_ID === "") {
-		alert("사용자ID를 입력해주세요.");
+	if(!idChkYN){
+		alert("아이디 중복확인을 완료해주세요.");
 		return;
 	}
 	if(!validChk_email(formData.EMAIL)) {
@@ -180,18 +237,18 @@ function saveUserInfo(){
 		return;
 	}
 	
+	
+	
 	var param = {"param" : formData};
 	var url = "/rrs/saveUserInfo.do";
 	
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
-			if(data.isExistUser == 'Y'){
-				alert("기존에 등록된 아이디 입니다.");
-			} else if(data.isExistMember == 'N') {
-				alert("멤버회원이 등록되어 있지 않습니다."); 
+			if((data.isExistMemberID == 'Y') && !(formData.MEMBER_ID == formData.Ex_MEMBER_ID)){
+				alert("중복되는 맴버ID입니다."); 
 			} else {
 				alert("<s:message code='info.save'/>");
-				popupClose($('#p_UserInfo').data('pid'));			
+				popupClose($('#p_UserInfo').data('pid'));
 			}
 		});
 	}
@@ -209,4 +266,92 @@ function validChk_email(val){
 	return (val != '' && val != 'undefined' && pattern.test(val));
 }
 
+
+// 회원 타입 변경 이벤트
+$(function() {
+	$("#MEM_GBN").on("change",function() {
+		if($("#MEM_GBN").val() == '01') {
+			$("#btn_userSearchPopup").show();
+		} else {
+			$("#btn_userSearchPopup").hide();
+			$("#MEMBER_ID").val("");
+		}
+		idChkYN = false;
+	});
+});
+
+// 맴버 찾기 클릭 
+$('#btn_userSearchPopup').on('click', function(e) {
+	var url = "/rrs/UserInfoSearchPopup.do";
+	var pid = "UserInfoSearchPopup";
+	var param = {};
+	
+	popupOpen(url, pid, param, function(data) {
+		cSearch();
+	});
+});
+
+function cSearch(){
+	var memberId = $('#SEARCH_MEMBER_ID').val();
+	if (memberId != "") {
+		var param = {
+			"param": {
+				"MEMBER_ID" : memberId
+			}
+		};
+		var url = "/rrs/selectSearchUserInfo.do";
+			
+		fn_ajax(url, false, param, function(data, xhr){
+			fn_dataBind('frmUserInfo', data.result[0]);
+		});
+		
+		$('#USER_ID').val(memberId);
+		$('#Ex_MEMBER_ID').val(memberId);
+		typeChage();
+	}
+}
+//아이디 중복체크
+$('#btn_idCheck').on('click', function(e) {
+	var idCnt = $('#USER_ID').val().length;
+	if (idCnt == 0) {
+		alert("회원 ID를 입력해주세요.");
+	} else if (($('#MEM_GBN').val() != "01") && (idCnt<6)) {
+		alert("회원 ID 글자수를 확인해주세요.");
+	} else {
+		idCheck(idCnt);
+	}
+	
+});
+
+function idCheck(idCnt) {
+	var idCnt = $('#USER_ID').val().length;
+	var url   = "/UserIdCheck.do";
+	var param = {
+		"param": {"USER_ID" : $('#USER_ID').val()}
+	}
+
+	fn_ajax(url, false, param, function(data, xhr){
+		
+		if(data.isExistUser == 'Y'){
+			alert("회원가입이 가능한 ID입니다.");
+			idChkYN = true;
+		} else {
+			alert("기존에 등록된 아이디 입니다.");
+		}
+	});
+	
+}
+
+
+function typeChage() {
+	// 연락처 하이픈 처리
+	var tel_no = $("#TEL_NO").val();
+	var convert_tel_no = tel_no.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
+	$("#TEL_NO").val(convert_tel_no);
+	
+	var reg_dtm = $("#REG_DTM").val();
+	var upd_dtm = $("#UPD_DTM").val();
+	$("#REG_DTM").val(new Date(Number(reg_dtm)).toLocaleDateString());	// 등록일시 readonly
+	$("#UPD_DTM").val(new Date(Number(upd_dtm)).toLocaleDateString());	// 수정일시 readonly
+}
 </script>

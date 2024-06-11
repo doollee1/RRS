@@ -105,6 +105,16 @@ public class RrsUserDao extends DBAbstractMapper {
 	}
 	
 	/**
+	 * 맴버ID 중복체크
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public int selectMemberIDCnt(BMap param) throws Exception{
+		return (int)selectByPk("RrsUserMapper.selectMemberIDCnt", param);
+	}
+	
+	/**
 	 * 특정 멤버회원 수 카운트
 	 * @param param
 	 * @return
@@ -141,5 +151,23 @@ public class RrsUserDao extends DBAbstractMapper {
 	 */
 	public void deleteMemberUserInfo(BMap param) throws Exception{
 		delete("RrsUserMapper.deleteMemberUserInfo", param);
+	}
+	
+	/**
+	 * 삭제 전 회원 테이블에 멤버 정보가 있는지 체크
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public int selectMemberUserInfoCntAfterMemberdelete(BMap param) throws Exception{
+		return (int)selectByPk("RrsUserMapper.selectMemberUserInfoCntAfterMemberdelete", param);
+	}
+	
+	/**
+	 * 멤버회원 정보 검색 조회 
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> selectSearchUserInfo(BMap param )throws Exception{
+		return list("RrsUserMapper.selectSearchUserInfo", param);
 	}
 }

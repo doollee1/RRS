@@ -1,21 +1,44 @@
 package bt.reserve.controller;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import bt.btframework.utils.BMap;
+import bt.btframework.utils.BRespData;
 import bt.reserve.service.ReserveService;
+import bt.btframework.utils.BReqData;
+import bt.common.service.FileService;
 
 @Controller
 public class ReserveController {
 
 	@Resource	
 	private ReserveService reserveService;
+	
+	@Resource(name = "FileService")
+	private FileService fileService;
+	
+	@Autowired
+    private Environment env;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ReserveController.class);
 	
@@ -191,4 +214,72 @@ public class ReserveController {
 	public String searchId(ModelMap model,HttpServletRequest request) throws Exception{
 		return "/popup/searchId";
 	}
+	
+	/**
+	 * PDF 파일 첨부 업로드
+	 * @param req
+	 * @param resp
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/reserve/uploadPdf.do")
+	@ResponseBody
+	public BRespData uploadPdf(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+		List<BMap> list = reserveService.uploadPdf(req);
+		BRespData respData = new BRespData();
+		respData.put("result", list);
+		return respData;
+	}
+	
+	/**
+	 * PDF 첨부파일 다운로드
+	 * @param req
+	 * @param resp
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/reserve/downloadInvoicePdf", method = RequestMethod.POST, produces="text/plain;charset=UTF-8")
+	public void downloadInvoicePdf(HttpServletRequest req, HttpServletResponse resp) throws Exception{
+		reserveService.downloadInvoicePdf(req, resp);
+	}
+	
+	/**
+	 * PDF 첨부파일 삭제
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/reserve/deleteInvoicePdf.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData deleteNoticeAttach(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BMap param = reqData.getParamDataMap("param");
+		param.put("FILE_UID", param.getString("fileUid"));
+		param.put("NEW_FILE_NM", param.getString("fileName"));
+		BRespData respData = new BRespData();
+
+		reserveService.deleteInvoicePdf(param,req);
+		
+		return respData;
+	}
+	
+	/**
+	 * 객실 풀관리 화면 호출
+	 * @param model
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/reserve/reserveNoRoom.do")
+	public String reserveNoRoom(ModelMap model,HttpServletRequest request) throws Exception {
+//		BMap param = new BMap();
+//		param.put("HEAD_CD", 500030);
+//		
+//		BMap param2 = new BMap();
+//		param2.put("HEAD_CD", 500020);
+//
+//		model.addAttribute("mem_gbn"  , reserveService.selectGetCommonCode(param));
+//		model.addAttribute("prc_sts"  , reserveService.selectGetCommonCode(param2));
+		return "/reserve/ReserveNoRoom"; 
+	}
+	
 }

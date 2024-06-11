@@ -299,7 +299,7 @@ background-repeat: no-repeat;
 .ctu_g3_wrap .editable.inline-edit-cell.ui-widget-content{border-top:1px solid #b9b9b9 !important;}
 
 /*******/
-
+   
 #switcher {
 	background: #fff;
 	position: fixed;
@@ -469,3 +469,23 @@ background-repeat: no-repeat;
 
 .strong_line {border-top:1px solid #636a6f !important; border-bottom:1px solid #636a6f !important;}
 .top_line {border-top:1px solid #636a6f !important;}
+
+.user_info_table input[type=checkbox] {cursor:pointer;}
+
+/* 객실풀 관리 */
+#reserve_noroom_Calendar { text-align:center; }
+#reserve_noroom_Calendar > thead > tr > td { width:60px; height:60px; font-size:15px;}
+#reserve_noroom_Calendar > thead > tr:first-child > td { font-weight:bold; }
+#reserve_noroom_Calendar > thead > tr:last-child > td { background-color:#90EE90; }
+#reserve_noroom_Calendar > tbody > tr > td { width:60px; height:60px; font-size:15px;}
+
+#table_reserve_noroom {width:100%;}    
+#table_reserve_noroom button {margin-right : 5px;}
+#table_reserve_noroom input[type=text], #table_reserve_noroom p {margin : 0 5px 0 5px}
+#table_reserve_noroom .small_td p {margin : 0 10px 0 10px} 
+#calendar_noroom {margin-top:10px;}
+.btn_noroom {border: 1px solid #a9cbeb !important; border-radius: 2px; background: #bdd6ee !important; cursor: pointer; color: #2269b1; padding: 3px 10px 3px 10px;}
+.reserve_room_tblForm {width: 70%; min-width: 250px; border-collapse: collapse; margin-top: 8px; border-spacing: 0px; margin-left:15%;}
+.reserve_room_tblForm tr {border : 1px solid #C1D0DC;}
+.reserve_room_tblForm th {background:#b3d4fc; color:#000; padding:7px;}
+.reserve_room_tblForm td {width:60%; text-align:center;}

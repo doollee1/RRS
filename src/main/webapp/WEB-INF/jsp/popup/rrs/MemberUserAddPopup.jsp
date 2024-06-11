@@ -13,52 +13,61 @@
 				<tbody>
 					<tr>
 						<td class="small_td">맴버ID</td>
-			      		<td><p><input type="text" id="MEMBER_ID" name="MEMBER_ID" maxlength="30" onlyEngNum></p></td>
+			      		<td><p><input type="text" id="MEMBER_ID" name="MEMBER_ID" maxlength="5" noSpecial></p></td>
 			      	</tr>
 					<tr>
 						<td class="small_td">이름</td>
-			      		<td><p><input type="text" id="HAN_NAME" name="HAN_NAME" maxlength="20" onlyKor></p></td>
+			      		<td><p><input type="text" id="HAN_NAME" class="onlyKor" name="HAN_NAME" maxlength="20"></p></td>
 			      	</tr>
 			      	<tr>
 						<td class="small_td">영문이름</td>
-			      		<td><p><input type="text" id="ENG_NAME" name="ENG_NAME" maxlength="30" onlyEng></p></td>
+			      		<td><p><input type="text" id="ENG_NAME" class="onlyEng" name="ENG_NAME" maxlength="30"></p></td>
 			      	</tr>
 			      	<tr>
 						<td class="small_td">전화번호</td>
-			      		<td><p><input type="text" id="TEL_NO" name="TEL_NO" maxlength="13" oninput="autoHyphen(this)"></p></td>
+			      		<td><p><input type="text" id="TEL_NO" class="onlyNum" name="TEL_NO " maxlength="13"></p></td>
 			      	</tr>
 			      	<tr>
+			      		<td class="small_td">Email</td>
+						<td><p><input type="text" id="EMAIL" name="EMAIL" maxlength="50" EMAIL></p></td>
+			      	</tr>
+			      	
+			      	<tr>
 						<td class="small_td">배우자한글이름</td>
-			      		<td><p><input type="text" id="PARTNER_HAN_NAME" name="PARTNER_HAN_NAME" maxlength="20" onlyKor></p></td>
+			      		<td><p><input type="text" id="PARTNER_HAN_NAME" class="onlyKor" name="PARTNER_HAN_NAME" maxlength="20"></p></td>
 			      	</tr>
 			      	<tr>
 						<td class="small_td">배우자영문이름</td>
-			      		<td><p><input type="text" id="PARTNER_ENG_NAME" name="PARTNER_ENG_NAME" maxlength="30" onlyEng></p></td>
+			      		<td><p><input type="text" id="PARTNER_ENG_NAME" class="onlyEng" name="PARTNER_ENG_NAME" maxlength="30"></p></td>
 			      	</tr>
 			      	<tr>
 						<td class="small_td">배우자성별</td>
 						<td>
-							<select id="PARTNER_GENDER" name="PARTNER_GENDER" class="cmc_combo" style="width:150px;">
-						    	<!-- <c:forEach var="i" items="${partner_gender}">
+							<select id="PARTNER_GENDER" name="PARTNER_GENDER" class="cmc_combo" style="width:165px;">
+								<option value="">선택</option>
+						    	<c:forEach var="i" items="${partner_gender}">
 									<option value="${i.CODE}">${i.CODE_NM}</option>
-								</c:forEach> -->
-								<option value="1">남</option>
+								</c:forEach>
 							</select>
 						</td>
 			      	</tr>
 			      	<tr>
+						<td class="small_td">배우자전화번호</td>
+			      		<td><p><input type="text" id="PARTNER_TEL_NO" class="onlyNum" name="PARTNER_TEL_NO" maxlength="13"></p></td>
+			      	</tr>
+			      	<tr>
 						<td class="small_td">탈퇴여부</td>
 						<td>
-							<select id="RET_YN" name="RET_YN" class="cmc_combo" ${ret_yn} style="width:150px;">
-						    	<!-- <c:forEach var="i" items="${ret_yn}">
+							<select id="RET_YN" name="RET_YN" class="cmc_combo" style="width:165px;">
+						    	<c:forEach var="i" items="${ret_yn}">
 									<option value="${i.CODE}">${i.CODE_NM}</option>
-								</c:forEach> -->
-								<option value="N">N</option>
+								</c:forEach>
 							</select>
 						</td>
 			      	</tr>
 				</tbody>
 			</table>
+			<input type="hidden" id="Ex_MEMBER_ID" name="Ex_MEMBER_ID" />
 			<input type="hidden" id="Ex_HAN_NAME" name="Ex_HAN_NAME" />
 	      	<input type="hidden" id="Ex_ENG_NAME" name="Ex_ENG_NAME" />
 	      	<input type="hidden" id="Ex_TEL_NO" name="Ex_TEL_NO" />
@@ -66,15 +75,43 @@
 	</div>
 </div>
 <script type="text/javascript">
+$(document).on("keyup", "input[noSpecial]", function() {$(this).val( $(this).val().replace(/[^a-zA-Z0-9]/gi,"") );});
 $(document).on("keyup", "input[onlyKor]",    function() {$(this).val( $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"'\\]/g,"") );});
 $(document).on("keyup", "input[onlyEng]",    function() {$(this).val( $(this).val().replace(/[^A-Za-z]/ig,"") );});
+$(document).on("keyup", 'input[EMAIL]', function() {$(this).val($(this).val().replace(/[^a-zA-Z0-9@._-]/g, ''));});
+
+$(document).on("focusout", '[class^=onlyKor]', function() {
+	const regExp = /[ㄱ-ㅎㅏ-ㅣ가-힣]/gi; 
+	if($(this).val() != "" && !regExp.test($(this).val())){
+    	alert("한글로 작성해주세요.");
+    	$(this).val("");
+    }
+});
+
+$(document).on("focusout", '[class^=onlyEng]', function() {
+	const regExp =  /^[a-zA-Z]*$/; 
+	if($(this).val() != "" && !regExp.test($(this).val())){
+    	alert("영문으로 작성해주세요.");
+    	$(this).val("");
+    }
+});
+
+$(document).on("focusout", '[class^=onlyNum]', function() {
+	const regExp = /^[0123456789-]*$/;
+	if($(this).val() != "" && !regExp.test($(this).val())){
+    	alert("숫자로 작성해주세요.");
+    	$(this).val("");
+    }else{
+    	$(this).val($(this).val().replace(/^(\d{2,3})(\d{3,4})(\d{4})$/g, "$1-$2-$3"));
+    }
+});
 
 $(function() {
 	$('#MemberUserAddPopup').dialog({
 		title:'멤버 회원 정보 등록',
 		autoOpen: false,
-		height: 300,
-		width: 400,
+		height: 350,
+		width: 450,
 		modal: true,
 		buttons: {
 			'save': {
@@ -98,15 +135,39 @@ $(function() {
 			$('#PARTNER_HAN_NAME').val($(this).data('PARTNER_HAN_NAME'));
 			$('#PARTNER_ENG_NAME').val($(this).data('PARTNER_ENG_NAME'));
 			$('#PARTNER_GENDER').val($(this).data('PARTNER_GENDER'));
+			$('#PARTNER_TEL_NO').val($(this).data('PARTNER_TEL_NO'));
 			$('#RET_YN').val($(this).data('RET_YN'));
+			$('#Ex_MEMBER_ID').val($(this).data('MEMBER_ID'));
 			$('#Ex_HAN_NAME').val($(this).data('HAN_NAME'));
 			$('#Ex_ENG_NAME').val($(this).data('ENG_NAME'));
 			$('#Ex_TEL_NO').val($(this).data('TEL_NO'));
 			
+			var gender = $(this).data('PARTNER_GENDER');
+			var url = '/rrs/selectMemCodeInfo.do';
+			var sendData = {'param' : {"HEAD_CD": 500250}};
+			
+			fn_ajax(url, false, sendData, function(data, xhr) {
+				var codeInfo = data.result;
+				$.each(codeInfo, function(index, item){
+					var codeNm = item.CODE_NM;
+					
+					if (item.CODE_NM === gender) {
+						$('#PARTNER_GENDER').val(item.CODE).prop("selected",true);
+					}
+				});
+				
+			});
+			
 			// 연락처 하이픈 처리
-			var tel_no = $("#TEL_NO").val();
-			var convert_tel_no = tel_no.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
+			/*var tel_no = $("#TEL_NO").val();
+			var convert_tel_no = tel_no.replace(/[^0-9]/gi,"").replace(/^(\d{2,3})(\d{3,4})(\d{4})$/g, "$1-$2-$3").replace(/\-{1,2}$/g,"");
 			$("#TEL_NO").val(convert_tel_no);
+			
+			var p_tel_no = $("#PARTNER_TEL_NO").val();
+			var convert_p_tel_no = p_tel_no.replace(/[^0-9]/gi,"").replace(/^(\d{2,3})(\d{3,4})(\d{4})$/g, "$1-$2-$3").replace(/\-{1,2}$/g,"");
+			
+		
+			$("#PARTNER_TEL_NO").val(convert_p_tel_no);*/
 		},
 		close: function() {
 			popupClose($(this).data('pid'));
@@ -138,21 +199,27 @@ function saveMemberUserInfo(){
 		alert("전화번호를 입력해주세요.");
 		return;
 	}
-	if(formData.RET_YN === "") {
-		alert("탈퇴여부를 입력해주세요.");
+	if(formData.RET_YN == "") {
+		alert("탈퇴여부를 선택해주세요.");
 		return;
 	}
 	
 	// delete hypen
 	formData.TEL_NO = formData.TEL_NO.replace(/-/g, '');
 	formData.Ex_TEL_NO = formData.Ex_TEL_NO.replace(/-/g, '');
+	formData.PARTNER_TEL_NO = formData.PARTNER_TEL_NO.replace(/-/g, '');
+
 	var param = {"param" : formData};
 	var url = "/rrs/saveMemberUserInfo.do"
+	
 		
+
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
 			if(data.isExistMember == 'Y'){
 				alert("이미 등록된 멤버회원이 존재합니다."); 
+			} else if((data.isExistMemberID == 'Y') && !(formData.MEMBER_ID == formData.Ex_MEMBER_ID)){
+				alert("중복되는 맴버ID입니다."); 
 			} else {
 				alert("<s:message code='info.save'/>");
 				popupClose($('#MemberUserAddPopup').data('pid'));			
@@ -164,7 +231,7 @@ function saveMemberUserInfo(){
 function autoHyphen(target) {
 	target.value = target.value
 		.replace(/[^0-9]/g, '')
-	  	.replace(/^(\d{0,3})(\d{0,4})(\d{0,4})$/g, "$1-$2-$3").replace(/(\-{1,2})$/g, "");
+	  	.replace(/[^0-9]/gi,"").replace(/^(\d{2,3})(\d{3,4})(\d{4})$/g, "$1-$2-$3").replace(/\-{1,2}$/g,"");
 	return target
 }
 

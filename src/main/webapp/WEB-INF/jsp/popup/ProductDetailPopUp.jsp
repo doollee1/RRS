@@ -44,8 +44,9 @@
 					<th style="text-align:center;"><s:message code="product.season"/></th>
 					<td>&nbsp;
 						<select id="SSN_GBN" name="SSN_GBN" class="cmc_combo" style="width:238px;">
-    						<option value="1" selected>시즌</option>
-    						<option value="2">비시즌</option>
+    						<option value="3" selected>비수기</option>
+    						<option value="2">준성수기</option>
+    						<option value="1">성수기</option>
 						</select>
 						<input type="text" name="SSN_GBN_mod" id="SSN_GBN_mod" style="display:none; width:230px;" readonly >
 					</td>
@@ -59,16 +60,19 @@
 							</c:forEach>
 						</select>
 						<input type="text" name="HDNG_GBN_mod" id="HDNG_GBN_mod" style="display:none; width:595px;" readonly >
+						<input type="hidden" name="HDNG_GBN_CODE" id="HDNG_GBN_CODE" value="" />
 					</td>
 				</tr>
 				<tr>
 					<th style="text-align:center;"><s:message code="product.condition"/></th>
 					<td colspan=3>&nbsp;
 						<select id="PROD_COND" name="PROD_COND" class="cmc_combo" style="width:604px;">
-<%-- 							<c:forEach var="i" items="${cond}"> --%>
-<%-- 								<option value="${i.CODE}">${i.CODE_NM}</option> --%>
-<%-- 							</c:forEach> --%>
+							<c:forEach var="i" items="${prodcond}">
+								<option value="${i.CODE}">${i.CODE_NM}</option>
+							</c:forEach>
 						</select>
+						<input type="text" name="PROD_COND_mod" id="PROD_COND_mod" style="display:none; width:595px;" readonly >
+						<input type="hidden" name="PROD_COND2" id="PROD_COND2" value="" />
 					</td>
 				</tr>
 				<tr>
@@ -82,8 +86,9 @@
 				<tr>
 					<th style="text-align:center;"><s:message code="product.amount"/></th>
 					<td colspan=3>&nbsp;
-						일반 <input type="text" class="check" name="COM_AMT" id="COM_AMT" style="width:170px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='9' >&nbsp;원 &emsp;&emsp;&emsp;
-						에이전시 <input type="text" class="check" name="AGN_AMT" id="AGN_AMT" style="width:170px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='9' >&nbsp;원
+						일반 <input type="text" class="check" name="COM_AMT" id="COM_AMT" style="width:100px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='9' >&nbsp;원 &emsp;
+						일반여행사 <input type="text" class="check" name="AGN_COM_AMT" id="AGN_COM_AMT" style="width:100px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='9' >&nbsp;원&emsp;
+						총판여행사 <input type="text" class="check" name="AGN_DIS_AMT" id="AGN_DIS_AMT" style="width:100px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='9' >&nbsp;원
 					</td>
 				</tr>
 				<tr>
@@ -95,11 +100,21 @@
 					</td>
 				</tr>
 				<tr>
-					<th style="text-align:center;">에이전시<s:message code="product.etc"/></th>
+					<th style="text-align:center;">일반여행사<br/><s:message code="product.etc"/></th>
 					<td colspan=3>&nbsp;
-						기준인원 <input type="text" class="check" name="AGN_BAS_PER" id="AGN_BAS_PER" style="width:50px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='3'>&nbsp;명 &emsp;&emsp;
-						기준일 <input type="text" class="check" name="AGN_BAS_DAY" id="AGN_BAS_DAY" style="width:50px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='3'>&nbsp;일 &emsp;&emsp;&emsp;
-						내용 <input type="text" name="AGN_CNTN" id="AGN_CNTN" style="width:248px" maxlength='50'>
+						기준인원 <input type="text" class="check" name="AGN_COM_BAS_PER" id="AGN_COM_BAS_PER" style="width:50px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='3'>&nbsp;명 &emsp;&emsp;
+						기준일 <input type="text" class="check" name="AGN_COM_BAS_DAY" id="AGN_COM_BAS_DAY" style="width:50px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='3'>&nbsp;일 &emsp;&emsp;&emsp;
+						내용 <input type="text" name="AGN_COM_CNTN" id="AGN_COM_CNTN" style="width:248px" maxlength='50'>
+					</td>
+				</tr>
+				
+				
+				<tr>
+					<th style="text-align:center;">총판여행사<br/><s:message code="product.etc"/></th>
+					<td colspan=3>&nbsp;
+						기준인원 <input type="text" class="check" name="AGN_DIS_BAS_PER" id="AGN_DIS_BAS_PER" style="width:50px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='3'>&nbsp;명 &emsp;&emsp;
+						기준일 <input type="text" class="check" name="AGN_DIS_BAS_DAY" id="AGN_DIS_BAS_DAY" style="width:50px; text-align:right" value="0" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength='3'>&nbsp;일 &emsp;&emsp;&emsp;
+						내용 <input type="text" name="AGN_DIS_CNTN" id="AGN_DIS_CNTN" style="width:248px" maxlength='50'>
 					</td>
 				</tr>
 			</table>
@@ -138,6 +153,7 @@ $(function(){
 	})
 	
 	$("#HDNG_GBN").on("change", function(e){
+ 		$("#PROD_COND").find("option").remove();
 		condFilter();
 	})
 
@@ -169,23 +185,32 @@ $(function(){
 				$('#productDetailPopUp').dialog({title : '<s:message code="product.adj_product"/>'});
 				
 				$('#BAS_YY_IN_mod').val($(this).data("BAS_YY"));			//기준년도 (수정)
-				$('#SSN_GBN_mod').val($(this).data("SSN_GBN"));			//시즌구분 (수정)
-				$('#HDNG_GBN_mod').val($(this).data("HDNG_GBN"));		//항목구분 (수정)
-				$("#PROD_COND").val($(this).data("PROD_COND2"));			//조건
+				$('#SSN_GBN_mod').val($(this).data("SSN_GBN"));				//시즌구분 (수정)
+				$('#HDNG_GBN_mod').val($(this).data("HDNG_GBN"));			//항목구분 (수정)
+				$('#HDNG_GBN_CODE').val($(this).data("HDNG_GBN_CODE"));		//항목구분 코드
+				
+				$("#PROD_COND").val($(this).data("PROD_COND"));				//조건
+				$("#PROD_COND2").val($(this).data("PROD_COND2"));			//조건2
+				$("#PROD_COND_mod").val($(this).data("PROD_COND"));			//조건(수정)
 				
 				$("#seldt_P").val($(this).data("ST_DT1") + " ~ " + $(this).data("ED_DT1"));
 				$("#seldt_I").val($(this).data("BAS_YY_SEQ"));
 				
 				$("#COM_AMT").val($(this).data("COM_AMT"));				//일반 금액
-				$("#AGN_AMT").val($(this).data("AGN_AMT"));				//에이전시 금액
+				$("#AGN_COM_AMT").val($(this).data("AGN_COM_AMT"));		//일반여행사 금액
+				$("#AGN_DIS_AMT").val($(this).data("AGN_DIS_AMT"));		//총판여행사 금액
 				
 				$("#COM_BAS_PER").val($(this).data("COM_BAS_PER"));		//일반 기준인원수
 				$("#COM_BAS_DAY").val($(this).data("COM_BAS_DAY"));		//일반 기준일수
 				$("#COM_CNTN").val($(this).data("COM_CNTN"));			//일반 기타내용
 				
-				$("#AGN_BAS_PER").val($(this).data("AGN_BAS_PER"));		//에이전시 기준인원수
-				$("#AGN_BAS_DAY").val($(this).data("AGN_BAS_DAY"));		//에이전시 기준일수
-				$("#AGN_CNTN").val($(this).data("AGN_CNTN"));			//에이전시 기타내용
+				$("#AGN_COM_BAS_PER").val($(this).data("AGN_COM_BAS_PER"));		//일반여행사 기준인원수
+				$("#AGN_COM_BAS_DAY").val($(this).data("AGN_COM_BAS_DAY"));		//일반여행사 기준일수
+				$("#AGN_COM_CNTN").val($(this).data("AGN_COM_CNTN"));			//일반여행사 기타내용
+
+				$("#AGN_DIS_BAS_PER").val($(this).data("AGN_DIS_BAS_PER"));		//총판여행사 기준인원수
+				$("#AGN_DIS_BAS_DAY").val($(this).data("AGN_DIS_BAS_DAY"));		//총판여행사 기준일수
+				$("#AGN_DIS_CNTN").val($(this).data("AGN_DIS_CNTN"));			//총판여행사 기타내용
 				
 				$('#BAS_YY_UP').val($(this).data("BAS_YY"));				//기준년도
 				$('#BAS_YY_SEQ_UP').val($(this).data("BAS_YY_SEQ"));		//기준년도 순번
@@ -197,7 +222,11 @@ $(function(){
 				$('#SSN_GBN_mod').show();
 				$('#HDNG_GBN').hide();
 				$('#HDNG_GBN_mod').show();
-				
+				$('#PROD_COND').hide();
+				$('#PROD_COND_mod').show();
+				$('#PROD_COND2').show();
+				$('#seldt').hide();
+
 				var url = "/product/selectReserveStatus.do"
 				var param = {"BAS_YY"      : $(this).data("BAS_YY")
 						   , "BAS_YY_SEQ"  : $(this).data("BAS_YY_SEQ")
@@ -219,7 +248,7 @@ $(function(){
 					
 				}
 			};
-
+			// condFilter();
 		},
 		close: function() {
 			/* 필수로 들어가야함 */
@@ -245,15 +274,19 @@ function saveProductInfo(){
 	var param = {"param" : 
 					{"SSN_GBN":(formData.SSN_GBN != "") ? formData.SSN_GBN : formData.SSN_GBN_mod
 					,"HDNG_GBN":(formData.HDNG_GBN != "") ? formData.HDNG_GBN : formData.HDNG_GBN_mod
-					,"PROD_COND" : formData.PROD_COND
+					,"PROD_COND":(formData.modify == "1") ? formData.PROD_COND2 : formData.PROD_COND	
 					,"COM_AMT" : (formData.COM_AMT != "") ? formData.COM_AMT : 0
-					,"AGN_AMT" : (formData.AGN_AMT != "") ? formData.AGN_AMT : 0
+					,"AGN_COM_AMT" : (formData.AGN_COM_AMT != "") ? formData.AGN_COM_AMT : 0
+					,"AGN_DIS_AMT" : (formData.AGN_DIS_AMT != "") ? formData.AGN_DIS_AMT : 0
 					,"COM_BAS_PER" : (formData.COM_BAS_PER != "") ? formData.COM_BAS_PER : 0
 					,"COM_BAS_DAY" : (formData.COM_BAS_DAY != "") ? formData.COM_BAS_DAY : 0
 					,"COM_CNTN" : formData.COM_CNTN
-					,"AGN_BAS_PER" : (formData.AGN_BAS_PER != "") ? formData.AGN_BAS_PER : 0
-					,"AGN_BAS_DAY" : (formData.AGN_BAS_DAY != "") ? formData.AGN_BAS_DAY : 0
-					,"AGN_CNTN" : formData.AGN_CNTN
+					,"AGN_COM_BAS_PER" : (formData.AGN_COM_BAS_PER != "") ? formData.AGN_COM_BAS_PER : 0
+					,"AGN_COM_BAS_DAY" : (formData.AGN_COM_BAS_DAY != "") ? formData.AGN_COM_BAS_DAY : 0
+					,"AGN_COM_CNTN" : formData.AGN_COM_CNTN
+					,"AGN_DIS_BAS_PER" : (formData.AGN_DIS_BAS_PER != "") ? formData.AGN_DIS_BAS_PER : 0
+					,"AGN_DIS_BAS_DAY" : (formData.AGN_DIS_BAS_DAY != "") ? formData.AGN_DIS_BAS_DAY : 0
+					,"AGN_DIS_CNTN" : formData.AGN_DIS_CNTN
 					,"BAS_YY" : (formData.BAS_YY_UP != "") ? formData.BAS_YY_UP : formData.BAS_YY_IN
 					,"BAS_YY_SEQ" : (formData.BAS_YY_SEQ_UP != "") ? formData.BAS_YY_SEQ_UP : formData.seldt_I
 					,"PROD_SEQ" : formData.PROD_SEQ_UP
@@ -316,12 +349,12 @@ function validation(){
 		$("#seldt_I").focus();
 		return;
 	}
-	if($("#COM_AMT").val() == ""  || $("#AGN_AMT").val() == ""){
+	if($("#COM_AMT").val() == ""  || $("#AGN_COM_AMT").val() == "" || $("#AGN_DIS_AMT").val() == ""){
 		alert("금액을 입력해 주세요.")
 		$("#COM_AMT").focus();
 		return;
 	} else {
-		if($("#COM_AMT").val() + $("#AGN_AMT").val() == 0){
+		if($("#COM_AMT").val() + $("#AGN_COM_AMT").val() + $("#AGN_DIS_AMT").val() == 0){
 			alert("일반금액과 에이전시 금액의 합은 0이 될 수 없습니다.");
 			$("#COM_AMT").focus();
 			return;
@@ -335,12 +368,20 @@ function condFilter(){
 	var url = "/popup/ProductSelectCond.do";
 	
 	var formData = formIdAllToMap('frmProductDetail');
-	var param = {"code" :formData.HDNG_GBN};
-	
+ 	var param = {"code" :formData.HDNG_GBN};
+ 	// 수정이면
+ 	if(formData.modify == "1"){
+ 		param = {"code" :formData.HDNG_GBN_CODE};
+ 	}
+
 	fn_ajax(url, false, param, function(data, xhr){
 		$("#PROD_COND").empty();
 		for (var i = 0; i < data.cond.length; i++) {
-			$("#PROD_COND").append("<option value="+data.cond[i].CODE+">"+data.cond[i].CODE_NM+"</option>");
+			if(formData.modify == "1" && formData.PROD_COND2 == data.cond[i].CODE ){
+				$("#PROD_COND").append("<option value="+data.cond[i].CODE+" selected>"+data.cond[i].CODE_NM+"</option>");
+			}else{
+				$("#PROD_COND").append("<option value="+data.cond[i].CODE+">"+data.cond[i].CODE_NM+"</option>");
+			}
 		}
 	});
 }

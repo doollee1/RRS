@@ -55,11 +55,12 @@ public class LoginController {
 	 * @return
 	 */
 	@RequestMapping(value = "/index.do")
-	public String index(ModelMap model) throws Exception{		
-		double erpPrice = Double.parseDouble(changeNormForm(String.valueOf("33,00")));
-		double reqPrice = Double.parseDouble(changeNormForm(String.valueOf("32,50")));
+	public String index(ModelMap model) throws Exception{	
 		
-		System.err.println( (erpPrice - reqPrice) > 1);
+		//double erpPrice = Double.parseDouble(changeNormForm(String.valueOf("33,00")));
+		//double reqPrice = Double.parseDouble(changeNormForm(String.valueOf("32,50")));
+		
+		//System.err.println( (erpPrice - reqPrice) > 1);
 		return "forward:/login/login.do";
 	}
 	
@@ -140,7 +141,7 @@ public class LoginController {
 				// 로그인정보를 세션에 저장
 				//session.setMaxInactiveInterval(10); 
 				//session.setMaxInactiveInterval(60*300);
-				session.setMaxInactiveInterval(60*100); // 30분 세션시간
+				session.setMaxInactiveInterval(60*120); // 2시간 세션시간
 				session.setAttribute("loginVO", loginVO);
 			}
 			
@@ -190,11 +191,15 @@ public class LoginController {
 		return "redirect:/";
 	}
 	
+	
 	/**
 	 * 세션아웃
 	 */
 	@RequestMapping(value = "/login/sessionout.do")
 	public String sessionOut(HttpServletRequest req) throws Exception {
+		
+		logger.info("======== 세션아웃 =======");
+		
 		return "/login/sessionout";
 	}
 	

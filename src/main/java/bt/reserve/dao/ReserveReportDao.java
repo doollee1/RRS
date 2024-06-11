@@ -53,4 +53,22 @@ public class ReserveReportDao extends DBAbstractMapper {
 		update("ReserveReportMapper.updateReserveInfo", param);
 	}
 	
+	/**
+	 * 예약현황 특정일자 정보 등록
+	 * @param param
+	 * @throws Exception
+	 */
+	public void insertReserveInfo(List<BMap> list) throws Exception{
+		insert("ReserveReportMapper.insertReserveInfo", list);
+	}
+	
+	/**
+	 * 예약현황 특정일자 정보 삭제
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deleteReserveInfo(BMap param) throws Exception{
+		delete("ReserveReportMapper.deleteReserveInfo", param);
+	}
+	
 }

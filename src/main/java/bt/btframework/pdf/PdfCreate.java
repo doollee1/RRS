@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
@@ -27,6 +29,9 @@ import com.itextpdf.tool.xml.pipeline.html.HtmlPipeline;
 import com.itextpdf.tool.xml.pipeline.html.HtmlPipelineContext;
 
 public class PdfCreate {
+	
+	private static final Logger logger = LoggerFactory.getLogger(PdfCreate.class);
+			
 	private Document document;
 	
 	public PdfCreate() {
@@ -71,7 +76,8 @@ public class PdfCreate {
 		XMLWorker worker = new XMLWorker(css, true);
 		XMLParser xmlParser = new XMLParser(worker, Charset.forName("UTF-8"));
 		
-		StringReader strReader = new StringReader(event.getHtmlContent().toString());
+		//logger.info("===== Html : "+event.getHtmlContent().toString());
+		StringReader strReader = new StringReader(event.getHtmlContent().toString());		
 		xmlParser.parse(strReader);
 		
 		document.close();

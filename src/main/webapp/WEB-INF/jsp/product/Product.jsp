@@ -136,14 +136,19 @@ function createGrid(){
 				'<s:message code='product.etc'/>',
 				'<s:message code='product.amount'/>',
 				'<s:message code='product.etc'/>',
+				'<s:message code='product.amount'/>',
+				'<s:message code='product.etc'/>',
 				'BAS_YY',
 				'BAS_YY_SEQ',
 				'PROD_SEQ',
 				'COM_BAS_PER',
 				'COM_BAS_DAY',
-				'AGN_BAS_PER',
-				'AGN_BAS_DAY',
+				'AGN_COM_BAS_PER',
+				'AGN_COM_BAS_DAY',
+				'AGN_DIS_BAS_PER',
+				'AGN_DIS_BAS_DAY',
 				'PROD_COND2',
+				'HDNG_GBN_CODE',
 				]
 	var colModel = [
 		{ name: 'SSN_GBN', width: 5, align: 'center'},
@@ -157,16 +162,21 @@ function createGrid(){
 		{ name: 'ED_DT3', width: 7, align: 'center'},
 		{ name: 'COM_AMT', width: 7, align: 'right', formatter:'integer', formatoptions : {defaultValue: '', thousandsSeparator : ','}},
 		{ name: 'COM_CNTN', width: 7, align: 'left'},
-		{ name: 'AGN_AMT', width: 7, align: 'right', formatter:'integer', formatoptions : {defaultValue: '', thousandsSeparator : ','}},
-		{ name: 'AGN_CNTN', width: 7, align: 'left'},
+		{ name: 'AGN_COM_AMT', width: 7, align: 'right', formatter:'integer', formatoptions : {defaultValue: '', thousandsSeparator : ','}},
+		{ name: 'AGN_COM_CNTN', width: 7, align: 'left'},
+		{ name: 'AGN_DIS_AMT', width: 7, align: 'right', formatter:'integer', formatoptions : {defaultValue: '', thousandsSeparator : ','}},
+		{ name: 'AGN_DIS_CNTN', width: 7, align: 'left'},
 		{ name: 'BAS_YY', hidden:true},
 		{ name: 'BAS_YY_SEQ', hidden:true},
 		{ name: 'PROD_SEQ', hidden:true},
 		{ name: 'COM_BAS_PER', hidden:true},
 		{ name: 'COM_BAS_DAY', hidden:true},
-		{ name: 'AGN_BAS_PER', hidden:true},
-		{ name: 'AGN_BAS_DAY', hidden:true},
+		{ name: 'AGN_COM_BAS_PER', hidden:true},
+		{ name: 'AGN_COM_BAS_DAY', hidden:true},
+		{ name: 'AGN_DIS_BAS_PER', hidden:true},
+		{ name: 'AGN_DIS_BAS_DAY', hidden:true},
 		{ name: 'PROD_COND2', hidden:true},
+		{ name: 'HDNG_GBN_CODE', hidden:true},
   	];
 	
 	var gSetting = {
@@ -190,7 +200,8 @@ function createGrid(){
 			{startColumnName: 'ST_DT2', numberOfColumns: 2, titleText: '기간2'},
 			{startColumnName: 'ST_DT3', numberOfColumns: 2, titleText: '기간3'},
 			{startColumnName: 'COM_AMT', numberOfColumns: 2, titleText: '일반'},
-			{startColumnName: 'AGN_AMT', numberOfColumns: 2, titleText: '에이전시'},
+			{startColumnName: 'AGN_COM_AMT', numberOfColumns: 2, titleText: '일반여행사'},
+			{startColumnName: 'AGN_DIS_AMT', numberOfColumns: 2, titleText: '총판여행사'},
 			]
 	});
 	
@@ -224,7 +235,7 @@ function cSearch(currentPage){
 	
 	//복사등록 비활성화 여부 설정
 	var cBtnCopy = document.getElementById("cBtnCopy");
-	if(param.SSN_GBN == 3) {
+	if(param.SSN_GBN == 9) {
 		cBtnCopy.disabled = false;
 	} else {
 		cBtnCopy.disabled = true;
@@ -233,7 +244,7 @@ function cSearch(currentPage){
 	
 	//미리보기 비활성화 여부 설정
 	var cBtnUser1 = document.getElementById("cBtnUser1");
-	if(param.SSN_GBN != 3){
+	if(param.SSN_GBN != 9){
 		cBtnUser1.disabled = false;
 	} else {
 		cBtnUser1.disabled = true;
@@ -246,27 +257,30 @@ function grid1_ondblClickRow(rowid, iRow, iCol, e){
 	var formData = formIdAllToMap('frmDetail');
 	var param = {
 		"modify" : true,
-		"BAS_YY" : formData.BAS_YY,					// 기준년도
-		"SSN_GBN" : gridData["SSN_GBN"],			// 시즌구분
-		"HDNG_GBN" : gridData["HDNG_GBN"],			// 항목구분
-		"PROD_COND" : gridData["PROD_COND"],		// 조건
-		"PROD_COND2" : gridData["PROD_COND2"],		// 조건
+		"BAS_YY" : formData.BAS_YY,							// 기준년도
+		"SSN_GBN" : gridData["SSN_GBN"],					// 시즌구분
+		"HDNG_GBN" : gridData["HDNG_GBN"],					// 항목구분
+		"PROD_COND" : gridData["PROD_COND"],				// 조건
+		"PROD_COND2" : gridData["PROD_COND2"],				// 조건
+		"HDNG_GBN_CODE" : gridData["HDNG_GBN_CODE"],		// 항목 코드
+		"COM_AMT" : gridData["COM_AMT"],					// 일반 금액
+		"COM_BAS_PER" : gridData["COM_BAS_PER"],			// 일반 기준인원수
+		"COM_BAS_DAY" : gridData["COM_BAS_DAY"],			// 일반 기준일수
+		"COM_CNTN" : gridData["COM_CNTN"],					// 일반 기타내용
+		"AGN_COM_AMT" : gridData["AGN_COM_AMT"],			// 총판여행사 금액
+		"AGN_COM_BAS_PER" : gridData["AGN_COM_BAS_PER"],	// 총판여행사 기준인원수
+		"AGN_COM_BAS_DAY" : gridData["AGN_COM_BAS_DAY"],	// 총판여행사 기준일수
+		"AGN_COM_CNTN" : gridData["AGN_COM_CNTN"],			// 총판여행사 기타내용
+		"AGN_DIS_AMT" : gridData["AGN_DIS_AMT"],			// 일반여행사 금액
+		"AGN_DIS_BAS_PER" : gridData["AGN_DIS_BAS_PER"],	// 일반여행사 기준인원수
+		"AGN_DIS_BAS_DAY" : gridData["AGN_DIS_BAS_DAY"],	// 일반여행사 기준일수
+		"AGN_DIS_CNTN" : gridData["AGN_DIS_CNTN"],			// 일반여행사 기타내용
+		"BAS_YY" : gridData["BAS_YY"],						// 기준년도
+		"BAS_YY_SEQ" : gridData["BAS_YY_SEQ"],				// 기간년도순번
+		"PROD_SEQ" : gridData["PROD_SEQ"],					// 상품순번
 		
-		"COM_AMT" : gridData["COM_AMT"],			// 일반 금액
-		"COM_BAS_PER" : gridData["COM_BAS_PER"],	// 일반 기준인원수
-		"COM_BAS_DAY" : gridData["COM_BAS_DAY"],	// 일반 기준일수
-		"COM_CNTN" : gridData["COM_CNTN"],			// 일반 기타내용
-		"AGN_AMT" : gridData["AGN_AMT"],			// 에이전시 금액
-		"AGN_BAS_PER" : gridData["AGN_BAS_PER"],	// 에이전시 기준인원수
-		"AGN_BAS_DAY" : gridData["AGN_BAS_DAY"],	// 에이전시 기준일수
-		"AGN_CNTN" : gridData["AGN_CNTN"],			// 에이전시 기타내용
-		
-		"BAS_YY" : gridData["BAS_YY"],				// 기준년도
-		"BAS_YY_SEQ" : gridData["BAS_YY_SEQ"],		// 기간년도순번
-		"PROD_SEQ" : gridData["PROD_SEQ"],			// 상품순번
-		
-		"ST_DT1" : gridData["ST_DT1"],				// 시작일
-		"ED_DT1" : gridData["ED_DT1"],				// 종료일
+		"ST_DT1" : gridData["ST_DT1"],						// 시작일
+		"ED_DT1" : gridData["ED_DT1"],						// 종료일
 	};
 	productDetailPopUp(param);
 }
@@ -302,7 +316,7 @@ function cCopy(param){
 	popupOpen(url, pid, param, function(data){
 		if(data.BAS_YY != ""){
 			$("#BAS_YY").val(data.BAS_YY);
-			$("#SSN_GBN").val(3);
+			$("#SSN_GBN").val(9);
 		}
 		cSearch();
 	});

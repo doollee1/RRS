@@ -1,4 +1,5 @@
 package bt.reserve.service;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -33,7 +34,7 @@ public class ReserveReportService {
 		System.out.println("@@reserveReportSelectList");
 		for (BMap bMap : list) {
 			// System.out.println(bMap);
-			
+			/*
 			String RND_CHG_YN1 = bMap.getString("RND_CHG_YN1");
 			String RND_CHG_YN2 = bMap.getString("RND_CHG_YN2");
 			double ROUNDING_SAT = bMap.getDouble("ROUNDING_SAT");
@@ -58,7 +59,7 @@ public class ReserveReportService {
 				bMap.put("ROUNDING_SUN_MORNING", "-");
 				bMap.put("ROUNDING_SUN_AFTERNOON", ROUNDING_SUN);
 			}
-			
+			*/
 			// 일자별 인원수 데이터 조회
 			BMap reserveMap = new BMap();
 			reserveMap.put("REQ_DT", bMap.getString("REQ_DT"));
@@ -77,40 +78,49 @@ public class ReserveReportService {
 	 */
 	public BRespData saveReserveList(BMap param) throws Exception{
 		BRespData respData = new BRespData();
-		
+		BMap inputBMap = new BMap();
 		List<BMap> paramList = (List<BMap>) param.get("gridData");
-		
+		System.out.println("paramList : " + paramList);
+
 		try {
 			for(int i=0; i<paramList.size(); i++) {
 				BMap map = new BMap(paramList.get(i));
-				for (String key : map.keySet()) {
-					if(key.contains("day") && !map.getString(key).equals("")) {
-						// 키값에 day가 있고 && 그 value값이 빈값이 아니라면 => update
-						String SEARCH_DT = param.getString("SEARCH_DT");
-						String day = map.getString(key);
+				
+				inputBMap.put("FROM_DT", param.getString("FROM_DT"));
+				inputBMap.put("TO_DT",   param.getString("TO_DT"));
+				inputBMap.put("REQ_DT",  param.getString("REQ_DT"));
+				inputBMap.put("REQ_SEQ", param.getString("REQ_SEQ"));
+				
+				// 해당 기간의 데이터값 삭제
+				reserveReportDao.deleteReserveInfo(inputBMap);
+				
+				List<BMap> list = new ArrayList<BMap>();
 
-						BMap inputBMap = new BMap();
-						inputBMap.put("REQ_DT", map.getString("REQ_DT"));
-						inputBMap.put("REQ_SEQ", map.getString("SEQ"));
-						inputBMap.put("BAS_YM", SEARCH_DT.substring(0,6));
-						inputBMap.put("DD", key.substring(3));
-						inputBMap.put("PER_STR", day.replace("day", ""));
-						inputBMap.put("LOGIN_USER", LoginInfo.getUserId());
+				for (String key : map.keySet()) {
+					if(!map.getString(key).equals("")) {
+						BMap detailMap = new BMap();
+						String day     = map.getString(key);
 						
-						// select 해서 값 비교
-						// 값이 다르면 업데이트
-						List<BMap> infoList = reserveReportDao.selectInfoNumberOfReserve(inputBMap);
-						if(infoList.size()>0 && !infoList.get(0).getString("PER_STR").equals(inputBMap.getString("PER_STR"))) {
-							reserveReportDao.updateReserveInfo(inputBMap);
-						}
-					}
-				}
+						detailMap.put("FROM_DT", param.getString("FROM_DT"));
+						detailMap.put("TO_DT",   param.getString("TO_DT"));
+						detailMap.put("REQ_DT",  param.getString("REQ_DT"));
+						detailMap.put("REQ_SEQ", param.getString("REQ_SEQ"));
+						detailMap.put("LOGIN_USER", LoginInfo.getUserId());
+						detailMap.put("BAS_YM", key.substring(3,9));
+						detailMap.put("DD", key.substring(9));
+						detailMap.put("PER_STR", day.replace("day", ""));
+						
+						list.add(detailMap);
+					}					
+				}	
+				// 값이 있는 데이터 INSERT
+				reserveReportDao.insertReserveInfo(list);
 			}
 			respData.put("message", "success");
 		} catch(Exception e) {
 			respData.put("message", e.getMessage());
 		}
-		return new BRespData();
+		return respData;
 	}
 	
 }

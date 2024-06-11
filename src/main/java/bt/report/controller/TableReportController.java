@@ -46,6 +46,7 @@ import bt.btframework.utils.LoginInfo;
 import bt.btframework.utils.ResponseStatus;
 import bt.common.service.CommonCodeService;
 import bt.common.service.CommonService;
+import bt.common.service.FileService;
 import bt.common.service.MailSendService;
 import bt.report.service.TableReportService;
 import bt.reserve.service.ReserveService;
@@ -70,8 +71,11 @@ public class TableReportController {
 	@Resource
     private MailSendService mailSendService;
 	
-	 @Autowired
-	 private Environment env;
+	@Resource(name = "FileService")
+	private FileService fileService;  //파일서비스
+	
+	@Autowired
+	private Environment env;
 	
 	@RequestMapping(value = "/customer.do")
 	public ModelAndView customer() throws Exception {
@@ -736,6 +740,88 @@ public class TableReportController {
        return respData;
     }
 
+	
+	/**
+	 * 인보이스 PDF 메일전송
+	 * 
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/retrieveEmailPdfReportSend.do", method = RequestMethod.POST)
+	public BRespData pdfEmailSend(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		
+		logger.info("=============== 인보이스 PDF 메일전송 =============");		
+		logger.info("=============== param : "+reqData);
+		
+		BMap param = new BMap();
+        param.put("SEQ"        , (String) reqData.get("SEQ"));
+        param.put("REQ_DT"     , (String) reqData.get("REQ_DT"));
+        param.put("LOGIN_USER" , LoginInfo.getUserId());
+        param.put("DEP_AMT"    , reqData.get("DEP_AMT"));
+        param.put("EXP_DT"     , (String) reqData.get("EXP_DT"));
+        param.put("FILE_UID"   , (String) reqData.get("FILE_UID"));
+                
+        
+	    //예약상세 조회
+	    BMap paramData = new BMap();
+	    paramData.put("SEQ"   , (String) reqData.get("SEQ"));
+	    paramData.put("REQ_DT", (String) reqData.get("REQ_DT"));	 
+	    BMap resultDeptDetail = reserveService.reserveSelectDetail(paramData);
+	    
+	    String emailAddr 	=  reqData.get("EMAIL") == null?  resultDeptDetail.get("EMAIL").toString() : reqData.get("EMAIL").toString();
+	    logger.info("===== 이메일 주소 : "+emailAddr);
+	    
+	    
+	    //pdf파일명 조회	    	    
+	    List<BMap> fileList = fileService.selectFileInfo(param);
+	    String filenm = fileList.get(0).getString("NEW_FILE_NM");
+	    logger.info("===== 파일명 : "+filenm);
+	        
+	    
+	    BMap paramPath = new BMap();
+	    
+	    //메일전송 메시지 조회
+	    paramPath.put("REF_CHR1"        ,  "MSG");	    
+	    List<CodeVO> pathList = commonService.selectCommonCode("500200", paramPath);        
+        String msg = pathList.get(0).getValue();
+        logger.info("===== 이메일 메시지 : "+msg);
+        
+        
+        //메일 제목 조회
+        paramPath.put("REF_CHR1"        ,  "SUBJECT");	    
+        pathList = commonService.selectCommonCode("500200", paramPath);        
+        String subject = pathList.get(0).getValue();
+        logger.info("===== 이메일 제목 : "+subject);
+        
+        
+        //이메일전송
+        BMap sendEmailparam = new BMap();
+        sendEmailparam.put("FILE_FULL_NM", env.getProperty("PDF_ATTACHFILEPATH")  + filenm);
+        sendEmailparam.put("FILE_NM"     	, filenm);
+        sendEmailparam.put("TO_EMAIL"   	, emailAddr);
+        sendEmailparam.put("MSG"     		, msg);
+        sendEmailparam.put("SUBJECT"   	, subject);
+       
+        
+        logger.info("=========== sendEmailparam : "+sendEmailparam.toString());
+        
+        boolean res = mailSendService.sendMail(sendEmailparam);
+        
+        System.out.println("================"+res);
+        if(res)
+        {
+            //인보이스 발행일자 수정
+            reserveService.updateInvRegDt(param);
+        }
+		BRespData respData = new BRespData();
+		respData.put("resultCd", res);
+        
+	      return respData;		
+	}
+	
+	
 	@RequestMapping(value = "/product.do")
 	public ModelAndView product() throws Exception {
 		return new ModelAndView("/report/Product");

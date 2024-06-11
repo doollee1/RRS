@@ -444,5 +444,42 @@ public class ReserveDao extends DBAbstractMapper {
 		return delete("ReserveMapper.deleteEtcAll", param);
 	}
 	
+	/**
+	 * PDF_UID 삭제
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deletePdfInfo(BMap param) throws Exception{
+		 update("ReserveMapper.deletePdfUid", param);
+	}
 	
+	/**
+	 * 객실풀관리(예약불가 객실) 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> reserveNoRoomList(BMap param) throws Exception {
+		return list("ReserveMapper.reserveNoRoomList", param);
+	}
+	
+	/**
+	 * 객실풀 데이터 추가
+	 * @param list
+	 * @throws Exception
+	 */
+	public int insertnoRoomInfo(List<BMap> list) throws Exception{
+		return insert("ReserveMapper.insertnoRoomInfo", list);
+	}
+	
+	/**
+	 * 객실풀 데이터 삭제
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deletenoRoomInfo(BMap param) throws Exception{
+		delete("ReserveMapper.deletenoRoomInfo", param);
+		
+	}
 }

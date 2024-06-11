@@ -9,6 +9,14 @@
 %>
 <style>
 .pbtn_default {margin: 0 3px -1px 5px;padding: 3px 10px 3px 10px;border: 1px solid #a9cbeb !important;background: #bdd6ee !important;color: #2269b1;}
+.notice_file_del {margin:3px; margin-right:0px; font-size:11px;}
+.downLink {padding:0px 3px 0px 3px; font-size:15px;}
+.ct_grid_top_left {vertical-align: middle;}
+#pdfUpload {wdith:100%;}
+#ATTACHFILE {display:table-cell; float: right;padding-left:105px;}
+#ATTACHFILE .MultiFile-wrap {margin-top:5px; margin-left:5px; margin-bottom:5px;}
+#ATTACHFILE .MultiFile-wrap input[type=file] {width:300px;}
+#ATTACHFILE .MultiFile-label {font-size:15px;}
 </style>
 
 <div id="p_invoicePopup">
@@ -18,7 +26,7 @@
 		</div>
 		<div id="divBtn">
 			<button class="btn btn-default" id="btn_preview" onclick='cExcelSample(this);'><i class="fa fa-cube"></i><s:message code='button.preview'/></button>
-			<button class="btn btn-default" id="btn_send"    onclick='cExcelSample(this);'><i class="fa fa-phone"></i><s:message code='button.send'/></button>
+			<button class="btn btn-default" id="btn_send"><i class="fa fa-phone"></i><s:message code='button.send'/></button>
 			<button class="btn btn-default" id="btn_save"><i class="fa fa-save"></i><s:message code='button.save'/></button>
 			<button class="btn btn-default" id="btn_del"><i class="fa fa-trash"></i><s:message code='button.delete'/></button>
             <button class="btn btn-default" id="btn_close"><i class="fa fa-close"></i><s:message code='button.close'/></button>
@@ -34,6 +42,11 @@
 			    예약금<input type="text" id="POP_DEP_AMT" name="POP_DEP_AMT" style="text-align: right" value="0" class="withComma" >
 			</div>
 			<div class="ct_grid_top_right">
+				<input type="hidden" id="hFileUid" name="hFileUid" />
+				<div id="pdfUpload">
+					<div id="ATTACHFILE"></div>
+					<div id="invoicePdfAttach"></div>
+				</div>
 				<button class="btn btn-default" id="btn_addRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.addRow'/></button>
             	<button class="btn btn-default" id="btn_delRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.delRow'/></button>
             </div>
@@ -56,6 +69,8 @@ $(function() {
 	var chk_out_dt;
 	var min_date;
 	var prc_sts;
+	var file;
+	var temp_file_uid;
 	
 	$('#p_invoicePopup').dialog({
 		title :'<s:message code='invoice.invoiceTitle'/>',
@@ -80,11 +95,15 @@ $(function() {
 		chk_out_dt = recevicedData.CHK_OUT_DT;
 		prc_sts    = recevicedData.PRC_STS;
 		
-		if(prc_sts == "04" || prc_sts == "05"){  //04(예약신청), 05(입금대기)
+		
+		//04(예약신청), 05(입금대기)
+		if(prc_sts == "04" || prc_sts == "05"){  
 			//$("#POP_EXP_DT,#POP_DEP_AMT , #btn_send, #btn_preview").attr("disabled",true);
 			$("#btn_send, #btn_preview").attr("disabled",true);
-		}else if(prc_sts == "01" || prc_sts == "02" || prc_sts == "03" || prc_sts == "06" || prc_sts == "07" || prc_sts == "08" || prc_sts == "09" || prc_sts == "96"){ //01예약요청-일반), 02(예약요청-멤버), 03(예약가능), 06(예약확정), 07(환불요청), 08(환불완료), 09(예약취소), 96(예약완료-교민)
-			$("#POP_EXP_DT,#POP_DEP_AMT , #btn_send, #btn_preview ,#btn_save , #btn_del , #btn_addRow , #btn_delRow").attr("disabled",true);
+		//01(예약요청-일반), 02(예약요청-멤버), 03(예약가능), 06(예약확정), 07(환불요청), 08(환불완료), 09(예약취소), 96(예약완료-교민)
+		}else if(prc_sts == "01" || prc_sts == "02" || prc_sts == "03" || prc_sts == "06" || prc_sts == "07" || prc_sts == "08" || prc_sts == "09" || prc_sts == "96"){ 
+			//$("#POP_EXP_DT,#POP_DEP_AMT , #btn_send, #btn_preview , #btn_del , #btn_addRow , #btn_delRow").attr("disabled",true);
+			$("#POP_EXP_DT,#POP_DEP_AMT , #btn_send, #btn_preview , #btn_del ").attr("disabled",true);
 		}
 		
 		$("#POP_DEP_AMT").val(fn_comma(recevicedData.DEP_AMT));
@@ -94,8 +113,13 @@ $(function() {
 		
 		createGrid();
 		cSearch();
-	}
 		
+		//첨부파일 업로드 부분 만드는
+		$("#ATTACHFILE").mkFileUpload("PDF", "/reserve/uploadPdf.do", "pdf",1);
+
+		ajaxUpload();
+	}
+	
 	function cSearch(currentPage){
 		var url = "/reserve/invoiceSelectList.do";
 		var formData = formIdAllToMap('frmSearch');
@@ -119,7 +143,19 @@ $(function() {
 			for(var i =0; i < data.result.length; i++){
 				jQuery("#invoiceGrid").setCell(i+1);
 			}
-
+			
+			//첨부파일이 있으면 output()함수로 첨부파일을 표시해준다
+			file = data.fileResult;
+			if(file.length == 0){
+				//file = $("#hFileUid").val();
+				temp_file_uid="";
+			}else{
+				//기존 첨부파일의 uid 저장
+				temp_file_uid = file[0]["FILE_UID"];
+				$("#hFileUid").val(temp_file_uid);
+				output(file,seq,req_dt);	
+			}
+			
 			btGrid.gridResizing('invoiceGrid');
 		    $("#PartnerSchGrid_pager_right").append('<div dir="ltr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(sum_tot)+'</div>');
 	    });
@@ -298,6 +334,224 @@ $(function() {
 	});
 	
 	$("#btn_save").on("click" , function(){
+		//첨부파일이 없을 경우
+		if($("#ATTACHFILE input[type=file]").val() == null || $("#ATTACHFILE input[type=file]").val() == ""){
+			insertVoiceInfo();
+		}else{
+			//기존 첨부파일이 있는 경우
+			if(!fn_empty(file)){
+				insertVoiceInfo();
+			}
+			//첨부파일을 추가하는 경우
+			else{
+				$("#multiform_PDF").submit();
+			}
+		}
+	});
+	
+	
+	$("#btn_delRow").on("click" , function(){
+		var rowId =$("#invoiceGrid").jqGrid('getGridParam','selrow');
+		var args = "";
+		if (rowId == null) {
+			args = '<s:message code='title.row'/>';
+    		alert("<s:message code='errors.selectdel' arguments='" + args + "' javaScriptEscape='false'/>");
+
+    		return;
+		}else{
+			var grdData = $("#invoiceGrid").jqGrid("getCell", rowId, "STATUS_V");
+			
+			if(grdData != 'I'){
+				alert("<s:message code='errors.statusR' javaScriptEscape='false'/>"); 
+	    		return;
+	    	} else {
+	    			$("#invoiceGrid").jqGrid("delRowData",rowId);
+	    	}
+		}
+	});
+	
+	//닫기
+	$("#btn_close").on("click" , function(){
+		popupClose($('#p_invoicePopup').data('pid'));
+	});
+	$("#btn_del").on("click" , function(){
+		var rowId =$("#invoiceGrid").jqGrid('getGridParam','selrow');
+		var args    = "";
+		if(rowId == "" || rowId == null){
+    		alert("<s:message code='errors.selectdel' arguments='행(을)' javaScriptEscape='false'/>");
+			return;
+		}
+		var grdData = $("#invoiceGrid").jqGrid("getCell", rowId, "STATUS_V");
+		
+		if(grdData == 'I'){
+			alert("<s:message code='errors.statusI' javaScriptEscape='false'/>"); 
+    		return;
+    	}
+		args =  $("#"+rowId+"_ITEM_NM").val()
+		if(confirm("<s:message code='confirm.delRow' arguments='" + args + "' javaScriptEscape='false'/>")){
+			var url = '/reserve/deleteInvoiceManager.do';alert($("#invoiceGrid").jqGrid("getCell", rowId, "TOT_AMT"));
+			var param = { "REQ_DT"  : req_dt
+					, "SEQ"     : seq
+					, "ITEM_CD" : $("#invoiceGrid").jqGrid("getCell", rowId, "PREV_ITEM_CD")
+					, "ORDER" 	: $("#invoiceGrid").jqGrid("getCell", rowId, "PREV_ORDER")
+					, "TOT_AMT" : $("#invoiceGrid").jqGrid("getCell", rowId, "TOT_AMT")
+			        }
+			
+				fn_ajax(url, false, param, function(data, xhr){
+					if(data.resultCd == "-1"){
+						alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
+					}else{
+					    alert("<s:message code='product.info.delete'/>");
+						cSearch();
+					}
+				});
+		}
+	});
+	
+	
+	//이메일 전송하기
+	$("#btn_send").on("click" , function(){
+	
+		console.log("======= 전송하기 =======");
+		
+		var fileUid = $('#hFileUid').val();
+		console.log("=== hFileUid : "+fileUid);
+		
+		
+		//pdf파일 업로드 확인
+		if(!fileUid){
+			alert("pdf 파일업로드 후 저장버튼을 클릭해주세요.");
+			return false;
+		}
+		
+		var exp_dt = $("#POP_EXP_DT").val().replaceAll(".","");
+        var dep_amt = parseInt($("#POP_DEP_AMT").val().replaceAll(",",""));
+		var param = { "REQ_DT"  : req_dt
+				    , "SEQ"     : seq
+				    , "EMAIL"   : email
+				    , "MEM_GBN" : mem_gbn
+				    , "FILE_UID": fileUid
+		}
+
+		if(!fn_empty(exp_dt)) param.EXP_DT  = exp_dt;
+		if(dep_amt != 0)      param.DEP_AMT = dep_amt;
+		else {
+	        if(fn_empty(exp_dt)){
+	        	alert("예약기한을 확인해주세요.");
+				return false;
+	        }
+			if(exp_dt > chk_in_dt){
+				alert("예약기한이 체크인날짜 이후입니다. 예약기한을 확인해주세요.");
+				return false;
+			}
+		}
+		
+		console.log("param : "+JSON.stringify(param));
+		
+		
+		if(!confirm("<s:message code='confirm.send'/>")){  //전송하시겠습니까?
+			return false;
+		}
+		var url = "/report/retrieveEmailPdfReportSend.do";  //pdf이메일전송
+		fn_ajax(url, false, param, function(data, xhr){
+		    if(!data.resultCd){
+				alert("<s:message code='error.sendmail' javaScriptEscape='false'/>");  //메일 전송실패했습니다.
+			}else{
+				alert("<s:message code='success.sendemail'/>");  //메일 전송완료했습니다.
+				cSearch();
+			}
+		});
+		
+	});
+	
+	
+	//공통버튼 - 엑셀 다운 클릭
+	window.cExcelSample = function(data) {
+		var exp_dt = $("#POP_EXP_DT").val().replaceAll(".","");
+        var dep_amt = parseInt($("#POP_DEP_AMT").val().replaceAll(",",""));
+		var param = { "REQ_DT"  : req_dt
+				    , "SEQ"     : seq
+				    , "EMAIL"   : email
+				    , "MEM_GBN" : mem_gbn
+				    , "WK_GBN"	: ""
+		}
+
+		if(!fn_empty(exp_dt)) param.EXP_DT  = exp_dt;
+		if(dep_amt != 0)      param.DEP_AMT = dep_amt;
+		else {
+	        if(fn_empty(exp_dt)){
+	        	alert("예약기한을 확인해주세요.");
+				return false;
+	        }
+			if(exp_dt > chk_in_dt){
+				alert("예약기한이 체크인날짜 이후입니다. 예약기한을 확인해주세요.");
+				return false;
+			}
+		}
+		
+		if(data.id == "btn_preview")
+		{
+			param.WK_GBN = "R";
+			fn_formSubmit('/report/retrieveCustomerReportAll.do', param);
+		} /* else {
+			if(!confirm("<s:message code='confirm.send'/>")){
+				return false;
+			}
+			var url = "/report/retrieveCustomerReportSend.do";
+			fn_ajax(url, false, param, function(data, xhr){
+			    if(!data.resultCd){
+					alert("<s:message code='error.sendmail' javaScriptEscape='false'/>"); 
+				}else{
+					alert("<s:message code='success.sendemail'/>");
+					cSearch();
+				}
+			});
+		} */
+		
+		
+		/* setTimeout(function() { 
+			if(!(data.id == "btn_preview"))
+			{
+				var url = "/report/retrieveCustomerReportSend.do";
+				fn_ajax(url, false, param, function(data, xhr){
+				    if(!data.resultCd){
+						alert("<s:message code='error.sendmail' javaScriptEscape='false'/>"); 
+					}else{
+						alert("<s:message code='success.sendemail'/>");
+						cSearch();
+					}
+				});
+			}
+		}, 1500); */
+	}
+	
+	$("#invoiceGrid").bind("change , keyup" , function(){
+		var changeRowId  = $('#invoiceGrid').jqGrid('getGridParam', 'selrow');
+		var rowCnt       = $('#invoiceGrid').getGridParam('reccount');
+		var ids          = $('#invoiceGrid').jqGrid('getDataIDs');
+		var full_tot_amt = 0;
+		
+		if($('#invoiceGrid').jqGrid('getRowData', changeRowId).STATUS_V != "I"){
+			$("#invoiceGrid").jqGrid('setCell',changeRowId , 'STATUS_V', 'U');
+		}
+		var per_amt = $("#"+changeRowId+"_PER_AMT").val();// == undefined ? $(this).jqGrid('getCell', changeRowId ,"PER_AMT") : $("#"+changeRowId+"_PER_AMT").val();
+		var use_day = $("#"+changeRowId+"_USE_DAY").val();// == undefined ? $(this).jqGrid('getCell', changeRowId ,"USE_DAY") : $("#"+changeRowId+"_USE_DAY").val();
+		var use_num = $("#"+changeRowId+"_USE_NUM").val();// == undefined ? $(this).jqGrid('getCell', changeRowId ,"USE_NUM") : $("#"+changeRowId+"_USE_NUM").val();
+		var tot_amt = parseInt(per_amt.replaceAll("," , "")) * parseInt(use_day.replaceAll("," , "")) * parseInt(use_num.replaceAll("," , ""));
+		if(per_amt != "" && use_day != "" && use_num != ""){
+			$(this).jqGrid('setCell' , changeRowId , 'TOT_AMT' , tot_amt);
+		}else{
+			$(this).jqGrid('setCell' , changeRowId , 'TOT_AMT' , 0);
+		}
+    
+		for(var i = 0 ; i < ids.length ; i ++ ){
+			full_tot_amt += parseInt(fn_uncomma($(this).jqGrid('getCell', ids[i] ,'TOT_AMT')));
+		}
+		$("#sumtot_amt").text('Total Price: '+fn_comma(full_tot_amt));
+	    $("#sumtot_amt").append('<div dir="ltr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(full_tot_amt)+'</div>');
+	});
+	
+	function insertVoiceInfo(result){
 		btGrid.gridSaveRow('invoiceGrid');
 		var gridData  = $("#invoiceGrid").getRowData();
 		var ids = $("#invoiceGrid").jqGrid("getDataIDs");
@@ -310,16 +564,28 @@ $(function() {
 		}
 		
 		var exp_dt = $("#POP_EXP_DT").val().replaceAll(".","");
-        var dep_amt = parseInt($("#POP_DEP_AMT").val().replaceAll(",",""));
-       /*  if(fn_empty(exp_dt)){
-        	alert("예약기한을 확인해주세요.");
+	    var dep_amt = parseInt($("#POP_DEP_AMT").val().replaceAll(",",""));
+	   /*  if(fn_empty(exp_dt)){
+	    	alert("예약기한을 확인해주세요.");
 			return false;
-        }
+	    }
 		if(exp_dt > chk_in_dt){
 			alert("예약기한이 체크인날짜 이후입니다. 예약기한을 확인해주세요.");
 			return false;
 		} */
-
+		
+		var file_uid = $("#hFileUid").val();
+		if(!fn_empty(result)){
+			file_uid = result[0]["FILE_UID"];
+		}
+		//파일만 추가/변경 했을 경우
+		if(fn_empty(file) && temp_file_uid != file_uid){
+			//변경사항이 없다는 에러 넘기기
+			cnt++;
+			//넘어가는 첫번째 그리드의 STATUS_V 을 업데이트로 변경
+			gridDataChk[0]["STATUS_V"] = 'U';
+		}
+		
 		var args = '';
 		$.each(gridData , function(i , json){
 			$.each(json, function(k , value){
@@ -392,6 +658,7 @@ $(function() {
 		var param = {"detail"      : gridDataChk
 				   , "SEQ"         : seq 
 				   , "REQ_DT"      : req_dt
+				   , "FILE_UID"    : file_uid
 				   };
 		if(!fn_empty(exp_dt)) param.EXP_DT  = exp_dt;
 		if(dep_amt != 0)      param.DEP_AMT = dep_amt;
@@ -404,157 +671,76 @@ $(function() {
 					
 					//예약기간, 예약금, 전송, 미리보기 활성화
 					$("#POP_EXP_DT,#POP_DEP_AMT , #btn_send, #btn_preview").attr("disabled",false);
+
 					cSearch();
 				}
 			});
 		}
-	});
-	
-	$("#btn_delRow").on("click" , function(){
-		var rowId =$("#invoiceGrid").jqGrid('getGridParam','selrow');
-		var args = "";
-		if (rowId == null) {
-			args = '<s:message code='title.row'/>';
-    		alert("<s:message code='errors.selectdel' arguments='" + args + "' javaScriptEscape='false'/>");
-
-    		return;
-		}else{
-			var grdData = $("#invoiceGrid").jqGrid("getCell", rowId, "STATUS_V");
-			
-			if(grdData != 'I'){
-				alert("<s:message code='errors.statusR' javaScriptEscape='false'/>"); 
-	    		return;
-	    	} else {
-	    			$("#invoiceGrid").jqGrid("delRowData",rowId);
-	    	}
-		}
-	});
-	
-	//닫기
-	$("#btn_close").on("click" , function(){
-		popupClose($('#p_invoicePopup').data('pid'));
-	});
-	$("#btn_del").on("click" , function(){
-		var rowId =$("#invoiceGrid").jqGrid('getGridParam','selrow');
-		var args    = "";
-		if(rowId == "" || rowId == null){
-    		alert("<s:message code='errors.selectdel' arguments='행(을)' javaScriptEscape='false'/>");
-			return;
-		}
-		var grdData = $("#invoiceGrid").jqGrid("getCell", rowId, "STATUS_V");
-		
-		if(grdData == 'I'){
-			alert("<s:message code='errors.statusI' javaScriptEscape='false'/>"); 
-    		return;
-    	}
-		args =  $("#"+rowId+"_ITEM_NM").val()
-		if(confirm("<s:message code='confirm.delRow' arguments='" + args + "' javaScriptEscape='false'/>")){
-			var url = '/reserve/deleteInvoiceManager.do';alert($("#invoiceGrid").jqGrid("getCell", rowId, "TOT_AMT"));
-			var param = { "REQ_DT"  : req_dt
-					, "SEQ"     : seq
-					, "ITEM_CD" : $("#invoiceGrid").jqGrid("getCell", rowId, "PREV_ITEM_CD")
-					, "ORDER" 	: $("#invoiceGrid").jqGrid("getCell", rowId, "PREV_ORDER")
-					, "TOT_AMT" : $("#invoiceGrid").jqGrid("getCell", rowId, "TOT_AMT")
-			        }
-			
-				fn_ajax(url, false, param, function(data, xhr){
-					if(data.resultCd == "-1"){
-						alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
-					}else{
-					    alert("<s:message code='product.info.delete'/>");
-						cSearch();
-					}
-				});
-		}
-	});
-	
-	//공통버튼 - 엑셀 다운 클릭
-	window.cExcelSample = function(data) {
-		var exp_dt = $("#POP_EXP_DT").val().replaceAll(".","");
-        var dep_amt = parseInt($("#POP_DEP_AMT").val().replaceAll(",",""));
-		var param = { "REQ_DT"  : req_dt
-				    , "SEQ"     : seq
-				    , "EMAIL"   : email
-				    , "MEM_GBN" : mem_gbn
-				    , "WK_GBN"	: ""
-		}
-
-		if(!fn_empty(exp_dt)) param.EXP_DT  = exp_dt;
-		if(dep_amt != 0)      param.DEP_AMT = dep_amt;
-		else {
-	        if(fn_empty(exp_dt)){
-	        	alert("예약기한을 확인해주세요.");
-				return false;
-	        }
-			if(exp_dt > chk_in_dt){
-				alert("예약기한이 체크인날짜 이후입니다. 예약기한을 확인해주세요.");
-				return false;
-			}
-		}
-		
-		if(data.id == "btn_preview")
-		{
-			param.WK_GBN = "R";
-			fn_formSubmit('/report/retrieveCustomerReportAll.do', param);
-		} else {
-			if(!confirm("<s:message code='confirm.send'/>")){
-				return false;
-			}
-			var url = "/report/retrieveCustomerReportSend.do";
-			fn_ajax(url, false, param, function(data, xhr){
-			    if(!data.resultCd){
-					alert("<s:message code='error.sendmail' javaScriptEscape='false'/>"); 
-				}else{
-					alert("<s:message code='success.sendemail'/>");
-					cSearch();
-				}
-			});
-		}
-		
-		
-		/* setTimeout(function() { 
-			if(!(data.id == "btn_preview"))
-			{
-				var url = "/report/retrieveCustomerReportSend.do";
-				fn_ajax(url, false, param, function(data, xhr){
-				    if(!data.resultCd){
-						alert("<s:message code='error.sendmail' javaScriptEscape='false'/>"); 
-					}else{
-						alert("<s:message code='success.sendemail'/>");
-						cSearch();
-					}
-				});
-			}
-		}, 1500); */
 	}
 	
-	$("#invoiceGrid").bind("change , keyup" , function(){
-		var changeRowId  = $('#invoiceGrid').jqGrid('getGridParam', 'selrow');
-		var rowCnt       = $('#invoiceGrid').getGridParam('reccount');
-		var ids          = $('#invoiceGrid').jqGrid('getDataIDs');
-		var full_tot_amt = 0;
-		
-		if($('#invoiceGrid').jqGrid('getRowData', changeRowId).STATUS_V != "I"){
-			$("#invoiceGrid").jqGrid('setCell',changeRowId , 'STATUS_V', 'U');
-		}
-		var per_amt = $("#"+changeRowId+"_PER_AMT").val();// == undefined ? $(this).jqGrid('getCell', changeRowId ,"PER_AMT") : $("#"+changeRowId+"_PER_AMT").val();
-		var use_day = $("#"+changeRowId+"_USE_DAY").val();// == undefined ? $(this).jqGrid('getCell', changeRowId ,"USE_DAY") : $("#"+changeRowId+"_USE_DAY").val();
-		var use_num = $("#"+changeRowId+"_USE_NUM").val();// == undefined ? $(this).jqGrid('getCell', changeRowId ,"USE_NUM") : $("#"+changeRowId+"_USE_NUM").val();
-		var tot_amt = parseInt(per_amt.replaceAll("," , "")) * parseInt(use_day.replaceAll("," , "")) * parseInt(use_num.replaceAll("," , ""));
-		if(per_amt != "" && use_day != "" && use_num != ""){
-			$(this).jqGrid('setCell' , changeRowId , 'TOT_AMT' , tot_amt);
-		}else{
-			$(this).jqGrid('setCell' , changeRowId , 'TOT_AMT' , 0);
-		}
-    
-		for(var i = 0 ; i < ids.length ; i ++ ){
-			full_tot_amt += parseInt(fn_uncomma($(this).jqGrid('getCell', ids[i] ,'TOT_AMT')));
-		}
-		$("#sumtot_amt").text('Total Price: '+fn_comma(full_tot_amt));
-	    $("#sumtot_amt").append('<div dir="ltr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(full_tot_amt)+'</div>');
-	});
+	function ajaxUpload(){
+		$('#multiform_PDF').ajaxForm({
+	     	cache: false,
+	     	dataType:"json",
+	     	data:{
+	     		"fileuid" : $("#hFileUid").val()
+	     	},
+	       	//보내기전 validation check가 필요할경우
+	       	beforeSubmit: function (data, frm, opt) {
+				return true;
+			},
+			//submit이후의 처리
+			success: function(data, statusText){
+				//새롭게 업로드된 uid를 가져와서 세팅
+				$("#hFileUid").val(data.result[0]["FILE_UID"]);
+				insertVoiceInfo(data.result);
+			},
+	        //ajax error
+	       	error: function(e){
+				alert("<s:message code='fail.common.msg'/>");
+			}                               
+		});
+	}
+	
 });
 
+//첨부파일이 있는 경우 첨부파일 다운로드 링크와 삭제버튼 추가
+function output(data,seq,req_dt){
+	if(data){
+		$("#ATTACHFILE").hide();
+	}
+	//PDF첨부파일은 한개만 있으므로
+	item = data[0];
+	//그 전 내용을 지워준다
+	$("#invoicePdfAttach").empty();
+	//PDF파일 표시 및 다운로드와 삭제 로직 연결
+	var link = "/reserve/downloadInvoicePdf.do?f=" + item.NEW_FILE_NM + "&of=" + item.SRC_FILE_NM;
+	var deleteLink = "/reserve/deleteInvoicePdf.do?seq="+seq+"&req_dt="+req_dt;
+	$("#invoicePdfAttach").append("<span>등록된 PDF파일 : </span>");
+	$("#invoicePdfAttach").append("<a class='downLink' href='#' onclick=\"fileDownload('" + link + "');\">" + item.SRC_FILE_NM + "</a>");   //item.SRC_FILE_NM
+	$("#invoicePdfAttach").append("<span class='clipdel'><a href='#' onclick=\"fileDelete2('" +deleteLink + "', '" + item.FILE_UID + "', '" + item.NEW_FILE_NM + "');\"><span class='notice_file_del'>Delete</span></a></span>");
+	$("#invoicePdfAttach").append("<br/>");
+}
+
+//PDF 파일 삭제 시 인보이스 팝업창이 닫히도록
+function fileDelete2(url, fileUid, fileName){
+	//if(confirm("삭제하시겠습니까?")){
+	if(confirm("PDF파일을 삭제하시겠습니까?")){
+		var param = { "param" : {
+				"fileUid" : fileUid,
+				"fileName" : fileName
+			}
+		};
+		
+		//PDF파일 삭제 후 invocie 팝업창 닫기
+		fn_ajax(url, false, param, function(data, xhr){
+			alert("삭제하였습니다.");
+			//alert("Deleted.");
+			popupClose($("#p_invoicePopup").attr('id'));
+		});
+	}
+}
+	
 function fn_formSubmit2(url, data) {
 	var form = '<form action="' + url + '" id="form" method="post">';
 	$.each(data, function(key, value) {
@@ -564,5 +750,4 @@ function fn_formSubmit2(url, data) {
 	alert(2);
 	//$(form).appendTo('body').submit().remove();
 }
-
 </script>

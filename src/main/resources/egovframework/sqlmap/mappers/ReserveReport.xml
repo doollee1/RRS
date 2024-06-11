@@ -5,82 +5,92 @@
 	<select id="reserveReportSelectList" parameterType="BMap" resultType="BMap">
     <include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
 		SELECT 
-			ROW_NUMBER() OVER(ORDER BY T1.REQ_DT ASC, T1.SEQ ASC) AS ROWNUM
-			,T1.REQ_DT
-			,T1.SEQ
-			,T1.USER_ID
-			,T1.MEM_GBN
+			ROW_NUMBER() OVER(ORDER BY T1.REQ_DT ASC, T1.SEQ ASC) AS ROWNUM	/* 순번 */
+			,T1.REQ_DT	/* 예약일자 */
+			,T1.SEQ		/* 예약순번 */
 			,(
 				SELECT CODE_NM
 				FROM BC_COMM_L
 				WHERE 1=1
 				AND HEAD_CD = '500030'
 				AND CODE = T1.MEM_GBN
-			) AS MEM_NM /* 회원 구분 */
-			,T1.CONFIRM_NO /* 리조트 CF 번호 */
-			,T1.REQ_HAN_NM /* 예약자 한글 */
-			,T1.REQ_ENG_NM /* 예약자 영문 */
-			,T1.INV_REG_DT /* 인보이스 발행일자 */
-			,T2.DEP_IN_DT /* 예약금 입금 일자 */
-			,T2.DEP_AMT /* 예약금 금액 */
-			,T2.BAL_IN_DT /* 잔금 입금 일자 */
-			,T2.BAL_AMT /* 잔금 금액 */
+			  ) AS MEM_GBN	/* 회원구분 */
+			,T1.REQ_HAN_NM	/* 예약자 한글명 */
+			,T1.REQ_ENG_NM	/* 예약자 영문명 */
+			,T1.REQ_TEL_NO	/* 예약자 전화번호 */
+			,(
+				SELECT CODE_NM
+				FROM BC_COMM_L
+				WHERE 1=1
+				AND HEAD_CD = '500020'
+				AND CODE = T1.PRC_STS
+			)	AS PRC_STS	/* 예약 상태 */
+			,T1.FLIGHT_IN	/* 도착 항공편 */
+			,T1.FLIGHT_OUT	/* 출발 항공편 */
+			,T1.TOT_PERSON	/* 예약인원 */
+			,(
+				SELECT CODE_NM
+				FROM BC_COMM_L
+				WHERE 1=1
+				AND HEAD_CD = '500000'
+				AND CODE = T3.HDNG_GBN
+			)	AS PROD_SEQ	/* 상품 */
+			,T1.CHK_IN_DT	/* 체크인 */
+			,T1.CHK_OUT_DT	/* 체크아웃 */
 			,(
 				SELECT CODE_NM
 				FROM BC_COMM_L
 				WHERE 1=1
 				AND HEAD_CD = '500110'
 				AND CODE = T1.PICK_IN
-			) AS PICK_IN /* 픽업 차량 도착 */
+			) AS PICK_IN	/* 픽업차량 도착 */
 			,(
 				SELECT CODE_NM
 				FROM BC_COMM_L
 				WHERE 1=1
 				AND HEAD_CD = '500110'
 				AND CODE = T1.PICK_OUT
-			) AS PICK_OUT /* 픽업 차량 출발  */
-			,T1.FLIGHT_IN /* 항공편 도착 */
-			,T1.FLIGHT_OUT /* 항공편 출발 */
-			,T1.R_PERSON /* 라운딩 인원 */
-			,T1.CNT_D1 /* 숙박 트윈 */
-			,T1.CNT_D2 /* 숙박 더블 */
-			,T1.CNT_P1 /* 숙박 프리미엄트윈 */
-			,T1.CNT_P2 /* 숙박 프리미엄킹 */
-			,T1.BAS_YY
-			,T1.PROD_SEQ
-			,T1.CHK_IN_DT 
-			,T1.CHK_OUT_DT 
-			,T3.HDNG_GBN /* 상품 항목 구분 */
+			) AS PICK_OUT	/* 픽업차량 출발 */
+			,T1.TWIN_CNT 		AS TWIN_CNT		/* 트윈 TWIN_CNT */
+			,T1.KING_CNT 		AS KING_CNT		/* 킹 KING_CNT */
+			,T1.ROOM_ADD_IL		AS ROOM_ADD_IL	/* 룸추가 일수 ROOM_ADD_IL */
+			,T1.ROOM_ADD_CNT	AS ROOM_ADD_CNT	/* 룸추가 개수 ROOM_ADD_CNT */
+			,T1.PRIM_ADD_IL		AS PRIM_ADD_IL	/* 프리미엄 추가 일수 PRIM_ADD_IL */
+			,T1.PRIM_ADD_CNT	AS PRIM_ADD_CNT	/* 프리미엄 추가 개수 PRIM_ADD_CNT */
+			,T1.INV_REG_DT		AS INV_REG_DT	/* 인보이스발행일자 INV_REG_DT */
+			,T2.TOT_AMT     	AS TOT_AMT		/* 인보이스 총금액 TOT_AMT */
+			,T2.DEP_IN_DT   	AS DEP_IN_DT	/* 예약금 입금일자 DEP_IN_DT */
+			,T2.DEP_AMT     	AS DEP_AMT		/* 예약금 금액 DEP_AMT */
+			,T2.BAL_IN_DT   	AS BAL_IN_DT	/* 잔금 입금일자 BAL_IN_DT */
+			,T2.BAL_AMT     	AS BAL_AMT		/* 잔금 금액 BAL_AMT */
 			,IFNULL((
 				SELECT REF_NUM1
 				FROM BC_COMM_L
 				WHERE 1=1
 				AND HEAD_CD = '500000'
 				AND CODE = T3.HDNG_GBN
-			), 0) AS ROUNDING_WEEK /* 라운딩 평일 */
+			), 0) AS ROUNDING_WEEK 	/* 라운딩 평일 */
 			,IFNULL((
 				SELECT REF_NUM2
 				FROM BC_COMM_L
 				WHERE 1=1
 				AND HEAD_CD = '500000'
 				AND CODE = T3.HDNG_GBN
-			), 0) AS ROUNDING_SAT /* 라운딩 토 */
+			), 0) AS ROUNDING_SAT 	/* 라운딩 토 */
 			,IFNULL((
 				SELECT REF_NUM3
 				FROM BC_COMM_L
 				WHERE 1=1
 				AND HEAD_CD = '500000'
 				AND CODE = T3.HDNG_GBN
-			), 0) AS ROUNDING_SUN /* 라운딩 일 */
-			,T1.RND_CHG_YN1 /* 라운딩변경(토오전)여부 */
-			,T1.RND_CHG_YN2 /* 라운딩변경(일오전)여부 */
-			,T1.REMARK /* 비고(추가요구사항) */
+			), 0) AS ROUNDING_SUN 	/* 라운딩 일 */
+			,T1.REMARK 				/* 비고(추가요구사항) */
 		FROM TB_REQ_BOOKING_M T1
 		LEFT JOIN tb_req_fee T2
 		ON T1.REQ_DT = T2.REQ_DT AND T1.SEQ = T2.REQ_SEQ
 		LEFT JOIN tb_prod_info T3
 		ON T1.BAS_YY = T3.BAS_YY AND T1.PROD_SEQ = T3.PROD_SEQ
-		WHERE DATE_FORMAT(T1.CHK_IN_DT,'%Y%m') = #{SEARCH_DT}
+		WHERE T1.CHK_IN_DT BETWEEN #{FROM_DT} AND #{TO_DT}
     <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
 	
@@ -117,4 +127,36 @@
 			AND DD = #{DD}
 	</update>
 	
+	<insert id="insertReserveInfo" parameterType="BMap">
+		INSERT INTO TB_REQ_R_PLAN
+			      ( REQ_DT
+			      , REQ_SEQ
+			      , BAS_YM
+			      , DD
+			      , PER_STR
+			      , REG_DTM
+			      , REG_ID
+			      , UPD_DTM
+			      , UPD_ID
+			      )
+		   VALUES 
+		   <foreach collection="list" item="item" separator=",">
+		   		  (#{item.REQ_DT}
+		   		  ,#{item.REQ_SEQ}
+		   		  ,#{item.BAS_YM}
+		   		  ,#{item.DD}
+		   		  ,#{item.PER_STR}
+		   		  ,NOW()
+		   		  ,#{item.LOGIN_USER}
+		   		  ,NOW()
+		   		  ,#{item.LOGIN_USER}
+		   		  )
+		   </foreach>
+	</insert>
+	<delete id="deleteReserveInfo" parameterType="BMap">
+		DELETE FROM TB_REQ_R_PLAN
+		 WHERE REQ_DT  = #{REQ_DT}
+		   AND REQ_SEQ = #{REQ_SEQ}
+		   AND CONCAT(BAS_YM, DD) BETWEEN #{FROM_DT} AND #{TO_DT}
+	</delete>
 </mapper>

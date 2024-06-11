@@ -23,33 +23,41 @@
 				<tbody>
 					<tr>  
 					    <td class="small_td"><p><s:message code="reservation.period"/></p></td>
-                        <td class="medium_td">
+                        <td class="medium_td" id="SEARCH_TD">
                             <select id="SEARCH" name="SEARCH" class="">
                                 <option value="T1.REQ_DT">예약 일자</option>
                                 <option value="T1.CHK_IN_DT">체크인 일자</option>
                             </select>
-                        </td>
-						<td class="medium_td">
-						    <input type="text" name="RESERVE_STDT" id="RESERVE_STDT" data-type="date" style="width:90px; float:left; text-align: center;"/>
+                          <input type="text" name="RESERVE_STDT" id="RESERVE_STDT" data-type="date" style="width:90px; float:left; text-align: center;"/>
 						    <p style="float:left;">-</p>
 						    <input type="text" name="RESERVE_EDDT" id="RESERVE_EDDT" data-type="date" style="width:90px;float:left; text-align: center;"/>
 					    </td>
-						<td class="small_td"><p><s:message code="reservation.state"/></p></td>
-						<td class="medium_td">
-						    <select id="PRC_STS" name="PRC_STS" class="">
+					    <td class="blank_td"></td>
+					    <td class="small_td" id="INVOCIE"><p>인보이스 발행유무</p></td>
+						<td class="medium_td" id="INVOCIE_YN">
+						    <select id="INVOICE_YN" name="INVOICE_YN" class="">
 						        <option value="">전체</option>
-							    <c:forEach var="i" items="${prc_sts}">
-								    <option value="${i.CODE}">${i.CODE_NM}</option>
-							    </c:forEach>
+						        <option value="Y">유</option>
+						        <option value="N">무</option>
 						    </select>
 						</td>
 					</tr>
 					<tr>
 					    <td class="small_td"><p><s:message code="reservation.division"/></p></td>
-						<td class="medium_td">
+						<td class="medium_td" id="MEMBER_TD">
 						    <select id="MEM_GBN" name="MEM_GBN" class="">
 						        <option value="">전체</option>
 							    <c:forEach var="i" items="${mem_gbn}">
+								    <option value="${i.CODE}">${i.CODE_NM}</option>
+							    </c:forEach>
+						    </select>
+						</td>
+						<td class="blank_td"></td>
+						<td class="small_td" id="STATUS"><p><s:message code="reservation.state"/></p></td>
+						<td class="medium_td">
+						    <select id="PRC_STS" name="PRC_STS" class="">
+						        <option value="">전체</option>
+							    <c:forEach var="i" items="${prc_sts}">
 								    <option value="${i.CODE}">${i.CODE_NM}</option>
 							    </c:forEach>
 						    </select>
@@ -76,6 +84,20 @@
 	</div>
 	<!-- 그리드 끝 -->
 </div>
+
+<style type="text/css">
+	.tab_top_search2 .medium_td { width: 360px; text-align : center;}
+	.tab_top_search2 .small_td { text-align : center;}
+	.tab_top_search2 .small_td p {margin-left:10px;}
+	.tab_top_search2 .blank_td { width:50px;}
+	#ct_wrap select {text-align:center;}
+	#MEMBER_TD { width: 200px; }
+	#RESERVE_DT {width:240px;}
+	#SEARCH {width:105px; float:left; margin-left:5px; margin-right:5px;}
+	#MEM_GBN {width:350px; }
+	#INVOICE_YN {width:300px; }
+	#PRC_STS {width:300px;}
+</style>
 
 <script type="text/javascript">
 <%-- 
@@ -130,9 +152,10 @@
 		var colName = [ 
             '<s:message code="reservation.seq"/>',
 	        '<s:message code="reservation.mem_gbn"/>',
+	        '에이전시구분',
 	        '에이전시명',
-		    '<s:message code="reservation.reserveSeq"/>',
 	        '<s:message code="reservation.date"/>',
+		    '<s:message code="reservation.reserveSeq"/>',
 	        '<s:message code="reservation.member"/>',
 	        '<s:message code="reservation.product_gbn"/>',
 	        '<s:message code="reservation.checkIn"/>',
@@ -142,23 +165,26 @@
 	        '<s:message code="reservation.totAmount"/>',
 	        '<s:message code="reservation.flight"/>',
 	        '<s:message code="reservation.state"/>', 
+	        '인보이스 발행일자',
 	        '<s:message code="reservation.prodCnt"/>',
 		];
 		var colModel = [ 
 		    {name : 'ROWNUM'    , width : 70  , align : 'center'}, 
-		    {name : 'MEM_NM'    , width : 70  , align : 'center'}, 
+		    {name : 'MEM_NM'    , width : 70  , align : 'center'},
+		    {name : 'AGN_GB'    , width : 80  , align : 'center'},
 		    {name : 'AGN_CD_NM' , width : 70  , align : 'center'}, 
-		    {name : 'SEQ'       , width : 70  , align : 'center'}, 
 		    {name : 'REQ_DT'    , width : 100 , align : 'center'}, 
+		    {name : 'SEQ'       , width : 70  , align : 'center'}, 
 		    {name : 'REQ_HAN_NM', width : 70  , align : 'center'}, 
-		    {name : 'PROD_NM'   , width : 200, align : 'center'}, 
-		    {name : 'CHK_IN_DT' , width : 100  , align : 'center'}, 
+		    {name : 'PROD_NM'   , width : 200 , align : 'center'}, 
+		    {name : 'CHK_IN_DT' , width : 100 , align : 'center'}, 
 		    {name : 'CHK_OUT_DT', width : 100 , align : 'center'}, 
-		    {name : 'TOT_PERSON', width : 70 , align : 'center'}, 
-		    {name : 'DEP_AMT'   , width : 100  , align : 'center'}, 
-		    {name : 'TOT_AMT'   , width : 100 , align : 'center'}, 
+		    {name : 'TOT_PERSON', width : 70  , align : 'center'}, 
+		    {name : 'DEP_AMT'   , width : 100 , align : 'right'}, 
+		    {name : 'TOT_AMT'   , width : 100 , align : 'right'}, 
 		    {name : 'FLIGHT_OUT', width : 100 , align : 'center'}, 
-		    {name : 'STATE_NM'  , width : 100 , align : 'center', ref : 'linkq'}, 
+		    {name : 'STATE_NM'  , width : 100 , align : 'center', ref : 'linkq'},
+		    {name : 'INV_REG_DT', width : 120 , align : 'center'}, 
 		    {name : 'PROD_SEQ'  , width : 100 , align : 'center', ref : 'linkq', hidden : true} 
 		    ];
 		var gSetting = {
@@ -185,7 +211,9 @@
 				       , "RESERVE_EDDT" : $("#RESERVE_EDDT").val().replaceAll(/\./gi, '')
 				       , "MEM_GBN"      : $("#MEM_GBN option:selected").val()
 				       , "PRC_STS"      : $("#PRC_STS option:selected").val()
+				       , "INVOICE_YN"   : $("#INVOICE_YN").val()
 		               };
+		
 		var param = {"param":formData};
 		fn_ajax(url, true, param, function(data, xhr) {
 		    reloadGrid("quotationGrid", fn_dataSet(data.result));
@@ -231,7 +259,11 @@
 					value = Util.converter.dateFormat1(value);
 				}else if(key == "TOT_PERSON" || key == "DEP_AMT" || key == "TOT_AMT"){
 					value = fn_comma(value);
+				}else if(key == "INV_REG_DT"){
+					if(value != '')
+						value = Util.converter.dateFormat1(value);
 				}
+				
 				obj[key] = value;
 				delete obj;
 			});
@@ -245,7 +277,8 @@
 	}
 	function reservePopup(param) {
 		var url = "/reserve/reserveRegi.do";
-		var pid = "p_reserveRegi"; //팝업 페이지의 취상위 div ID
+		//var pid = "p_reserveRegi"; //팝업 페이지의 취상위 div ID
+		var pid = "p_reserveListRegi"; //팝업 페이지의 취상위 div ID 
 
 		popupOpen(url, pid, param, function(data) {
 			cSearch();

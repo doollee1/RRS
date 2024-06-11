@@ -23,19 +23,22 @@
 	</div>
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
 		<div class="pop_grid_wrap">	
-			<table id="grid_MemberUser"></table>
+			<table id="grid_MemberUser" class="user_info_table"></table>
 			<div id="pager_MemberUser"></div>
 		</div>	
 		<!-- 그리드 끝 -->
 	</div>
 </div>
+<style>
+    td { cursor:pointer; }
+</style>
 <script type="text/javascript">
 $(function() {
 	$('#memberUserPopup').dialog({
 		title:'멤버 회원 정보',
 		autoOpen: false,
 		height: 468,
-		width: 930,
+		width: 1300,
 		modal: true,
 		buttons: {
 			'<s:message code='button.close'/>': {
@@ -73,7 +76,8 @@ $(function() {
 	});
 	
 	$("#btn_memberUserAddPopup").click(function(e) {
-		memberUserPopup();
+		var param = {"RET_YN" : "N"}
+		memberUserPopup(param);
 	});
 });
 
@@ -84,9 +88,11 @@ function grid_MemberUser_Load() {
 		'이름',
 		'영문이름',
 		'전화번호',
+		'이메일',
 		'배우자한글이름',
 		'배우자영문이름',
 		'배우자성별',
+		'배우자전화번호',
 		'탈퇴여부',
 		''
 	];
@@ -96,10 +102,12 @@ function grid_MemberUser_Load() {
 		{ name: 'MEMBER_ID', width: 100, align: 'center' },
 		{ name: 'HAN_NAME', width: 100, align: 'center' },
 		{ name: 'ENG_NAME', width: 100, align: 'center' },
-		{ name: 'TEL_NO', width: 100, align: 'center' },
+		{ name: 'TEL_NO', width: 120, align: 'center' },
+		{ name: 'EMAIL', width: 120, align: 'center' },
 		{ name: 'PARTNER_HAN_NAME', width: 100, align: 'center' },
 		{ name: 'PARTNER_ENG_NAME', width: 100, align: 'center' },
 		{ name: 'PARTNER_GENDER', width: 70, align: 'center' },
+		{ name: 'PARTNER_TEL_NO', width: 120, align: 'center' },
 		{ name: 'RET_YN', width: 50, align: 'center' },
 		{ name: 'CHK', index: 'CHK', width: 50, align: 'center', formatter: gridCboxFormat, sortable: false }
 	];
@@ -107,7 +115,7 @@ function grid_MemberUser_Load() {
 	var gSetting = {
 			height: 277,
 			pgflg:true,
-			exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
+			exportflg : false,  //엑셀, pdf 출력 버튼 노출여부
 			colsetting : false,  // 컬럼 설정 버튼 노출여부
 			searchInit : false,  // 데이터 검색 버튼 노출여부
 			resizeing : true,
@@ -194,24 +202,50 @@ function popupSearch() {
 	var url = '/rrs/selectMemberUserInfo.do';
 	
 	fn_ajax(url, false, sendData, function(data, xhr) {
-		var gridData = data.result;
+		var gridData     = data.result;
 		$('#grid_MemberUser').jqGrid('clearGridData');
 	    $('#grid_MemberUser').jqGrid('setGridParam', {data:gridData});
 	    $('#grid_MemberUser').trigger('reloadGrid');
+	    
 	});
 	setTelNoHypen();
+	setPatnerGender();
 }
 
 function setTelNoHypen() {
 	var rowDataList = $("#grid_MemberUser").getRowData();
 	for(var i=0; i<rowDataList.length; i++) {
-		var convert_TEL_NO = rowDataList[i].TEL_NO.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
+		var convert_TEL_NO = rowDataList[i].TEL_NO.replace(/[^0-9]/gi,"").replace(/^(\d{2,3})(\d{3,4})(\d{4})$/g, "$1-$2-$3").replace(/\-{1,2}$/g,"");
 		$("#grid_MemberUser").jqGrid('setCell', i+1, 'TEL_NO', convert_TEL_NO);
+		
+		var convert_p_TEL_NO = rowDataList[i].PARTNER_TEL_NO.replace(/[^0-9]/gi,"").replace(/^(\d{2,3})(\d{3,4})(\d{4})$/g, "$1-$2-$3").replace(/\-{1,2}$/g,"");
+		$("#grid_MemberUser").jqGrid('setCell', i+1, 'PARTNER_TEL_NO', convert_p_TEL_NO);
 	}
+}
+
+function setPatnerGender() {
+	var url = '/rrs/selectMemCodeInfo.do';
+	var sendData = {'param' : {"HEAD_CD": 500250}};
+	
+	fn_ajax(url, false, sendData, function(data, xhr) {
+		var codeInfo = data.result;
+		var rowDataList = $("#grid_MemberUser").getRowData();
+		
+		for(var i=0; i<rowDataList.length; i++) {			
+			var patnerGender = rowDataList[i].PARTNER_GENDER;
+			
+			$.each(codeInfo, function(index, item){
+				if (patnerGender === item.CODE) {
+					$("#grid_MemberUser").jqGrid('setCell', i+1, 'PARTNER_GENDER', item.CODE_NM);
+				}
+			});	
+		}		
+	});		
 }
 
 function grid1_ondblClickRow(rowid, iRow, iCol, e){
 	var gridData = $("#grid_MemberUser").getRowData(rowid);
+
 	var param = {
 		"MEMBER_ID" : gridData["MEMBER_ID"],
 		"HAN_NAME"  : gridData["HAN_NAME"],
@@ -220,6 +254,7 @@ function grid1_ondblClickRow(rowid, iRow, iCol, e){
 		"PARTNER_HAN_NAME" : gridData["PARTNER_HAN_NAME"],
 		"PARTNER_ENG_NAME" : gridData["PARTNER_ENG_NAME"],
 		"PARTNER_GENDER"   : gridData["PARTNER_GENDER"],
+		"PARTNER_TEL_NO"   : gridData["PARTNER_TEL_NO"],
 		"RET_YN"    : gridData["RET_YN"],
 	};
 	memberUserPopup(param);
@@ -258,8 +293,12 @@ function deleteMemberUser() {
 		var param = {"gridData" : gridData};
 		
 		fn_ajax(url, false, param, function(data, xhr){
-			alert("삭제하였습니다.");
-			popupSearch();
+			if (data.isExistUserMember == 'Y') {
+				alert("회원정보가 있습니다. 탈퇴로 변경 부탁드립니다");
+			} else {
+				alert("삭제하였습니다.");
+				popupSearch();
+			}
 		});
 	}
 }

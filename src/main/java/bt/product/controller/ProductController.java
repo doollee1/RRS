@@ -54,6 +54,10 @@ public class ProductController {
 		BMap param2 = new BMap();
 		param2.put("HEAD_CD", 500000);
 		model.addAttribute("hdng"  , productService.selectGetCommonCode(param2));
+
+		BMap param3 = new BMap();
+		param3.put("HEAD_CD", 500220);
+		model.addAttribute("prodcond"  , productService.selectGetCommonCode(param3));
 		
 		return "/popup/ProductDetailPopUp";
 	}

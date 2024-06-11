@@ -241,13 +241,13 @@ function chk_initialpw(){
                                     <td align="center"><input type="password" id="PASSWORD" name="PASSWORD" class="idpwInput" style="width:340px;" placeholder="Password" tabindex="2" onKeyPress="if(event.keyCode == 13) javascript:login();" />
                                     </td>
                                 </tr>
-                                <tr>
+                                <%-- <tr>
                                     <td>
 	                                    <input type="hidden" id="RSAModulus" value="${RSAModulus}"/>
 	        							<input type="hidden" id="RSAExponent" value="${RSAExponent}"/>
 	        							<input type="hidden" id="Language" name="Language" value="KO"/>
                                     </td> 
-                                </tr>
+                                </tr> --%>
                                  <tr>
                                     <td>
 	                                    <input type="hidden" id="RSAModulus" value="${RSAModulus}"/>
