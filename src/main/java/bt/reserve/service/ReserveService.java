@@ -88,6 +88,24 @@ public class ReserveService {
 		return result;
 	}
 	
+	
+	/**
+	 * 예약상세유무 조회 서비스
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public String selectReserveDetlYn(BMap param) throws Exception {
+		
+		logger.info("======= 예약상세유무 조회 서비스 ==========");
+		
+		int detailCnt = reserveDao.reserveSelectAddListCnt(param);
+		logger.info("===== 예약상세갯수 : "+detailCnt);
+		
+		return detailCnt > 0? "Y" : "N";
+	}
+	
 	/**
 	 * 공통코드 리스트 조회
 	 * @param param

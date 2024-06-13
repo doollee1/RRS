@@ -1236,7 +1236,31 @@ $(function() {
 		$("#BAL_AMT").val(fn_comma(bal_amt));
 	});
 	
+	
+	//인보이스 생성
 	$("#btn_create").click(function() {
+		
+		console.log("====== 인보이스 생성버튼 클릭 ======")
+		
+		//예약상세 여부 확인
+		console.log("====== 예약상세여부 확인 ======")
+		var url3 = "/reserve/selectReserveDetlYn.do";
+		var param3 = {
+			"SEQ" : seq, 	
+			"REQ_DT" : req_dt
+		};
+		
+		fn_ajax(url3, false, param3, function(data, xhr) {
+			
+			console.log("=== 예약상세여부 : "+data.result)
+			if(data.result == "N") {
+				
+				alert("동반자 정보가 없습니다.");
+				return false;
+			}			
+		});
+		
+		
 		var url = "/reserve/InvoicePopup.do";
 		var pid = "p_invoicePopup";
 		var param = {
@@ -1274,7 +1298,7 @@ $(function() {
 				errChk++;
 				return false;
 			} else  {
-				alert("날짜입력오류");
+				alert("체크인, 체크아웃 날짜확인후 저장버튼을 클릭해주세요.");
 				errChk++;
 				return false;
 			}

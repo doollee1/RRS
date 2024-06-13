@@ -105,6 +105,33 @@ public class ReserveRestController {
 	
 	
 	/**
+	 * 예약상세유무 조회
+	 * 
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/selectReserveDetlYn.do", method = RequestMethod.POST)
+	public BRespData selectReserveDetlYn(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		
+		logger.info("======= 예약상세유무 조회  ==========");
+		
+		BMap paramData = new BMap();
+		paramData.put("SEQ"  	   , (String) reqData.get("SEQ"));
+		paramData.put("REQ_DT"	   , (String) reqData.get("REQ_DT"));
+		
+		String result = reserveService.selectReserveDetlYn(paramData);
+		logger.info("===== 예약상세유무 : "+result);
+		
+		BRespData respData = new BRespData();
+		respData.put("result", result);
+		
+		return respData;
+	}
+	
+	
+	/**
 	 * 인보이스 현황 리스트 조회
 	 * @param reqData
 	 * @param req
