@@ -252,7 +252,7 @@ $(function() {
 						      }
 						  }
 						, { name: 'ITEM_CD',  width : 120, align: 'left'   , editable:true , edittype:"select", formatter : "select"}
-						, { name: 'ITEM_NM',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'ITEM_NM',  width : 150, align: 'left' , editable:true, editoptions:{maxlength:100}}
 						, { name: 'AMT_SIGN', width : 50 , align: 'center' , editable:true, edittype:"select" ,  editoptions:{value:{"￦" : "￦"}}} 
 						, { name: 'PER_AMT',  width : 70 , align: 'right' , editable:true, formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{    
 				            dataInit: function(element) {

@@ -10,33 +10,43 @@
 .pbtn_default {margin: 0 3px -1px 5px;padding: 3px 10px 3px 10px;border: 1px solid #a9cbeb !important;background: #bdd6ee !important;color: #2269b1;}
 </style>
 <div id="p_searchIdPopup">
-	<div id="pop_ct_form_wrap">
-		<table class="pop_tblForm">
-			<colgroup>
-				<col width="20%" />
-		        <col width="30%" />
-		        <col width="20%" />
-		        <col width="30%" />
-		    </colgroup>
-			<tr>
-			    <th>멤버구분</th>
-			    <td>
-				    <select id="POP_MEM_GBN" name="POP_MEM_GBN" class="cmc_combo" style="width:62%;">
-					    <option value="">--<s:message code='system.select'/>--</option>
-					    <option value="01">멤버</option>
-					    <option value="02">일반</option>
-					    <option value="03">교민</option>
-					</select>
-				</td>
-				<th>아이디</th>
-			    <td>
-				    <select id="SEL_USER_ID" name="SEL_USER_ID" class="cmc_combo" style="width:62%;">
-					</select>
-			        <!-- <input type="text" id="INP_USER_ID" name="INP_USER_ID" value="" style="display: none;"> -->
-				</td>
-			</tr>
-		</table>
+	<!-- Search condition start -->
+	<form id="frmSearch">
+		<input type="hidden"  name="CURRENT_PAGE"  id="CURRENT_PAGE" />
+		<input type="hidden"  name="ROWS_PER_PAGE"  id="ROWS_PER_PAGE" />
+		<!------------->
+		<div class="tab_top_search">
+			<table>
+				<tbody>
+					<tr>
+						<td class="small_td"><p>회원구분</p></td>
+						<td class="medium_td">
+							<select id="S_MEM_GBN" name="S_MEM_GBN" class="cmc_combo" style="width:150px;">
+								<option value="">전체</option>
+								<c:forEach var="i" items="${mem_gbn}">
+							    	<option value="${i.CODE}">${i.CODE_NM}</option>
+						    	</c:forEach>
+							</select>
+						</td>
+						<td class="small_td"><p><s:message code='system.UserID'/></p></td>
+						<td class="medium_td"><input type="text" id="S_USER_ID" name="S_USER_ID" class="cmc_txt" maxlength="20" noSpecial /></td>
+						<td class="small_td"><p><s:message code='system.Username'/></p></td>
+						<td class="medium_td"><input type="text" id="S_USER_NM" name="S_USER_NM" class="cmc_txt" maxlength="30" noSpecial /></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<!-------------->	
+	</form>
+	<!-- Search condition end -->
+	
+	
+	<!-- grid start -->
+	<div id="ctm_mg_wrap">
+		<table id="grid1" class="user_info_table"></table>
+		<div id="grid1_pager"></div>
 	</div>
+	<!-- grid end -->
 </div>
 
 <script type="text/javascript">
@@ -47,15 +57,14 @@ $(function() {
 	$('#p_searchIdPopup').dialog({
 		title :'<s:message code='reservation.searchId'/>',
 		autoOpen : false,
-		height: 'auto',
+		height: 470,
 		width: 1076.4,
 		modal : true,
 		buttons : {
-			'<s:message code='reservation.chgState'/>' : {
-				text: '<s:message code='button.save'/>',
-				id : 'save',
+			'<s:message code='button.search'/>' : {
+				text: '<s:message code='button.search'/>',
 				click: function() {
-					saveSetId();
+					cSearch();
 				}
 			},
 			'<s:message code='button.close'/>' : {
@@ -69,94 +78,117 @@ $(function() {
 			popupClose($(this).attr('id')); /* 필수로 들어가야함 */
 		},
 		open : function() {
-			cSearch();
-		}
-	});
-	
-	
-	function cSearch(receivcedData){
-		var url = "/reserve/selectSearchId.do";
-		var param = {
-				    };
-		fn_ajax(url, true, param, function(data, xhr){
-			if(data.MESSAGE != "OK"){
-				alert("ajax 통신 error!");
-			}else{
-				fn_dataSet(data.result);
-			}
-		});
-	}
-	
-	function fn_dataSet(data){
-		var vhtml;
-		vhtml = '<option value="00" >--<s:message code="system.select"/>--</option>';
-		if(!fn_empty(data)){
-			$.each(data , function( i , v){
-				vhtml += '<option value = '+v.USER_ID+' mem_gbn = '+v.MEM_GBN+' eng_name = '+v.ENG_NAME+' han_name = '+v.HAN_NAME+' tel_no = '+v.TEL_NO+'>'+v.USER_ID+'</option>';
-			});
-		}
-		$("#SEL_USER_ID").append(vhtml);
-		$("#SEL_USER_ID option").hide();
-		$("#SEL_USER_ID option[value='00']").show();
-	}
-	
-	function saveSetId(){
-		if(!isValidation())return;
-		var url = "/reserve/insertReserve.do";
-		var param = {"REQ_DT"      : today
-				   , "USER_ID"     : $("#SEL_USER_ID").val()
-				   , "MEM_GBN"     : $("#SEL_USER_ID option:selected").attr("mem_gbn")
-				   , "ENG_NAME"    : $("#SEL_USER_ID option:selected").attr("eng_name")
-				   , "HAN_NAME"    : $("#SEL_USER_ID option:selected").attr("han_name")
-				   , "TEL_NO"      : $("#SEL_USER_ID option:selected").attr("tel_no")
-				    };
-		if(confirm("<s:message code='confirm.save'/>")){
-			fn_ajax(url, true, param, function(data, xhr){
-				if(data.result.resultCd != '0000'){
-					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
-				}else{
-					alert("<s:message code='info.save'/>");
-					p_rtnData = {"REQ_DT"  : param.REQ_DT
-							   , "USER_ID" : param.USER_ID
-							   , "SEQ"     : data.result.SEQ };
-					popupClose($('#p_searchIdPopup').data('pid'));
-				}	
-			});
-		}
-	}
-	
-	function isValidation(){
-		var mem_gbn = $("#POP_MEM_GBN").val();
-		if(fn_empty(mem_gbn)){
-			alert("멤버구분을 선택해주세요.");
-			return false;
-		}
-		
-		var selUsrid = $("#SEL_USER_ID").val();
-		if(mem_gbn == "01" || mem_gbn == "02"){
-			if(fn_empty(selUsrid)){
-				alert("아이디를 선택해주세요.");
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	$("#POP_MEM_GBN").on("change", function(){
-		var val = $(this).val();
-		if(!fn_empty(val)){
-			$('#SEL_USER_ID option').hide();
-			$('#SEL_USER_ID option[mem_gbn='+ val +']').show();
-			$('#SEL_USER_ID option[mem_gbn='+ val +']:eq(0)').prop("selected" , true);
+			createGrid1();
 			
-		}else{
-			$('#SEL_USER_ID option').hide();
-			$('#SEL_USER_ID option[value=00]').show();
-			$('#SEL_USER_ID').val('00');
-			$("#SEL_USER_ID").show();
+			/* grid1 Event */
+			$('#grid1').jqGrid('setGridParam', {
+				ondblClickRow: function(rowid, iRow, iCol, e) {
+					grid1_ondblClickRow(rowid, iRow, iCol, e);
+				}
+			});
+			
+			$('#S_USER_ID').on('keypress', function (e) {
+				if(e.which == 13){
+					cSearch(null)
+				}
+			});
+			
+			$('#S_USER_NM').on('keypress', function (e) {
+				if(e.which == 13){
+					cSearch(null)
+				}
+			});
 		}
 	});
+	
+	
 });
+
+function createGrid1(){
+	var colName = [
+		'순번',
+		'회원구분',
+		'이름',
+		'영문이름',
+		'전화번호',
+		'ID',
+		'Email',
+		'',
+		'회원구분'
+	]
+	var colModel = [
+		{ name: 'ROWNUM', width: 100, align: 'center' },
+		{ name: 'MEM_NM', width: 100, align: 'center' },
+		{ name: 'HAN_NAME', width: 100, align: 'center' },
+		{ name: 'ENG_NAME', width: 100, align: 'center' },
+		{ name: 'TEL_NO', width: 100, align: 'center' },
+		{ name: 'USER_ID', width: 100, align: 'center' },
+		{ name: 'EMAIL', width: 100, align: 'center' },
+		{ name: 'CHK', index: 'CHK', width: 50, align: 'center', formatter: gridCboxFormat, sortable: false },
+		{ name: 'MEM_GBN', width : 0  , align : 'center', hidden:true }
+	]
+	
+	var gSetting = {
+			height:"300",
+			pgflg:true,
+			exportflg : false,  //엑셀, pdf 출력 버튼 노출여부, td 태그안에 체크박스가 들어가 있어 pdf 생성시 에러발생
+			colsetting : false,  // 컬럼 설정 버튼 노출여부
+			searchInit : false,  // 데이터 검색 버튼 노출여부
+			resizeing : true,
+			rownumbers:false,
+			shrinkToFit: true,
+			autowidth: true,
+			queryPagingGrid:true // 쿼리 페이징 처리 여부				
+	};
+	
+	btGrid.createGrid('grid1', colName, colModel, gSetting);
+	btGrid.gridResizing('grid1');
+}
+
+function cSearch(currentPage){
+	var vCurrentPage = 1;
+	var vRowsPerPage;
+	if(!fn_empty(currentPage)){
+		vCurrentPage = currentPage;
+	} else if(!fn_empty($('#CURRENT_PAGE').val())) {
+		vCurrentPage = $('#CURRENT_PAGE').val();
+	} else {
+		vCurrentPage = 1;
+	}
+	vRowsPerPage = btGrid.getGridRowSel('grid1_pager');
+	$('#CURRENT_PAGE').val(vCurrentPage);
+	$('#ROWS_PER_PAGE').val(vRowsPerPage);
+	
+	var url = "/rrs/selectUserInfo.do";
+	
+	var formData = formIdAllToMap('frmSearch');
+	var param = {"param":formData};
+	
+	fn_ajax(url, false, param, function(data, xhr){
+		reloadGrid("grid1", data.result);
+		btGrid.gridQueryPaging($('#grid1'), 'cSearch', data.result);
+	});
+	setTelNoHypen();
+}
+
+function grid1_ondblClickRow(rowid, iRow, iCol, e){
+	var gridData = $("#grid1").getRowData(rowid);
+	p_rtnData = {
+		"USER_ID"    : gridData["USER_ID"],
+		"MEM_GBN"    : gridData["MEM_GBN"],
+		"REQ_HAN_NM" : gridData["HAN_NAME"],
+		"REQ_ENG_NM" : gridData["ENG_NAME"],
+		"REQ_TEL_NO" : gridData["TEL_NO"],
+	};
+	popupClose($('#p_searchIdPopup').data('pid'));
+}
+
+function setTelNoHypen() {
+	var rowDataList = $("#grid1").getRowData();
+	for(var i=0; i<rowDataList.length; i++) {
+		var convert_TEL_NO = rowDataList[i].TEL_NO.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
+		$("#grid1").jqGrid('setCell', i+1, 'TEL_NO', convert_TEL_NO);
+	}
+}
 
 </script>

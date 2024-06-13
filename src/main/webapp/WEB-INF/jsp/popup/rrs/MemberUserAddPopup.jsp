@@ -179,35 +179,35 @@ function saveMemberUserInfo(){
 	var formData = formIdAllToMap('frmMemberUserInfo');
 	
 	// validation check
-	if(formData.MEMBER_ID === "") {
+	if($('#MEMBER_ID').val() === "") {
 		alert("맴버ID를 입력해주세요.");
 		return;
 	}
-	if(!(/^[a-zA-Z]+[0-9]{4}$/).test(formData.MEMBER_ID)) {
+	if(!(/^[a-zA-Z]+[0-9]{4}$/).test($('#MEMBER_ID').val())) {
 		alert("멤버번호는 알파벳 1자리+숫자 4자리로 입력해주세요.");
 		return;
 	}
-	if(formData.HAN_NAME === "") {
+	if($('#HAN_NAME').val() === "") {
 		alert("이름을 입력해주세요.");
 		return;
 	}
-	if(formData.ENG_NAME === "") {
+	if($('#ENG_NAME').val() === "") {
 		alert("영문이름을 입력해주세요.");
 		return;
 	}
-	if(formData.TEL_NO === "") {
+	if($('#TEL_NO').val() === "") {
 		alert("전화번호를 입력해주세요.");
 		return;
 	}
-	if(formData.RET_YN == "") {
+	if($('#RET_YN').val() == "") {
 		alert("탈퇴여부를 선택해주세요.");
 		return;
 	}
 	
 	// delete hypen
-	formData.TEL_NO = formData.TEL_NO.replace(/-/g, '');
-	formData.Ex_TEL_NO = formData.Ex_TEL_NO.replace(/-/g, '');
-	formData.PARTNER_TEL_NO = formData.PARTNER_TEL_NO.replace(/-/g, '');
+	formData.TEL_NO    = $('#TEL_NO').val().replace(/-/g, '');
+	formData.Ex_TEL_NO = $('#Ex_TEL_NO').val().replace(/-/g, '');
+	formData.PARTNER_TEL_NO = $('#PARTNER_TEL_NO').val().replace(/-/g, '');
 
 	var param = {"param" : formData};
 	var url = "/rrs/saveMemberUserInfo.do"

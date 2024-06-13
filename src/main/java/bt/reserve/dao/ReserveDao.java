@@ -43,6 +43,39 @@ public class ReserveDao extends DBAbstractMapper {
 	public List<CodeVO>  selectGetCommonCode1(BMap param) throws Exception{
 		return list("ReserveMapper.selectGetCommonCode1", param);
 	}
+
+	/**
+	 * 공통코드 리스트 가져오기2
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<CodeVO>  selectGetCommonCode2(BMap param) throws Exception{
+		return list("ReserveMapper.selectGetCommonCode2", param);
+	}
+
+//	/**
+//	 * 공통코드 리스트 가져오기3
+//	 * @param param
+//	 * @return
+//	 * @throws Exception
+//	 */
+//	@SuppressWarnings("unchecked")
+//	public List<CodeVO>  selectGetCommonCode3(BMap param) throws Exception{
+//		return list("ReserveMapper.selectGetCommonCode3", param);
+//	}
+
+	/**
+	 * 공통코드 리스트 가져오기3
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> selectGetCommonCode3(BMap param) throws Exception{
+		return list("ReserveMapper.selectGetCommonCode3", param);
+	}
 	
 	/**
 	 * 예약현황 상세조회
@@ -53,7 +86,37 @@ public class ReserveDao extends DBAbstractMapper {
 	public BMap reserveSelectDetail(BMap param) throws Exception {
 		return (BMap) selectByPk("ReserveMapper.reserveSelectDetail", param);
 	}
-	
+
+	/**
+	 * 예약현황 상세  리스트(그리드) 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public int reserveSelectAddListCnt(BMap param) throws Exception{
+		return(int)selectByPk("ReserveMapper.reserveSelectAddListCnt", param);
+	}
+
+	/**
+	 * 예약현황 상세  리스트(그리드) 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public void firstReserveSelectAddList(BMap param) throws Exception {
+		insert("ReserveMapper.firstReserveSelectAddList", param);
+	}
+
+	/**
+	 * 예약현황 상세  리스트(그리드) 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> reserveSelectAddList(BMap param) throws Exception {
+		return list("ReserveMapper.reserveSelectAddList", param);
+	}
 	
 	/**
 	 * 인보이스 현황 리스트 조회
@@ -481,5 +544,71 @@ public class ReserveDao extends DBAbstractMapper {
 	public void deletenoRoomInfo(BMap param) throws Exception{
 		delete("ReserveMapper.deletenoRoomInfo", param);
 		
+	}
+
+	/**
+	 * 예약등록 디테일 등록(insert , update)
+	 * @param param
+	 * @throws Exception
+	 */
+	public void addReserveDetail(BMap param) throws Exception{
+		insert("ReserveMapper.addReserveDetail", param);
+	}
+
+	/**
+	 * 예약등록 디테일 수정
+	 * @param param
+	 * @throws Exception
+	 */
+	public void updateReserveDetailInfo(BMap param) throws Exception{
+		update("ReserveMapper.updateReserveDetailInfo", param);
+	}
+	
+	
+	/**
+	 * 일반 패키지비 계산
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap selectPackageCharge(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.selectPackageCharge", param);
+	}
+	
+	
+	/**
+	 * 멤버 숙박비 계산
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap selectMemRoomChargeCalc(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.selectMemRoomChargeCalc", param);
+	}
+	
+	
+	/**
+	 * 비라운딩, 소아 추가숙박비 계산
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap selectNokidChargeCalc(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.selectNokidChargeCalc", param);
+	}
+	
+	
+	/**
+	 * 인보이스 코드정보 조회
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap selectInvoiceCodeInfo(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.selectInvoiceCodeInfo", param);
 	}
 }

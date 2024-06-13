@@ -24,7 +24,13 @@
 				<tbody>
 					<tr>  
 					    <td class="small_td"><p style="margin:0 0 4px 18px">조회기간</p></td>
-						<td class="medium_td" style="display:flex">
+					    <td class="small_td" style="text-align:center;">
+					    	<select id="S_DATE_GBN" name="S_DATE_GBN" class="cmc_combo" style="width:100px;">
+					    		<option value="S_REQ">예약일자</option>
+					    		<option value="S_CHK_IN">체크인</option>
+					    	</select>
+					    </td>
+						<td class="medium_td" style="display:flex; margin-top:3px;">
 						    <input type="text" name="FROM_DT" id="FROM_DT" data-type="date" style="text-align:center; width:90px; float:left; "/>
 						    <div style="margin:0 10px 0 10px;">-</div>
 						    <input type="text" name="TO_DT" id="TO_DT" data-type="date" style="text-align:center; width:90px; float:left;"/>
@@ -51,7 +57,9 @@
 	</div>
 	<div id="ctm_mg_wrap">
 		<div class="ct_grid_top_wrap">
-			<div class="ct_grid_top_left"><h4>예약 라운딩</h4></div>
+			<div class="ct_grid_top_left" style="display:flex; justify-content:space-between;padding:10px 0; height:25px;">
+				<h4 style="margin:0;">예약 라운딩</h4>
+				<button class="cBtnclass cBtnSave_style" id="cBtnSave" type="button" onclick="cSave();">저장</button></div>
 			<div class="ct_grid_top_right"></div>
 		</div>
 		<div class="ctu_g_wrap" id="dayTable" style= width:100%; float:left; padding-top:0px; overflow:auto;">
@@ -85,11 +93,14 @@
   * ===============================
 --%>
 	//초기 날짜 세팅값
-	var origin_FROM_DT = '';	
-	var origin_TO_DT   = '';
+	var origin_FROM_DT    = '';	
+	var origin_TO_DT      = '';
+	var origin_CHK_IN_DT  = '';
+	var origin_CHK_OUT_DT = '';
 	var selectNum  = "";		// 선택 그리드 순번
 	
 	$(function() {
+		setCommBtn("Save", false);
 		fn_Init(); //초기 로드
 	});
 	
@@ -359,9 +370,6 @@
 			$.jgrid.gridUnload("#reserveReportGrid");	// grid 초기화
 			viewGrid(FROM_DT, TO_DT);
 		}
-		// 월별 그리드 조회 기간에 맞게 다시 셋팅
-		$.jgrid.gridUnload("#reserveDayReportGrid");
-		createreserveDayReportGrid(FROM_DT, TO_DT);
 
 		fn_ajax(url, true, param, function(data, xhr) {
 		    reloadGrid("reserveReportGrid", fn_dataSet(data.result));
@@ -379,11 +387,10 @@
 				const reservationDayList = data.result[i].dayOfReservation;
 				if(reservationDayList.length > 0) {
 					for(let j=0; j<reservationDayList.length; j++) {
-						const ym  = Number(reservationDayList[j].BAS_YM);
-						const day = Number(reservationDayList[j].DD);
+						const dt  = Number(reservationDayList[j].BAS_DT);
 						const numOfPerson = reservationDayList[j].PER_STR;		
 						
-						dayWeek += "day" + ym + day.toString().padStart(2 , '0') + "/" + numOfPerson + ",";
+						dayWeek += "day" + dt + "/" + numOfPerson + ",";
 					}
 
 				}
@@ -395,13 +402,27 @@
 	// 조회내역 그리드 클릭 이벤트
 	function grid1_onCilckRow(e, rowid, status){
 		selectNum = rowid;	// 선택 그리드 순번
+		origin_CHK_IN_DT  = $('#reserveReportGrid').jqGrid('getRowData',rowid).CHK_IN_DT;
+		origin_CHK_OUT_DT = $('#reserveReportGrid').jqGrid('getRowData',rowid).CHK_OUT_DT;
 		
-		DayGridSet();
+		$.jgrid.gridUnload("#reserveDayReportGrid");
 		
-		var dayArr = ($('#reserveReportGrid').jqGrid('getRowData',rowid).DAYWEEK).split(",");
-		for(var i=0; i<dayArr.length; i++) {
-			var sDay = dayArr[i].split("/");
-			$('#reserveDayReportGrid').jqGrid('setCell', 0, sDay[0], sDay[1]);
+		if (($('#reserveReportGrid').jqGrid('getRowData',rowid).CHK_IN_DT != "") && ($('#reserveReportGrid').jqGrid('getRowData',rowid).CHK_OUT_DT != "")) {
+			// 월별 그리드 조회 기간에 맞게 다시 셋팅
+			createreserveDayReportGrid(origin_CHK_IN_DT, origin_CHK_OUT_DT);
+			$("#reserveDayReportGrid").jqGrid("addRowData", 0, {}, 'first'); 
+
+			var dayArr = ($('#reserveReportGrid').jqGrid('getRowData',rowid).DAYWEEK).split(",");
+			for(var i=0; i<dayArr.length; i++) {
+				var sDay = dayArr[i].split("/");
+				$('#reserveDayReportGrid').jqGrid('setCell', 0, sDay[0], sDay[1]);
+			}	
+			
+			// 주말 음영 처리
+			const weekendOfMonth = getWeekendOfMonth(origin_CHK_IN_DT, origin_CHK_OUT_DT);
+			for(let j=0; j<weekendOfMonth.length; j++) {
+				$('#reserveDayReportGrid').jqGrid('setCell', 0, "day"+weekendOfMonth[j], "", {'background-color':'#FFCB9E'});
+			}
 		}	
 	}
 	
@@ -428,14 +449,15 @@
 		gridData.push($("#reserveDayReportGrid").getRowData(0));
 		
 		const url = '/reserve/saveReserveList.do';
-		const param = {"param":{"FROM_DT"  : $("#FROM_DT").val().replaceAll(/\./gi, ''),
-					   "TO_DT"    : $("#TO_DT").val().replaceAll(/\./gi, ''),
+		const param = {"param":{"FROM_DT"  : origin_CHK_IN_DT.replaceAll(/\./gi, ''),
+					   "TO_DT"    : origin_CHK_OUT_DT.replaceAll(/\./gi, ''),
 					   "REQ_DT"   : $("#reserveReportGrid").getRowData(selectNum).REQ_DT.replaceAll(/\./gi, ''),
 					   "REQ_SEQ"  : $("#reserveReportGrid").getRowData(selectNum).SEQ,
 					   "gridData" : gridData}
 					   };
 		
 		fn_ajax(url, false, param, function(data, xhr){
+			alert("저장하였습니다.");
 			cSearch();
 		}); 
 	}

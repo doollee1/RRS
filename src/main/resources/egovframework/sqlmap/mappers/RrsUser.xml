@@ -14,6 +14,7 @@
 			  ,EMAIL
 			  ,PASSWD
 			  ,RET_YN
+			  ,PERINFO_AGREE_YN
 			  ,REG_ID
 			  ,REG_DTM
 			  ,UPD_ID
@@ -80,6 +81,7 @@
 					,MEMBER_ID
 					,EMAIL
 					,PASSWD
+					,PERINFO_AGREE_YN
 					,RET_YN
 					,REG_ID
 					,REG_DTM
@@ -94,6 +96,7 @@
 					,#{MEMBER_ID}
 					,#{EMAIL}
 					,#{PASSWD}
+					,#{PERINFO_AGREE_YN}
 					,'N'
 					,#{LOGIN_USER}
 					,NOW()
@@ -110,6 +113,7 @@
 			  ,MEMBER_ID = #{MEMBER_ID}
 			  ,EMAIL     = #{EMAIL}
 			  ,PASSWD    = #{PASSWD}
+			  ,PERINFO_AGREE_YN = #{PERINFO_AGREE_YN}
 			  ,RET_YN    = #{RET_YN}
 			  ,UPD_ID    = #{LOGIN_USER}
 			  ,UPD_DTM   = NOW()

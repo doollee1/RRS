@@ -90,20 +90,24 @@
 		ON T1.REQ_DT = T2.REQ_DT AND T1.SEQ = T2.REQ_SEQ
 		LEFT JOIN tb_prod_info T3
 		ON T1.BAS_YY = T3.BAS_YY AND T1.PROD_SEQ = T3.PROD_SEQ
+		<if test='S_DATE_GBN == "S_REQ"'>
+		WHERE T1.REQ_DT BETWEEN #{FROM_DT} AND #{TO_DT}
+		</if>
+		<if test='S_DATE_GBN == "S_CHK_IN"'>
 		WHERE T1.CHK_IN_DT BETWEEN #{FROM_DT} AND #{TO_DT}
+		</if>
+		
     <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
 	
 	<select id="selectListNumberOfReserveInMonth" parameterType="BMap" resultType="BMap">
-		SELECT
-			REQ_DT
-			,REQ_SEQ
-			,BAS_YM
-			,DD
-			,PER_STR
+		SELECT REQ_DT
+			 , REQ_SEQ
+			 , BAS_DT
+			 , PER_STR
 		FROM TB_REQ_R_PLAN
-		WHERE REQ_DT = #{REQ_DT}
-		AND REQ_SEQ = #{REQ_SEQ}
+		WHERE REQ_DT  = #{REQ_DT}
+		  AND REQ_SEQ = #{REQ_SEQ}
 	</select>
 	
 	<select id="selectInfoNumberOfReserve" parameterType="BMap" resultType="BMap">
@@ -131,8 +135,7 @@
 		INSERT INTO TB_REQ_R_PLAN
 			      ( REQ_DT
 			      , REQ_SEQ
-			      , BAS_YM
-			      , DD
+			      , BAS_DT
 			      , PER_STR
 			      , REG_DTM
 			      , REG_ID
@@ -143,8 +146,7 @@
 		   <foreach collection="list" item="item" separator=",">
 		   		  (#{item.REQ_DT}
 		   		  ,#{item.REQ_SEQ}
-		   		  ,#{item.BAS_YM}
-		   		  ,#{item.DD}
+		   		  ,#{item.BAS_DT}
 		   		  ,#{item.PER_STR}
 		   		  ,NOW()
 		   		  ,#{item.LOGIN_USER}
@@ -157,6 +159,6 @@
 		DELETE FROM TB_REQ_R_PLAN
 		 WHERE REQ_DT  = #{REQ_DT}
 		   AND REQ_SEQ = #{REQ_SEQ}
-		   AND CONCAT(BAS_YM, DD) BETWEEN #{FROM_DT} AND #{TO_DT}
+		   AND BAS_DT BETWEEN #{FROM_DT} AND #{TO_DT}
 	</delete>
 </mapper>

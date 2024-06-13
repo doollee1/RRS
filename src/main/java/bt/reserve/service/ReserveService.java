@@ -23,25 +23,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 
-import bt.btframework.common.vo.CodeVO;
-import bt.btframework.utils.BMap;
-import bt.btframework.utils.LoginInfo;
-import bt.reserve.dao.ReserveDao;
 import bt.btframework.common.FileManager;
 import bt.btframework.common.fileupload.FileExtFilter;
 import bt.btframework.common.fileupload.FileMaxUploadFilter;
 import bt.btframework.common.fileupload.FileTransferManager;
+import bt.btframework.common.vo.CodeVO;
+import bt.btframework.utils.BMap;
+import bt.btframework.utils.LoginInfo;
 import bt.btframework.utils.StringUtils;
 import bt.common.service.FileService;
-import egovframework.rte.fdl.property.EgovPropertyService;
+import bt.reserve.dao.ReserveDao;
 
 @Service
 @PropertySource("classpath:/egovframework/properties/common.properties")
@@ -67,6 +66,26 @@ public class ReserveService {
 	 */
 	public List<BMap> reserveSelectList(BMap param) throws Exception {
 		return reserveDao.reserveSelectList(param);
+	}
+
+	/**
+	 * 예약현황 현황 리스트(그리드) 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> reserveSelectAddList(BMap param) throws Exception {
+		
+		logger.info("======= 예약현황 현황 리스트(그리드) 조회 ==========");
+	    List<BMap> result = null; 
+		int detailCnt = reserveDao.reserveSelectAddListCnt(param);
+		if(detailCnt == 0){
+		    result = reserveDao.reserveSelectAddList(param);
+		}else{
+		    result = reserveDao.reserveSelectAddList(param);
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -98,7 +117,83 @@ public class ReserveService {
 		}
 		return resultValue;
 	}
-	
+
+	/**
+	 * 공통코드 리스트 조회2
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public String selectGetCommonCode2(BMap param) throws Exception {
+		List<CodeVO> codeList = reserveDao.selectGetCommonCode2(param);
+		
+		String resultValue = "";
+		for (int i=0; i<codeList.size(); i++) {
+			if (i == 0) {
+				resultValue += "" + ":" + "-선택-";
+				resultValue += ";" + codeList.get(i).getCode() + ":" + codeList.get(i).getValue();
+			} else {
+				resultValue += ";" + codeList.get(i).getCode() + ":" + codeList.get(i).getValue();
+			}
+		}
+		return resultValue;
+	}
+
+//	public String selectGetCommonCode3(BMap param) throws Exception {
+////		List<CodeVO> codeList = reserveDao.selectGetCommonCode3(param);
+////		
+////		String resultValue = "";
+////		for (int i=0; i<codeList.size(); i++) {
+////			if (i == 0) {
+////				resultValue += "" + ":" + "-선택-";
+////				resultValue += ";" + codeList.get(i).getCode() + ":" + codeList.get(i).getValue();
+////			} else {
+////				resultValue += ";" + codeList.get(i).getCode() + ":" + codeList.get(i).getValue();
+////			}
+////		}
+////		return resultValue;
+//		return reserveDao.selectGetCommonCode3(param);
+//	}
+
+	/**
+	 * 공통코드 리스트 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> selectGetCommonCode3(BMap param) throws Exception {
+		return reserveDao.selectGetCommonCode3(param);
+	}
+
+	public String selectGetCommonCodeHH(BMap param) throws Exception {
+		
+		String resultValue = "";
+		for (int i=0; i<24; i++) {
+			if (i == 0) {
+				resultValue += "" + ":" + "-선택-";
+				resultValue += ";00" + ":" + "00";
+			} else {
+				if (i < 10) {
+					resultValue += ";0" + i + ":0" + i;
+				}else{
+					resultValue += ";" + i + ":" + i;
+				}
+			}
+		}
+		return resultValue;
+	}
+
+	public String selectGetCommonCodeCom_Gbn(BMap param) throws Exception {
+		
+		String resultValue = "";
+		
+		resultValue += "" + ":" + "-선택-";
+		resultValue += ";1" + ":" + "예약자";
+		resultValue += ";2" + ":" + "동반자";
+		
+		return resultValue;
+	}
+
 	/**
 	 * 예약현황 상세 조회
 	 * @param param
@@ -108,6 +203,26 @@ public class ReserveService {
 	public BMap reserveSelectDetail(BMap param) throws Exception {
 		
 		return reserveDao.reserveSelectDetail(param);
+	}
+
+	/**
+	 * 예약현황 상세  리스트(그리드) 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> firstReserveSelectAddList(BMap param) throws Exception {
+		
+		logger.info("======= 예약현황 상세  리스트(그리드) 조회 ==========");
+	    List<BMap> result = null; 
+		int detailCnt = reserveDao.reserveSelectAddListCnt(param);
+		if(detailCnt == 0){
+		    result = reserveDao.reserveSelectAddList(param);
+		}else{
+		    result = reserveDao.reserveSelectAddList(param);
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -119,12 +234,149 @@ public class ReserveService {
 	public List<BMap> invoiceSelectList(BMap param) throws Exception {
 		
 		logger.info("======= 인보이스 현황 리스트 조회 ==========");
+		
 	    List<BMap> result = null; 
 		int detailCnt = reserveDao.selectInvoiceListCnt(param);
 		if(detailCnt == 0){
-		    reserveDao.firstInvoiceSelectList(param);
+			
+			//기존로직
+		    //reserveDao.firstInvoiceSelectList(param);
+			//result = reserveDao.invoiceSelectList(param);
+			
+			/* 신규로직 : 20240612 */
+			BMap resultDeptDetail = reserveDao.reserveSelectDetail(param); 
+			
+			String reqDt  = resultDeptDetail.getString("REQ_DT");
+			String seq    = resultDeptDetail.getString("SEQ");
+			String memGbn = resultDeptDetail.getString("MEM_GBN");			
+			String agnGb  = "";						
+			
+			if("04".equals(memGbn)) { //에이전시회원
+				agnGb  = resultDeptDetail.get("AGN_GB") ==  null? "" : resultDeptDetail.getString("AGN_GB");
+			}
+			
+			logger.info(" === 기본 예약일자        : "+reqDt);
+			logger.info(" === 기본 일련번호        : "+seq);
+			logger.info(" === 기본 회원구분       : "+memGbn);						
+			logger.info(" === 기본 에이전시구분   : "+agnGb);
+			
+			
+			//예약상세조회
+			List<BMap> resultAddList = reserveDao.reserveSelectAddList(param);
+			
+						
+			for(BMap paramMap : resultAddList) {
+			
+				BMap paramData = new BMap();
+				
+				long packageAmt      = 0;  // 패키지가격
+				long roomCharge      = 0;  // 숙박비				
+				long nokidAmt = 0;  	   // 비라운드,소아 가격
+				
+				String dSeq       = paramMap.getString("DSEQ");          //상세일련번호
+				String numGbn     = paramMap.getString("NUM_GBN");       //인원구분 
+				String comHanNm   = paramMap.getString("COM_HAN_NM");    //동반자한글명
+				String chkInDt  = paramMap.getString("CHK_IN_DT");       //체크인일자
+				String chkOutDt = paramMap.getString("CHK_OUT_DT");      //체크인일자
+				String hdngGbn    = paramMap.getString("HDNG_GBN");      //항목구분
+				
+				
+				logger.info(" === 상세 일련번호  : "+dSeq);
+				logger.info(" === 상세 인원구분       : "+numGbn);
+				logger.info(" === 상세 동반자한글명  : "+comHanNm);
+				logger.info(" === 상세 체크인일자     : "+chkInDt);
+				logger.info(" === 상세 체크아웃일자  : "+chkOutDt);
+				logger.info(" === 상세 항목구분       : "+hdngGbn);
+				
+				
+				//영유아일경우 다음 레코드로 이동
+				if("05".equals(numGbn)) {
+					continue;
+				}
+				
+				paramData.put("CHK_IN_DT"  , chkInDt);  //체크인일자
+				paramData.put("CHK_OUT_DT" , chkOutDt); //체크아웃일자
+				paramData.put("HDNG_GBN" , hdngGbn);      //항목구분
+				paramData.put("agnGb" , agnGb);   		  //에이전시 구분
+				paramData.put("REQ_DT"  , reqDt);		  //예약일자
+				paramData.put("SEQ"  , seq);			  //일련번호
+				paramData.put("DSEQ"  , dSeq);            //상세일련번호
+				
+				
+				logger.info("===== 인보이스 코드정보 조회 =====");
+				BMap invoiceCdBmap = reserveDao.selectInvoiceCodeInfo(paramData);  //상품테이블에 정보가 있는지 확인
+				logger.info(" === 인보이스 코드정보       : "+invoiceCdBmap);
+				
+				if(invoiceCdBmap == null) {  //null일 경우 다음레코드로 이동
+					continue;   
+				}
+				
+				
+				//일반일 경우 패키지 금액 계산
+				if("02".equals(numGbn)) {
+					
+					logger.info(" ===== 일반 패키지비 계산 =====");
+					
+					BMap packageBmap = reserveDao.selectPackageCharge(paramData);
+					
+					packageAmt = Long.parseLong(packageBmap.getString("PACKAGE_AMT"));
+					logger.info(" === 패키지금액       : "+packageAmt);
+					
+					
+					
+				} else if("01".equals(numGbn)) {  //멤버일 경우 숙박비 계산
+					
+					logger.info(" ===== 멤버 숙박비 계산 =====");
+					
+					BMap roomChgBmap = reserveDao.selectMemRoomChargeCalc(paramData);
+					
+					roomCharge = Long.parseLong(roomChgBmap.getString("MEM_ROOM_CHARGE"));
+					logger.info(" === 숙박비금액       : "+roomCharge);
+				
+					
+				} else if("03".equals(numGbn) || "04".equals(numGbn)) {  //비라운딩, 소아일경우 추가숙박비 계산
+					
+					logger.info(" ===== 추가숙박비(노키드) 계산 =====");
+					
+					BMap nokidChgBmap = reserveDao.selectNokidChargeCalc(paramData);
+					
+					nokidAmt  = Long.parseLong(nokidChgBmap.getString("NOKID_AMT"));
+					logger.info(" === 추가숙박비 금액       : "+nokidAmt);
+					
+				}
+				
+				
+				
+				
+				long perAmt = "02".equals(numGbn)? packageAmt :("01".equals(numGbn) ? roomCharge : nokidAmt);
+				long useDay = Long.parseLong(invoiceCdBmap.getString("USE_DAY"));
+				
+				logger.info(" === 인보이스 금액     : "+perAmt);
+				logger.info(" === 인보이스 이용횟수    : "+useDay);
+				
+				paramData.put("ITEM_CD", invoiceCdBmap.getString("CODE"));       //항목코드
+				paramData.put("ORDER", dSeq);  								     //표시순서
+				paramData.put("ITEM_NM", invoiceCdBmap.getString("CODE_NM")+" "+comHanNm);  //항목명(항목명_동반자한글명)
+				paramData.put("AMT_SIGN", invoiceCdBmap.getString("AMT_SIGN"));  //통화기호
+				paramData.put("PER_AMT", perAmt);  								 //금액
+				paramData.put("USE_DAY",  useDay);   							 //이용횟수 (일)
+				paramData.put("UNIT_DAY", invoiceCdBmap.getString("UNIT_DAY"));  //횟수단위(D)
+				paramData.put("USE_NUM", 1);                                     //이용수량(명)
+				paramData.put("UNIT_NUM", invoiceCdBmap.getString("UNIT_NUM"));  //수량단위(P)
+				paramData.put("TOT_AMT", perAmt * useDay);   					 //총금액(금액 * 이용획수)
+				paramData.put("LOGIN_USER" , LoginInfo.getUserId());			 //로그인ID
+				
+				//인보이스 등록
+				logger.info("===== 인보이스 등록 =====");
+				reserveDao.insertInvoiceDetailInfo(paramData);
+			}
+			
+			
+			//인보이스 조회
 		    result = reserveDao.invoiceSelectList(param);
-		}else{
+		    
+		}else {  //인보이스 항목 1건이상
+			
 		    result = reserveDao.invoiceSelectList(param);
 		}
 		
@@ -417,10 +669,18 @@ public class ReserveService {
 	 * @return
 	 * @throws Exception
 	 */
-	public Boolean ReserveManager(BMap reserveInfo) throws Exception{
+	public Boolean ReserveManager(BMap reserveInfo, List<BMap> detail) throws Exception{
 		Boolean isValid = true;
 		int feeCnt = 0;
+		int sum_tot = 0;
+		int feeCntList  = 0;
+		
+		
+		DateFormat df2 = new SimpleDateFormat("yyyyMMdd");
+		
         try {
+        	
+// master start /////
         	if(reserveInfo.getString("V_FLAG").equals("new")){ //insert
         		reserveDao.insertReserveInfo(reserveInfo);
         	}else if(reserveInfo.getString("V_FLAG").equals("detail")){ //update
@@ -432,6 +692,55 @@ public class ReserveService {
         			reserveDao.updateReserveFee(reserveInfo);
         		}
         	}
+// master end /////       	
+        	
+// detail start /////
+			for(int i = 0; i < detail.size(); i++){
+				BMap detailMap = new BMap(detail.get(i));
+				detailMap.put("REQ_DT"    , (String) reserveInfo.get("REQ_DT"));
+				detailMap.put("SEQ"       , (String) reserveInfo.get("SEQ"));
+				
+				String CHK_IN_DT = (String) reserveInfo.get("CHK_IN_DT");
+				String CHK_OUT_DT = (String) reserveInfo.get("CHK_OUT_DT");
+//				CHK_IN_DT = CHK_IN_DT.replaceAll(".", "");
+//				CHK_OUT_DT = CHK_OUT_DT.replaceAll(".", "");
+				
+				detailMap.put("CHK_IN_DT"       , CHK_IN_DT);
+				detailMap.put("CHK_OUT_DT"       , CHK_OUT_DT);
+				
+				detailMap.put("LOGIN_USER", LoginInfo.getUserId());
+//				detailMap.put("FILE_UID"  , (String) reserveInfo.get("FILE_UID"));
+				
+				feeCntList = reserveDao.selectFeeListCnt(detailMap);
+				
+//				sum_tot += Integer.parseInt((String) reserveInfo.get("TOT_AMT"));
+				
+				if(detailMap.getString("STATUS_V").equals("I")){
+					
+					reserveDao.addReserveDetail(detailMap);
+//					reserveDao.addInvoiceDetailHis(detailMap);
+					
+				}else if(detailMap.getString("STATUS_V").equals("U")){
+					reserveDao.updateReserveDetailInfo(detailMap);
+//					reserveDao.addInvoiceDetailHis(detailMap);
+				}
+			}
+			
+//			BMap paramMap = new BMap();
+//			paramMap.put("SEQ"       , (String) param.get("SEQ"));      
+//			paramMap.put("REQ_DT"    , (String) param.get("REQ_DT"));   
+//			paramMap.put("LOGIN_USER", LoginInfo.getUserId());          
+//			paramMap.put("TOT_AMT"   , sum_tot);
+//			paramMap.put("EXP_DT"    , (String) param.get("EXP_DT"));      
+//			paramMap.put("DEP_AMT"   , param.get("DEP_AMT"));      
+//			
+//			if(feeCntList == 0){ //fee table insert
+//				reserveDao.insertFeeInfo(paramMap);
+//			}else if(feeCntList == 1 && sum_tot != reserveDao.selectFeeTOT_AMT(paramMap)){ //fee table update
+//				reserveDao.updateFeeInfo(paramMap);
+//			}
+// detail end /////       	
+        	
 		} catch (Exception e) {
 		    // TODO: handle exception
 			e.printStackTrace();
@@ -456,7 +765,7 @@ public class ReserveService {
         	}else if(param.getString("MEM_GBN").equals("03")){
         		param.put("CHG_PRC_STS", "96");
         	}
-        	param.put("SEQ", param.getInt("REQ_SEQ"));
+        	param.put("REQ_SEQ", param.getInt("REQ_SEQ"));
         	
         	//예약 리조트컨펌번호(없을시)
         	reserveDao.updateReserveResortNum(param);
@@ -474,7 +783,7 @@ public class ReserveService {
         		BMap paramMap = new BMap();
         		paramMap.put("REQ_DT"  , param.get("REQ_DT"));
         		paramMap.put("REQ_SEQ" , param.get("REQ_SEQ"));
-        		paramMap.put("BAS_YM"  , data.get(i).substring(0,6));
+        		paramMap.put("BAS_DT"  , data.get(i).substring(0,8));
         		paramMap.put("DD"      , data.get(i).substring(6));
         		paramMap.put("REG_ID"  , param.get("LOGIN_USER"));
         		paramMap.put("UPD_ID"  , param.get("LOGIN_USER"));
@@ -563,8 +872,8 @@ public class ReserveService {
 		if(dataMap.get("CHK_DIFF_DAY") == null || dataMap.get("BAS_YY_CHK_DAY") == null)
 		{
 			dataMap.put("resultCd", "9999");  //날짜 입력 오류
-		} else if(!dataMap.getString("CHK_DIFF_DAY").equals(dataMap.getString("BAS_YY_CHK_DAY"))){
-			dataMap.put("resultCd", "1001"); //기간 불일치
+//		} else if(!dataMap.getString("CHK_DIFF_DAY").equals(dataMap.getString("BAS_YY_CHK_DAY"))){
+//			dataMap.put("resultCd", "1001"); //기간 불일치
 		} else {
 			dataMap.put("resultCd", "0000"); //정상
 		}

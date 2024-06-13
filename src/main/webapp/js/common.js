@@ -3,15 +3,15 @@ var chk_event = true;
 var p_rtnData = [];
 $(function() {
 	fn_fontchg();
-	$.datepicker.regional['kr'] = {
+	$.datepicker.regional['KO'] = {
 		closeText : '닫기',
 		prevText : '이전',
 		nextText : '다음',
 		currentText : '오늘',
 		monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월',
 				'10월', '11월', '12월' ],
-		monthNamesShort : [ '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
-				'11', '12' ],
+		monthNamesShort : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월',
+				'11월', '12월' ],
 		dayNames : [ '일', '월', '화', '수', '목', '금', '토' ],
 		dayNamesShort : [ '일', '월', '화', '수', '목', '금', '토' ],
 		dayNamesMin : [ '일', '월', '화', '수', '목', '금', '토' ],
@@ -84,7 +84,7 @@ $(function() {
 		selectOtherMonths : true,
 		yearSuffix : ''
 	};
-	$.datepicker.regional['en'] = {
+	$.datepicker.regional['EN'] = {
 		closeText : 'Close',
 		prevText : 'Prev',
 		nextText : 'Next',

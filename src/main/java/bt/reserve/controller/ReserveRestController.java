@@ -67,6 +67,42 @@ public class ReserveRestController {
 		respData.put("image", reserveService.selectAirlineImg(paramData));
 		return respData;
 	}
+
+	/**
+	 * 예약 현황 리스트(그리드) 조회
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/reserveSelectAddList.do", method = RequestMethod.POST)
+	public BRespData reserveSelectAddList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		
+		BMap paramData = new BMap();
+		paramData.put("SEQ"  	   , (String) reqData.get("SEQ"));
+		paramData.put("REQ_DT"	   , (String) reqData.get("REQ_DT"));
+//		paramData.put("CHK_IN_DT"  , (String)reqData.get("CHK_IN_DT"));
+//		paramData.put("CHK_OUT_DT" , (String)reqData.get("CHK_OUT_DT"));
+//		paramData.put("LOGIN_USER" , LoginInfo.getUserId());
+		
+		List<BMap> resultDeptDetail = reserveService.reserveSelectAddList(paramData);
+		
+//		paramData.put("FILE_UID", resultDeptDetail.get(0).getString("FILE_UID"));
+//		List<BMap> fileList = fileService.selectFileInfo(paramData);
+		
+		BRespData respData = new BRespData();
+		respData.put("result", resultDeptDetail);
+//		respData.put("fileResult", fileList);
+		
+	/*	BMap param = new BMap();
+		param.put("HEAD_CD"   , 500140);
+		param.put("REF_CHR1"  , (String)reqData.get("MEM_GBN"));
+		param.put("ORDER_GBN" , 1);
+		
+		respData.put("selectList"   , reserveService.selectGetCommonCode(param));*/
+		return respData;
+	}
+	
 	
 	/**
 	 * 인보이스 현황 리스트 조회
@@ -116,7 +152,7 @@ public class ReserveRestController {
 	
 		BMap param = new BMap();
 		param.put("HEAD_CD"   , 500140);
-		param.put("REF_CHR1"  , (String)reqData.get("MEM_GBN"));
+		//param.put("REF_CHR1"  , (String)reqData.get("MEM_GBN"));
 		param.put("ORDER_GBN" , 1);
 		
 		respData.put("selectList"   , reserveService.selectGetCommonCode(param));
@@ -306,7 +342,7 @@ public class ReserveRestController {
 		respData.put("result", reserveService.selectAirlineImg(paramData));
 		return respData;
 	}
-	
+
 	/**
 	 * 예약 데이터 저장 및 업데이트 
 	 * @param reqData
@@ -321,10 +357,13 @@ public class ReserveRestController {
 		BMap reserveInfo = reqData.getParamDataMap("reserveInfo");
 		reserveInfo.put("V_FLAG"    , (String)reqData.get("V_FLAG"));
 		reserveInfo.put("LOGIN_USER", LoginInfo.getUserId());
+
+		List<BMap> detail = reqData.getParamDataList("detail");
 		
-		if(!reserveService.ReserveManager(reserveInfo)){
+		if(!reserveService.ReserveManager(reserveInfo, detail)){
 			respData.put("dup", "Y");
 		};
+		
 		return respData;
 	}
 	
@@ -390,7 +429,9 @@ public class ReserveRestController {
 		param.put("CHK_OUT_DT" , (String)reqData.get("CHK_OUT_DT"));
 		param.put("booleanIn"  , (String)reqData.get("booleanIn"));
 		param.put("booleanOut" , (String)reqData.get("booleanOut"));
-		param.put("R_PERSON"   , (String)reqData.get("R_PERSON"));
+//		param.put("R_PERSON"   , (String)reqData.get("R_PERSON"));
+		param.put("M_PERSON"   , (String)reqData.get("M_PERSON"));
+		param.put("G_PERSON"   , (String)reqData.get("G_PERSON"));
 		param.put("CONFIRM_NO" , (String)reqData.get("CONFIRM_NO"));	
 		param.put("PICK_IN"    , (String)reqData.get("PICK_IN"));	
 		param.put("PICK_OUT"   , (String)reqData.get("PICK_OUT"));	

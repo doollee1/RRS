@@ -304,6 +304,10 @@
 			return;
 		}
 		
+		if(fn_empty(gridData1["STATUS"])){
+			$("#grid1").jqGrid('setCell', $("#grid1").getGridParam('selrow'), 'STATUS', 'Y');
+		}
+		
 		var ids = $("#grid1").jqGrid("getDataIDs");
 		var updateCounter = 0;
 		for(var i = 0; i < ids.length; i++){
@@ -390,7 +394,7 @@
 		var rowData = $("#grid1").getRowData(rowid);
 		$('#grid2').jqGrid('setSelection', rowid);
 		//ROW_STATUS = I 신규 ROW
-		var data = {"HEAD_CD" : rowData["HEAD_CD"], "ROW_STATUS" : "I"};
+		var data = {"HEAD_CD" : rowData["HEAD_CD"], "ROW_STATUS" : "I", "STATUS" : rowData["STATUS"]};
 		btGrid.gridAddRow("grid2", "last", data);
 	}
 	

@@ -120,16 +120,18 @@
 			'전화번호',
 			'ID',
 			'Email',
+			'개인정보 동의 여부',
 			''
 		]
 		var colModel = [
-			{ name: 'ROWNUM', width: 100, align: 'center' },
+			{ name: 'ROWNUM', width: 50, align: 'center' },
 			{ name: 'MEM_NM', width: 100, align: 'center' },
 			{ name: 'HAN_NAME', width: 100, align: 'center' },
 			{ name: 'ENG_NAME', width: 100, align: 'center' },
 			{ name: 'TEL_NO', width: 100, align: 'center' },
 			{ name: 'USER_ID', width: 100, align: 'center' },
-			{ name: 'EMAIL', width: 100, align: 'center' },
+			{ name: 'EMAIL', width: 120, align: 'center' },
+			{ name: 'PERINFO_AGREE_YN', width: 100, align: 'center' },
 			{ name: 'CHK', index: 'CHK', width: 50, align: 'center', formatter: gridCboxFormat, sortable: false }
 		]
 		

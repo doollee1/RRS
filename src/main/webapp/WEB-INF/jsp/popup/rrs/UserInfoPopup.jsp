@@ -33,7 +33,7 @@
 					</td>
 					<th>이름</th>
 					<td>
-						<input type="text"  id="HAN_NAME" name="HAN_NAME" class="onlyKor cmc_txt" style="width:125px;" maxlength="20" />
+						<input type="text"  id="HAN_NAME" name="HAN_NAME" class="onlyKor" style="width:125px;" maxlength="20" />
 					</td>
 					<th>영문이름</th>
 					<td>
@@ -60,6 +60,13 @@
 					<td>
 						<input type="text" id="EMAIL" name="EMAIL" class="cmc_txt" style="width:150px;" maxlength="50" EMAIL/>
 					</td>
+					<th>개인정보 동의</th>
+					<td>
+						<select id="PERINFO_AGREE_YN" name="PERINFO_AGREE_YN" class="cmc_combo" style="width:130px;">
+							<option value="N" selected>N</option>
+							<option value="Y">Y</option>
+						</select>
+					</td>
 					<th>탈퇴여부</th>
 					<td>
 						<select id="RET_YN" name="RET_YN" class="cmc_combo" style="width:130px;">
@@ -68,7 +75,6 @@
 						    </c:forEach>
 						</select>
 					</td>
-					<th></th>
 				</tr>
 				<tr>
 					<th>등록자 ID</th>
@@ -270,13 +276,26 @@ function validChk_email(val){
 // 회원 타입 변경 이벤트
 $(function() {
 	$("#MEM_GBN").on("change",function() {
+		idChkYN = false;
+		$("#HAN_NAME").val("");
+		
 		if($("#MEM_GBN").val() == '01') {
 			$("#btn_userSearchPopup").show();
-		} else {
-			$("#btn_userSearchPopup").hide();
-			$("#MEMBER_ID").val("");
+			$("#HAN_NAME").addClass("onlyKor");
+			return;
+		} else if($("#MEM_GBN").val() == '02') {
+			$("#HAN_NAME").addClass("onlyKor");
+		} else if($("#MEM_GBN").val() == '04') {
+			$("#HAN_NAME").removeClass("onlyKor");
 		}
-		idChkYN = false;
+		
+		$("#btn_userSearchPopup").hide();
+		$("#MEMBER_ID").val("");
+		$("#REG_ID"   ).val("");
+		$("#REG_DTM"  ).val("");
+		$("#UPD_ID"   ).val("");
+		$("#UPD_DTM"  ).val("");
+		
 	});
 });
 
@@ -287,29 +306,23 @@ $('#btn_userSearchPopup').on('click', function(e) {
 	var param = {};
 	
 	popupOpen(url, pid, param, function(data) {
-		cSearch();
+		if(!fn_empty(data)){
+			$("#HAN_NAME").val(data.HAN_NAME);
+			$("#ENG_NAME").val(data.ENG_NAME);
+			$("#TEL_NO").val(data.TEL_NO);
+			$("#USER_ID").val(data.MEMBER_ID);
+			$("#MEMBER_ID").val(data.MEMBER_ID);
+			$("#EMAIL").val(data.EMAIL);
+			$("#REG_ID").val(data.REG_ID);
+			$("#REG_DTM").val(data.REG_DTM);
+			$("#UPD_ID").val(data.UPD_ID);
+			$("#UPD_DTM").val(data.UPD_DTM);
+			
+			typeChage();
+		}
 	});
 });
 
-function cSearch(){
-	var memberId = $('#SEARCH_MEMBER_ID').val();
-	if (memberId != "") {
-		var param = {
-			"param": {
-				"MEMBER_ID" : memberId
-			}
-		};
-		var url = "/rrs/selectSearchUserInfo.do";
-			
-		fn_ajax(url, false, param, function(data, xhr){
-			fn_dataBind('frmUserInfo', data.result[0]);
-		});
-		
-		$('#USER_ID').val(memberId);
-		$('#Ex_MEMBER_ID').val(memberId);
-		typeChage();
-	}
-}
 //아이디 중복체크
 $('#btn_idCheck').on('click', function(e) {
 	var idCnt = $('#USER_ID').val().length;

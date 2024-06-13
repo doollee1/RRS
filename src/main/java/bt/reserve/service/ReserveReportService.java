@@ -106,9 +106,8 @@ public class ReserveReportService {
 						detailMap.put("REQ_DT",  param.getString("REQ_DT"));
 						detailMap.put("REQ_SEQ", param.getString("REQ_SEQ"));
 						detailMap.put("LOGIN_USER", LoginInfo.getUserId());
-						detailMap.put("BAS_YM", key.substring(3,9));
-						detailMap.put("DD", key.substring(9));
-						detailMap.put("PER_STR", day.replace("day", ""));
+						detailMap.put("BAS_DT", key.replace("day", ""));
+						detailMap.put("PER_STR", day);
 						
 						list.add(detailMap);
 					}					

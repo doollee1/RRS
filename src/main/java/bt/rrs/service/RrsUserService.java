@@ -89,7 +89,7 @@ public class RrsUserService {
 		if(isNew.equals("Y")) {
 			// 신규 입력인 경우
 			if(cnt == 0) {
-				param.put("PASSWD", EgovFileScrty.encryptPassword("fam1!", param.getString("USER_ID")));   //"1234"
+				param.put("PASSWD", EgovFileScrty.encryptPassword("fam1!", param.getString("USER_ID")));   //"fam1!"
 				rrsUserDao.insertUserInfo(param); //등록되지 않았을 때 등록
 			} else {
 				bMap.put("result", "isExistUser");

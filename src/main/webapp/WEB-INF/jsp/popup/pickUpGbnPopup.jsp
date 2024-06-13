@@ -267,7 +267,7 @@ $(function() {
 					for (var i = 0; i < data.result.length; i++) {
 						$.each(data.result[i], function(k , v){
 							if(k == "PICK_GBN"){
-								if(v == "04" || v == "05"){
+								if(v == "03" || v == "04" || v == "05" || v == "06" || v == "07" || v == "08" || v == "09"){
 									$("#PICK_GBN_1").val("03");
 									$('#PROD_SEQ1 option[data=03]').show();
 									$('#PROD_SEQ1 option').not('[data=03]').hide();
@@ -368,7 +368,7 @@ $(function() {
 			    }
 			    
 			    if(car_num1 == "0" || fn_empty(car_num1)){
-			    	alert("차량대수를 입력해주세요.");
+			    	alert("이용횟수를 입력해주세요.");
 			    	return false;
 			    }
 		    }else{
