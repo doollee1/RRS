@@ -337,7 +337,6 @@
 		param.DETAIL = 'Y';
 		
 	    popupOpen(url, pid, param, function(data) {
-	    	cSearch();
 	    });
 	}
 	

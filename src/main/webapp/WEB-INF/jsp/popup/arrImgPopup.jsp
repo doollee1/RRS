@@ -23,6 +23,7 @@
 $(function() {
 	var req_dt;
 	var seq;
+	var add_file_seq;
 	
 	$('#p_arrImgPopup').dialog({
 		title :'<s:message code='reservation.arrImg'/>',
@@ -49,8 +50,9 @@ $(function() {
 	
 	function cSearch(receivcedData){
 		var url = "/reserve/selectAirlineImg.do";
-		var param = {"REQ_DT"   : req_dt
-				    ,"SEQ"      : seq
+		var param = {"REQ_DT"        : req_dt
+				    ,"SEQ"           : seq
+				    ,"ADD_FILE_SEQ"  : add_file_seq
 				    };
 		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
@@ -64,8 +66,9 @@ $(function() {
 	}
 	
 	function fn_init (receivedData){
-		req_dt     = receivedData.REQ_DT;
-		seq        = receivedData.SEQ;
+		req_dt          = receivedData.REQ_DT;
+		seq             = receivedData.SEQ;
+		add_file_seq    = receivedData.ADD_FILE_SEQ;
 	}
 	
 });

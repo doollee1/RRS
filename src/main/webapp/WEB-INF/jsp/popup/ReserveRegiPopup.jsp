@@ -154,11 +154,6 @@
 								<option value="24">24</option>
 						</select>
 					</td>
-<!-- 					항공이미지 보기 -->
-					<th class="image"><s:message code='reservation.arrImg'/></th>
-					<td class="image">
-						<button type="button" class="pbtn_default" id="ARR_IMG">이미지보기</button>
-					</td>
 				</tr>	
 				<tr>
 				    <th><s:message code='reservation.totalCnt'/></th>
@@ -560,11 +555,6 @@ $(function() {
 		$("#TWIN_CNT").val("0");
 		$("#KING_CNT").val("0");
 		
-		//예약 현황의 상세보기로 넘어왔다면 필요없는 부분 disabled 하기
-		if(receivedData.DETAIL == 'Y'){
-			//미팅샌딩 상세버튼 /상태 변경 버튼 / 인보이스 발행일자 생성 버튼 / 입금완료 버튼 / 행추가,행삭제 버튼 / 저장 버튼
-			$("#btn_search, #insertPickGbn, #btn_create, #btn_deposit, #changeStatus, #btn_com_add, #btn_List_addRow, #btn_List_delRow, #save").attr("disabled", true);
-		}
 		if(fn_empty(seq || req_dt)){ //신규
 		    $(".ui-dialog-title").text('<s:message code='reservation.registration'/>');
 		    $("#CHK_IN_DT"      ).val(Util.converter.dateFormat1(today));
@@ -574,6 +564,12 @@ $(function() {
 		    vflag = "new";
 		    $("#TOT_AMT , #PAY_AMT , #DCT_AMT , #BAL_AMT , #DEP_IN_DT , #DEP_AMT , #EXP_DT , #INV_REG_DT").attr("disabled", true);
 		}else{ // 상세
+			//예약 현황의 상세보기로 넘어왔다면 필요없는 부분 disabled 하기
+			if(receivedData.DETAIL == 'Y'){
+				//미팅샌딩 상세버튼 /상태 변경 버튼 / 인보이스 발행일자 생성 버튼 / 입금완료 버튼 / 행추가,행삭제 버튼 / 저장 버튼
+				$("#btn_search, #insertPickGbn, #btn_create, #btn_deposit, #changeStatus, #btn_com_add, #btn_List_addRow, #btn_List_delRow, #save").attr("disabled", true);
+			}
+		
 		    $("#USER_ID , #MEM_GBN").attr("disabled", true);
 		    $(".ui-dialog-title").text('<s:message code='reservation.detail'/>');
 		    $("#btn_search").hide();
@@ -1370,51 +1366,6 @@ $(function() {
 		});
 	});
 
-	$("#ARR_IMG").on("click" , function(){
-		reserveSelectAirlineImg('1');
-	});	
-
-	function reserveSelectAirlineImg(fileseq){
-		var url = "/reserve/arrImg.do";
-	    var pid = "p_arrImgPopup";
-	    var addfileseq = fileseq;
-	    var param = { "REQ_DT"          : req_dt
-			        , "SEQ"             : seq
-			        , "ADD_FILE_SEQ"    : addfileseq
-	                };
-	    
-		popupOpen(url, pid, param, function(data) {
-			reserveSelectAirlineImg2();
-		});
-		
-// 		jqg30_ADD_FILE_SEQ
-	}
-
-	function reserveSelectAirlineImg2(){
-		var url = "/reserve/reserveSelectAirlineImg.do";
-	    var param = { "REQ_DT"          : req_dt
-			        , "SEQ"             : seq
-			        , "ADD_FILE_SEQ"    : addfileseq
-	                };
-	    
-		fn_ajax(url, true, param, function(data, xhr){
-			if(data.MESSAGE != "OK"){
-				alert("ajax 통신 error!");
-			}else{
-				fn_imageSet(data.image);
-			}
-		});
-	}
-	
-	function fn_imageSet(data){
-		if(!fn_empty(data)){
-			$(".image").show();
-		}else{
-			$(".image").hide();
-		}
-	}
-	
-
 	$("#changeStatus").on("click" , function(){
 		changeStatus();
 	});
@@ -1588,7 +1539,10 @@ $(function() {
 		    $("#reserveGrid_pager_right").append('<div dir="ltr" id="reserve_sumtot_amt" style="text-align:right">Total Price: '+fn_comma(reserve_sum_tot)+'</div>');
 		   
 			$("#reserveGrid_pager_left").hide();
-		     
+
+			$('#reserveGrid').bind('jqGridSelectRow', function(e, rowid, status) {
+				grid1_onCilckRow(e, rowid, status);
+			});
 		    
 	    });
 		
@@ -1683,20 +1637,8 @@ $(function() {
 						, { name: 'FLIGHT_IN_HH',  width : 74, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_HH}'}}
 						, { name: 'FLIGHT_OUT',  width : 80, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT}'}}
 						, { name: 'FLIGHT_OUT_HH',  width : 74, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
-						
-// 						, { name: 'ADD_FILE_SEQ',  width : 120, align: 'center' , editable:true, editoptions:{maxlength:100}, formatter:showARR_IMG}
-
-// str += "<div>";
-// 		str += "<button class='btn btn-default' onclick=\"javascript:fn_detail('" + rowid + "')\">항공이미지보기 </button>";
-// 		str += "</div>";
-		
-		
-		
-// 						, { name: 'ADD_FILE_SEQ',  width : 120, align: 'center' , editable:true, editoptions:{maxlength:100}, formatter:button, editoptions:{value:'${ADD_FILE_SEQ}'}}
-// 						<button type="button" class="pbtn_default" id="ARR_IMG">이미지보기</button>, value2:'${ADD_FILE_SEQ}'
-// 						reserveSelectAirlineImg('1');
-						, { name: 'ADD_FILE_SEQ',  width : 120, align: 'left' , editable:true, edittype:"button" , formatter : "button" , editoptions:{value:'이미지보기'}}
-						
+// 						, { name: 'ADD_FILE_SEQ',  width : 120, align: 'left' , editable:true, edittype:"button" , formatter : "button" , editoptions:{value:'이미지보기'}}
+						, { name: 'ADD_FILE_SEQ',  width : 84, align: 'center' , editable:true, edittype:"button", }
 						, { name: 'HDNG_GBN',  width : 120, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn_g}'}}
 						, { name: 'LATE_CHECK_IN',  width : 80, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_IN}'}}
 						, { name: 'LATE_CHECK_OUT',  width : 80, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_OUT}'}}
@@ -1864,16 +1806,63 @@ $(function() {
 	});
 	
 
-	//`이미지보기 버튼
-	function showARR_IMG(cellvalue, options, rowObject){
-		var str = "";
-		var rowid = options.rowId;
-
-		str += "<div>";
-		str += "<button class='btn btn-default' onclick=\"javascript:fn_detail('" + rowid + "')\">항공이미지보기 </button>";
-		str += "</div>";
+	function reserveSelectAirlineImg(fileseq){
+		var url = "/reserve/arrImg.do";
+	    var pid = "p_arrImgPopup";
+	    var addfileseq = fileseq;
+	    var param = { "REQ_DT"          : req_dt
+			        , "SEQ"             : seq
+			        , "ADD_FILE_SEQ"    : addfileseq
+	                };
+	    
+		popupOpen(url, pid, param, function(data) {
+			reserveSelectAirlineImg2(addfileseq);
+		});
 		
-		return str;
+// 		jqg30_ADD_FILE_SEQ
+	}
+
+	function reserveSelectAirlineImg2(fileseq){
+		var url = "/reserve/reserveSelectAirlineImg.do";
+	    var addfileseq = fileseq;
+	    var param = { "REQ_DT"          : req_dt
+			        , "SEQ"             : seq
+			        , "ADD_FILE_SEQ"    : addfileseq
+	                };
+	    
+		fn_ajax(url, true, param, function(data, xhr){
+			if(data.MESSAGE != "OK"){
+				alert("ajax 통신 error!");
+			}else{
+				fn_imageSet(data.image);
+			}
+		});
+	}
+	
+	function fn_imageSet(data){
+		if(!fn_empty(data)){
+			$(".image").show();
+		}else{
+			$(".image").hide();
+		}
+	}
+	
+
+	// 조회내역 그리드 클릭 이벤트
+	function grid1_onCilckRow(e, rowid, status){
+		if(!fn_empty(rowid)){ // 선택 그리드 순번
+			var addFileSeq = "";
+			addFileSeq = $('#reserveGrid').jqGrid('getRowData',rowid).ADD_FILE_SEQ;
+			var fileSeqArr = ($('#reserveGrid').jqGrid('getRowData',rowid).ADD_FILE_SEQ).split(" ");
+			
+			for(var i=0; i<fileSeqArr.length; i++) {
+				var addFileSeq2 = fileSeqArr[i].split("value=");
+				if(!fn_empty(addFileSeq2[1])){
+					var addFileSeq3 = addFileSeq2[1].replaceAll('"' , '');
+					reserveSelectAirlineImg(addFileSeq3);
+				}
+			}	
+		}
 	}
 	
 	

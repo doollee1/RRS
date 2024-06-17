@@ -387,6 +387,7 @@ public class ReserveRestController {
 		BMap paramData = new BMap();
 		paramData.put("SEQ"          , reqData.get("SEQ"));
 		paramData.put("REQ_DT"       , (String)reqData.get("REQ_DT"));
+		paramData.put("ADD_FILE_SEQ"       , (String)reqData.get("ADD_FILE_SEQ"));
 		
 		respData.put("result", reserveService.selectAirlineImg(paramData));
 		return respData;
@@ -603,7 +604,7 @@ public class ReserveRestController {
 		BRespData respData = new BRespData();
 
 		if(!reserveService.saveNoRoom(detail)){
-			respData.put("dup", "Y");
+			respData.put("dup", "N");
 		};
 		return respData;
 	}
@@ -624,7 +625,7 @@ public class ReserveRestController {
 		param.put("REQ_NO_DT", reqData.get("DATE"));
 		param.put("ROOM_TYPE", reqData.get("TYPE"));
 	
-		if(!reserveService.deletenoRoomInfo(param)){
+		if(reserveService.deleteNoRoomInfo(param)){
 			respData.put("dup", "Y");
 		};
 		return respData;

@@ -1728,7 +1728,7 @@
     <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
 	
-	<insert id="insertnoRoomInfo" parameterType="List">
+	<insert id="insertNoRoomInfo" parameterType="List">
 	INSERT INTO TB_REQ_NO_ROOM
       	 ( REQ_NO_DT
       	 , ROOM_TYPE
@@ -1750,12 +1750,13 @@
          </foreach>
 	</insert>
 	
-	<delete id="deletenoRoomInfo" parameterType="BMap">
-	DELETE 
+	<delete id="deleteNoRoomInfo" parameterType="BMap">
+DELETE 
   	  FROM TB_REQ_NO_ROOM
  	 WHERE 1=1
-	   AND REQ_NO_DT BETWEEN #{FROM_DATE} AND #{TO_DATE}
-	</delete>
+	   AND REQ_NO_DT = #{REQ_NO_DT}
+	   AND ROOM_TYPE = #{ROOM_TYPE}
+</delete>
 	
 	
 	
@@ -2223,40 +2224,42 @@
 	<!-- 미팅샌딩  추가 계산 -->
 	<select id="sendingCalc" parameterType="BMap" resultType="BMap">
 		<![CDATA[
-         SELECT DISTINCT
-				A.CODE           AS ITEM_CD			/* 항목코드 */
-			   ,A.CODE_NM        AS ITEM_NM			/* 항목명  */
-		       ,A.REF_CHR2       AS AMT_SIGN		/* 통화기호 */
-		       ,C.COM_AMT        AS PER_AMT		    /* 이용금액 */
-			   ,'1'              AS USE_DAY         /* 이용 */
-               ,A.REF_CHR3       AS UNIT_DAY  		/* 사용단위 */
-               ,IFNULL(B.PER_NUM, 0) AS USE_NUM         /* 수량 */
-               ,A.REF_CHR4       AS UNIT_NUM   	    /* 수량단위 */
-			   ,IFNULL(C.COM_AMT * B.PER_NUM, 0) AS TOT_AMT /* 총괄금액 */
-			   , ( SELECT COUNT(*)
-                     FROM bc_comm_l AA
-                    WHERE HEAD_CD = '500160' /* 야간할증항공편 */
-                      AND CODE IN (B.FLIGHT_IN, B.FLIGHT_OUT)
-                  ) AS SURCHARGE_CNT /* 야간할증 갯수 */
-          FROM BC_COMM_L A, 
-		       TB_REQ_BOOKING_M B, 
-		       TB_PROD_INFO C,
-		       tb_bas_yy_info D
-         WHERE A.HEAD_CD = '500140'  -- 인보이스 항목
-		   AND A.CODE = #{SEND_CODE}
-		   AND B.BAS_YY = C.BAS_YY
-  		   AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
-		   AND B.REQ_DT = #{REQ_DT}
-		   AND B.SEQ    = #{SEQ}
-		   AND C.HDNG_GBN = #{SEND_GBN}
-		   AND C.PROD_COND =  CASE WHEN B.PER_NUM > 4 THEN '4'
-		                           WHEN C.PROD_SEQ IN ('82','90','98','106') THEN '0'
-		                           ELSE IFNULL(B.PER_NUM,0)
-		                       END
-		   AND C.PROD_SEQ in ('82','83','84','85','86','90','98','106')
-		   AND C.BAS_YY   = D.BAS_YY
-		   AND C.BAS_YY_SEQ = D.BAS_YY_SEQ
-		   AND C.BAS_YY = YEAR(NOW())
+			 SELECT DISTINCT
+			        B.CODE           AS ITEM_CD			/* 항목코드 */
+				  , B.CODE_NM        AS ITEM_NM			/* 항목명  */
+				  , B.REF_CHR2       AS AMT_SIGN		/* 통화기호 */ 
+				  , D.COM_AMT        AS PER_AMT		    /* 이용금액 */
+				  , '1'              AS USE_DAY         /* 이용 */
+			      , B.REF_CHR3       AS UNIT_DAY  		/* 사용단위 */
+			      , IFNULL(A.PER_NUM, 0) AS USE_NUM     /* 수량 */
+			      , B.REF_CHR4       AS UNIT_NUM   	    /* 수량단위 */
+			      , IFNULL(D.COM_AMT * A.PER_NUM, 0) AS TOT_AMT /* 총괄금액 */
+				  , ( SELECT COUNT(*)
+			            FROM bc_comm_l AA
+			           WHERE HEAD_CD = '500160' 		/* 야간할증항공편 */
+			             AND CODE IN (A.FLIGHT_IN, A.FLIGHT_OUT)
+			         ) AS SURCHARGE_CNT /* 야간할증 갯수 */
+			FROM  TB_REQ_BOOKING_M AS A
+			      , BC_COMM_L AS B
+			      , BC_COMM_L AS C
+			      , TB_PROD_INFO AS D
+			      , TB_BAS_YY_INFO AS E
+			  where A.REQ_DT = #{REQ_DT}
+			  AND A.SEQ      = #{SEQ}
+			  AND B.HEAD_CD  = '500140'
+			  AND C.HEAD_CD  = '500220'
+			  AND B.CODE = C.REF_CHR4 
+			  AND C.CODE = D.PROD_COND
+			  AND D.HDNG_GBN = #{SEND_GBN}
+			  AND D.PROD_COND =  CASE WHEN D.HDNG_GBN != '18' AND A.PER_NUM > 3 THEN '4'
+					                  WHEN D.HDNG_GBN != '18' AND A.PER_NUM = 3 THEN '3'
+					                  WHEN D.HDNG_GBN != '18' AND A.PER_NUM = 2 THEN '2'
+					                  WHEN D.HDNG_GBN != '18' AND A.PER_NUM = 1 THEN '1'
+					                  ELSE 0
+					                   end
+			  AND D.BAS_YY     = E.BAS_YY
+			  AND D.BAS_YY_SEQ = E.BAS_YY_SEQ
+			  AND D.BAS_YY = YEAR(NOW())
 		]]>
 	</select>
 	
@@ -2264,37 +2267,38 @@
 	<!-- 야간 미팅샌딩  추가 계산 -->
 	<select id="sendingSubCalc" parameterType="BMap" resultType="BMap">
 		<![CDATA[
-        SELECT DISTINCT
-				A.CODE           AS ITEM_CD			/* 항목코드 */
-			   ,A.CODE_NM        AS ITEM_NM			/* 항목명  */
-		       ,A.REF_CHR2       AS AMT_SIGN		/* 통화기호 */
-		       ,C.COM_AMT        AS PER_AMT		    /* 이용금액 */
-			   ,'1'              AS USE_DAY         /* 이용 */
-               ,A.REF_CHR3       AS UNIT_DAY  		/* 사용단위 */
-               ,IFNULL(B.PER_NUM, 0) AS USE_NUM     /* 수량 */
-               ,A.REF_CHR4       AS UNIT_NUM   	    /* 수량단위 */
-			   ,IFNULL(C.COM_AMT * B.PER_NUM, 0) AS TOT_AMT /* 총괄금액 */
-          FROM BC_COMM_L A, 
-		       TB_REQ_BOOKING_M B, 
-		       TB_PROD_INFO C,
-		       tb_bas_yy_info D
-         WHERE A.HEAD_CD = '500140'  -- 인보이스 항목
-		   AND A.CODE = #{SEND_CODE}
-		   AND B.BAS_YY = C.BAS_YY
-  		   AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
-		   AND B.REQ_DT = #{REQ_DT}
-		   AND B.SEQ    = #{SEQ}
-		   AND C.HDNG_GBN = #{SEND_GBN}
-		   AND C.PROD_COND =  CASE WHEN IFNULL(B.PER_NUM,0) < 4
-                                   THEN 'PD4'
-                                   ELSE 'PU4'
-                               END
-		   AND C.BAS_YY   = D.BAS_YY
-		   AND C.BAS_YY_SEQ = D.BAS_YY_SEQ
-		   AND (    B.CHK_IN_DT BETWEEN D.ST_DT1 AND D.ED_DT1
-                 OR B.CHK_IN_DT BETWEEN D.ST_DT2 AND D.ED_DT2
-                 OR B.CHK_IN_DT BETWEEN D.ST_DT3 AND D.ED_DT3
-               )
+			 SELECT DISTINCT
+			        B.CODE           AS ITEM_CD			/* 항목코드 */
+				  , B.CODE_NM        AS ITEM_NM			/* 항목명  */
+				  , B.REF_CHR2       AS AMT_SIGN		/* 통화기호 */ 
+				  , D.COM_AMT        AS PER_AMT		    /* 이용금액 */
+				  , '1'              AS USE_DAY         /* 이용 */
+			      , B.REF_CHR3       AS UNIT_DAY  		/* 사용단위 */
+			      , IFNULL(A.PER_NUM, 0) AS USE_NUM     /* 수량 */
+			      , B.REF_CHR4       AS UNIT_NUM   	    /* 수량단위 */
+			      , IFNULL(D.COM_AMT * A.PER_NUM, 0) AS TOT_AMT /* 총괄금액 */
+			 FROM TB_REQ_BOOKING_M AS A
+			      , BC_COMM_L AS B
+			      , BC_COMM_L AS C
+			      , TB_PROD_INFO AS D
+			      , TB_BAS_YY_INFO AS E
+			  where A.REQ_DT = #{REQ_DT}
+			  AND A.SEQ      = #{SEQ}
+			  AND B.HEAD_CD = '500140'
+			  AND C.HEAD_CD = '500220'
+			  AND B.CODE = C.REF_CHR4 
+			  AND C.CODE = D.PROD_COND
+			  AND D.HDNG_GBN = #{SEND_GBN}
+			  AND D.PROD_COND = CASE WHEN IFNULL(A.PER_NUM,0) < 4 
+			                         THEN 'PD4'
+			                         ELSE 'PU4'
+			                          END
+			  AND D.BAS_YY     = E.BAS_YY
+			  AND D.BAS_YY_SEQ = E.BAS_YY_SEQ
+			  AND (    A.CHK_IN_DT BETWEEN E.ST_DT1 AND E.ED_DT1
+			        OR A.CHK_IN_DT BETWEEN E.ST_DT2 AND E.ED_DT2
+			        OR A.CHK_IN_DT BETWEEN E.ST_DT3 AND E.ED_DT3
+			      )
 		]]>
 	</select>
 	

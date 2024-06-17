@@ -371,8 +371,8 @@
 	  ORDER BY REF_CHR3, REF_CHR1, CODE_NM
 	</select>
 	
-	<insert id="insertFlightInfo" parameterType="BMap">
-	/* CommonCode.xml -> insertFlightInfo */
+	<insert id="insertFlightInfo" parameterType="List">
+/* CommonCode.xml -> insertFlightInfo */
 		INSERT INTO BC_COMM_L
 		     ( HEAD_CD,
 			   CODE,
@@ -399,16 +399,18 @@
 			   UPT_DT,
 			   UPT_ID
 		     )
-		VALUES (#{HEAD_CD},
-				#{CODE_NM},
+		VALUES 
+		<foreach collection="list" item="item" separator=",">
+			(   #{item.HEAD_CD},
+				#{item.CODE_NM},
 				'',
-				#{CODE_NM},
+				#{item.CODE_NM},
 				'',
 				'',
 				'',
-				#{REF_CHR1},
-				#{REF_CHR2},
-				#{REF_CHR3},
+				#{item.REF_CHR1},
+				#{item.REF_CHR2},
+				#{item.REF_CHR3},
 				'',
 				'',
 				0,
@@ -420,11 +422,12 @@
 				0,
 				'Y',
 				NOW(),
-				#{LOGIN_USER},
+				#{item.LOGIN_USER},
 				NOW(),
-				#{LOGIN_USER}
+				#{item.LOGIN_USER}
 				)
-	</insert>
+			</foreach>
+</insert>
 	
 	<update id="updateFlightInfo" parameterType="BMap">
 	/* CommonCode.xml -> updateFlightInfo */

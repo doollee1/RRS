@@ -616,45 +616,47 @@ $(function() {
 			});
 		});
 		
-		if(cnt == 0){
-			alert("<s:message code='errors.noChange' javaScriptEscape='false'/>"); 
+		
+		//인보이스 팝업에서 저장을 위해 주석처리
+		/* if(cnt == 0){
+			alert("<s:message code='errors.noChange' javaScriptEscape='false'/>"); //변경내역이 없습니다.
 			return;
-		}
+		} */
 		if(errChk > 0){
 			var args = '<s:message code="invoice.item_cd"/>';
-			alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+			alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>"); //항목코드는 필수 입력값입니다.
 			return;
 		}
 		
 		for(var i = 0; i < gridDataChk.length; i++){
 			if(fn_empty(gridDataChk[i]["ORDER"])){
 				args = '<s:message code="invoice.order"/>';
-				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>"); //정렬순서는 필수 입력값입니다.
 				return;
 			}
 			if(fn_empty(gridDataChk[i]["ITEM_CD"]) ){
 				args = '<s:message code="invoice.item_cd"/>';
-				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>"); //항목코드는 필수 입력값입니다.
 				return;
 			}
 			if(fn_empty(gridDataChk[i]["ITEM_NM"])){
 				args = '<s:message code="invoice.item_nm"/>';
-				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");  //항목표시명은 필수 입력값입니다.
 				return;
 			}
 			if(fn_empty(gridDataChk[i]["PER_AMT"])){
 				args = '<s:message code="invoice.per_amt"/>';
-				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");  //단위금액은 필수 입력값입니다.
 				return;
 			} 
 			if(fn_empty(gridDataChk[i]["USE_DAY"])){
 				args = '<s:message code="invoice.use_day"/>';
-				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");  //사용/횟수은 필수 입력값입니다.
 				return;
 			}
 			if(fn_empty(gridDataChk[i]["USE_NUM"])){
 				args = '<s:message code="invoice.use_num"/>';
-				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
+				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");  //수량은  필수 입력값입니다.
 				return;
 			}
 		}
@@ -670,9 +672,9 @@ $(function() {
 		if(confirm("<s:message code='confirm.save'/>")){
 			fn_ajax(url, false, param, function(data, xhr){
 				if(data.dup == 'Y'){
-					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
+					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>");   //Save is not complete.\\nErp validation is Missing.
 				}else{
-					alert("<s:message code='info.save'/>");
+					alert("<s:message code='info.save'/>");  //저장하였습니다.
 					
 					//예약기간, 예약금, 전송, 미리보기 활성화
 					$("#POP_EXP_DT,#POP_DEP_AMT , #btn_send, #btn_preview").attr("disabled",false);

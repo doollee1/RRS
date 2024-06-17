@@ -599,10 +599,8 @@ public class ReserveService {
 				invoiceHeaderMap.put("ORDER", invoiceDSeq);
 				
 				if("02".equals((String)resultDeptDetail.get("PICK_GBN"))) {
-					invoiceHeaderMap.put("SEND_CODE", "SENDING02");
 					invoiceHeaderMap.put("SEND_GBN", "18");
 				}else if("03".equals((String)resultDeptDetail.get("PICK_GBN"))) {
-					invoiceHeaderMap.put("SEND_CODE", "SENDING01");
 					invoiceHeaderMap.put("SEND_GBN", "19");
 				}
 				
@@ -622,13 +620,12 @@ public class ReserveService {
 					reserveDao.insertInvoiceDetailInfo(invoiceHeaderMap);
 					
 					
-					if(Integer.parseInt(String.valueOf(sendingCalc.get("SURCHARGE_CNT"))) > 0) {
+					if(Integer.parseInt(String.valueOf(sendingCalc.get("SURCHARGE_CNT"))) > 0 && "19".equals(invoiceHeaderMap.get("SEND_GBN"))) {
 						
 						logger.info("===== 야간 미팅샌딩 계산 =====");
 						
 						invoiceDSeq++;
 						invoiceHeaderMap.put("ORDER", invoiceDSeq);
-						invoiceHeaderMap.put("SEND_CODE", "SURCHARGE00");
 						invoiceHeaderMap.put("SEND_GBN", "19");
 						
 						BMap sendingSubCalc =  reserveDao.sendingSubCalc(invoiceHeaderMap);
@@ -647,20 +644,19 @@ public class ReserveService {
 							reserveDao.insertInvoiceDetailInfo(invoiceHeaderMap);
 							
 						} else {
-							
 							logger.info("===== 야간 미팅샌딩 금액이 없음 =====");
 						}
 					}
 					
 				} else {
-					
 					logger.info("===== 미팅샌딩 금액이 없음 =====");
 				}
 												
 			}
 			
 			//인보이스 조회
-		    result = reserveDao.invoiceSelectList(param);		       
+		    result = reserveDao.invoiceSelectList(param);
+		    //invoiceDSeq = 0;    
 		    
 		}else {  //인보이스 항목 1건이상
 			
@@ -1355,7 +1351,7 @@ public class ReserveService {
 				list.add(detailMap);
 			}
 			
-			reserveDao.insertnoRoomInfo(list);
+			reserveDao.insertNoRoomInfo(list);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1365,9 +1361,14 @@ public class ReserveService {
 		return isValid;
 	}
 
-	public boolean deletenoRoomInfo(BMap param) throws Exception {
-		reserveDao.deletenoRoomInfo(param);
-		return false;
+	public Boolean deleteNoRoomInfo(BMap param) throws Exception {
+		Boolean isValid = true;
+		try {
+			reserveDao.deleteNoRoomInfo(param);
+		} catch (Exception e) {
+			e.printStackTrace();
+			isValid = false;
+		}
+		return isValid;
 	}
-	
 }

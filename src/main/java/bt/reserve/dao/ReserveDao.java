@@ -543,8 +543,8 @@ public class ReserveDao extends DBAbstractMapper {
 	 * @param list
 	 * @throws Exception
 	 */
-	public int insertnoRoomInfo(List<BMap> list) throws Exception{
-		return insert("ReserveMapper.insertnoRoomInfo", list);
+	public int insertNoRoomInfo(List<BMap> list) throws Exception{
+		return insert("ReserveMapper.insertNoRoomInfo", list);
 	}
 	
 	/**
@@ -552,8 +552,8 @@ public class ReserveDao extends DBAbstractMapper {
 	 * @param param
 	 * @throws Exception
 	 */
-	public void deletenoRoomInfo(BMap param) throws Exception{
-		delete("ReserveMapper.deletenoRoomInfo", param);
+	public void deleteNoRoomInfo(BMap param) throws Exception{
+		delete("ReserveMapper.deleteNoRoomInfo", param);
 		
 	}
 

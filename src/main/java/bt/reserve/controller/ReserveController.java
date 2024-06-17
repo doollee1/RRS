@@ -327,14 +327,7 @@ public class ReserveController {
 	 */
 	@RequestMapping(value = "/reserve/reserveNoRoom.do")
 	public String reserveNoRoom(ModelMap model,HttpServletRequest request) throws Exception {
-//		BMap param = new BMap();
-//		param.put("HEAD_CD", 500030);
-//		
-//		BMap param2 = new BMap();
-//		param2.put("HEAD_CD", 500020);
-//
-//		model.addAttribute("mem_gbn"  , reserveService.selectGetCommonCode(param));
-//		model.addAttribute("prc_sts"  , reserveService.selectGetCommonCode(param2));
+
 		return "/reserve/ReserveNoRoom"; 
 	}
 	
