@@ -23,7 +23,7 @@
 						<td class="medium_td">
 							<select id="S_MEM_GBN" name="S_MEM_GBN" class="cmc_combo" style="width:150px;">
 								<option value="">전체</option>
-								<c:forEach var="i" items="${mem_gbn}">
+								<c:forEach var="i" items="${pop_mem_gbn}">
 							    	<option value="${i.CODE}">${i.CODE_NM}</option>
 						    	</c:forEach>
 							</select>
@@ -113,8 +113,7 @@ function createGrid1(){
 		'전화번호',
 		'ID',
 		'Email',
-		'',
-		'회원구분'
+		'MEM_GBN',
 	]
 	var colModel = [
 		{ name: 'ROWNUM', width: 100, align: 'center' },
@@ -124,8 +123,7 @@ function createGrid1(){
 		{ name: 'TEL_NO', width: 100, align: 'center' },
 		{ name: 'USER_ID', width: 100, align: 'center' },
 		{ name: 'EMAIL', width: 100, align: 'center' },
-		{ name: 'CHK', index: 'CHK', width: 50, align: 'center', formatter: gridCboxFormat, sortable: false },
-		{ name: 'MEM_GBN', width : 0  , align : 'center', hidden:true }
+		{ name: 'MEM_GBN', width: 100, align: 'center', hidden:true },
 	]
 	
 	var gSetting = {

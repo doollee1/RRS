@@ -264,6 +264,17 @@ public class ReserveDao extends DBAbstractMapper {
 	public void updatePickGbn(BMap param) throws Exception{
         update("ReserveMapper.updatePickGbn", param);
 	}
+
+	/**
+	 * 예약테이블 PickGbn 수정
+	 * @param param
+	 * @throws Exception
+	 */
+	public void updateDeletePickGbn(BMap param) throws Exception{
+        update("ReserveMapper.updateDeletePickGbn", param);
+	}
+	
+	
 	
 	/**
 	 * 미팅샌딩정보 삭제
@@ -598,6 +609,78 @@ public class ReserveDao extends DBAbstractMapper {
 	 */
 	public BMap selectNokidChargeCalc(BMap param) throws Exception {
 		return (BMap) selectByPk("ReserveMapper.selectNokidChargeCalc", param);
+	}
+	
+	
+	/**
+	 * 싱글룸 추가 계산
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap roomupCalc(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.roomupCalc", param);
+	}
+	
+	
+	/**
+	 * 프리미엄 추가 계산
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap primCalc(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.primCalc", param);
+	}
+	
+	
+	/**
+	 * Early Check In 추가 계산
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap earlyCheckInCalc(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.earlyCheckInCalc", param);
+	}
+	
+	
+	/**
+	 * Late Check Out 추가 계산
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap lateCheckOutCalc(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.lateCheckOutCalc", param);
+	}
+	
+	
+	/**
+	 * 미팅샌딩 추가 계산
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap sendingCalc(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.sendingCalc", param);
+	}
+	
+	
+	/**
+	 * 야간할증미팅샌딩 추가 계산
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap sendingSubCalc(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.sendingSubCalc", param);
 	}
 	
 	

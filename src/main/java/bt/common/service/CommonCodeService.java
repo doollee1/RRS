@@ -94,11 +94,19 @@ public class CommonCodeService {
 	 * @param param
 	 * @throws Exception
 	 */
-	public void deleteCommonCodeDetailInfo(List<BMap> paramList) throws Exception{
-		for(int i = 0; i < paramList.size(); i++){
-			BMap map = new BMap(paramList.get(i));
-			commonCodeDao.deleteCommonCodeDetailInfo(map); //디테일 삭제
+	public Boolean deleteCommonCodeDetailInfo(List<BMap> paramList) throws Exception{
+		Boolean isValid = true;
+		try {
+			for(int i = 0; i < paramList.size(); i++){
+				BMap map = new BMap(paramList.get(i));
+				commonCodeDao.deleteCommonCodeDetailInfo(map); //디테일 삭제
+			}
 		}
+		catch (Exception e) {
+			e.printStackTrace();
+			isValid = false;
+		}
+		return isValid;
 	}
 	
 	/**
@@ -145,5 +153,82 @@ public class CommonCodeService {
 	 */
 	public String getCodeNm(BMap param) throws Exception{
 		return commonCodeDao.getCodeNm(param);
+	}
+	
+	
+	/**
+	 * 항공편 조회
+	 * @param param
+	 * @return List<BMap>
+	 * @throws Exception
+	 */
+	public List<BMap> selectFlightInfo(BMap param) throws Exception {
+		return commonCodeDao.selectFlightInfo(param);
+	}
+	/**
+	 * 항공편 추가
+	 * @param code
+	 * @return
+	 * @throws Exception
+	 */
+	public Boolean insertFlightInfo(BMap paramData, List<BMap> insertParam) throws Exception {
+		Boolean isValid = true;
+		try {
+			for(int i=0; i < insertParam.size();i++) {
+				BMap detail = new BMap(insertParam.get(i));
+				detail.put("LOGIN_USER", LoginInfo.getUserId());
+				//중복되는 값이 있는지 체크
+				if(commonCodeDao.selectCommonCodeDetailCnt(detail) == 0) {
+					commonCodeDao.insertFlightInfo(detail);
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			isValid = false;
+		}
+		return isValid;
+	}
+	/**
+	 * 항공편 수정
+	 * @param code
+	 * @return
+	 * @throws Exception
+	 */
+	public Boolean updateFlightInfo(BMap paramData, List<BMap> updateParam) throws Exception {
+		Boolean isValid = true;
+		try {
+			for(int i=0; i < updateParam.size();i++) {
+				BMap detail = new BMap(updateParam.get(i));
+				detail.put("LOGIN_USER", LoginInfo.getUserId());
+				
+				commonCodeDao.updateFlightInfo(detail);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			isValid = false;
+		}
+		return isValid;
+	}
+	/**
+	 * 항공편 삭제
+	 * @param param
+	 * @return 
+	 * @throws Exception
+	 */
+	public Boolean deleteFlightInfo(List<BMap> paramList) throws Exception {
+		Boolean isValid = true;
+		try {
+			for(int i = 0; i < paramList.size(); i++){
+				BMap param = new BMap(paramList.get(i));
+				commonCodeDao.deleteFlightInfo(param);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			isValid = false;
+		}
+		return isValid;
 	}
 }

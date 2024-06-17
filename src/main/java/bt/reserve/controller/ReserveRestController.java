@@ -67,7 +67,25 @@ public class ReserveRestController {
 		respData.put("image", reserveService.selectAirlineImg(paramData));
 		return respData;
 	}
-
+	
+	/**
+	 * 예약 현황 상세 조회
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/reserveSelectAirlineImg.do", method = RequestMethod.POST)
+	public BRespData reserveSelectAirlineImg(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BMap paramData = new BMap();
+		paramData.put("REQ_DT"   , (String) reqData.get("REQ_DT"));
+		paramData.put("SEQ", (String) reqData.get("SEQ"));
+		paramData.put("ADD_FILE_SEQ", (String) reqData.get("ADD_FILE_SEQ"));
+		
+		BRespData respData = new BRespData();
+		respData.put("image", reserveService.selectAirlineImg(paramData));
+		return respData;
+	}
 	/**
 	 * 예약 현황 리스트(그리드) 조회
 	 * @param reqData
@@ -257,6 +275,9 @@ public class ReserveRestController {
 		BMap paramData = new BMap();
 		paramData.put("HEAD_CD"    , 500210);
 		paramData.put("CHK_IN_DT"  , (String)reqData.get("CHK_IN_DT"));
+		paramData.put("CHK_OUT_DT"  , (String)reqData.get("CHK_OUT_DT"));
+		paramData.put("REQ_DT"  , (String)reqData.get("REQ_DT"));
+		paramData.put("SEQ"  , (String)reqData.get("SEQ"));
 		respData.put("result"      , reserveService.selectPrdInfo(paramData));
 		return respData;
 	}
@@ -296,6 +317,7 @@ public class ReserveRestController {
 		paramData.put("REQ_DT"    , (String)reqData.get("REQ_DT"));
 		paramData.put("PICK_GBN"  , (String)reqData.get("PICK_GBN"));
 		paramData.put("PROD_SEQ"  , reqData.get("PROD_SEQ"));
+		paramData.put("PER_NUM"  , reqData.get("PER_NUM"));
 		paramData.put("LOGIN_USER", LoginInfo.getUserId());
 		
 		if(!reserveService.pickupManager(paramData , detail)){
@@ -456,9 +478,7 @@ public class ReserveRestController {
 		param.put("CHK_OUT_DT" , (String)reqData.get("CHK_OUT_DT"));
 		param.put("booleanIn"  , (String)reqData.get("booleanIn"));
 		param.put("booleanOut" , (String)reqData.get("booleanOut"));
-//		param.put("R_PERSON"   , (String)reqData.get("R_PERSON"));
-		param.put("M_PERSON"   , (String)reqData.get("M_PERSON"));
-		param.put("G_PERSON"   , (String)reqData.get("G_PERSON"));
+		param.put("R_PERSON"   , (String)reqData.get("R_PERSON"));
 		param.put("CONFIRM_NO" , (String)reqData.get("CONFIRM_NO"));	
 		param.put("PICK_IN"    , (String)reqData.get("PICK_IN"));	
 		param.put("PICK_OUT"   , (String)reqData.get("PICK_OUT"));	

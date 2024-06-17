@@ -247,7 +247,7 @@
 	
 	<delete id="deleteCommonCodeDetailInfo" parameterType="BMap">
 	/* CommonCode.xml -> deleteCommonCodeDetailInfo */
-		DELETE BC_COMM_L
+		DELETE FROM BC_COMM_L
 		 WHERE HEAD_CD = #{HEAD_CD}
 		<if test='CODE != null and CODE != ""'>
 		   AND CODE = #{CODE}
@@ -259,7 +259,12 @@
 		SELECT COUNT(1)
 		  FROM BC_COMM_L
 		 WHERE HEAD_CD = #{HEAD_CD}
+		 <if test='CODE != null and CODE != ""'>
 		   AND CODE = #{CODE}
+		 </if>
+		 <if test='CODE_NM != null and CODE_NM != ""'>
+		   AND CODE_NM = #{CODE_NM}
+		 </if>
 	</select>
 	
 	<select id="selectCommonCodeList" parameterType="Map" resultType="BMap">
@@ -346,4 +351,99 @@
 	/* CommonCode.xml -> getCodeNm */
 		SELECT GETCODENM(#{S_HEAD_ID}, #{S_CODE}, #{LANG})
 	</select>
+	
+	<select id="selectFlightInfo" parameterType="BMap" resultType="BMap">
+	/* CommonCode.xml -> selectFlightInfo */
+		SELECT ROW_NUMBER() OVER(ORDER BY REF_CHR3, REF_CHR1, CODE_NM) ROWNUM,
+			   HEAD_CD,
+			   CODE,
+			   CODE_NM,
+			   REF_CHR1,
+			   REF_CHR2,
+			   REF_CHR3,
+			   STATUS
+		  FROM BC_COMM_L
+		 WHERE HEAD_CD = #{TIME}
+		 <if test='NAME != ""'>
+		   AND CODE_NM LIKE CONCAT('%',#{NAME},'%')
+	    /* AND CODE_NM LIKE '%${NAME}%' */
+		 </if>
+	  ORDER BY REF_CHR3, REF_CHR1, CODE_NM
+	</select>
+	
+	<insert id="insertFlightInfo" parameterType="BMap">
+	/* CommonCode.xml -> insertFlightInfo */
+		INSERT INTO BC_COMM_L
+		     ( HEAD_CD,
+			   CODE,
+			   READ_CD,
+			   CODE_NM,
+			   CODE_EN,
+			   CODE_FR,
+			   CODE_4TH,
+			   REF_CHR1,
+			   REF_CHR2,
+			   REF_CHR3,
+			   REF_CHR4,
+			   REF_CHR5,
+			   REF_NUM1,
+			   REF_NUM2,
+			   REF_NUM3,
+			   REF_NUM4,
+			   REF_NUM5,
+			   PRIORITY,
+			   REF_CNT,
+			   STATUS,
+			   REG_DT,
+			   REG_ID,
+			   UPT_DT,
+			   UPT_ID
+		     )
+		VALUES (#{HEAD_CD},
+				#{CODE_NM},
+				'',
+				#{CODE_NM},
+				'',
+				'',
+				'',
+				#{REF_CHR1},
+				#{REF_CHR2},
+				#{REF_CHR3},
+				'',
+				'',
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				'Y',
+				NOW(),
+				#{LOGIN_USER},
+				NOW(),
+				#{LOGIN_USER}
+				)
+	</insert>
+	
+	<update id="updateFlightInfo" parameterType="BMap">
+	/* CommonCode.xml -> updateFlightInfo */
+		UPDATE BC_COMM_L
+		   SET CODE     = #{CODE_NM},
+			   CODE_NM  = #{CODE_NM},
+			   REF_CHR1 = #{REF_CHR1},
+			   REF_CHR2 = #{REF_CHR2},
+			   REF_CHR3 = #{REF_CHR3},
+			   STATUS   = #{STATUS},
+			   UPT_DT   = NOW(),
+			   UPT_ID   = #{LOGIN_USER}
+		 WHERE HEAD_CD  = #{HEAD_CD} 
+		   AND CODE     = #{CODE}
+	</update>
+	<delete id="deleteFlightInfo" parameterType="BMap">
+	/* CommonCode.xml -> deleteFlightInfo */
+		DELETE FROM BC_COMM_L
+		 WHERE HEAD_CD = #{HEAD_CD}
+		   AND CODE    = #{CODE}
+	</delete>
 </mapper>

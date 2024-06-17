@@ -105,6 +105,8 @@
 			if($('#grid2').jqGrid('getRowData', changeRowId).ROW_STATUS != "I"){
 				$("#grid2").jqGrid('setCell', $("#grid2").getGridParam('selrow'), 'ROW_STATUS', 'U');
 			}
+			
+			$("#grid2").jqGrid("saveRow",changeRowId);
 		});
 		
 		$('#grid2').jqGrid('setGridParam', {
@@ -139,6 +141,7 @@
 		
 	});
 
+	//공통코드 마스터
 	function createGrid1(){
 		var colName = ['CHK',
 						'<s:message code='common.headercode'/>',
@@ -199,6 +202,7 @@
 		btGrid.createGrid('grid1', colName, colModel, gSetting);
 	}
 	
+	//공통코드 디테일
 	function createGrid2(){
 		var colName = ['<input type="checkbox" style="margin-top:1px;" onclick="hdCheckboxAll(event, \'grid2\')" /> ',
 						'<s:message code='common.headercode'/>',
@@ -220,7 +224,9 @@
 						'<s:message code='common.relationNum5'/>',
 						'<s:message code='common.sortorder'/>',
 						'ROW_STATUS',
-						'<s:message code='common.status'/>'];
+						'<s:message code='common.status'/>',
+						'삭제'
+						];
 		var colModel = [
 			{name : 'CHK',index : 'CHK',width : 0,align : 'center',formatter : gridCboxFormat, hidden:true},
 			{ name: 'HEAD_CD', width: 75, align: 'center' },
@@ -242,7 +248,8 @@
 			{ name: 'REF_NUM5', width: 90, align: 'right', editable:true, editoptions:{maxlength:22}, formatter: 'integer'},
 			{ name: 'PRIORITY', width: 90, align: 'right', editable:true, editoptions:{maxlength:3}, formatter: 'integer' },
 			{ name: 'ROW_STATUS', width: 100, hidden:true},
-			{ name: 'STATUS', width: 80, align: 'center', editable:true, edittype:"select", formatter : "select", editoptions:{value:'${status}'}}
+			{ name: 'STATUS', width: 80, align: 'center', editable:true, edittype:"select", formatter : "select", editoptions:{value:'${status}'}},
+			{ name: 'CHK2'   , index : 'CHK2', width : 50, align : 'center', formatter : gridCboxFormat, sortable: false}
 	  	];
 		
 		var gSetting = {
@@ -252,16 +259,14 @@
 				searchInit : false,
 				resizeing : true,
 				rownumbers:false,
-				shrinkToFit: true,
+				shrinkToFit: false,
 				autowidth: true,
 				queryPagingGrid:true, // 쿼리 페이징 처리 여부
 				height:269
 		};
 		
-		
 		btGrid.createGrid('grid2', colName, colModel, gSetting);
 	}
-
 	
 	function cSearch(currentPage){
 		var vCurrentPage = 1;
@@ -398,24 +403,43 @@
 		btGrid.gridAddRow("grid2", "last", data);
 	}
 	
-	/* 그리드 헤더 체크박스 선택 */
-	function hdCheckboxAll(e, gid) {
-		e = e || event;
-		e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
-
-		var ids = $('#' + gid).jqGrid('getDataIDs');
-		for (var i = 0, len = ids.length; i < len; i++) {
-			if ($(e.target).prop('checked') == true) {
-				$('#' + gid + '_' + ids[i] + '_CHK').prop('checked', true);
-			} else {
-				$('#' + gid + '_' + ids[i] + '_CHK').prop('checked', false);
+	function cDel(){
+		var ids = $("#grid2").jqGrid("getDataIDs");
+		var gridData = [];
+		var cnt = 0;
+		
+		btGrid.gridSaveRow('grid2');
+		for(var i = 0; i < ids.length; i++){
+			console.log($('#grid2_' + ids[i] + '_CHK2').prop('checked'));
+			if($('#grid2_' + ids[i] + '_CHK2').prop('checked')){
+				cnt++;
+				gridData.push($("#grid2").getRowData(ids[i]));
 			}
 		}
+		
+		if(cnt < 1){
+			alert("삭제할 데이터를 선택하십시오.");
+			return;
+		}
+		
+		if(confirm("삭제하시겠습니까?")){
+			var url = '/common/deleteCommonCodeDetailInfo.do';
+			var param = {"gridData" : gridData};
+			
+			fn_ajax(url, false, param, function(data, xhr){
+				if(data.success){
+					alert("삭제하였습니다.");
+				}else{
+					alert("삭제에 실패했습니다. "+data.message);
+				}
+				
+				cSearch();
+			});
+		}
 	}
-
+	
 	//그리드 체크박스 이벤트
 	function grid_cbox_onclick(gid, rowid, colkey) {
-		
 	}
 </script>
 

@@ -11,7 +11,8 @@
 .pbtn_default {margin: 0 3px -1px 5px;padding: 3px 10px 3px 10px;border: 1px solid #a9cbeb !important;background: #bdd6ee !important;color: #2269b1;}
 .notice_file_del {margin:3px; margin-right:0px; font-size:11px;}
 .downLink {padding:0px 3px 0px 3px; font-size:15px;}
-.ct_grid_top_left {vertical-align: middle;}
+.ct_grid_top_left {vertical-align: middle; background-position:left 10px;}
+.ct_grid_top_right {display:flex; flex-direction:column;}
 #pdfUpload {wdith:100%;}
 #ATTACHFILE {display:table-cell; float: right;padding-left:105px;}
 #ATTACHFILE .MultiFile-wrap {margin-top:5px; margin-left:5px; margin-bottom:5px;}
@@ -38,8 +39,10 @@
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
 		<div class="pop_grid_top_wrap">
 			<div class="ct_grid_top_left">
-			    예약기한<input type="text" class="cmc_txt" id="POP_EXP_DT" name="POP_EXP_DT" data-type="date" style="width:20 .5%;"/>
-			    예약금<input type="text" id="POP_DEP_AMT" name="POP_DEP_AMT" style="text-align: right" value="0" class="withComma" >
+			<div style="height:100%; padding-top:12px;">
+				 예약기한<input type="text" class="cmc_txt" id="POP_EXP_DT" name="POP_EXP_DT" data-type="date" style="width:20 .5%;"/>
+			 	예약금<input type="text" id="POP_DEP_AMT" name="POP_DEP_AMT" style="text-align: right" value="0" class="withComma" >
+			</div>
 			</div>
 			<div class="ct_grid_top_right">
 				<input type="hidden" id="hFileUid" name="hFileUid" />
@@ -47,8 +50,10 @@
 					<div id="ATTACHFILE"></div>
 					<div id="invoicePdfAttach"></div>
 				</div>
-				<button class="btn btn-default" id="btn_addRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.addRow'/></button>
-            	<button class="btn btn-default" id="btn_delRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.delRow'/></button>
+				<div>
+					<button class="btn btn-default" id="btn_addRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.addRow'/></button>
+            		<button class="btn btn-default" id="btn_delRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.delRow'/></button>
+				</div>
             </div>
 		</div>
 		<div class="pop_grid_wrap">
@@ -251,8 +256,8 @@ $(function() {
 				               }, maxlength:5
 						      }
 						  }
-						, { name: 'ITEM_CD',  width : 120, align: 'left'   , editable:true , edittype:"select", formatter : "select"}
-						, { name: 'ITEM_NM',  width : 150, align: 'left' , editable:true, editoptions:{maxlength:100}}
+						, { name: 'ITEM_CD',  width : 220, align: 'left'   , editable:true , edittype:"select", formatter : "select"}
+						, { name: 'ITEM_NM',  width : 220, align: 'left' , editable:true, editoptions:{maxlength:100}}
 						, { name: 'AMT_SIGN', width : 50 , align: 'center' , editable:true, edittype:"select" ,  editoptions:{value:{"￦" : "￦"}}} 
 						, { name: 'PER_AMT',  width : 70 , align: 'right' , editable:true, formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{    
 				            dataInit: function(element) {

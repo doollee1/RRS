@@ -155,10 +155,10 @@
 						</select>
 					</td>
 <!-- 					항공이미지 보기 -->
-<%-- 					<th class="image"><s:message code='reservation.arrImg'/></th> --%>
-<!-- 					<td class="image"> -->
-<!-- 						<button type="button" class="pbtn_default" id="ARR_IMG">이미지보기</button> -->
-<!-- 					</td> -->
+					<th class="image"><s:message code='reservation.arrImg'/></th>
+					<td class="image">
+						<button type="button" class="pbtn_default" id="ARR_IMG">이미지보기</button>
+					</td>
 				</tr>	
 				<tr>
 				    <th><s:message code='reservation.totalCnt'/></th>
@@ -268,8 +268,9 @@
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>&nbsp;
-						<input type="text" id="TWIN_CNT" name="TWIN_CNT" style="width:30px; text-align: right";" value="0" maxlength="3" class="withComma"/>개 
-						<input type="text" id="KING_CNT" name="KING_CNT" style="width:30px; text-align: right";" value="0" maxlength="3" class="withComma"/>개
+						<input type="text" id="TWIN_KING_CNT" name="TWIN_KING_CNT" style="width:30px; text-align: right";" value="0" maxlength="3" class="withComma"/>개
+						<input type="hidden" id="TWIN_CNT" name="TWIN_CNT" style="width:30px; text-align: right";" value="0" maxlength="3" class="withComma"/>
+						<input type="hidden" id="KING_CNT" name="KING_CNT" style="width:30px; text-align: right";" value="0" maxlength="3" class="withComma"/>
 					</td>                                                           
 					<th><s:message code='reservation.addSingle'/></th>
 					<td>
@@ -357,7 +358,7 @@
 			</table>
 			
 			<!-- 그리드 시작 -->
-			<div class="ctu_g3_wrap" style="width:100%; float:left; padding-top:6px; margin-bottom:6px; ">
+			<div class="ctu_g3_wrap" style="width:100%; float:left; padding-top:10px; margin-bottom:6px; ">
 				<div class="pop_grid_top_wrap">
 					<div class="ct_grid_top_left" style="align:left; width:10%; float:left; margin-bottom:-6px; padding-top:1px; padding-bottom:-6px; ">
 						<button type="button" class="pbtn_default" id="btn_com_add" style="align:left">동반자추가</button>
@@ -496,12 +497,19 @@ $(function() {
 	$('#ROOM_TYPE').change(function() {
 		if($(this).val() == '01'){ // 01:트윈, 02:킹
 			$("#KING_CNT").val("0");
-			$("#TWIN_CNT").attr("readonly", false);
-			$("#KING_CNT").attr("readonly", true);
 		}else{
 			$("#TWIN_CNT").val("0");
-			$("#TWIN_CNT").attr("readonly", true);
-			$("#KING_CNT").attr("readonly", false);
+		}
+		fn_roomTypeCnt();
+	});
+
+	$("#TWIN_KING_CNT").on("change , keyup", function(){
+		if($("#ROOM_TYPE").val() == '01'){ // 01:트윈, 02:킹
+			$("#KING_CNT").val("0");
+			$("#TWIN_CNT").val($(this).val());
+		}else{
+			$("#TWIN_CNT").val("0");
+			$("#KING_CNT").val($(this).val());
 		}
 	});
 	
@@ -517,8 +525,27 @@ $(function() {
 				$("#ADD_HDNG_GBN").attr("disabled", false);
 			}
 		}
-		
+		fn_roomTypeCnt();
 	});
+	
+	function fn_roomTypeCnt(){
+		var roomTypeCnt = 0;
+		roomTypeCnt = parseInt($('#M_PERSON').val()) + parseInt($('#G_PERSON').val()) + parseInt($('#N_PERSON').val());
+		if(roomTypeCnt > 0){
+			roomTypeCnt = Math.ceil(roomTypeCnt/2);
+			
+			$("#TWIN_KING_CNT").val(roomTypeCnt);
+			if($("#ROOM_TYPE").val() == '01'){ //01 트윈
+				$("#TWIN_CNT").val(roomTypeCnt);
+				$("#KING_CNT").val("0");
+			}else if($("#ROOM_TYPE").val() == '02'){ //02 킹
+				$("#TWIN_CNT").val("0");
+				$("#KING_CNT").val(roomTypeCnt);
+			}else{
+				
+			}
+		}
+	}
 	
 	function fn_init(receivedData){
 		var day = new Date();
@@ -530,9 +557,14 @@ $(function() {
 // 		alert("req_dt : " + req_dt);
 		$("input:radio[name='LATE_CHECK_IN'][value='3']").prop("checked", true);
 		$("input:radio[name='LATE_CHECK_OUT'][value='3']").prop("checked", true);
-		$("#TWIN_CNT , #KING_CNT").attr("readonly", true);
-		$("#TWIN_CNT , #KING_CNT").val("0");
-
+		$("#TWIN_CNT").val("0");
+		$("#KING_CNT").val("0");
+		
+		//예약 현황의 상세보기로 넘어왔다면 필요없는 부분 disabled 하기
+		if(receivedData.DETAIL == 'Y'){
+			//미팅샌딩 상세버튼 /상태 변경 버튼 / 인보이스 발행일자 생성 버튼 / 입금완료 버튼 / 행추가,행삭제 버튼 / 저장 버튼
+			$("#btn_search, #insertPickGbn, #btn_create, #btn_deposit, #changeStatus, #btn_com_add, #btn_List_addRow, #btn_List_delRow, #save").attr("disabled", true);
+		}
 		if(fn_empty(seq || req_dt)){ //신규
 		    $(".ui-dialog-title").text('<s:message code='reservation.registration'/>');
 		    $("#CHK_IN_DT"      ).val(Util.converter.dateFormat1(today));
@@ -612,20 +644,18 @@ $(function() {
     		}else{
     			$('[name='+ key +']').val(val);
     		}
-    		
+
     		if(key == "TWIN_CNT"){
     			var room_cnt = parseInt(val);
-    			if(room_cnt < 1){
-    				$("#TWIN_CNT").attr("readonly", true);
-    				$("#KING_CNT").attr("readonly", false);
+    			if(room_cnt > 0){
+    				$("#TWIN_KING_CNT").val(val);
     			}
     		}
 
     		if(key == "KING_CNT"){
     			var room_cnt2 = parseInt(val);
-    			if(room_cnt2 < 1){
-    				$("#TWIN_CNT").attr("readonly", false);
-    				$("#KING_CNT").attr("readonly", true);
+    			if(room_cnt2 > 0){
+    				$("#TWIN_KING_CNT").val(val);
     			}
     		}
 
@@ -709,19 +739,11 @@ $(function() {
 				alert("ajax 통신 error!");
 			}else{
 				fn_dataSet(data.result);
-				fn_imageSet(data.image);
+// 				fn_imageSet(data.image);
 			}
 		});
 	}
-	
-	function fn_imageSet(data){
-		if(!fn_empty(data)){
-			$(".image").show();
-		}else{
-			$(".image").hide();
-		}
-	}
-	
+
 	// 천단위 콤마 (소수점포함)
 	function numberWithCommas(num) {
 	    var parts = num.toString().split(".");	
@@ -767,8 +789,6 @@ $(function() {
 	    $("#FLIGHT_IN_HH" ).attr("disabled",temp);
 	    $("#FLIGHT_OUT"  ).attr("disabled",temp);
 	    $("#FLIGHT_OUT_HH" ).attr("disabled",temp);
-	    $("#TWIN_CNT"     ).attr("disabled",temp);
-	    $("#KING_CNT"     ).attr("disabled",temp);
 	    $("#ROOM_ADD_IL"     ).attr("disabled",temp);
 	    $("#ROOM_ADD_CNT"     ).attr("disabled",temp);
 	    $("#PRIM_ADD_IL"     ).attr("disabled",temp);
@@ -1250,17 +1270,21 @@ $(function() {
 			"REQ_DT" : req_dt
 		};
 		
+		var isReserveDetlYn = "";
 		fn_ajax(url3, false, param3, function(data, xhr) {
 			
-			console.log("=== 예약상세여부 : "+data.result)
-			if(data.result == "N") {
-				
-				alert("동반자 정보가 없습니다.");
-				return false;
-			}			
+			isReserveDetlYn = data.result;
+			console.log("=== 예약상세여부 : "+isReserveDetlYn);									
 		});
 		
 		
+		if(isReserveDetlYn != "Y"){  //예약상세여부가 'Y'가 아닐시
+					
+			alert("동반자 정보가 없습니다.");
+			return false;
+		}
+		
+	
 		var url = "/reserve/InvoicePopup.do";
 		var pid = "p_invoicePopup";
 		var param = {
@@ -1322,6 +1346,7 @@ $(function() {
 			        , "PRC_STS"      : $("#PRC_STS"     ).val()
 			        , "TOT_PERSON"   : $("#TOT_PERSON"  ).val().replaceAll("," , "")
 			        , "CHK_IN_DT"    : $("#CHK_IN_DT"   ).val().replaceAll(".","")
+			        , "CHK_OUT_DT"    : $("#CHK_OUT_DT"   ).val().replaceAll(".","")
 	                };
 	    if(fn_empty(seq) || fn_empty(req_dt)) {
 	    	alert("미팅샌딩등록은 상세화면에서 가능합니다.");
@@ -1344,18 +1369,51 @@ $(function() {
 			}
 		});
 	});
-	
+
 	$("#ARR_IMG").on("click" , function(){
+		reserveSelectAirlineImg('1');
+	});	
+
+	function reserveSelectAirlineImg(fileseq){
 		var url = "/reserve/arrImg.do";
 	    var pid = "p_arrImgPopup";
-	    var param = { "SEQ"          : seq
-			        , "REQ_DT"       : req_dt
+	    var addfileseq = fileseq;
+	    var param = { "REQ_DT"          : req_dt
+			        , "SEQ"             : seq
+			        , "ADD_FILE_SEQ"    : addfileseq
 	                };
 	    
 		popupOpen(url, pid, param, function(data) {
-			initSelect();
+			reserveSelectAirlineImg2();
 		});
-	});	
+		
+// 		jqg30_ADD_FILE_SEQ
+	}
+
+	function reserveSelectAirlineImg2(){
+		var url = "/reserve/reserveSelectAirlineImg.do";
+	    var param = { "REQ_DT"          : req_dt
+			        , "SEQ"             : seq
+			        , "ADD_FILE_SEQ"    : addfileseq
+	                };
+	    
+		fn_ajax(url, true, param, function(data, xhr){
+			if(data.MESSAGE != "OK"){
+				alert("ajax 통신 error!");
+			}else{
+				fn_imageSet(data.image);
+			}
+		});
+	}
+	
+	function fn_imageSet(data){
+		if(!fn_empty(data)){
+			$(".image").show();
+		}else{
+			$(".image").hide();
+		}
+	}
+	
 
 	$("#changeStatus").on("click" , function(){
 		changeStatus();
@@ -1477,8 +1535,8 @@ $(function() {
 			        , "PAY_AMT"      : pay_amt
 			        , "MEM_GBN"      : $("#MEM_GBN").val()
 			        , "R_PERSON"     : String(parseInt($('#M_PERSON').val()) + parseInt($('#G_PERSON').val()))
-			        , "booleanIn"    : lateYn().booleanIn  == true ? "IN" : String(parseInt($('#M_PERSON').val()) + parseInt($('#G_PERSON').val()))
-			        , "booleanOut"   : lateYn().booleanOut == true ? "OUT": String(parseInt($('#M_PERSON').val()) + parseInt($('#G_PERSON').val()))
+			        , "booleanIn"    : String(parseInt($('#M_PERSON').val()) + parseInt($('#G_PERSON').val()))
+			        , "booleanOut"   : String(parseInt($('#M_PERSON').val()) + parseInt($('#G_PERSON').val()))
 			        , "CHK_IN_DT"    : $("#CHK_IN_DT").val().replaceAll(".", "")
 			        , "CHK_OUT_DT"   : $("#CHK_OUT_DT").val().replaceAll(".", "")
  			        , "CONFIRM_NO"   : ""
@@ -1626,7 +1684,19 @@ $(function() {
 						, { name: 'FLIGHT_OUT',  width : 80, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT}'}}
 						, { name: 'FLIGHT_OUT_HH',  width : 74, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
 						
-						, { name: 'ADD_FILE_SEQ',  width : 120, align: 'left' , editable:true, editoptions:{maxlength:100}}
+// 						, { name: 'ADD_FILE_SEQ',  width : 120, align: 'center' , editable:true, editoptions:{maxlength:100}, formatter:showARR_IMG}
+
+// str += "<div>";
+// 		str += "<button class='btn btn-default' onclick=\"javascript:fn_detail('" + rowid + "')\">항공이미지보기 </button>";
+// 		str += "</div>";
+		
+		
+		
+// 						, { name: 'ADD_FILE_SEQ',  width : 120, align: 'center' , editable:true, editoptions:{maxlength:100}, formatter:button, editoptions:{value:'${ADD_FILE_SEQ}'}}
+// 						<button type="button" class="pbtn_default" id="ARR_IMG">이미지보기</button>, value2:'${ADD_FILE_SEQ}'
+// 						reserveSelectAirlineImg('1');
+						, { name: 'ADD_FILE_SEQ',  width : 120, align: 'left' , editable:true, edittype:"button" , formatter : "button" , editoptions:{value:'이미지보기'}}
+						
 						, { name: 'HDNG_GBN',  width : 120, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn_g}'}}
 						, { name: 'LATE_CHECK_IN',  width : 80, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_IN}'}}
 						, { name: 'LATE_CHECK_OUT',  width : 80, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_OUT}'}}
@@ -1792,6 +1862,20 @@ $(function() {
 	    	}
 		}
 	});
+	
+
+	//`이미지보기 버튼
+	function showARR_IMG(cellvalue, options, rowObject){
+		var str = "";
+		var rowid = options.rowId;
+
+		str += "<div>";
+		str += "<button class='btn btn-default' onclick=\"javascript:fn_detail('" + rowid + "')\">항공이미지보기 </button>";
+		str += "</div>";
+		
+		return str;
+	}
+	
 	
 	$("#reserveGrid").bind("change , keyup" , function(){
 		var changeRowId  = $('#reserveGrid').jqGrid('getGridParam', 'selrow');

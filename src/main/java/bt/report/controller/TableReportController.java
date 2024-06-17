@@ -120,12 +120,12 @@ public class TableReportController {
         List<CodeVO> HList = commonService.selectCommonCode("500200", param);
         
         param.put("REF_CHR1"  ,  "D");
-        param.put("REF_CHR2"  ,  reqData.get("MEM_GBN"));
+        //param.put("REF_CHR2"  ,  reqData.get("MEM_GBN"));
         
         List<CodeVO> DList = commonService.selectCommonCode("500200", param);
         
         param.put("REF_CHR1"  ,  "T");
-        param.put("REF_CHR2"  ,  reqData.get("MEM_GBN"));
+        //param.put("REF_CHR2"  ,  reqData.get("MEM_GBN"));
         
         List<CodeVO> TList = commonService.selectCommonCode("500200", param);
       
@@ -243,10 +243,10 @@ public class TableReportController {
 	            else 
 	            {
 	                String codeNm = DList.get(i).getValue();
-	
+	                
 	                if(DList.get(i).getCode().equals("D04") || DList.get(i).getCode().equals("D32"))
 	                {
-	                	String expDt = (String) resultDeptDetail.get("EXP_DT");
+	                	String expDt   = (String) resultDeptDetail.get("EXP_DT");
 	                    codeNm = codeNm.replace("[0]", numFormatter.format(resultDeptDetail.get("DEP_AMT")));  //예약금
 	                    codeNm = codeNm.replace("[1]", expDt.substring(4, 6) + "월 "+expDt.substring(6, 8) + "일");  //예약기한
 	                }
@@ -261,7 +261,13 @@ public class TableReportController {
 	                	
 	                	reportBalAmt = reportTotAmt - reportDepAmt;
 	                    codeNm = codeNm.replace("[0]", numFormatter.format(reportBalAmt)); //인보이스 잔금 = 총금액 - 팝업 예약금
-	                }           
+	                } else if(DList.get(i).getCode().equals("D07"))
+	                {         
+	                	String chkInDt = (String) resultDeptDetail.get("CHK_IN_DT");
+	                	chkInDt = chkInDt.substring(2, 8);
+	                	codeNm  = codeNm.replace("[0]", (String) resultDeptDetail.get("REQ_HAN_NM"));  //예약자 이름
+	                    codeNm  = codeNm.replace("[1]", chkInDt.replace(".", ""));   				  //예약 체크인 날짜
+	                }
 	                currentRow.getCell(1).setValue(codeNm);
 	            }
 	            

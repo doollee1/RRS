@@ -74,10 +74,17 @@ public class CommonCodeController {
 	@RequestMapping(value = "/common/deleteCommonCodeDetailInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData deleteCommonCodeDetailInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
-		List<BMap> paramList = reqData.getParamDataList("gridData");
 		BRespData respData = new BRespData();
 		
-		commonCodeService.deleteCommonCodeDetailInfo(paramList);
+		try {
+			List<BMap> paramList = reqData.getParamDataList("gridData");
+			commonCodeService.deleteCommonCodeDetailInfo(paramList);
+			
+			respData.put("success", true);
+		}catch(Exception e) {
+			respData.put("success", false);
+			respData.put("message", e.getMessage());
+		}
 		
 		return respData;
 	}

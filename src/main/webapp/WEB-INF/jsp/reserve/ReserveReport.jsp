@@ -334,6 +334,7 @@
 	    var param = {};                       
 		param.SEQ    = selRowData.SEQ;    
 		param.REQ_DT = selRowData.REQ_DT.replaceAll(".",""); 
+		param.DETAIL = 'Y';
 		
 	    popupOpen(url, pid, param, function(data) {
 	    	cSearch();

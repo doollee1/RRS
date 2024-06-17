@@ -899,26 +899,18 @@
 	</select>
 	
 	<select id="selectPickupList" parameterType="BMap" resultType="BMap">
-		SELECT T1.REQ_DT   AS REQ_DT   /* 예약일자  */
-	         , T1.REQ_SEQ  AS REQ_SEQ  /* 순번      */
-	         , T1.PROD_SEQ AS PROD_SEQ /* 상품구분  */
-	         , T1.PER_NUM  AS PER_NUM  /* 인원수    */
-	         , T1.CAR_NUM  AS CAR_NUM  /* 차량대수  */
-	         , T1.USE_AMT  AS USE_AMT  /* 이용금액  */
-	         , T1.ADD_AMT  AS ADD_AMT  /* 부가금액  */
-	         , T1.REG_DTM  AS REG_DTM  /* 등록일시  */
-	         , T1.REG_ID   AS REG_ID   /* 등록자ID  */
-	         , T1.UPD_DTM  AS UPD_DTM  /* 수정일시  */
-	         , T1.UPD_ID   AS UPD_ID   /* 수정자ID  */
-	         , (SELECT code
-	              FROM BC_COMM_L  TT1
-	                     , TB_PROD_INFO TT2
-	             WHERE 1 = 1
-	               AND TT1.HEAD_CD  = '500050'
-	               AND TT1.REF_CHR1 = TT2.HDNG_GBN
-	               AND TT1.REF_CHR2 = TT2.PROD_COND
-	               AND TT2.PROD_SEQ = T1.PROD_SEQ
-	               AND TT2.BAS_YY   = T2.BAS_YY) AS PICK_GBN /* 픽업구분 */
+		SELECT T1.REQ_DT   AS REQ_DT   /* 예약일자    */
+	         , T1.REQ_SEQ  AS REQ_SEQ  /* 순번         */
+	         , T1.PROD_SEQ AS PROD_SEQ /* 상품구분   */
+	         , T1.PER_NUM  AS PER_NUM  /* 인원수     */
+	         , T1.CAR_NUM  AS CAR_NUM  /* 이용횟수   */
+	         , T1.USE_AMT  AS USE_AMT  /* 이용금액   */
+	         , T1.ADD_AMT  AS ADD_AMT  /* 부가금액   */
+	         , T1.REG_DTM  AS REG_DTM  /* 등록일시   */
+	         , T1.REG_ID   AS REG_ID   /* 등록자ID */
+	         , T1.UPD_DTM  AS UPD_DTM  /* 수정일시   */
+	         , T1.UPD_ID   AS UPD_ID   /* 수정자ID */
+	         , T2.PICK_GBN AS PICK_GBN /* 픽업구분   */
 	      FROM TB_REQ_PICKUP T1
 	         , TB_REQ_BOOKING_M T2
 	     WHERE 1 =1
@@ -974,6 +966,17 @@
 	<update id="updatePickGbn" parameterType="BMap">
 	    UPDATE TB_REQ_BOOKING_M
            SET PICK_GBN = #{PICK_GBN}
+             , PER_NUM = #{PER_NUM}
+             , UPD_DTM  = NOW()
+             , UPD_ID   = #{LOGIN_USER}
+         WHERE REQ_DT   = #{REQ_DT}
+           AND SEQ      = #{REQ_SEQ}
+	</update>
+	
+	<update id="updateDeletePickGbn" parameterType="BMap">
+	    UPDATE TB_REQ_BOOKING_M
+           SET PICK_GBN = '01'
+             , PER_NUM = '0'
              , UPD_DTM  = NOW()
              , UPD_ID   = #{LOGIN_USER}
          WHERE REQ_DT   = #{REQ_DT}
@@ -986,9 +989,6 @@
 	     WHERE 1 = 1
 	       AND REQ_DT   = #{REQ_DT}
            AND REQ_SEQ  = #{REQ_SEQ}
-       <if test="HD_PROD_SEQ != null and HD_PROD_SEQ != ''">
-		   AND PROD_SEQ = #{HD_PROD_SEQ} 
-	   </if>
 	</delete>
 	
 	<update id="updateReserveStatus" parameterType="BMap">
@@ -1126,7 +1126,7 @@
 		 WHERE 1 = 1
 		   AND REQ_DT   = #{REQ_DT}
 		   AND REQ_SEQ  = #{SEQ}
-		   AND ADD_FILE_SEQ = 1
+		   AND ADD_FILE_SEQ = #{ADD_FILE_SEQ}
 	</select>
 	
 	<insert id="insertReserveInfo" parameterType="BMap"> 
@@ -1437,15 +1437,13 @@
 											    WHERE HDNG_GBN = #{ADD_HDNG_GBN}
 											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
 											    	    		
-			                <if test="'02'.equals(MEM_GBN)">
 			                <![CDATA[
- 			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
+ 			                AND PROD_COND = (CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
  							                     THEN 'DU10'
  							                     WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
  							                     THEN 'DD10'
- 							                     END
+ 							                     END)
  							]]>
- 							</if>
  							
 										    ) AS A 
 										JOIN 
@@ -1464,15 +1462,13 @@
 											    WHERE HDNG_GBN = #{ADD_HDNG_GBN}
 											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
 											    	    		
-			                <if test="'02'.equals(MEM_GBN)">
 			                <![CDATA[
- 			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
+ 			                AND PROD_COND = (CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
  							                     THEN 'DU10'
  							                     WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
  							                     THEN 'DD10'
- 							                     END
+ 							                     END)
  							]]>
- 							</if>
  							
                           						AND SSN_GBN = '3'
                           						
@@ -2000,13 +1996,13 @@
         SELECT DISTINCT A.COM_AMT  AS PACKAGE_AMT /* 숙박비 */
           FROM (
               SELECT
-               <if test = 'agnGb == null or "".equals(agnGb)'>
+               <if test = 'AGN_GB == null or "".equals(AGN_GB)'>
                 MAX(AA.COM_AMT) AS COM_AMT							<!-- 일반금액 -->
                </if>
-               <if test = 'agnGb != null and "1".equals(agnGb)'>
+               <if test = 'AGN_GB != null and "1".equals(AGN_GB)'>
                 MAX(AA.AGN_DIS_AMT) AS COM_AMT						<!-- 총판에이전시금액 -->
                </if>
-               <if test = 'agnGb != null and "2".equals(agnGb)'>
+               <if test = 'AGN_GB != null and "2".equals(AGN_GB)'>
                 MAX(AA.AGN_COM_AMT) AS COM_AMT						<!-- 일반에이전시금액 -->
                </if>  
                 FROM tb_prod_info   AA
@@ -2085,6 +2081,220 @@
 			  OR CC.CHK_DT BETWEEN BB.ST_DT3 AND BB.ED_DT3
 	       GROUP BY AA.BAS_YY, AA.BAS_YY_SEQ, AA.PROD_SEQ, CC.CHK_DT
 	       ) A
+		]]>
+	</select>
+	
+	
+	<!-- 싱글 룸  추가 계산 -->
+	<select id="roomupCalc" parameterType="BMap" resultType="BMap">
+		<![CDATA[
+         SELECT DISTINCT
+				A.CODE           AS ITEM_CD			/* 항목코드 */
+			   ,A.CODE_NM        AS ITEM_NM			/* 항목명  */
+		       ,A.REF_CHR2       AS AMT_SIGN		/* 통화기호 */
+		       ,C.COM_AMT        AS PER_AMT		    /* 이용금액 */
+			   ,B.ROOM_ADD_IL    AS USE_DAY         /* 이용 */
+               ,A.REF_CHR3       AS UNIT_DAY  		/* 사용단위 */
+               ,B.ROOM_ADD_CNT   AS USE_NUM         /* 수량 */
+               ,A.REF_CHR4       AS UNIT_NUM   	    /* 수량단위 */
+			   ,IFNULL(C.COM_AMT * B.ROOM_ADD_IL * B.ROOM_ADD_CNT, 0) AS TOT_AMT /* 총괄금액 */
+          FROM BC_COMM_L A, 
+		       TB_REQ_BOOKING_M B, 
+		       TB_PROD_INFO C,
+		       TB_BAS_YY_INFO D
+         WHERE A.HEAD_CD = '500140'  -- 인보이스 항목
+		   AND A.CODE = 'ROOMADD02' 
+		   AND B.BAS_YY = C.BAS_YY
+  		   AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
+		   AND B.REQ_DT = #{REQ_DT}
+		   AND B.SEQ    = #{SEQ}
+		   AND C.HDNG_GBN = '14'
+		   AND C.BAS_YY   = D.BAS_YY
+		   AND C.BAS_YY_SEQ = D.BAS_YY_SEQ
+		   AND (B.CHK_IN_DT BETWEEN D.ST_DT1 AND D.ED_DT1
+                OR B.CHK_IN_DT BETWEEN D.ST_DT2 AND D.ED_DT2
+                OR B.CHK_IN_DT BETWEEN D.ST_DT3 AND D.ED_DT3
+               )
+		]]>
+	</select>
+	
+	<!-- 프리미엄  추가 계산 -->
+	<select id="primCalc" parameterType="BMap" resultType="BMap">
+		<![CDATA[
+         SELECT DISTINCT
+				A.CODE           AS ITEM_CD			/* 항목코드 */
+			   ,A.CODE_NM        AS ITEM_NM			/* 항목명  */
+		       ,A.REF_CHR2       AS AMT_SIGN		/* 통화기호 */
+		       ,C.COM_AMT        AS PER_AMT		    /* 이용금액 */
+			   ,B.PRIM_ADD_IL    AS USE_DAY         /* 이용 */
+               ,A.REF_CHR3       AS UNIT_DAY  		/* 사용단위 */
+               ,B.PRIM_ADD_CNT   AS USE_NUM         /* 수량 */
+               ,A.REF_CHR4       AS UNIT_NUM   	    /* 수량단위 */
+			   ,IFNULL(C.COM_AMT * B.ROOM_ADD_IL * B.ROOM_ADD_CNT, 0) AS TOT_AMT /* 총괄금액 */
+          FROM BC_COMM_L A, 
+		       TB_REQ_BOOKING_M B, 
+		       TB_PROD_INFO C,
+		       TB_BAS_YY_INFO D
+         WHERE A.HEAD_CD = '500140'  -- 인보이스 항목
+		   AND A.CODE = 'ROOMUP02' 
+		   AND B.BAS_YY = C.BAS_YY
+  		   AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
+		   AND B.REQ_DT = #{REQ_DT}
+		   AND B.SEQ    = #{SEQ}
+		   AND C.HDNG_GBN = '15'
+		   AND C.BAS_YY   = D.BAS_YY
+		   AND C.BAS_YY_SEQ = D.BAS_YY_SEQ
+		   AND (B.CHK_IN_DT BETWEEN D.ST_DT1 AND D.ED_DT1
+                OR B.CHK_IN_DT BETWEEN D.ST_DT2 AND D.ED_DT2
+                OR B.CHK_IN_DT BETWEEN D.ST_DT3 AND D.ED_DT3
+               )
+		]]>
+	</select>
+	
+	
+	<!-- Early Check In 추가 계산 -->
+	<select id="earlyCheckInCalc" parameterType="BMap" resultType="BMap">
+		<![CDATA[
+         SELECT DISTINCT
+				A.CODE AS ITEM_CD			    /* 항목코드 */
+		       ,A.CODE_NM AS ITEM_NM			/* 항목명  */
+		       ,A.REF_CHR2 AS AMT_SIGN			/* 통화기호 */
+		       ,C.COM_AMT     AS PER_AMT		/* 이용금액 */
+			   ,'1' AS USE_DAY       			/* 사용횟수 */
+               ,A.REF_CHR3    AS UNIT_DAY  		/* 사용단위 */
+               ,#{ROOM_PERSON} as USE_NUM		/* 수량 */
+               ,A.REF_CHR4    AS UNIT_NUM   	/* 수량단위 */
+			   ,IFNULL(C.COM_AMT * #{ROOM_PERSON}, 0) as TOT_AMT
+          FROM BC_COMM_L A, 
+		       TB_REQ_BOOKING_M B, 
+		       TB_PROD_INFO C,
+		       TB_BAS_YY_INFO D
+          WHERE A.HEAD_CD = '500140'  -- 인보이스 항목
+		    AND A.CODE =  'LATECHECKIN01' 
+		    AND B.BAS_YY   = C.BAS_YY
+			AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
+			AND B.REQ_DT = #{REQ_DT}
+		    AND B.SEQ    = #{SEQ}
+		    AND C.HDNG_GBN   = '32'
+		    AND C.BAS_YY     = D.BAS_YY
+		    AND C.BAS_YY_SEQ = D.BAS_YY_SEQ
+		    AND ( B.CHK_IN_DT BETWEEN D.ST_DT1 AND D.ED_DT1
+                  OR B.CHK_IN_DT BETWEEN D.ST_DT2 AND D.ED_DT2
+                  OR B.CHK_IN_DT BETWEEN D.ST_DT3 AND D.ED_DT3
+                )
+		]]>
+	</select>
+	
+	
+	<!-- Late Check Out  추가 계산 -->
+	<select id="lateCheckOutCalc" parameterType="BMap" resultType="BMap">
+		<![CDATA[
+         SELECT DISTINCT
+				A.CODE AS ITEM_CD			    /* 항목코드 */
+		       ,A.CODE_NM AS ITEM_NM			/* 항목명  */
+		       ,A.REF_CHR2 AS AMT_SIGN			/* 통화기호 */
+		       ,C.COM_AMT     AS PER_AMT		/* 이용금액 */
+			   ,'1' AS USE_DAY       			/* 사용횟수 */
+               ,A.REF_CHR3    AS UNIT_DAY  		/* 사용단위 */
+               ,#{ROOM_PERSON} as USE_NUM		/* 수량 */
+               ,A.REF_CHR4    AS UNIT_NUM   	/* 수량단위 */
+			   ,IFNULL(C.COM_AMT * #{ROOM_PERSON}, 0) as TOT_AMT
+          FROM BC_COMM_L A, 
+		       TB_REQ_BOOKING_M B, 
+		       TB_PROD_INFO C,
+		       TB_BAS_YY_INFO D
+          WHERE A.HEAD_CD = '500140'  -- 인보이스 항목
+		    AND A.CODE = #{LATE_CODE} 
+		    AND B.BAS_YY   = C.BAS_YY
+			AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
+			AND B.REQ_DT = #{REQ_DT}
+		    AND B.SEQ    = #{SEQ}
+		    AND C.HDNG_GBN   = #{LATE_HDNG_GBN}
+		    AND C.BAS_YY     = D.BAS_YY
+		    AND C.BAS_YY_SEQ = D.BAS_YY_SEQ
+		    AND ( B.CHK_IN_DT BETWEEN D.ST_DT1 AND D.ED_DT1
+                  OR B.CHK_IN_DT BETWEEN D.ST_DT2 AND D.ED_DT2
+                  OR B.CHK_IN_DT BETWEEN D.ST_DT3 AND D.ED_DT3
+                )
+		]]>
+	</select>
+	
+	
+	<!-- 미팅샌딩  추가 계산 -->
+	<select id="sendingCalc" parameterType="BMap" resultType="BMap">
+		<![CDATA[
+         SELECT DISTINCT
+				A.CODE           AS ITEM_CD			/* 항목코드 */
+			   ,A.CODE_NM        AS ITEM_NM			/* 항목명  */
+		       ,A.REF_CHR2       AS AMT_SIGN		/* 통화기호 */
+		       ,C.COM_AMT        AS PER_AMT		    /* 이용금액 */
+			   ,'1'              AS USE_DAY         /* 이용 */
+               ,A.REF_CHR3       AS UNIT_DAY  		/* 사용단위 */
+               ,IFNULL(B.PER_NUM, 0) AS USE_NUM         /* 수량 */
+               ,A.REF_CHR4       AS UNIT_NUM   	    /* 수량단위 */
+			   ,IFNULL(C.COM_AMT * B.PER_NUM, 0) AS TOT_AMT /* 총괄금액 */
+			   , ( SELECT COUNT(*)
+                     FROM bc_comm_l AA
+                    WHERE HEAD_CD = '500160' /* 야간할증항공편 */
+                      AND CODE IN (B.FLIGHT_IN, B.FLIGHT_OUT)
+                  ) AS SURCHARGE_CNT /* 야간할증 갯수 */
+          FROM BC_COMM_L A, 
+		       TB_REQ_BOOKING_M B, 
+		       TB_PROD_INFO C,
+		       tb_bas_yy_info D
+         WHERE A.HEAD_CD = '500140'  -- 인보이스 항목
+		   AND A.CODE = #{SEND_CODE}
+		   AND B.BAS_YY = C.BAS_YY
+  		   AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
+		   AND B.REQ_DT = #{REQ_DT}
+		   AND B.SEQ    = #{SEQ}
+		   AND C.HDNG_GBN = #{SEND_GBN}
+		   AND C.PROD_COND =  CASE WHEN B.PER_NUM > 4 THEN '4'
+		                           WHEN C.PROD_SEQ IN ('82','90','98','106') THEN '0'
+		                           ELSE IFNULL(B.PER_NUM,0)
+		                       END
+		   AND C.PROD_SEQ in ('82','83','84','85','86','90','98','106')
+		   AND C.BAS_YY   = D.BAS_YY
+		   AND C.BAS_YY_SEQ = D.BAS_YY_SEQ
+		   AND C.BAS_YY = YEAR(NOW())
+		]]>
+	</select>
+	
+	
+	<!-- 야간 미팅샌딩  추가 계산 -->
+	<select id="sendingSubCalc" parameterType="BMap" resultType="BMap">
+		<![CDATA[
+        SELECT DISTINCT
+				A.CODE           AS ITEM_CD			/* 항목코드 */
+			   ,A.CODE_NM        AS ITEM_NM			/* 항목명  */
+		       ,A.REF_CHR2       AS AMT_SIGN		/* 통화기호 */
+		       ,C.COM_AMT        AS PER_AMT		    /* 이용금액 */
+			   ,'1'              AS USE_DAY         /* 이용 */
+               ,A.REF_CHR3       AS UNIT_DAY  		/* 사용단위 */
+               ,IFNULL(B.PER_NUM, 0) AS USE_NUM     /* 수량 */
+               ,A.REF_CHR4       AS UNIT_NUM   	    /* 수량단위 */
+			   ,IFNULL(C.COM_AMT * B.PER_NUM, 0) AS TOT_AMT /* 총괄금액 */
+          FROM BC_COMM_L A, 
+		       TB_REQ_BOOKING_M B, 
+		       TB_PROD_INFO C,
+		       tb_bas_yy_info D
+         WHERE A.HEAD_CD = '500140'  -- 인보이스 항목
+		   AND A.CODE = #{SEND_CODE}
+		   AND B.BAS_YY = C.BAS_YY
+  		   AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
+		   AND B.REQ_DT = #{REQ_DT}
+		   AND B.SEQ    = #{SEQ}
+		   AND C.HDNG_GBN = #{SEND_GBN}
+		   AND C.PROD_COND =  CASE WHEN IFNULL(B.PER_NUM,0) < 4
+                                   THEN 'PD4'
+                                   ELSE 'PU4'
+                               END
+		   AND C.BAS_YY   = D.BAS_YY
+		   AND C.BAS_YY_SEQ = D.BAS_YY_SEQ
+		   AND (    B.CHK_IN_DT BETWEEN D.ST_DT1 AND D.ED_DT1
+                 OR B.CHK_IN_DT BETWEEN D.ST_DT2 AND D.ED_DT2
+                 OR B.CHK_IN_DT BETWEEN D.ST_DT3 AND D.ED_DT3
+               )
 		]]>
 	</select>
 	
