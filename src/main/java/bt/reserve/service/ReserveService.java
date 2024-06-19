@@ -11,10 +11,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -466,14 +464,13 @@ public class ReserveService {
 			if(!"0".equals(String.valueOf(resultDeptDetail.get("ROOM_ADD_CNT")))) {
 				
 				logger.info(" ===== 싱글룸 추가  =====");
-				
-				invoiceDSeq++;
-				invoiceHeaderMap.put("ORDER", invoiceDSeq);
-				
+												
 				BMap roomupCalc =  reserveDao.roomupCalc(invoiceHeaderMap);
 				
 				if(roomupCalc != null) {
-					
+				
+					invoiceDSeq++;
+					invoiceHeaderMap.put("ORDER", invoiceDSeq);
 					invoiceHeaderMap.put("ITEM_CD",  roomupCalc.get("ITEM_CD"));
 					invoiceHeaderMap.put("ITEM_NM",  roomupCalc.get("ITEM_NM"));
 					invoiceHeaderMap.put("AMT_SIGN", roomupCalc.get("AMT_SIGN"));
@@ -496,14 +493,13 @@ public class ReserveService {
 			if(!"0".equals(String.valueOf(resultDeptDetail.get("PRIM_ADD_CNT")))) {
 				
 				logger.info(" ===== 프리미엄 추가 계산 =====");
-				
-				invoiceDSeq++;
-				invoiceHeaderMap.put("ORDER", invoiceDSeq);
-				
+												
 				BMap primCalc =  reserveDao.primCalc(invoiceHeaderMap);
 				
 				if(primCalc != null) {
-					
+				
+					invoiceDSeq++;
+					invoiceHeaderMap.put("ORDER", invoiceDSeq);
 					invoiceHeaderMap.put("ITEM_CD",  primCalc.get("ITEM_CD"));
 					invoiceHeaderMap.put("ITEM_NM",  primCalc.get("ITEM_NM"));
 					invoiceHeaderMap.put("AMT_SIGN", primCalc.get("AMT_SIGN"));
@@ -526,14 +522,13 @@ public class ReserveService {
 			if("1".equals((String)resultDeptDetail.get("LATE_CHECK_IN"))) {
 				
 				logger.info("===== EARLY 체크인 계산 =====");
-				
-				invoiceDSeq++;
-				invoiceHeaderMap.put("ORDER", invoiceDSeq);
-				
+												
 				BMap earlyCheckInCalc =  reserveDao.earlyCheckInCalc(invoiceHeaderMap);
 				
 				if(earlyCheckInCalc != null) {
 					
+					invoiceDSeq++;
+					invoiceHeaderMap.put("ORDER", invoiceDSeq);
 					invoiceHeaderMap.put("ITEM_CD",  earlyCheckInCalc.get("ITEM_CD"));
 					invoiceHeaderMap.put("ITEM_NM",  earlyCheckInCalc.get("ITEM_NM"));
 					invoiceHeaderMap.put("AMT_SIGN", earlyCheckInCalc.get("AMT_SIGN"));
@@ -556,10 +551,7 @@ public class ReserveService {
 			if(!"3".equals((String)resultDeptDetail.get("LATE_CHECK_OUT"))) {
 				
 				logger.info("===== LATE 체크아웃 계산 =====");
-				
-				invoiceDSeq++;
-				invoiceHeaderMap.put("ORDER", invoiceDSeq);
-				
+												
 				if("1".equals((String)resultDeptDetail.get("LATE_CHECK_OUT"))) {
 					invoiceHeaderMap.put("LATE_CODE", "LATECHECKOUT01");
 					invoiceHeaderMap.put("LATE_HDNG_GBN", "16");
@@ -571,7 +563,9 @@ public class ReserveService {
 				BMap lateCheckOutCalc =  reserveDao.lateCheckOutCalc(invoiceHeaderMap);
 				
 				if(lateCheckOutCalc != null) {
-				
+					
+					invoiceDSeq++;
+					invoiceHeaderMap.put("ORDER", invoiceDSeq);
 					invoiceHeaderMap.put("ITEM_CD",  lateCheckOutCalc.get("ITEM_CD"));
 					invoiceHeaderMap.put("ITEM_NM",  lateCheckOutCalc.get("ITEM_NM"));
 					invoiceHeaderMap.put("AMT_SIGN", lateCheckOutCalc.get("AMT_SIGN"));
@@ -594,19 +588,21 @@ public class ReserveService {
 			if(!"01".equals((String)resultDeptDetail.get("PICK_GBN"))) {
 				
 				logger.info("===== 미팅샌딩 계산 =====");
-				
-				invoiceDSeq++;
-				invoiceHeaderMap.put("ORDER", invoiceDSeq);
-				
+											
 				if("02".equals((String)resultDeptDetail.get("PICK_GBN"))) {
-					invoiceHeaderMap.put("SEND_GBN", "18");
+					invoiceHeaderMap.put("SEND_GBN", "18");  //스나이
 				}else if("03".equals((String)resultDeptDetail.get("PICK_GBN"))) {
-					invoiceHeaderMap.put("SEND_GBN", "19");
+					invoiceHeaderMap.put("SEND_GBN", "19");  //싱가폴
 				}
 				
-				BMap sendingCalc =  reserveDao.sendingCalc(invoiceHeaderMap);
+				//미팅샌딩 계산 리스트
+				List<BMap> sendingCalcList =  reserveDao.sendingCalc(invoiceHeaderMap);
 				
-				if(sendingCalc != null) {
+				int cnt=0;
+				for (BMap sendingCalc : sendingCalcList) {
+																
+					invoiceDSeq++;
+					invoiceHeaderMap.put("ORDER", invoiceDSeq);
 					
 					invoiceHeaderMap.put("ITEM_CD",  sendingCalc.get("ITEM_CD"));
 					invoiceHeaderMap.put("ITEM_NM",  sendingCalc.get("ITEM_NM"));
@@ -618,45 +614,49 @@ public class ReserveService {
 					invoiceHeaderMap.put("UNIT_NUM", sendingCalc.get("UNIT_NUM"));
 					invoiceHeaderMap.put("TOT_AMT",  sendingCalc.get("TOT_AMT"));
 					reserveDao.insertInvoiceDetailInfo(invoiceHeaderMap);
+						
 					
+					//마지막 레코드
+					if(cnt == sendingCalcList.size() -1) { 
 					
-					if(Integer.parseInt(String.valueOf(sendingCalc.get("SURCHARGE_CNT"))) > 0 && "19".equals(invoiceHeaderMap.get("SEND_GBN"))) {
-						
-						logger.info("===== 야간 미팅샌딩 계산 =====");
-						
-						invoiceDSeq++;
-						invoiceHeaderMap.put("ORDER", invoiceDSeq);
-						invoiceHeaderMap.put("SEND_GBN", "19");
-						
-						BMap sendingSubCalc =  reserveDao.sendingSubCalc(invoiceHeaderMap);
-						
-						if(sendingSubCalc != null) {
+						if(Integer.parseInt(String.valueOf(sendingCalc.get("SURCHARGE_CNT"))) > 0 && "19".equals(invoiceHeaderMap.get("SEND_GBN"))) {  //싱가폴
 							
-							invoiceHeaderMap.put("ITEM_CD",  sendingSubCalc.get("ITEM_CD"));
-							invoiceHeaderMap.put("ITEM_NM",  sendingSubCalc.get("ITEM_NM"));
-							invoiceHeaderMap.put("AMT_SIGN", sendingSubCalc.get("AMT_SIGN"));
-							invoiceHeaderMap.put("PER_AMT",  sendingSubCalc.get("PER_AMT"));
-							invoiceHeaderMap.put("USE_DAY",  sendingSubCalc.get("USE_DAY"));
-							invoiceHeaderMap.put("UNIT_DAY", sendingSubCalc.get("UNIT_DAY"));
-							invoiceHeaderMap.put("USE_NUM",  sendingSubCalc.get("USE_NUM"));
-							invoiceHeaderMap.put("UNIT_NUM", sendingSubCalc.get("UNIT_NUM"));
-							invoiceHeaderMap.put("TOT_AMT",  sendingSubCalc.get("TOT_AMT"));
-							reserveDao.insertInvoiceDetailInfo(invoiceHeaderMap);
+							logger.info("===== 야간 미팅샌딩 계산 =====");
+														
+							invoiceHeaderMap.put("SEND_GBN", "19");
 							
-						} else {
-							logger.info("===== 야간 미팅샌딩 금액이 없음 =====");
+							//야간 미팅샌딩 계산 리스트
+							List<BMap> sendingSubCalcList =  reserveDao.sendingSubCalc(invoiceHeaderMap);
+							
+							for(BMap sendingSubCalc : sendingSubCalcList) {
+																
+								invoiceDSeq++;
+								invoiceHeaderMap.put("ORDER", invoiceDSeq);
+								invoiceHeaderMap.put("ITEM_CD",  sendingSubCalc.get("ITEM_CD"));
+								invoiceHeaderMap.put("ITEM_NM",  sendingSubCalc.get("ITEM_NM"));
+								invoiceHeaderMap.put("AMT_SIGN", sendingSubCalc.get("AMT_SIGN"));
+								invoiceHeaderMap.put("PER_AMT",  sendingSubCalc.get("PER_AMT"));
+								invoiceHeaderMap.put("USE_DAY",  sendingSubCalc.get("USE_DAY"));
+								invoiceHeaderMap.put("UNIT_DAY", sendingSubCalc.get("UNIT_DAY"));
+								invoiceHeaderMap.put("USE_NUM",  sendingSubCalc.get("USE_NUM"));
+								invoiceHeaderMap.put("UNIT_NUM", sendingSubCalc.get("UNIT_NUM"));
+								invoiceHeaderMap.put("TOT_AMT",  sendingSubCalc.get("TOT_AMT"));
+								reserveDao.insertInvoiceDetailInfo(invoiceHeaderMap);
+							
+							}
+							
 						}
-					}
 					
-				} else {
-					logger.info("===== 미팅샌딩 금액이 없음 =====");
+					}
+				
+					cnt++;
 				}
 												
 			}
 			
+			
 			//인보이스 조회
-		    result = reserveDao.invoiceSelectList(param);
-		    //invoiceDSeq = 0;    
+		    result = reserveDao.invoiceSelectList(param);		        
 		    
 		}else {  //인보이스 항목 1건이상
 			
@@ -736,12 +736,19 @@ public class ReserveService {
 			paramMap.put("REQ_DT"    , (String) param.get("REQ_DT"));   
 			paramMap.put("LOGIN_USER", LoginInfo.getUserId());          
 			paramMap.put("TOT_AMT"   , sum_tot);
-			paramMap.put("EXP_DT"    , (String) param.get("EXP_DT"));      
+			paramMap.put("EXP_DT"    , (String) param.get("EXP_DT"));       
 			paramMap.put("DEP_AMT"   , param.get("DEP_AMT"));      
+			
+			
+			logger.info("===== feeCnt : "+feeCnt);
+			logger.info("===== sum_tot : "+sum_tot);
+			//logger.info("===== fee_Tot_amt : "+reserveDao.selectFeeTOT_AMT(paramMap));
+			
 			
 			if(feeCnt == 0){ //fee table insert
 				reserveDao.insertFeeInfo(paramMap);
-			}else if(feeCnt == 1 && sum_tot != reserveDao.selectFeeTOT_AMT(paramMap)){ //fee table update
+			//}else if(feeCnt == 1 && sum_tot != reserveDao.selectFeeTOT_AMT(paramMap)){ //fee table update
+			}else if(feeCnt == 1){ //fee table update, 예약금기한일자(EXP_DT), 	예약금액(DEP_AMT) 업데이트
 				reserveDao.updateFeeInfo(paramMap);
 			}
 		} catch (Exception e) {

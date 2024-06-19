@@ -362,9 +362,9 @@ $(function() {
 				vhtml = '<option value="" data = "01" dataDetail = "01" com_amt = 0>--<s:message code="system.select"/>--</option>'
 				$.each(data.result , function ( i , v){
 					if(v.HDNG_GBN == "18") {
-						vhtml += '<option value = '+v.PROD_COND+' data="02" dataDetail = '+'0'+(i+2)+' prod_seq = '+v.PROD_SEQ+' com_amt = '+v.COM_AMT+'>'+v.COM_CNTN+'</option>';
+						vhtml += '<option value = '+v.PROD_COND+' data="02" dataDetail = '+'0'+(i+2)+' prod_seq = '+v.PROD_SEQ+' com_amt = '+v.COM_AMT+'>'+v.CODE_NM+'</option>';
 					}else{
-						vhtml += '<option value = '+v.PROD_COND+' data="03" dataDetail = '+'0'+(i+2)+' prod_seq = '+v.PROD_SEQ+' com_amt = '+v.COM_AMT+'>'+v.COM_CNTN+'</option>';
+						vhtml += '<option value = '+v.PROD_COND+' data="03" dataDetail = '+'0'+(i+2)+' prod_seq = '+v.PROD_SEQ+' com_amt = '+v.COM_AMT+'>'+v.CODE_NM+'</option>';
 					}
 				});
 				$("#PROD_SEQ1").append(vhtml);

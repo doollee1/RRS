@@ -859,34 +859,24 @@
 	</delete>
 	
 	<select id="selectPrdInfo" parameterType="BMap" resultType="BMap" >
-	    SELECT A.COM_AMT
-	         , A.PROD_SEQ
-	         , A.COM_CNTN
-	         , A.PROD_COND
-	         , A.HDNG_GBN
-	         , A.PROD_SEQ AS HD_PROD_SEQ
-		  FROM TB_PROD_INFO A
-		     , (SELECT REF_CHR1 AS HDNG_GBN
-		          FROM BC_COMM_L
-				 WHERE 1 = 1
-		           AND HEAD_CD = #{HEAD_CD}   
-		           AND REF_CHR1 IS NOT NULL
-		           AND REF_CHR1 != ''
-			    ) B
-		  WHERE 1 = 1 
-		    AND A.BAS_YY     IN (SELECT BAS_YY
-		                           FROM TB_BAS_YY_INFO
-		                          WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
-		                             OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
-		                             OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3)
-		    AND A.BAS_YY_SEQ IN (SELECT BAS_YY_SEQ
-		                           FROM TB_BAS_YY_INFO
-		                          WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
-		                             OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
-		                             OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3)
-		    <!-- AND A.SSN_GBN    = #{SSN_GBN} -->
-		    AND A.HDNG_GBN   = B.HDNG_GBN
-			    
+		SELECT A.COM_AMT
+			, A.PROD_SEQ
+			, A.COM_CNTN
+			, A.PROD_COND
+			, A.HDNG_GBN
+			, A.PROD_SEQ AS HD_PROD_SEQ
+			,(CASE  WHEN B.CODE = '0' 
+					THEN (SELECT CODE_NM FROM BC_COMM_L WHERE CODE = '18' AND HEAD_CD = 500000)
+					ELSE B.CODE_NM END) 
+			AS CODE_NM 
+		FROM 
+		(SELECT * FROM TB_PROD_INFO 
+			WHERE HDNG_GBN IN ('18', '19') AND SSN_GBN = '3' 
+		) A,
+		(SELECT CODE, CODE_NM FROM BC_COMM_L 
+			WHERE HEAD_CD = 500220 AND REF_CHR1 IN('00', '03')
+		) B
+		WHERE A.PROD_COND   = B.CODE    
 	</select>
 	
 	<select id="selectPickListCnt" parameterType="BMap" resultType="int">
@@ -2223,35 +2213,38 @@ DELETE
 	
 	<!-- 미팅샌딩  추가 계산 -->
 	<select id="sendingCalc" parameterType="BMap" resultType="BMap">
-		<![CDATA[
-			 SELECT DISTINCT
+		<![CDATA[			 			  
+			SELECT DISTINCT
 			        B.CODE           AS ITEM_CD			/* 항목코드 */
 				  , B.CODE_NM        AS ITEM_NM			/* 항목명  */
 				  , B.REF_CHR2       AS AMT_SIGN		/* 통화기호 */ 
-				  , D.COM_AMT        AS PER_AMT		    /* 이용금액 */
-				  , '1'              AS USE_DAY         /* 이용 */
+				  , A.USE_AMT        AS PER_AMT		    /* 이용금액 */
+				  , A.CAR_NUM        AS USE_DAY         /* 이용 */
 			      , B.REF_CHR3       AS UNIT_DAY  		/* 사용단위 */
 			      , IFNULL(A.PER_NUM, 0) AS USE_NUM     /* 수량 */
 			      , B.REF_CHR4       AS UNIT_NUM   	    /* 수량단위 */
-			      , IFNULL(D.COM_AMT * A.PER_NUM, 0) AS TOT_AMT /* 총괄금액 */
+			      , IFNULL(A.USE_AMT * A.CAR_NUM * A.PER_NUM, 0) AS TOT_AMT /* 총괄금액 */
 				  , ( SELECT COUNT(*)
 			            FROM bc_comm_l AA
 			           WHERE HEAD_CD = '500160' 		/* 야간할증항공편 */
-			             AND CODE IN (A.FLIGHT_IN, A.FLIGHT_OUT)
+			             AND CODE IN (  F.FLIGHT_IN, F.FLIGHT_OUT )
 			         ) AS SURCHARGE_CNT /* 야간할증 갯수 */
-			FROM  TB_REQ_BOOKING_M AS A
+			FROM  tb_req_pickup AS A
 			      , BC_COMM_L AS B
 			      , BC_COMM_L AS C
 			      , TB_PROD_INFO AS D
 			      , TB_BAS_YY_INFO AS E
-			  where A.REQ_DT = #{REQ_DT}
-			  AND A.SEQ      = #{SEQ}
-			  AND B.HEAD_CD  = '500140'
-			  AND C.HEAD_CD  = '500220'
-			  AND B.CODE = C.REF_CHR4 
-			  AND C.CODE = D.PROD_COND
-			  AND D.HDNG_GBN = #{SEND_GBN}
-			  AND D.PROD_COND =  CASE WHEN D.HDNG_GBN != '18' AND A.PER_NUM > 3 THEN '4'
+			      , TB_REQ_BOOKING_M AS F
+			  where A.REQ_DT  = #{REQ_DT}
+			    AND A.REQ_SEQ = #{SEQ}
+			    and A.REQ_DT  = F.REQ_DT
+			    and A.REQ_SEQ  = F.SEQ
+			    AND B.HEAD_CD  = '500140'
+			    AND C.HEAD_CD  = '500220'
+			    AND B.CODE = C.REF_CHR4 
+			    AND C.CODE = D.PROD_COND
+			    AND D.HDNG_GBN = #{SEND_GBN}
+			    AND D.PROD_COND =  CASE WHEN D.HDNG_GBN != '18' AND A.PER_NUM > 3 THEN '4'
 					                  WHEN D.HDNG_GBN != '18' AND A.PER_NUM = 3 THEN '3'
 					                  WHEN D.HDNG_GBN != '18' AND A.PER_NUM = 2 THEN '2'
 					                  WHEN D.HDNG_GBN != '18' AND A.PER_NUM = 1 THEN '1'
@@ -2266,24 +2259,27 @@ DELETE
 	
 	<!-- 야간 미팅샌딩  추가 계산 -->
 	<select id="sendingSubCalc" parameterType="BMap" resultType="BMap">
-		<![CDATA[
-			 SELECT DISTINCT
+		<![CDATA[			      
+			SELECT DISTINCT
 			        B.CODE           AS ITEM_CD			/* 항목코드 */
 				  , B.CODE_NM        AS ITEM_NM			/* 항목명  */
 				  , B.REF_CHR2       AS AMT_SIGN		/* 통화기호 */ 
-				  , D.COM_AMT        AS PER_AMT		    /* 이용금액 */
-				  , '1'              AS USE_DAY         /* 이용 */
+				  , A.USE_AMT        AS PER_AMT		    /* 이용금액 */
+				  , A.CAR_NUM        AS USE_DAY         /* 이용 */
 			      , B.REF_CHR3       AS UNIT_DAY  		/* 사용단위 */
 			      , IFNULL(A.PER_NUM, 0) AS USE_NUM     /* 수량 */
 			      , B.REF_CHR4       AS UNIT_NUM   	    /* 수량단위 */
-			      , IFNULL(D.COM_AMT * A.PER_NUM, 0) AS TOT_AMT /* 총괄금액 */
-			 FROM TB_REQ_BOOKING_M AS A
+			      , IFNULL(A.USE_AMT * A.CAR_NUM * A.PER_NUM , 0) AS TOT_AMT /* 총괄금액 */
+			 FROM tb_req_pickup AS A
 			      , BC_COMM_L AS B
 			      , BC_COMM_L AS C
 			      , TB_PROD_INFO AS D
 			      , TB_BAS_YY_INFO AS E
+			      , TB_REQ_BOOKING_M AS F
 			  where A.REQ_DT = #{REQ_DT}
-			  AND A.SEQ      = #{SEQ}
+			  AND A.REQ_SEQ = #{SEQ}
+			  and A.REQ_DT 	= F.REQ_DT
+			  and A.REQ_SEQ = F.SEQ
 			  AND B.HEAD_CD = '500140'
 			  AND C.HEAD_CD = '500220'
 			  AND B.CODE = C.REF_CHR4 
@@ -2295,10 +2291,10 @@ DELETE
 			                          END
 			  AND D.BAS_YY     = E.BAS_YY
 			  AND D.BAS_YY_SEQ = E.BAS_YY_SEQ
-			  AND (    A.CHK_IN_DT BETWEEN E.ST_DT1 AND E.ED_DT1
-			        OR A.CHK_IN_DT BETWEEN E.ST_DT2 AND E.ED_DT2
-			        OR A.CHK_IN_DT BETWEEN E.ST_DT3 AND E.ED_DT3
-			      )
+			  AND (    F.CHK_IN_DT BETWEEN E.ST_DT1 AND E.ED_DT1
+			        OR F.CHK_IN_DT BETWEEN E.ST_DT2 AND E.ED_DT2
+			        OR F.CHK_IN_DT BETWEEN E.ST_DT3 AND E.ED_DT3
+			      )      
 		]]>
 	</select>
 	

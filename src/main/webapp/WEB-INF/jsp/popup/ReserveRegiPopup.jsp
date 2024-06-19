@@ -458,26 +458,6 @@ $(function() {
 			
 		}
 		
-// 		if($(this).val() == '03'){ //03 교민
-// 			isDisabled(true);
-// 		}else{
-// 			isDisabled(false);
-// 		}
-
-
-// 		if($(this).val() != '02'){ // 01,03
-// 			if($(this).val() == '03'){ // 03
-// 				isDisabled(true);
-// 			}else{ //01
-// 				isDisabled(false);
-// 			}
-// 			$("#AGN_CD").attr("disabled", true);
-// 		}else if($(this).val() == '03'){
-// 			isDisabled(true);
-// 			$("#AGN_CD").attr("disabled", false);
-// 		}else{
-// 			isDisabled(false);
-// 		}
 	});
 	 
 	$('#AGN_GB').change(function() {
@@ -593,13 +573,10 @@ $(function() {
 		    function(e) {
 		});
 		
-		// $("#btn_create").hide(); // 인보이스 발행일자 생성 버튼
+// 		$("#btn_create").hide(); // 인보이스 발행일자 생성 버튼
 		createGrid();
-
   		cSearch();
 		$("#reserveGrid_pager_left").hide();
-		
-
 		$("#TOT_PERSON"     ).attr("disabled",true);
 		$("#AGN_GB").val("");
 		$("#AGN_CD").val("");
@@ -688,7 +665,6 @@ $(function() {
         
     	//멤버구분 disabled 셋팅
     	if(!fn_empty(data.MEM_GBN)){
-    		//if(data.MEM_GBN == "03" || (data.MEM_GBN == "02" && !fn_empty($("#AGN_CD").val()))){
     		if(data.MEM_GBN == "03" || data.MEM_GBN == "04" ){
     			isDisabled(true);
     			if(data.MEM_GBN == "03"){
@@ -735,7 +711,6 @@ $(function() {
 				alert("ajax 통신 error!");
 			}else{
 				fn_dataSet(data.result);
-// 				fn_imageSet(data.image);
 			}
 		});
 	}
@@ -760,7 +735,6 @@ $(function() {
 		});
 	}
 	
-
 	function formatPhoneNumber (input) {
 	    var cleanInput = input.replaceAll(/[^0-9]/g, "");
 	    var result = "";
@@ -805,11 +779,6 @@ $(function() {
 	    }else if($("#MEM_GBN").val() == "02"){
 	    	$("#M_PERSON"     ).attr("disabled",true);
 	    	$("#ADD_HDNG_GBN"     ).attr("disabled",true);
-// 	    	if($("#G_PERSON").val() != "0"){
-// 	    		$("#ADD_HDNG_GBN"     ).attr("disabled",false);
-// 	    	}else{
-// 	    		$("#ADD_HDNG_GBN"     ).attr("disabled",true);
-// 	    	}
 	    	$("#AGN_GB"     ).attr("disabled",true);
 	    	$("#AGN_CD"     ).attr("disabled",true);
 	    }else if($("#MEM_GBN").val() == "04" || $("#MEM_GBN").val() == "03"){
@@ -921,7 +890,6 @@ $(function() {
 				    , "LATE_CHECK_OUT"  : $("[name='LATE_CHECK_OUT']:checked").val()
 				    , "REMARK"          : $("#REMARK").val()
 				    , "INV_REG_DT"      : $("#INV_REG_DT").val().replaceAll(".", "")
-// 				    , "CONFIRM_NO"      : $("#CONFIRM_NO").val()
 				    , "RND_CHG_YN1"     : $("#RND_CHG_YN1").is(":checked") == true ? "Y" : "N"
 				    , "RND_CHG_YN2"     : $("#RND_CHG_YN2").is(":checked") == true ? "Y" : "N"
 				    , "TOT_AMT"         : parseInt($("#TOT_AMT"  ).val().replaceAll("," , ""))
@@ -1124,17 +1092,6 @@ $(function() {
 			return false;
 		}
 		
-// 		var confirm_no = $("#CONFIRM_NO").val();
-		var prc_sts    = $("#PRC_STS").val();
-		if(mem_gbn == "01" || mem_gbn == "02"){
-			if(!fn_empty(prc_sts) && prc_sts == "06"){
-// 				if(fn_empty(confirm_no)){
-// 					alert("리조트컨펌번호를 입력해주세요.");
-// 					return false;
-// 				}
-			}
-		}
-		
 		var m_person = parseInt($("#M_PERSON").val().replaceAll("," , ""));
 		var g_person = parseInt($("#G_PERSON").val().replaceAll("," , ""));
 		var n_person = parseInt($("#N_PERSON").val().replaceAll("," , ""));
@@ -1193,7 +1150,6 @@ $(function() {
 				return false;
 			}
 		}
-		
 		return true;
 	}
 	
@@ -1272,7 +1228,6 @@ $(function() {
 			isReserveDetlYn = data.result;
 			console.log("=== 예약상세여부 : "+isReserveDetlYn);									
 		});
-		
 		
 		if(isReserveDetlYn != "Y"){  //예약상세여부가 'Y'가 아닐시
 					
@@ -1389,7 +1344,6 @@ $(function() {
 	});
 	
 
-
 	function isValidationSetId(){
 		var mem_gbn = $("#MEM_GBN").val();
 		if(fn_empty(mem_gbn)){
@@ -1398,12 +1352,10 @@ $(function() {
 		}
 		
 		var selUsrid = $("#USER_ID").val();
-// 		if(mem_gbn == "01" || mem_gbn == "02"){
-			if(fn_empty(selUsrid)){
-				alert("아이디를 선택해주세요.");
-				return false;
-			}
-// 		}
+		if(fn_empty(selUsrid)){
+			alert("아이디를 선택해주세요.");
+			return false;
+		}
 		
 		return true;
 	}
@@ -1435,13 +1387,6 @@ $(function() {
 					   			, "SEQ"     : data.result.SEQ
 					    };
 					fn_init(param2);
-					
-// 					p_rtnData = {
-// 							"USER_ID"    : gridData["USER_ID"],
-// 							"MEM_GBN"    : gridData["MEM_GBN"],
-// 							"REQ_HAN_NM" : gridData["HAN_NAME"],
-// 							"REQ_ENG_NM" : gridData["ENG_NAME"],
-// 							"REQ_TEL_NO" : gridData["TEL_NO"],
 				}	
 			});
 		}
@@ -1450,15 +1395,8 @@ $(function() {
 	
 	$("#btn_deposit").on("click", function(){
 		if(!isValidation())return;
-// 		var confirm_no = $("#CONFIRM_NO").val();
 		var mem_gbn = $("#MEM_GBN").val();
 		var agn_cd = $("#AGN_CD").val();
-// 		if((mem_gbn == "02" && fn_empty(agn_cd)) || mem_gbn == "01"){ // 일반고객이거나, 멤버고객
-// 		    if(fn_empty(confirm_no)){
-// 		    	alert("리조트 컨펌번호를 입력해주세요.");
-// 		    	return false;
-// 		    }
-// 		}
 
 		var pay_amt = parseInt($("#PAY_AMT").val().replaceAll(",", ""));
 		var tot_amt = parseInt($("#TOT_AMT").val().replaceAll(",", ""));
@@ -1508,11 +1446,6 @@ $(function() {
 		}
 	});
 	
-	
-	
-	
-	
-
 	function cSearch(currentPage){
 		var url = "/reserve/reserveSelectAddList.do";
 		var formData = formIdAllToMap('frmSearch');
@@ -1539,11 +1472,6 @@ $(function() {
 		    $("#reserveGrid_pager_right").append('<div dir="ltr" id="reserve_sumtot_amt" style="text-align:right">Total Price: '+fn_comma(reserve_sum_tot)+'</div>');
 		   
 			$("#reserveGrid_pager_left").hide();
-
-			$('#reserveGrid').bind('jqGridSelectRow', function(e, rowid, status) {
-				grid1_onCilckRow(e, rowid, status);
-			});
-		    
 	    });
 		
 		$('#POP_EXP_DT').datepicker({
@@ -1556,8 +1484,6 @@ $(function() {
 		loadingEnd();
 	}
 	
-	
-
 	function gridColspan(){
 		var newWidth1 = $("#jqgh_reserveGrid_USE_DAY").width() + $("#jqgh_reserveGrid_UNIT_DAY").width();
 		$('#reserveGrid').jqGrid("setLabel", "USE_DAY", "사용 일/횟수", "", {
@@ -1637,8 +1563,19 @@ $(function() {
 						, { name: 'FLIGHT_IN_HH',  width : 74, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_HH}'}}
 						, { name: 'FLIGHT_OUT',  width : 80, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT}'}}
 						, { name: 'FLIGHT_OUT_HH',  width : 74, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
-// 						, { name: 'ADD_FILE_SEQ',  width : 120, align: 'left' , editable:true, edittype:"button" , formatter : "button" , editoptions:{value:'이미지보기'}}
-						, { name: 'ADD_FILE_SEQ',  width : 84, align: 'center' , editable:true, edittype:"button", }
+						, { name: 'ADD_FILE_SEQ',  width : 84, align: 'center' , editable:true, edittype:"button",
+									editoptions:{
+										dataEvents:[{
+											type:"click",
+											fn:function(e){
+												if (parseInt(this.value) > 0) {
+													this.title = "이미지보기";
+													reserveSelectAirlineImg(this.value);
+												}
+											}
+										}]
+									}
+						}
 						, { name: 'HDNG_GBN',  width : 120, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn_g}'}}
 						, { name: 'LATE_CHECK_IN',  width : 80, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_IN}'}}
 						, { name: 'LATE_CHECK_OUT',  width : 80, align: 'left' , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_OUT}'}}
@@ -1655,10 +1592,10 @@ $(function() {
 		        colsetting : false,
 				searchInit : false,
 				resizeing : true,
-				rownumbers:false,
-				shrinkToFit: false,
-				autowidth: true,
-				queryPagingGrid:false, // 쿼리 페이징 처리 여부
+				rownumbers : false,
+				shrinkToFit : false,
+				autowidth : true,
+				queryPagingGrid : false, // 쿼리 페이징 처리 여부
 				height : 147
 		};
 		
@@ -1673,7 +1610,6 @@ $(function() {
 		});
 	}
 	
-
 	function delProgram(){
 		var ids = $("#reserveGrid").jqGrid("getDataIDs"); // 해당 그리드의 전체 로우의 아이디 조회
 		for(var i = 0; i < ids.length; i++){
@@ -1729,10 +1665,7 @@ $(function() {
 				j_i = j_i - 1;
 				g_HDNG_GBN = "";
 			}
-// 			g_SEQ = $("#HDNG_GBN").val();
-// 			g_SEQ = $("#HDNG_GBN").val();
-// 			var g_SEQ;
-// 			var g_REQ_DT;
+
 			g_DSEQ = i;
 			if (i == 0){
 				g_COM_HAN_NM = $("#REQ_HAN_NM").val();
@@ -1818,8 +1751,6 @@ $(function() {
 		popupOpen(url, pid, param, function(data) {
 			reserveSelectAirlineImg2(addfileseq);
 		});
-		
-// 		jqg30_ADD_FILE_SEQ
 	}
 
 	function reserveSelectAirlineImg2(fileseq){
@@ -1847,25 +1778,6 @@ $(function() {
 		}
 	}
 	
-
-	// 조회내역 그리드 클릭 이벤트
-	function grid1_onCilckRow(e, rowid, status){
-		if(!fn_empty(rowid)){ // 선택 그리드 순번
-			var addFileSeq = "";
-			addFileSeq = $('#reserveGrid').jqGrid('getRowData',rowid).ADD_FILE_SEQ;
-			var fileSeqArr = ($('#reserveGrid').jqGrid('getRowData',rowid).ADD_FILE_SEQ).split(" ");
-			
-			for(var i=0; i<fileSeqArr.length; i++) {
-				var addFileSeq2 = fileSeqArr[i].split("value=");
-				if(!fn_empty(addFileSeq2[1])){
-					var addFileSeq3 = addFileSeq2[1].replaceAll('"' , '');
-					reserveSelectAirlineImg(addFileSeq3);
-				}
-			}	
-		}
-	}
-	
-	
 	$("#reserveGrid").bind("change , keyup" , function(){
 		var changeRowId  = $('#reserveGrid').jqGrid('getGridParam', 'selrow');
 		var rowCnt       = $('#reserveGrid').getGridParam('reccount');
@@ -1875,15 +1787,7 @@ $(function() {
 		if($('#reserveGrid').jqGrid('getRowData', changeRowId).STATUS_V != "I"){
 			$("#reserveGrid").jqGrid('setCell',changeRowId , 'STATUS_V', 'U');
 		}
-// 		alert($("#"+changeRowId+"_NUM_GBN_HIDDEN").val());
-		
-// 		if($("#"+changeRowId+"_NUM_GBN").val() == "01"){
-//  			if($("#MEM_GBN").val() == '02'){
-//  				alert("일반회원 예약등록 시 멤버 동반자 선택 안됩니다.11");
-// 				return false;
-//  			}
-// 		}
-		
+
 		if($('#reserveGrid').jqGrid('getRowData', changeRowId).NUM_GBN != "00"){
 			
 			var m_person_g = 0;
@@ -1908,7 +1812,6 @@ $(function() {
 
 	 		if($("#"+changeRowId+"_NUM_GBN").val() == "01"){
 	 			if($("#MEM_GBN").val() == '02'){
-// 	 				$("#"+changeRowId+"_NUM_GBN").val() == $("#"+changeRowId+"_NUM_GBN_HIDDEN").val();
 	 				alert("일반회원 예약등록 시 멤버 동반자 선택 안됩니다.");
 					return false;
 	 			}else{
@@ -1918,7 +1821,7 @@ $(function() {
 	 			
 	 		}else if($("#"+changeRowId+"_NUM_GBN").val() == "02"){
 	 			g_person_g = g_person_g + 1
-	 			if($("#MEM_GBN").val() == '01'){  //$("#ADD_HDNG_GBN").val()   $("#HDNG_GBN").val()
+	 			if($("#MEM_GBN").val() == '01'){  
 	 				$("#reserveGrid").jqGrid('setCell',changeRowId , 'HDNG_GBN', $("#ADD_HDNG_GBN").val());
 	 			}else{
 	 				$("#reserveGrid").jqGrid('setCell',changeRowId , 'HDNG_GBN', $("#HDNG_GBN").val());

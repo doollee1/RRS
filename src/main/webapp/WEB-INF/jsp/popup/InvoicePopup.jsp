@@ -108,7 +108,7 @@ $(function() {
 		//01(예약요청-일반), 02(예약요청-멤버), 03(예약가능), 06(예약확정), 07(환불요청), 08(환불완료), 09(예약취소), 96(예약완료-교민)
 		}else if(prc_sts == "01" || prc_sts == "02" || prc_sts == "03" || prc_sts == "06" || prc_sts == "07" || prc_sts == "08" || prc_sts == "09" || prc_sts == "96"){ 
 			//$("#POP_EXP_DT,#POP_DEP_AMT , #btn_send, #btn_preview , #btn_del , #btn_addRow , #btn_delRow").attr("disabled",true);
-			$("#POP_EXP_DT,#POP_DEP_AMT , #btn_send, #btn_preview , #btn_del ").attr("disabled",true);
+			$("#POP_EXP_DT, #btn_send, #btn_preview , #btn_del ").attr("disabled",true);  //#POP_DEP_AMT 예약금 활성화
 		}
 		
 		$("#POP_DEP_AMT").val(fn_comma(recevicedData.DEP_AMT));
@@ -162,7 +162,7 @@ $(function() {
 			}
 			
 			btGrid.gridResizing('invoiceGrid');
-		    $("#PartnerSchGrid_pager_right").append('<div dir="ltr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(sum_tot)+'</div>');
+		    $("#PartnerSchGrid_pager_right").html('<div dir="ltr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(sum_tot)+'</div>');
 	    });
 		
 		$('#POP_EXP_DT').datepicker({
@@ -570,14 +570,14 @@ $(function() {
 		
 		var exp_dt = $("#POP_EXP_DT").val().replaceAll(".","");
 	    var dep_amt = parseInt($("#POP_DEP_AMT").val().replaceAll(",",""));
-	   /*  if(fn_empty(exp_dt)){
+	    if(fn_empty(exp_dt)){
 	    	alert("예약기한을 확인해주세요.");
 			return false;
 	    }
 		if(exp_dt > chk_in_dt){
 			alert("예약기한이 체크인날짜 이후입니다. 예약기한을 확인해주세요.");
 			return false;
-		} */
+		}
 		
 		var file_uid = $("#hFileUid").val();
 		if(!fn_empty(result)){

@@ -165,7 +165,7 @@ public class ReserveController {
 	}
 	
 	/**
-	 * 예약등록 팝업 호출
+	 * 미팅샌딩등록 팝업 호출
 	 * @param model
 	 * @param request
 	 * @return
@@ -181,7 +181,7 @@ public class ReserveController {
 		param2.put("HEAD_CD" , 500210);
 		
 		BMap param3 = new BMap();
-		param3.put("HEAD_CD" , 500170);
+		param3.put("HEAD_CD" , 500220);
 		
 		model.addAttribute("prod_seq" , reserveService.selectGetCommonCode(param));
 		model.addAttribute("region"   , reserveService.selectGetCommonCode(param2));

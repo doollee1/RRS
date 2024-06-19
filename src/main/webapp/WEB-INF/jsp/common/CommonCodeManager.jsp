@@ -410,7 +410,6 @@
 		
 		btGrid.gridSaveRow('grid2');
 		for(var i = 0; i < ids.length; i++){
-			console.log($('#grid2_' + ids[i] + '_CHK2').prop('checked'));
 			if($('#grid2_' + ids[i] + '_CHK2').prop('checked')){
 				cnt++;
 				gridData.push($("#grid2").getRowData(ids[i]));

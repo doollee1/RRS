@@ -667,8 +667,9 @@ public class ReserveDao extends DBAbstractMapper {
 	 * @return
 	 * @throws Exception
 	 */
-	public BMap sendingCalc(BMap param) throws Exception {
-		return (BMap) selectByPk("ReserveMapper.sendingCalc", param);
+	@SuppressWarnings("unchecked")
+	public List<BMap> sendingCalc(BMap param) throws Exception {
+		return list("ReserveMapper.sendingCalc", param);
 	}
 	
 	
@@ -679,8 +680,9 @@ public class ReserveDao extends DBAbstractMapper {
 	 * @return
 	 * @throws Exception
 	 */
-	public BMap sendingSubCalc(BMap param) throws Exception {
-		return (BMap) selectByPk("ReserveMapper.sendingSubCalc", param);
+	@SuppressWarnings("unchecked")
+	public List<BMap> sendingSubCalc(BMap param) throws Exception {
+		return list("ReserveMapper.sendingSubCalc", param);
 	}
 	
 	

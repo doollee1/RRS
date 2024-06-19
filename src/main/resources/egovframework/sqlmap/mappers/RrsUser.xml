@@ -32,7 +32,7 @@
 		   AND USER_ID LIKE CONCAT('%',#{S_USER_ID},'%')
 		</if>
 		<if test='S_USER_NM != null and S_USER_NM != ""'>
-		   AND (HAN_NAME LIKE CONCAT('%',#{S_USER_NM},'%')) OR (ENG_NAME LIKE CONCAT('%',#{S_USER_NM},'%'))
+		   AND ((HAN_NAME LIKE CONCAT('%',#{S_USER_NM},'%')) OR (ENG_NAME LIKE CONCAT('%',#{S_USER_NM},'%')))
 		</if>
 		<if test='S_MEM_GBN != null and S_MEM_GBN != ""'>
 		   AND MEM_GBN = #{S_MEM_GBN}
