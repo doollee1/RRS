@@ -53,6 +53,15 @@
 							</c:forEach>
 						</select>
 					</td>
+					<td class="small_td"><p>조건</p></td>
+					<td class="medium_td">
+						<select id="PROD_COND" name="PROD_COND" class="" style=width:80%;>
+							<option value="">--<s:message code='system.select'/>--</option>
+							<c:forEach var="i" items="${prodcond}">
+								<option value="${i.CODE}">${i.CODE_NM}</option>
+							</c:forEach>
+						</select>
+					</td>
 				</tr>
 			</tbody>
 		</table>
@@ -226,7 +235,8 @@ function cSearch(currentPage){
 	
 	var formData = formIdAllToMap('frmDetail');
 	var param = {"BAS_YY" :formData.BAS_YY
-				,"SSN_GBN":formData.SSN_GBN};
+				,"SSN_GBN":formData.SSN_GBN
+				,"PROD_COND":formData.PROD_COND};
 	
 	fn_ajax(url, false, param, function(data, xhr){
 		reloadGrid("grid1", data.result);

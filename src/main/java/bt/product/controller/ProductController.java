@@ -39,6 +39,11 @@ public class ProductController {
 		param.put("HEAD_CD", 500090);
 		param.put("Season", true);
 		model.addAttribute("season"  , productService.selectGetCommonCode(param));
+		
+		BMap param2 = new BMap();
+		param2.put("HEAD_CD", 500220);
+		model.addAttribute("prodcond"  , productService.selectGetCommonCode(param2));
+		
 		return "/product/Product";
 	}
 	
@@ -113,6 +118,7 @@ public class ProductController {
 		BMap param = new BMap();
 		param.put("SSN_GBN", reqData.get("SSN_GBN"));
 		param.put("BAS_YY", reqData.get("BAS_YY"));
+		param.put("PROD_COND", reqData.get("PROD_COND"));
 		
 		BRespData respData = new BRespData();
 		

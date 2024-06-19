@@ -56,6 +56,9 @@
 		 <if test='SSN_GBN != "9"'>
 		   AND A.SSN_GBN = #{SSN_GBN}
 		 </if> 
+		<if test="PROD_COND != null and PROD_COND != ''">
+		    AND B.PROD_COND = #{PROD_COND}
+		</if>
 		   AND A.BAS_YY = #{BAS_YY}
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>

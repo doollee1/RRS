@@ -57,7 +57,7 @@
 					</td>
 					<th><s:message code='meetSanding.carCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="CAR_NUM1" value="0" style="width:51.5%;" name="CAR_NUM1"/ maxlength="3">대
+						<input type="text" class="cmc_txt" id="CAR_NUM1" value="0" style="width:51.5%;" name="CAR_NUM1"/ maxlength="3">회
 					</td>
 				</tr>
 				<tr>
@@ -84,7 +84,7 @@
 					</td>
 					<th><s:message code='meetSanding.carCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="CAR_NUM2" value="0" style="width:51.5%;" name="CAR_NUM2" maxlength="3"/>대
+						<input type="text" class="cmc_txt" id="CAR_NUM2" value="0" style="width:51.5%;" name="CAR_NUM2" maxlength="3"/>회
 					</td>
 				</tr>
 				<tr class="doubleCnt">
@@ -113,7 +113,7 @@
 					</td>
 					<th><s:message code='meetSanding.carCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="CAR_NUM3" value="0" style="width:51.5%;" name="CAR_NUM3" maxlength="3"/>대
+						<input type="text" class="cmc_txt" id="CAR_NUM3" value="0" style="width:51.5%;" name="CAR_NUM3" maxlength="3"/>회
 					</td>
 				</tr>
 				<tr class="doubleCnt3">
@@ -142,7 +142,7 @@
 					</td>
 					<th><s:message code='meetSanding.carCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="CAR_NUM4" value="0" style="width:51.5%;" name="CAR_NUM4" maxlength="3"/>대
+						<input type="text" class="cmc_txt" id="CAR_NUM4" value="0" style="width:51.5%;" name="CAR_NUM4" maxlength="3"/>회
 					</td>
 				</tr>
 				<tr class="doubleCnt4">
@@ -399,13 +399,10 @@ $(function() {
 			}else{
 				if(!fn_empty(data.result)){
 					$("#PRD_CNT").val(data.result.length).trigger("change");
-// 					alert(data.result.length);
 					for (var i = 0; i < data.result.length; i++) {
 						$.each(data.result[i], function(k , v){
-// 							alert(v);
 							if(k == "PICK_GBN"){
 								if(v == "04" || v == "05"){
-// 									alert(111);
 									$("#PICK_GBN_1").val("03");
 									$('#PROD_SEQ1 option[data=03]').show();
 									$('#PROD_SEQ1 option').not('[data=03]').hide();
@@ -416,7 +413,6 @@ $(function() {
 									$('#PROD_SEQ4 option[data=03]').show();
 									$('#PROD_SEQ4 option').not('[data=03]').hide();
 								}else{
-// 									alert(v);
 									$("#PICK_GBN_1").val(v);
 									$('#PROD_SEQ1 option[data='+v+']').show();
 									$('#PROD_SEQ1 option').not('[data='+v+']').hide();
@@ -427,7 +423,6 @@ $(function() {
 									$('#PROD_SEQ4 option[data='+v+']').show();
 									$('#PROD_SEQ4 option').not('[data='+v+']').hide();
 								}
-// 								$("#PROD_SEQ" + parseInt(i+1) + ' option[dataDetail = '+ v +']').prop("selected", true);
 							}else if(k == "PROD_SEQ"){
 								$("#PROD_SEQ" + parseInt(i+1) + ' option[prod_seq='+v+']').prop("selected", true);
 								$("#HD_"+k+parseInt(i+1)).val(v); 
@@ -449,9 +444,6 @@ $(function() {
 	
 	function selec_init(data){ // 초기화
 		$('#PROD_SEQ1 option[value='+ data +']:eq(0)').prop("checked", true);
-// 		$('#PROD_SEQ2 option[value='+ data +']:eq(0)').prop("checked", true);
-// 		$('#PROD_SEQ3 option[value='+ data +']:eq(0)').prop("checked", true);
-// 		$('#PROD_SEQ4 option[value='+ data +']:eq(0)').prop("checked", true);
 		$("#PER_NUM1" ).val("0");
 		$("#ADD_AMT1" ).val("0");
 		$("#USE_AMT1" ).val("0");
@@ -514,59 +506,64 @@ $(function() {
 	function validation(data){
 		var prd_cnt = $("#PRD_CNT").val();
 		if(!fn_empty(prd_cnt)){
-			var per_num1 = $("#PER_NUM1").val();
-		    var car_num1 = $("#CAR_NUM1").val();
-		    var per_num2 = $("#PER_NUM2").val();
-		    var car_num2 = $("#CAR_NUM2").val();
-		    if(prd_cnt == "1"){
-		    	if(per_num1 == "0" || fn_empty(per_num1)){
-			    	alert("인원수를 입력해주세요.");
+			for (var i = 1; i < parseInt(prd_cnt) + 1 ; i++) {
+				if($("#PER_NUM"+i).val() == "0" || fn_empty($("#PER_NUM"+i).val())){
+					alert("인원수를 입력해주세요.");
 			        return false;
 			    }
 			    
-			    if(parseInt(per_num1) > parseInt(gv_tot_person)){
-			    	alert("입력하신 인원수가 총인원보다 많습니다.");
-			    	return false;
-			    }
-			    
-			    if(car_num1 == "0" || fn_empty(car_num1)){
-			    	alert("이용횟수를 입력해주세요.");
-			    	return false;
-			    }
-		    }else{
-		    	if(data[0].PROD_SEQ == data[1].PROD_SEQ){
-					alert("같은상품은 선택할수 없습니다.");
-					return false;	
-				}
+		    	if(prd_cnt == 1){
+		    		if(parseInt($("#PER_NUM1").val()) > parseInt(gv_tot_person)){
+				    	alert("입력하신 인원수가 총인원보다 많습니다.");
+				    	return false;
+				    }
+		    	}else if(prd_cnt == 2){
+		    		if(parseInt($("#PER_NUM1").val()) + parseInt($("#PER_NUM2").val()) > parseInt(gv_tot_person)){
+				    	alert("입력하신 인원수가 총인원보다 많습니다.");
+				    	return false;
+				    }
+		    	}else if(prd_cnt == 3){
+		    		if(parseInt($("#PER_NUM1").val()) + parseInt($("#PER_NUM2").val()) + parseInt($("#PER_NUM3").val()) > parseInt(gv_tot_person)){
+				    	alert("입력하신 인원수가 총인원보다 많습니다.");
+				    	return false;
+				    }
+		    	}else if(prd_cnt == 4){
+		    		if(parseInt($("#PER_NUM1").val()) + parseInt($("#PER_NUM2").val()) + parseInt($("#PER_NUM3").val()) + parseInt($("#PER_NUM4").val()) > parseInt(gv_tot_person)){
+				    	alert("입력하신 인원수가 총인원보다 많습니다.");
+				    	return false;
+				    }
+		    	}
 		    	
-		    	if(per_num1 == "0" || fn_empty(per_num1)){
-			    	alert("인원수를 입력해주세요.");
+		    	if($("#CAR_NUM"+i).val() == "0" || fn_empty($("#CAR_NUM"+i).val())){
+		    		alert("이용횟수를 입력해주세요.");
 			        return false;
 			    }
 		    	
-		    	if(per_num2 == "0" || fn_empty(per_num2)){
-			    	alert("인원수를 입력해주세요.");
-			        return false;
-			    }
-		    	
-		    	if(car_num1 == "0" || fn_empty(car_num1)){
-			    	alert("이용횟수를 입력해주세요.");
-			    	return false;
-			    }
-		    	
-		    	if(car_num2 == "0" || fn_empty(car_num2)){
-			    	alert("이용횟수를 입력해주세요.");
-			    	return false;
-			    }
-		    	
-		    	if(parseInt(per_num1) + parseInt(per_num2) > parseInt(gv_tot_person)){
-			    	alert("입력하신 인원수가 총인원보다 많습니다.");
-			    	return false;
-			    }
-		    }
+		    	if(prd_cnt == 2){
+	 		    	if(data[0].PROD_SEQ == data[1].PROD_SEQ){
+						alert("같은상품은 선택할 수 없습니다.");
+						return false;
+	 		    	}
+				}else if(prd_cnt == 3){
+	 		    	if(data[0].PROD_SEQ == data[1].PROD_SEQ || data[0].PROD_SEQ == data[2].PROD_SEQ || data[1].PROD_SEQ == data[2].PROD_SEQ){
+						alert("같은상품은 선택할 수 없습니다.");
+						return false;
+	 		    	}
+		    	}else if(prd_cnt == 4){
+		    		if(data[0].PROD_SEQ == data[1].PROD_SEQ || data[0].PROD_SEQ == data[2].PROD_SEQ || data[0].PROD_SEQ == data[3].PROD_SEQ){
+						alert("같은상품은 선택할 수 없습니다.");
+						return false;
+	 		    	}else if(data[1].PROD_SEQ == data[2].PROD_SEQ || data[1].PROD_SEQ == data[3].PROD_SEQ || data[2].PROD_SEQ == data[3].PROD_SEQ){
+						alert("같은상품은 선택할 수 없습니다.");
+						return false;
+	 		    	}
+		    	}
+				
+			}
 		}
-    	return true;
-	}
+		return true;
+	}		    
+	
 });
 
 
