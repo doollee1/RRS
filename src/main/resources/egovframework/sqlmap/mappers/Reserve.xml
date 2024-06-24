@@ -3,49 +3,49 @@
 
 <mapper namespace="ReserveMapper">
 	<select id="reserveSelectList" parameterType="BMap" resultType="BMap">
-    <include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+    <include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
     SELECT T3.*
       FROM (
     SELECT ROW_NUMBER() OVER(ORDER BY T1.REQ_DT DESC, T1.SEQ DESC) AS ROWNUM
-         , T1.REQ_DT                              /* 예약일자               */
-         , T1.SEQ                                 /* 일련번호               */
-         , T1.USER_ID                             /* 사용자ID      */
-         , T1.REQ_HAN_NM                          /* 예약자한글명         */
-         , T1.REQ_ENG_NM                          /* 예약자영문명         */
-         , T1.REQ_TEL_NO                          /* 예약자전화번호      */
-         , T1.MEM_GBN                             /* 회원구분               */
+         , T1.REQ_DT                              /* 예약일자 	   */
+         , T1.SEQ                                 /* 일련번호 	   */
+         , T1.USER_ID                             /* 사용자ID    */
+         , T1.REQ_HAN_NM                          /* 예약자한글명   */
+         , T1.REQ_ENG_NM                          /* 예약자영문명   */
+         , T1.REQ_TEL_NO                          /* 예약자전화번호 */
+         , T1.MEM_GBN                             /* 회원구분        */
          , (SELECT CODE
               FROM BC_COMM_L
              WHERE 1 = 1
                AND HEAD_CD = '500030'
-               AND CODE = T1.MEM_GBN) AS MEM_CD   /* 멤버구분코드         */
+               AND CODE = T1.MEM_GBN) AS MEM_CD   /* 멤버구분코드   */
          , (SELECT CODE_NM
               FROM BC_COMM_L
              WHERE 1 = 1
                AND HEAD_CD = '500030'
-               AND CODE = T1.MEM_GBN) AS MEM_NM   /* 멤버구분              */
+               AND CODE = T1.MEM_GBN) AS MEM_NM   /* 멤버구분       */
          , (SELECT CODE_NM
               FROM BC_COMM_L
              WHERE 1 = 1
                AND HEAD_CD = '500020'
-               AND CODE = T1.PRC_STS) AS STATE_NM /* 상태구분              */
-         , T1.AGN_CD                              /* 에이전시코드        */
+               AND CODE = T1.PRC_STS) AS STATE_NM /* 상태구분       */
+         , T1.AGN_CD                              /* 에이전시코드   */
          , (SELECT CODE_NM
 	          FROM BC_COMM_L
 	         WHERE 1 = 1
 	           AND HEAD_CD = '500120'
-	           AND CODE = T1.AGN_CD)  AS AGN_CD_NM /* 에이전시구분            */
-         , T1.PRC_STS                             /* 예약상태                    */
-         , T1.CHK_IN_DT                           /* 체크인일자                 */
-         , T1.CHK_OUT_DT                          /* 체크아웃일자              */
-         , T1.ROOM_TYPE                           /* 객실타입                    */
-         , T1.FLIGHT_IN                           /* 도착항공기편              */
-         , T1.FLIGHT_IN_HH                        /* 도착항공기시간           */
-         , T1.FLIGHT_OUT                          /* 출발항공기편              */
-         , T1.FLIGHT_OUT_HH                       /* 출발항공기시간           */
-         , T1.TOT_PERSON                          /* 총인원                       */
-         , T1.BAS_YY                              /* 기준년도                    */
-         , T1.BAS_YY_SEQ                          /* 기준년도SEQ      */
+	           AND CODE = T1.AGN_CD)  AS AGN_CD_NM /* 에이전시구분  */
+         , T1.PRC_STS                             /* 예약상태       */
+         , T1.CHK_IN_DT                           /* 체크인일자     */
+         , T1.CHK_OUT_DT                          /* 체크아웃일자   */
+         , T1.ROOM_TYPE                           /* 객실타입       */
+         , T1.FLIGHT_IN                           /* 도착항공기편   */
+         , T1.FLIGHT_IN_HH                        /* 도착항공기시간 */
+         , T1.FLIGHT_OUT                          /* 출발항공기편   */
+         , T1.FLIGHT_OUT_HH                       /* 출발항공기시간 */
+         , T1.TOT_PERSON                          /* 총인원        */
+         , T1.BAS_YY                              /* 기준년도      */
+         , T1.BAS_YY_SEQ                          /* 기준년도SEQ   */
          , T1.PROD_SEQ                            /* 상품순번                    */
          , T1.HDNG_GBN                            /* 항목구분                    */
          , T1.ADD_BAS_YY                          /* ADD_기준년도           */
@@ -130,7 +130,7 @@
  ORDER BY T3.ROWNUM
     <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
-	
+
 	<select id="selectGetCommonCode" parameterType="Bmap" resultType="Bmap">
 	    SELECT T1.CODE , T1.CODE_NM
           FROM BC_COMM_L T1
@@ -152,29 +152,29 @@
 	       </otherwise>
 	   </choose>
 	</select>
-	
+
 	<select id="selectGetCommonCode1" parameterType="Bmap" resultType="CodeVO">
         SELECT DISTINCT(${REF_CHR}) AS CODE
-             , CASE WHEN ${REF_CHR} = #{VAL} THEN #{KOR_1} ELSE #{KOR_2} END AS VALUE 
+             , CASE WHEN ${REF_CHR} = #{VAL} THEN #{KOR_1} ELSE #{KOR_2} END AS VALUE
           FROM BC_COMM_L
-         WHERE 1 = 1 
+         WHERE 1 = 1
            AND HEAD_CD =  #{HEAD_CD}
 	</select>
-	
+
 	<select id="selectGetCommonCode2" parameterType="Bmap" resultType="CodeVO">
         SELECT CODE AS CODE
-             , CODE_NM AS VALUE 
+             , CODE_NM AS VALUE
           FROM BC_COMM_L
-         WHERE 1 = 1 
+         WHERE 1 = 1
            AND HEAD_CD =  #{HEAD_CD}
 	</select>
-	
+
 	<select id="selectGetCommonCode33" parameterType="Bmap" resultType="CodeVO">
         SELECT CODE AS CODE
-             , CODE_NM AS CODE_NM 
-             , CODE_NM AS VALUE 
+             , CODE_NM AS CODE_NM
+             , CODE_NM AS VALUE
           FROM BC_COMM_L
-         WHERE 1 = 1 
+         WHERE 1 = 1
          <if test="HEAD_CD != null and HEAD_CD != ''">
            AND HEAD_CD =  #{HEAD_CD}
          </if>
@@ -185,7 +185,7 @@
            AND REF_CHR2 = #{REF_CHR2}
          </if>
 	</select>
-	
+
 	<select id="selectGetCommonCode3" parameterType="Bmap" resultType="Bmap">
 	    SELECT T1.CODE , T1.CODE_NM
           FROM BC_COMM_L T1
@@ -210,14 +210,14 @@
 	       </otherwise>
 	   </choose>
 	</select>
-	
-	
+
+
 	<select id="selectGetCommonCode4" parameterType="Bmap" resultType="CodeVO">
         SELECT CODE AS CODE
-             , CODE_NM AS CODE_NM 
-             , CODE_NM AS VALUE 
+             , CODE_NM AS CODE_NM
+             , CODE_NM AS VALUE
           FROM BC_COMM_L
-         WHERE 1 = 1 
+         WHERE 1 = 1
          <if test="HEAD_CD != null and HEAD_CD != ''">
            AND HEAD_CD =  #{HEAD_CD}
          </if>
@@ -228,7 +228,7 @@
            AND REF_CHR2 = #{REF_CHR2}
          </if>
 	</select>
-	
+
 	<select id="reserveSelectDetail" parameterType="BMap" resultType="BMap">
     SELECT T3.*
 	  FROM (
@@ -236,7 +236,7 @@
 	         , T1.REQ_DT                               AS REQ_DT           /* 예약일자               */
 	         , T1.SEQ                                  AS SEQ              /* 일련번호               */
 	         , T1.USER_ID                              AS USER_ID          /* 사용자ID      */
-	         , CONVERT(T1.REQ_HAN_NM USING 'utf8mb4')  AS REQ_HAN_NM       /* 예약자한글명         */     
+	         , CONVERT(T1.REQ_HAN_NM USING 'utf8mb4')  AS REQ_HAN_NM       /* 예약자한글명         */
 	         , T1.REQ_ENG_NM                           AS REQ_ENG_NM       /* 예약자영문명         */
 	         , T1.REQ_TEL_NO                           AS REQ_TEL_NO       /* 예약자전화번호      */
 	         , T1.MEM_GBN                              AS MEM_GBN          /* 회원구분               */
@@ -274,34 +274,34 @@
 	         , T1.FLIGHT_IN_HH                        AS FLIGHT_IN_HH      /* 도착항공기시간        */
 	         , T1.FLIGHT_OUT                          AS FLIGHT_OUT        /* 출발항공기편           */
 	         , T1.FLIGHT_OUT_HH                       AS FLIGHT_OUT_HH     /* 출발항공기시간        */
-	         
+
 	         , T1.BAS_YY                              AS BAS_YY            /* 기준년도                 */
 	         , T1.BAS_YY_SEQ                          AS BAS_YY_SEQ        /* 기준년도SEQ    */
 	         , T1.PROD_SEQ                            AS PROD_SEQ          /* 상품순번               */
 	         , T1.HDNG_GBN                            AS HDNG_GBN          /* 항목구분               */
-	         
+
 	         , T1.ADD_BAS_YY                              AS ADD_BAS_YY            /* ADD_기준년도                 */
 	         , T1.ADD_BAS_YY_SEQ                          AS ADD_BAS_YY_SEQ        /* ADD_기준년도SEQ    */
 	         , T1.ADD_PROD_SEQ                            AS ADD_PROD_SEQ          /* ADD_상품순번               */
 	         , T1.ADD_HDNG_GBN                            AS ADD_HDNG_GBN          /* ADD_항목구분               */
-	         
+
 	         , CASE WHEN T1.PICK_GBN = '03' || T1.PICK_GBN = '04' || T1.PICK_GBN = '05' THEN '03'
                     ELSE T1.PICK_GBN END              AS PICK_GBN          /* 미팅샌딩구분          */
-                    
+
 	         , NVL(T1.TOT_PERSON,0)                   AS TOT_PERSON        /* 총인원                 */
 	         , NVL(T1.M_PERSON,0)                     AS M_PERSON          /* 멤버인원              */
 	         , NVL(T1.G_PERSON,0)                     AS G_PERSON          /* 일반인원              */
 	         , NVL(T1.N_PERSON,0)                     AS N_PERSON          /* 비라운딩인원       */
 	         , NVL(T1.K_PERSON,0)                     AS K_PERSON          /* 소아인원             */
 	         , NVL(T1.I_PERSON,0)                     AS I_PERSON          /* 영유아인원          */
-	         
+
 	         , NVL(T1.TWIN_CNT,0)                     AS TWIN_CNT          /* 트윈갯수                   */
 	         , NVL(T1.KING_CNT,0)                     AS KING_CNT          /* 킹갯수                      */
 	         , NVL(T1.ROOM_ADD_IL,0)                  AS ROOM_ADD_IL       /* 룸추가일수                */
 	         , NVL(T1.ROOM_ADD_CNT,0)                 AS ROOM_ADD_CNT      /* 룸추가갯수                */
 	         , NVL(T1.PRIM_ADD_IL,0)                  AS PRIM_ADD_IL       /* 프리미엄추가일수        */
 	         , NVL(T1.PRIM_ADD_CNT,0)                 AS PRIM_ADD_CNT      /* 프리미엄추가추가갯수  */
-	         
+
 	         , T1.PICK_IN                             AS PICK_IN           /* 픽업차량-도착          */
 	         , T1.PICK_OUT                            AS PICK_OUT          /* 픽업차량-출발          */
 	         , T1.LATE_CHECK_IN                       AS LATE_CHECK_IN     /* Late체크인여부       */
@@ -343,7 +343,7 @@
 	         , T1.UPD_ID                              AS UPD_ID            /* 수정자ID               */
 	         , (SELECT SUM(TT1.PER_NUM)
                   FROM TB_REQ_PICKUP TT1
-				 WHERE 1 = 1 
+				 WHERE 1 = 1
                    AND TT1.REQ_DT  = T1.REQ_DT
                    AND TT1.REQ_SEQ = T1.SEQ)          AS PER_NUM           /* 미팅샌딩 인원합계      */
 	         , T3.DEP_IN_DT                           AS DEP_IN_DT         /* 예약금입금일자         */
@@ -356,8 +356,8 @@
 	         , NVL(T3.PAY_AMT,0)                      AS PAY_AMT           /* 입금금액               */
 	         , NVL(T3.TOT_AMT,0)                      AS TOT_AMT           /* 총액                   */
 	         , T4.EMAIL                               AS EMAIL             /* USR EMAIL              */
-	      FROM TB_REQ_BOOKING_M T1 
-	LEFT OUTER JOIN TB_REQ_FEE T3 
+	      FROM TB_REQ_BOOKING_M T1
+	LEFT OUTER JOIN TB_REQ_FEE T3
 	        ON T3.REQ_DT  = T1.REQ_DT
 	       AND T3.REQ_SEQ = T1.SEQ
 	LEFT JOIN TB_MEMBER T4
@@ -368,8 +368,8 @@
 	   AND T3.REQ_DT = #{REQ_DT}
 	 ORDER BY T3.ROWNUM
 	</select>
-	
-	
+
+
 	<select id="reserveSelectAddListCnt" parameterType="BMap" resultType="int">
 		SELECT COUNT(1) AS CNT
 		  FROM TB_REQ_BOOKING_D T1
@@ -377,52 +377,51 @@
 		   AND REQ_DT = #{REQ_DT}
 		   AND SEQ    = #{SEQ}
 	</select>
-	
-	
+
+
 	<select id="reserveSelectAddList" parameterType="BMap" resultType="BMap">
     SELECT T3.*
 	  FROM (
-	    SELECT ROW_NUMBER() OVER(ORDER BY T1.SEQ DESC) AS ROWNUM           /* ROWNUM      */
-	    
+	    SELECT ROW_NUMBER() OVER(ORDER BY T1.SEQ DESC) AS ROWNUM           /* ROWNUM         */
 	         , T1.REQ_DT                               AS REQ_DT            /* 예약일자               */
 	         , T1.SEQ                                  AS SEQ               /* 일련번호               */
 	         , T1.DSEQ                                 AS DSEQ              /* 상세일련번호          */
 	         , T1.COM_GBN                              AS COM_GBN           /* 동반자구분(1:예약자,2:동반자)   */
-	         , T1.NUM_GBN                              AS NUM_GBN           /* NUM_GBN      */
-	         , T1.COM_HAN_NM                           AS COM_HAN_NM        /* 예약자한글명         */     
-	         , T1.COM_ENG_NM                           AS COM_ENG_NM        /* 예약자영문명         */
-	         , T1.COM_TEL_NO                           AS COM_TEL_NO        /* 예약자전화번호      */
-	         , T1.CHK_IN_DT                            AS CHK_IN_DT         /* 체크인일자              */
+	         , T1.NUM_GBN                              AS NUM_GBN           /* NUM_GBN       */
+	         , T1.COM_HAN_NM                           AS COM_HAN_NM        /* 예약자한글명          */
+	         , T1.COM_ENG_NM                           AS COM_ENG_NM        /* 예약자영문명          */
+	         , T1.COM_TEL_NO                           AS COM_TEL_NO        /* 예약자전화번호       */
+	         , T1.CHK_IN_DT                            AS CHK_IN_DT         /* 체크인일자             */
 	         , T1.CHK_OUT_DT                           AS CHK_OUT_DT        /* 체크아웃일자           */
 	         , T1.FLIGHT_IN                            AS FLIGHT_IN         /* 도착항공기편           */
 	         , T1.FLIGHT_IN_HH                         AS FLIGHT_IN_HH      /* 도착항공기시간        */
 	         , T1.FLIGHT_OUT                           AS FLIGHT_OUT        /* 출발항공기편           */
 	         , T1.FLIGHT_OUT_HH                        AS FLIGHT_OUT_HH     /* 출발항공기시간        */
-	         , T1.ADD_FILE_SEQ                         AS ADD_FILE_SEQ      /* 첨부파일일련번호         */
-	         , T1.HDNG_GBN                             AS HDNG_GBN          /* 항목구분                  */
-	         , T1.LATE_CHECK_IN                        AS LATE_CHECK_IN     /* Late체크인여부       */
-	         , T1.LATE_CHECK_OUT                       AS LATE_CHECK_OUT    /* Late체크아웃여부     */
-	         , T1.ROOM_TYPE                            AS ROOM_TYPE         /* 객실타입                    */
+	         , T1.ADD_FILE_SEQ                         AS ADD_FILE_SEQ      /* 첨부파일일련번호      */
+	         , T1.HDNG_GBN                             AS HDNG_GBN          /* 항목구분                */
+	         , T1.LATE_CHECK_IN                        AS LATE_CHECK_IN     /* Late체크인여부      */
+	         , T1.LATE_CHECK_OUT                       AS LATE_CHECK_OUT    /* Late체크아웃여부    */
+	         , T1.ROOM_TYPE                            AS ROOM_TYPE         /* 객실타입                */
 	         , T1.CONFIRM_NO                           AS CONFIRM_NO        /* 리조트confirm번호  */
-	         , T1.BAS_YY                               AS BAS_YY            /* 기준년도                 */
-	         , T1.BAS_YY_SEQ                           AS BAS_YY_SEQ        /* 기준년도SEQ     */
-	         , T1.PROD_SEQ                             AS PROD_SEQ          /* 상품순번                  */
-	         , T1.REG_DTM                              AS REG_DTM           /* 등록일시                     */
-	         , T1.REG_ID                               AS REG_ID            /* 등록자ID         */
-	         , T1.UPD_DTM                              AS UPD_DTM           /* 수정일시                     */
-	         , T1.UPD_ID                               AS UPD_ID            /* 수정자ID         */
-	      FROM TB_REQ_BOOKING_D T1 
+	         , T1.BAS_YY                               AS BAS_YY            /* 기준년도                */
+	         , T1.BAS_YY_SEQ                           AS BAS_YY_SEQ        /* 기준년도SEQ      */
+	         , T1.PROD_SEQ                             AS PROD_SEQ          /* 상품순번                */
+	         , T1.REG_DTM                              AS REG_DTM           /* 등록일시                */
+	         , T1.REG_ID                               AS REG_ID            /* 등록자ID        */
+	         , T1.UPD_DTM                              AS UPD_DTM           /* 수정일시                */
+	         , T1.UPD_ID                               AS UPD_ID            /* 수정자ID        */
+	      FROM TB_REQ_BOOKING_D T1
 	       ) T3
 	 WHERE 1 = 1
 	   AND T3.SEQ    = #{SEQ}
 	   AND T3.REQ_DT = #{REQ_DT}
-	   ORDER BY T3.COM_GBN ASC, T3.NUM_GBN ASC, T3.DSEQ ASC
+	   ORDER BY T3.COM_GBN ASC, T3.DSEQ ASC 
 <!-- 	 ORDER BY T3.ROWNUM -->
 	</select>
-	
-	
+
+
 	<select id="invoiceSelectList" parameterType="BMap" resultType="BMap">
-        <include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+        <include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
             SELECT ROW_NUMBER() OVER(ORDER BY T1.ORDER) AS ROWNUM
                 , T1.REQ_DT     /*  예약일자     */
                 , T1.SEQ        /*  일련번호     */
@@ -455,19 +454,27 @@
         <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
 	
+	<select id="invoiceSumTot" parameterType="BMap" resultType="INT">
+		SELECT SUM(TOT_AMT) AS TOT_AMT   /*  총금액       */
+		  FROM TB_REQ_INVOICE
+		 WHERE 1=1
+		   AND REQ_DT = #{REQ_DT}
+           AND SEQ    = #{SEQ}
+	</select>
+
 	<select id="InvoiceSelectBoxList" parameterType="BMap" resultType="CodeVO">
 	    SELECT T3.CODE AS VALUE
-	         , T3.CODE AS CODE	
+	         , T3.CODE AS CODE
 	      FROM TB_REQ_INVOICE T1
              , TB_REQ_BOOKING_M T2
 		     , BC_COMM_L T3
-	     WHERE 1 = 1 
+	     WHERE 1 = 1
 	       AND HEAD_CD = #{HEAD_CD}
 	       AND T3.REF_CHR1 = T2.MEM_GBN
            AND T3.CODE     = T1.ITEM_CD
          ORDER BY T3.CODE
 	</select>
-	
+
 	<select id="selectInvoiceListCnt" parameterType="BMap" resultType="int">
 		SELECT COUNT(1) AS CNT
 		  FROM TB_REQ_INVOICE T1
@@ -475,7 +482,7 @@
 		   AND REQ_DT = #{REQ_DT}
 		   AND SEQ    = #{SEQ}
 	</select>
-	
+
 	<insert id="insertInvoiceDetailInfo" parameterType="BMap">
         INSERT INTO TB_REQ_INVOICE
                     ( REQ_DT
@@ -519,7 +526,7 @@
                     , #{LOGIN_USER}
                     )
 	</insert>
-	
+
 	<insert id="addInvoiceDetailHis" parameterType="BMap">
         INSERT INTO TB_REQ_INVOICE_HIS
                     ( REQ_DT
@@ -565,7 +572,7 @@
                     , #{LOGIN_USER}
                     )
 	</insert>
-	
+
 	<insert id="delInvoiceDetailHis" parameterType="BMap">
         INSERT INTO TB_REQ_INVOICE_HIS
                     ( REQ_DT
@@ -617,6 +624,19 @@
                   AND T1.ORDER = #{ORDER}
 	</insert>
 	
+	<select id="selectUserInfo" parameterType="BMap" resultType="BMap">
+		SELECT COUNT(*) as cnt 
+     		  ,USER_ID
+     		  ,MEM_GBN
+     		  ,HAN_NAME
+     		  ,ENG_NAME
+     		  ,TEL_NO
+     		  ,EMAIL
+ 		 FROM tb_member as T1
+		WHERE 1 = 1
+  		  AND USER_ID LIKE CONCAT('%',#{S_USER_ID},'%')
+	</select>
+
 	<update id="updateInvoiceDetailInfo" parameterType="BMap">
 		UPDATE TB_REQ_INVOICE
            SET REQ_DT   = #{REQ_DT  }
@@ -640,12 +660,12 @@
            AND TB_REQ_INVOICE.ORDER = #{PREV_ORDER}
 	</update>
 	<sql id="tmpDayDiff">
-	<![CDATA[	
-    		SELECT a.*, CASE WHEN A.MIN_ST = A.ST_DT1 AND A.MAX_ED = A.ED_DT1 THEN  ABS(TIMESTAMPDIFF(DAY,date_format(B.CHK_OUT_DT,'%Y-%m-%d'), date_format(B.CHK_IN_DT,'%Y-%m-%d')))  -- 기간상품 1개인 경우 
-                          -- 아래 기간상품 2개 이상인 경우                                                  
-		                 WHEN A.MIN_ST = A.ST_DT1 THEN ABS(TIMESTAMPDIFF(DAY,date_format(A.ED_DT1,'%Y-%m-%d'), date_format(B.CHK_IN_DT,'%Y-%m-%d'))) +1  -- 첫번째                                                     
+	<![CDATA[
+    		SELECT a.*, CASE WHEN A.MIN_ST = A.ST_DT1 AND A.MAX_ED = A.ED_DT1 THEN  ABS(TIMESTAMPDIFF(DAY,date_format(B.CHK_OUT_DT,'%Y-%m-%d'), date_format(B.CHK_IN_DT,'%Y-%m-%d')))  -- 기간상품 1개인 경우
+                          -- 아래 기간상품 2개 이상인 경우
+		                 WHEN A.MIN_ST = A.ST_DT1 THEN ABS(TIMESTAMPDIFF(DAY,date_format(A.ED_DT1,'%Y-%m-%d'), date_format(B.CHK_IN_DT,'%Y-%m-%d'))) +1  -- 첫번째
 		                 WHEN A.MAX_ED = A.ED_DT1 THEN ABS(TIMESTAMPDIFF(DAY,date_format(B.CHK_OUT_DT,'%Y-%m-%d'), date_format(A.ST_DT1,'%Y-%m-%d')))    -- 마지막
-		                 ELSE ABS(TIMESTAMPDIFF(DAY,date_format(A.ED_DT1,'%Y-%m-%d'), date_format(A.ST_DT1,'%Y-%m-%d')))+1 
+		                 ELSE ABS(TIMESTAMPDIFF(DAY,date_format(A.ED_DT1,'%Y-%m-%d'), date_format(A.ST_DT1,'%Y-%m-%d')))+1
                          END
 				            AS USE_DAY
 		                     , B.REQ_DT                              /* 예약일자              */
@@ -684,8 +704,8 @@
 		                     , B.HDNG_GBN                            /* 상품코드               */
 		                    ,ABS(TIMESTAMPDIFF(DAY,date_format(B.CHK_OUT_DT,'%Y-%m-%d'), date_format(B.CHK_IN_DT,'%Y-%m-%d'))) CHK_DIFF_DAY
 		        FROM  (SELECT X.*, MIN(ST_DT1) OVER(ORDER BY ST_DT1) MIN_ST
-                              , MAX(ED_DT1) OVER(ORDER BY ED_DT1 DESC) MAX_ED 
-                              FROM (   
+                              , MAX(ED_DT1) OVER(ORDER BY ED_DT1 DESC) MAX_ED
+                              FROM (
                        SELECT BAS_YY, BAS_YY_SEQ, ST_DT1,ED_DT1 FROM tb_bas_yy_info bb
                        WHERE 1=1
 		               AND (    #{CHK_IN_DT  }  BETWEEN bb.ST_DT1 AND bb.ED_DT1 -- IN 체크인
@@ -714,26 +734,26 @@
                    AND B.CHK_OUT_DT <= A.MAX_ED
 		        WHERE B.REQ_DT = #{REQ_DT}
            		  AND B.SEQ    = #{SEQ}
-           		    ]]>  
+           		    ]]>
 	</sql>
 
 	<select id="selectDayDiffChk" resultType="BMap">
 	SELECT Y.CHK_DIFF_DAY, SUM(USE_DAY) BAS_YY_CHK_DAY
 		FROM (
 	    <include refid="tmpDayDiff"></include>
-	    ) Y 
+	    ) Y
 	</select>
 
 	<insert id="firstInvoiceSelectList" parameterType="BMap">
         INSERT INTO TB_REQ_INVOICE
-		WITH TBL AS ( 
-			<include refid="tmpDayDiff"></include> 
+		WITH TBL AS (
+			<include refid="tmpDayDiff"></include>
 		)
-		<![CDATA[	
+		<![CDATA[
 		 SELECT X.REQ_DT
 		               ,X.SEQ
 		               ,X.ITEM_CD
-		               , @ROW:=@ROW+1 
+		               , @ROW:=@ROW+1
 		               ,X.ITEM_NM
 		               ,X.AMT_SIGN
 		               ,X.PER_AMT
@@ -746,11 +766,11 @@
 		               ,'' AS REF2
 		               ,'' AS FILE_UID
 		               ,NOW() AS REG_DTM
-		               ,#{LOGIN_USER}  AS REG_ID   
+		               ,#{LOGIN_USER}  AS REG_ID
 		               ,NOW() AS UPD_DTM
-		               ,#{LOGIN_USER}  AS UPD_DTM  
+		               ,#{LOGIN_USER}  AS UPD_DTM
 		        FROM (
-		    SELECT Y.* 
+		    SELECT Y.*
 		    FROM (
 					SELECT 		 TB.REQ_DT        AS REQ_DT
 						        , TB.SEQ         AS SEQ
@@ -759,8 +779,8 @@
 				                , P.PROD_SEQ
 						        , C.CODE        AS ITEM_CD
 						        , CONCAT(C.CODE_NM,' ',date_format(TB.ST_DT1,'%Y-%m-%d')) AS ITEM_NM
-						        , C.REF_CHR2    AS AMT_SIGN 
-						        , TB.TOT_PERSON  AS TOT_PERSON 
+						        , C.REF_CHR2    AS AMT_SIGN
+						        , TB.TOT_PERSON  AS TOT_PERSON
 						        , TB.M_PERSON    AS M_PERSON
 						        , TB.G_PERSON    AS G_PERSON
 						        , TB.N_PERSON    AS N_PERSON
@@ -776,22 +796,22 @@
 						           END USE_NUM
 						        , C.REF_CHR4    AS UNIT_NUM
 						        , ROW_NUMBER() OVER(ORDER BY C.REF_CHR5 , CONCAT(P.BAS_YY,P.BAS_YY_SEQ))    AS SORT
-						        , MAX(CASE  WHEN C.CODE = CONCAT('PROD',TB.MEM_GBN)		AND TB.HDNG_GBN = P.HDNG_GBN 	AND P.PROD_COND = 'DU10' 	AND TB.USE_DAY >= 10 	THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_DIS_AMT ELSE P.COM_AMT END 
-    						                WHEN C.CODE = CONCAT('PROD',TB.MEM_GBN)		AND TB.HDNG_GBN = P.HDNG_GBN 	AND P.PROD_COND = 'DD10' 	AND TB.USE_DAY <  10 	THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_DIS_AMT ELSE P.COM_AMT END 
-                                            WHEN C.CODE = CONCAT('PROD',TB.MEM_GBN)		AND TB.HDNG_GBN = P.HDNG_GBN 	AND P.PROD_COND = '0'                         		THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_DIS_AMT ELSE P.COM_AMT END 
-                                            WHEN C.CODE = CONCAT('ROOMN',TB.MEM_GBN)	AND P.HDNG_GBN = '29'          	AND P.PROD_COND = 'N' 		AND TB.N_PERSON > 0  	THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_DIS_AMT ELSE P.COM_AMT END  
-    						                WHEN C.CODE = CONCAT('ROOMK',TB.MEM_GBN)	AND P.HDNG_GBN = '29'          	AND P.PROD_COND = 'K'		AND TB.K_PERSON > 0  	THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_DIS_AMT ELSE P.COM_AMT END  
+						        , MAX(CASE  WHEN C.CODE = CONCAT('PROD',TB.MEM_GBN)		AND TB.HDNG_GBN = P.HDNG_GBN 	AND P.PROD_COND = 'DU10' 	AND TB.USE_DAY >= 10 	THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_DIS_AMT ELSE P.COM_AMT END
+    						                WHEN C.CODE = CONCAT('PROD',TB.MEM_GBN)		AND TB.HDNG_GBN = P.HDNG_GBN 	AND P.PROD_COND = 'DD10' 	AND TB.USE_DAY <  10 	THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_DIS_AMT ELSE P.COM_AMT END
+                                            WHEN C.CODE = CONCAT('PROD',TB.MEM_GBN)		AND TB.HDNG_GBN = P.HDNG_GBN 	AND P.PROD_COND = '0'                         		THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_DIS_AMT ELSE P.COM_AMT END
+                                            WHEN C.CODE = CONCAT('ROOMN',TB.MEM_GBN)	AND P.HDNG_GBN = '29'          	AND P.PROD_COND = 'N' 		AND TB.N_PERSON > 0  	THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_DIS_AMT ELSE P.COM_AMT END
+    						                WHEN C.CODE = CONCAT('ROOMK',TB.MEM_GBN)	AND P.HDNG_GBN = '29'          	AND P.PROD_COND = 'K'		AND TB.K_PERSON > 0  	THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_DIS_AMT ELSE P.COM_AMT END
 						                    WHEN C.CODE = CONCAT('ROOMK',TB.MEM_GBN)	AND P.HDNG_GBN = '29' 			AND P.PROD_COND = '0'                              	THEN CASE WHEN LENGTH(TB.AGN_CD) = 2 THEN P.AGN_DIS_AMT ELSE P.COM_AMT END
-						              ELSE 0 END) PER_AMT  
+						              ELSE 0 END) PER_AMT
 				FROM TBL TB
 				INNER JOIN BC_COMM_L C
 				    ON C.HEAD_CD      = '500140'   -- 인보이스 항목
-				    AND INSTR(C.REF_CHR1,TB.MEM_GBN) > 0  -- 항목구분   
-				    AND C.CODE IN(CONCAT('PROD',TB.MEM_GBN),CONCAT('ROOMN',TB.MEM_GBN),CONCAT('ROOMK',TB.MEM_GBN)) 
+				    AND INSTR(C.REF_CHR1,TB.MEM_GBN) > 0  -- 항목구분
+				    AND C.CODE IN(CONCAT('PROD',TB.MEM_GBN),CONCAT('ROOMN',TB.MEM_GBN),CONCAT('ROOMK',TB.MEM_GBN))
 				INNER JOIN TB_PROD_INFO P
 					ON TB.bas_yy = P.BAS_YY
-					AND TB.bas_yy_seq = P.BAS_YY_SEQ   
-				GROUP BY C.REF_CHR5,P.bas_yy, P.bas_yy_seq, P.PROD_SEQ, CONCAT(C.CODE_NM,' ',date_format(TB.ST_DT1,'%Y-%m')) 
+					AND TB.bas_yy_seq = P.BAS_YY_SEQ
+				GROUP BY C.REF_CHR5,P.bas_yy, P.bas_yy_seq, P.PROD_SEQ, CONCAT(C.CODE_NM,' ',date_format(TB.ST_DT1,'%Y-%m'))
 				UNION ALL
 				SELECT    B.REQ_DT      AS REQ_DT
 				        , B.SEQ         AS SEQ
@@ -800,27 +820,27 @@
 				        , C.PROD_SEQ
 				        , A.CODE        AS ITEM_CD
 				        , A.CODE_NM     AS ITEM_NM
-				        , A.REF_CHR2    AS AMT_SIGN 
-				        , B.TOT_PERSON  AS TOT_PERSON 
+				        , A.REF_CHR2    AS AMT_SIGN
+				        , B.TOT_PERSON  AS TOT_PERSON
 				        , B.M_PERSON    AS M_PERSON
 				        , B.G_PERSON    AS G_PERSON
 				        , B.N_PERSON    AS N_PERSON
 				        , B.K_PERSON    AS K_PERSON
 				        , B.I_PERSON    AS I_PERSON
-				        , CASE WHEN A.REF_CHR3 = 'D' THEN ABS(TIMESTAMPDIFF(DAY,date_format(B.CHK_OUT_DT,'%Y-%m-%d'), date_format(B.CHK_IN_DT,'%Y-%m-%d'))) 
+				        , CASE WHEN A.REF_CHR3 = 'D' THEN ABS(TIMESTAMPDIFF(DAY,date_format(B.CHK_OUT_DT,'%Y-%m-%d'), date_format(B.CHK_IN_DT,'%Y-%m-%d')))
 				             ELSE 1 END AS USE_DAY
 				        , A.REF_CHR3    AS UNIT_DAY
 				        , CASE  WHEN A.CODE = CONCAT('ROOMUP',B.MEM_GBN)         THEN B.ROOM_ADD_IL
 				                WHEN A.CODE = CONCAT('ROOMADD',B.MEM_GBN)        THEN B.ROOM_ADD_CNT
 				                WHEN A.REF_CHR4 = 'P'                            THEN B.TOT_PERSON
 				                WHEN A.REF_CHR4 = 'R'  AND B.ROOM_TYPE IN ('01', '02')     THEN B.TWIN_CNT + B.KING_CNT
-				                
+
 		                        ELSE 1
 				           END USE_NUM
 				        , A.REF_CHR4    AS UNIT_NUM
 				        , A.REF_CHR5    AS SORT
-				        , CASE  WHEN A.CODE = CONCAT('LATECHECKOUT',B.MEM_GBN)      AND B.LATE_CHECK_OUT = '1'  AND C.HDNG_GBN = '16' AND C.PROD_COND = '0' THEN CASE WHEN LENGTH(B.AGN_CD) = 2 THEN C.AGN_DIS_AMT ELSE C.COM_AMT END 
-				                WHEN A.CODE = CONCAT('LATECHECKOUT',B.MEM_GBN)      AND B.LATE_CHECK_OUT = '2'  AND C.HDNG_GBN = '17' AND C.PROD_COND = '0' THEN CASE WHEN LENGTH(B.AGN_CD) = 2 THEN C.AGN_DIS_AMT ELSE C.COM_AMT END 
+				        , CASE  WHEN A.CODE = CONCAT('LATECHECKOUT',B.MEM_GBN)      AND B.LATE_CHECK_OUT = '1'  AND C.HDNG_GBN = '16' AND C.PROD_COND = '0' THEN CASE WHEN LENGTH(B.AGN_CD) = 2 THEN C.AGN_DIS_AMT ELSE C.COM_AMT END
+				                WHEN A.CODE = CONCAT('LATECHECKOUT',B.MEM_GBN)      AND B.LATE_CHECK_OUT = '2'  AND C.HDNG_GBN = '17' AND C.PROD_COND = '0' THEN CASE WHEN LENGTH(B.AGN_CD) = 2 THEN C.AGN_DIS_AMT ELSE C.COM_AMT END
 				                WHEN A.CODE = CONCAT('ROOMUP',B.MEM_GBN)            AND B.PRIM_ADD_IL <> 0      AND C.HDNG_GBN = '15' AND C.PROD_COND = '0' THEN CASE WHEN LENGTH(B.AGN_CD) = 2 THEN C.AGN_DIS_AMT ELSE C.COM_AMT END
 		                        WHEN A.CODE = CONCAT('SURCHARGE',B.MEM_GBN) AND (SELECT COUNT(*) CNT FROM BC_COMM_L X WHERE HEAD_CD = '500160' AND CODE IN (B.FLIGHT_IN ,  B.FLIGHT_OUT)  ) > 0
 				                    AND  EXISTS (SELECT * FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ)
@@ -828,26 +848,26 @@
 				                WHEN A.CODE = CONCAT('SURCHARGE',B.MEM_GBN)  AND (SELECT COUNT(*) CNT FROM BC_COMM_L X WHERE HEAD_CD = '500160' AND CODE IN (B.FLIGHT_IN ,  B.FLIGHT_OUT)  ) > 0
 				                    AND   EXISTS (SELECT * FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ)
 		                            AND B.HDNG_GBN = '21' AND C.PROD_COND =  'PU4' AND  B.TOT_PERSON >= 4  THEN CASE WHEN LENGTH(B.AGN_CD) = 2 THEN C.AGN_DIS_AMT ELSE C.COM_AMT END
-				          WHEN A.CODE = CONCAT('SENDING',B.MEM_GBN)  AND   EXISTS (SELECT * FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ) THEN  (SELECT SUM(CASE WHEN LENGTH(B.AGN_CD) = 2 THEN C.AGN_DIS_AMT ELSE C.COM_AMT END) +SUM(ADD_AMT) FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ) 
+				          WHEN A.CODE = CONCAT('SENDING',B.MEM_GBN)  AND   EXISTS (SELECT * FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ) THEN  (SELECT SUM(CASE WHEN LENGTH(B.AGN_CD) = 2 THEN C.AGN_DIS_AMT ELSE C.COM_AMT END) +SUM(ADD_AMT) FROM  TB_REQ_PICKUP WHERE REQ_DT = B.REQ_DT AND REQ_SEQ = B.SEQ AND PROD_SEQ = C.PROD_SEQ)
 				         ELSE 0 END PER_AMT
 				      FROM  BC_COMM_L A
 				        INNER JOIN TB_REQ_BOOKING_M B
 				            ON A.HEAD_CD      = '500140'   -- 인보이스 항목
 				            AND INSTR(A.REF_CHR1,B.MEM_GBN) > 0  -- 항목구분
-				            AND A.CODE NOT IN(CONCAT('PROD',B.MEM_GBN),CONCAT('ROOMN',B.MEM_GBN),CONCAT('ROOMK',B.MEM_GBN))    
+				            AND A.CODE NOT IN(CONCAT('PROD',B.MEM_GBN),CONCAT('ROOMN',B.MEM_GBN),CONCAT('ROOMK',B.MEM_GBN))
 				        INNER JOIN TB_PROD_INFO C
 				            ON B.BAS_YY   = C.BAS_YY
 				            AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
 				 WHERE B.REQ_DT     = #{REQ_DT}
-				 AND B.SEQ          = #{SEQ}      -- INPUT 
+				 AND B.SEQ          = #{SEQ}      -- INPUT
 				 ORDER BY 14
 				) Y, (SELECT @ROW:=0) R
-				WHERE PER_AMT <> 0  
+				WHERE PER_AMT <> 0
 		   ORDER BY ITEM_NM ) X
 		;
-          ]]>  
+          ]]>
 	</insert>
-	
+
 	<delete id="deleteInvoiceDetailInfo" parameterType="BMap">
 	    DELETE
 	      FROM TB_REQ_INVOICE
@@ -857,7 +877,7 @@
 	       AND ITEM_CD = #{PREV_ITEM_CD}
 	       AND TB_REQ_INVOICE.ORDER = #{PREV_ORDER}
 	</delete>
-	
+
 	<select id="selectPrdInfo" parameterType="BMap" resultType="BMap" >
 		SELECT A.COM_AMT
 			, A.PROD_SEQ
@@ -865,20 +885,20 @@
 			, A.PROD_COND
 			, A.HDNG_GBN
 			, A.PROD_SEQ AS HD_PROD_SEQ
-			,(CASE  WHEN B.CODE = '0' 
+			,(CASE  WHEN B.CODE = '0'
 					THEN (SELECT CODE_NM FROM BC_COMM_L WHERE CODE = '18' AND HEAD_CD = 500000)
-					ELSE B.CODE_NM END) 
-			AS CODE_NM 
-		FROM 
-		(SELECT * FROM TB_PROD_INFO 
-			WHERE HDNG_GBN IN ('18', '19') AND SSN_GBN = '3' 
+					ELSE B.CODE_NM END)
+			AS CODE_NM
+		FROM
+		(SELECT * FROM TB_PROD_INFO
+			WHERE HDNG_GBN IN ('18', '19') AND SSN_GBN = '3'
 		) A,
-		(SELECT CODE, CODE_NM FROM BC_COMM_L 
+		(SELECT CODE, CODE_NM FROM BC_COMM_L
 			WHERE HEAD_CD = 500220 AND REF_CHR1 IN('00', '03')
 		) B
-		WHERE A.PROD_COND   = B.CODE    
+		WHERE A.PROD_COND   = B.CODE
 	</select>
-	
+
 	<select id="selectPickListCnt" parameterType="BMap" resultType="int">
 		SELECT COUNT(1) AS CNT
 		  FROM TB_REQ_PICKUP T1
@@ -887,7 +907,7 @@
 		   AND REQ_SEQ  = #{REQ_SEQ}
 		   <!-- AND PROD_SEQ = #{HD_PROD_SEQ} -->
 	</select>
-	
+
 	<select id="selectPickupList" parameterType="BMap" resultType="BMap">
 		SELECT T1.REQ_DT   AS REQ_DT   /* 예약일자    */
 	         , T1.REQ_SEQ  AS REQ_SEQ  /* 순번         */
@@ -909,8 +929,8 @@
 	       AND T1.REQ_DT  = #{REQ_DT}
 	       AND T1.REQ_SEQ = #{REQ_SEQ}
 	</select>
-	
-	
+
+
 	<insert id="insertPickupInfo" parameterType="BMap">
         INSERT INTO TB_REQ_PICKUP
                     ( REQ_SEQ
@@ -938,7 +958,7 @@
                     , #{LOGIN_USER}
                     )
 	</insert>
-	
+
 	<update id="updatePickupInfo" parameterType="BMap">
 	    UPDATE TB_REQ_PICKUP
            SET PROD_SEQ = #{PROD_SEQ}
@@ -952,7 +972,7 @@
            AND REQ_SEQ  = #{REQ_SEQ}
            AND PROD_SEQ = #{HD_PROD_SEQ}
 	</update>
-	
+
 	<update id="updatePickGbn" parameterType="BMap">
 	    UPDATE TB_REQ_BOOKING_M
            SET PICK_GBN = #{PICK_GBN}
@@ -962,7 +982,7 @@
          WHERE REQ_DT   = #{REQ_DT}
            AND SEQ      = #{REQ_SEQ}
 	</update>
-	
+
 	<update id="updateDeletePickGbn" parameterType="BMap">
 	    UPDATE TB_REQ_BOOKING_M
            SET PICK_GBN = '01'
@@ -972,7 +992,7 @@
          WHERE REQ_DT   = #{REQ_DT}
            AND SEQ      = #{REQ_SEQ}
 	</update>
-	
+
 	<delete id="deletePickupInfo" parameterType="BMap">
 	    DELETE
 	      FROM TB_REQ_PICKUP
@@ -980,7 +1000,7 @@
 	       AND REQ_DT   = #{REQ_DT}
            AND REQ_SEQ  = #{REQ_SEQ}
 	</delete>
-	
+
 	<update id="updateReserveStatus" parameterType="BMap">
 	    UPDATE TB_REQ_BOOKING_M
            SET PRC_STS = #{CHG_PRC_STS}
@@ -989,7 +1009,7 @@
          WHERE REQ_DT   = #{REQ_DT}
            AND SEQ      = #{SEQ}
 	</update>
-	
+
 	<select id="selectFeeListCnt" parameterType="BMap" resultType="int">
 		SELECT COUNT(1) AS CNT
 		  FROM TB_REQ_FEE T1
@@ -997,7 +1017,7 @@
 		   AND REQ_DT   = #{REQ_DT}
 		   AND REQ_SEQ  = #{SEQ}
 	</select>
-	
+
 	<select id="selectFeeTOT_AMT" parameterType="BMap" resultType="int">
 		SELECT NVL(TOT_AMT,0) AS TOT_AMT
 		  FROM TB_REQ_FEE T1
@@ -1005,7 +1025,7 @@
 		   AND REQ_DT   = #{REQ_DT}
 		   AND REQ_SEQ  = #{SEQ}
 	</select>
-	
+
 	<insert id="insertFeeInfo" parameterType="BMap">
    INSERT INTO TB_REQ_FEE
              ( REQ_DT     /* 예약일자       */
@@ -1037,7 +1057,7 @@
              , #{LOGIN_USER}
              )
 	</insert>
-	 
+
 	<insert id="insertFeeInfoDetail" parameterType="BMap">
    INSERT INTO TB_REQ_FEE
              ( REQ_DT     /* 예약일자       */
@@ -1069,7 +1089,7 @@
              , #{LOGIN_USER}
              )
 	</insert>
-	
+
 	<update id="updateFeeInfo" parameterType="BMap">
 	    UPDATE TB_REQ_FEE
            SET TOT_AMT = #{TOT_AMT}
@@ -1084,24 +1104,51 @@
 	
 	<update id="deleteFeeInfo" parameterType="BMap">
 	    UPDATE TB_REQ_FEE
-           SET BAL_AMT = BAL_AMT - #{TOT_AMT}
-             , TOT_AMT = TOT_AMT - #{TOT_AMT}
+           SET TOT_AMT = TOT_AMT - #{DEL_AMT}
+             , BAL_AMT = TOT_AMT - NVL(DEP_AMT,0)
+             , EXP_DT  = #{EXP_DT}
+             , DEP_AMT = #{DEP_AMT}
              , UPD_DTM  = NOW()
              , UPD_ID   = #{LOGIN_USER}
          WHERE REQ_DT   = #{REQ_DT}
            AND REQ_SEQ  = #{SEQ}
 	</update>
-	
+
+	<update id="deleteAllFeeInfo" parameterType="BMap">
+	    UPDATE TB_REQ_FEE
+           SET TOT_AMT    = 0
+             , BAL_AMT    = 0
+             , DCT_AMT    = 0
+             , PAY_AMT    = 0
+             , DEP_AMT    = 0
+             , EXP_DT     = ""
+             , DEP_IN_DT  = ""
+             , UPD_DTM  = NOW()
+             , UPD_ID   = #{LOGIN_USER}
+         WHERE REQ_DT   = #{REQ_DT}
+           AND REQ_SEQ  = #{SEQ}
+	</update>
+
 	<update id="updateInvRegDt" parameterType="BMap">
 	    UPDATE TB_REQ_BOOKING_M
            SET INV_REG_DT = date_format(NOW(),'%Y%m%d')
-             , PRC_STS  = '05'
+             , PRC_STS  = #{CHG_PRC_STS}    /* 기존 입금대기 '05' */  
              , UPD_DTM  = NOW()
              , UPD_ID   = #{LOGIN_USER}
          WHERE REQ_DT   = #{REQ_DT}
            AND SEQ  = #{SEQ}
 	</update>
 	
+	<update id="deleteInvRegDt" parameterType="BMap">
+	    UPDATE TB_REQ_BOOKING_M
+	    SET INV_REG_DT  = ''
+             , PRC_STS  = #{CHG_PRC_STS}    /* 입금신청 '04' */  
+             , UPD_DTM  = NOW()
+             , UPD_ID   = #{LOGIN_USER}
+         WHERE REQ_DT   = #{REQ_DT}
+           AND SEQ  = #{SEQ}
+	</update>
+
 	<select id="selectAirlineImg" parameterType="BMap" resultType="BMap">
 		SELECT REQ_DT
 		     , REQ_SEQ
@@ -1118,9 +1165,9 @@
 		   AND REQ_SEQ  = #{SEQ}
 		   AND ADD_FILE_SEQ = #{ADD_FILE_SEQ}
 	</select>
-	
-	<insert id="insertReserveInfo" parameterType="BMap"> 
-	
+
+	<insert id="insertReserveInfo" parameterType="BMap">
+
 		INSERT INTO TB_REQ_BOOKING_M
 		          ( REQ_DT
 		          , SEQ
@@ -1201,16 +1248,16 @@
 		          , #{N_PERSON        }
 		          , #{K_PERSON        }
 		          , #{I_PERSON        }
-		          
-		          , ( LEFT(#{CHK_IN_DT},4)) 
+
+		          , ( LEFT(#{CHK_IN_DT},4))
 		     , ( (SELECT A.BAS_YY_SEQ
-										FROM    
+										FROM
 										    (SELECT  PROD_SEQ, BAS_YY_SEQ, SSN_GBN
 											    FROM TB_PROD_INFO
 											    WHERE HDNG_GBN = #{HDNG_GBN}
 											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
-											    
-												    		
+
+
 			                <if test="'02'.equals(MEM_GBN)">
 			                <![CDATA[
  			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
@@ -1220,9 +1267,9 @@
  							                     END
  							]]>
  							</if>
- 							
-										    ) AS A 
-										JOIN 
+
+										    ) AS A
+										JOIN
 										    (SELECT BAS_YY_SEQ, SSN_GBN
 											    FROM TB_BAS_YY_INFO
 											    WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
@@ -1230,15 +1277,15 @@
 											    OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
 										    ) AS B
 										WHERE A.SSN_GBN = B.SSN_GBN
-										AND A.BAS_YY_SEQ = B.BAS_YY_SEQ)) 
+										AND A.BAS_YY_SEQ = B.BAS_YY_SEQ))
 		     , (SELECT PROD_SEQ
-										FROM    
+										FROM
 										    (SELECT  PROD_SEQ, BAS_YY_SEQ, SSN_GBN
 											    FROM TB_PROD_INFO
 											    WHERE HDNG_GBN = #{HDNG_GBN}
 											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
-											    
-														    		
+
+
 			                <if test="'02'.equals(MEM_GBN)">
 			                <![CDATA[
  			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
@@ -1248,9 +1295,9 @@
  							                     END
  							]]>
  							</if>
- 							
-										    ) AS A 
-										JOIN 
+
+										    ) AS A
+										JOIN
 										    (SELECT BAS_YY_SEQ, SSN_GBN
 											    FROM TB_BAS_YY_INFO
 											    WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
@@ -1259,18 +1306,18 @@
 										    ) AS B
 										WHERE A.SSN_GBN = B.SSN_GBN
 										AND A.BAS_YY_SEQ = B.BAS_YY_SEQ
-										
-		                         ) 
+
+		                         )
 		          , #{HDNG_GBN        }
-		          , ( LEFT(#{CHK_IN_DT},4)) 
+		          , ( LEFT(#{CHK_IN_DT},4))
 		     , ( (SELECT A.BAS_YY_SEQ
-										FROM    
+										FROM
 										    (SELECT  PROD_SEQ, BAS_YY_SEQ, SSN_GBN
 											    FROM TB_PROD_INFO
 											    WHERE HDNG_GBN = #{ADD_HDNG_GBN}
 											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
-											    
-											    		
+
+
 			                <![CDATA[
  			                AND PROD_COND = (CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
  							                     THEN 'DU10'
@@ -1278,9 +1325,9 @@
  							                     THEN 'DD10'
  							                     END)
  							]]>
- 							
-										    ) AS A 
-										JOIN 
+
+										    ) AS A
+										JOIN
 										    (SELECT BAS_YY_SEQ, SSN_GBN
 											    FROM TB_BAS_YY_INFO
 											    WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
@@ -1288,15 +1335,15 @@
 											    OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
 										    ) AS B
 										WHERE A.SSN_GBN = B.SSN_GBN
-										AND A.BAS_YY_SEQ = B.BAS_YY_SEQ)) 
+										AND A.BAS_YY_SEQ = B.BAS_YY_SEQ))
 		     , (SELECT PROD_SEQ
-										FROM    
+										FROM
 										    (SELECT  PROD_SEQ, BAS_YY_SEQ, SSN_GBN
 											    FROM TB_PROD_INFO
 											    WHERE HDNG_GBN = #{ADD_HDNG_GBN}
 											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
-											    
-											    	
+
+
 			                <![CDATA[
  			                AND PROD_COND = (CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
  							                     THEN 'DU10'
@@ -1304,10 +1351,10 @@
  							                     THEN 'DD10'
  							                     END)
  							]]>
- 							
- 							
-										    ) AS A 
-										JOIN 
+
+
+										    ) AS A
+										JOIN
 										    (SELECT BAS_YY_SEQ, SSN_GBN
 											    FROM TB_BAS_YY_INFO
 											    WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
@@ -1316,8 +1363,8 @@
 										    ) AS B
 										WHERE A.SSN_GBN = B.SSN_GBN
 										AND A.BAS_YY_SEQ = B.BAS_YY_SEQ
-										
-		                         ) 
+
+		                         )
 		          , #{ADD_HDNG_GBN        }
 		          , '01'
 		          , #{TWIN_CNT        }
@@ -1340,7 +1387,7 @@
 		          , #{LOGIN_USER      }
 		          )
 	</insert>
-	
+
 	<update id="updateReserveInfo" parameterType="BMap">
 	    UPDATE TB_REQ_BOOKING_M
 		   SET USER_ID        = #{USER_ID         }
@@ -1364,12 +1411,12 @@
 		     , I_PERSON       = #{I_PERSON        }
 		     , BAS_YY         = LEFT(#{CHK_IN_DT},4)
 		     , BAS_YY_SEQ     = (SELECT A.BAS_YY_SEQ
-										FROM    
+										FROM
 										    (SELECT  PROD_SEQ, BAS_YY_SEQ, SSN_GBN
 											    FROM TB_PROD_INFO
 											    WHERE HDNG_GBN = #{HDNG_GBN}
 											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
-											    	    		
+
 			                <if test="'02'.equals(MEM_GBN)">
 			                <![CDATA[
  			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
@@ -1379,9 +1426,9 @@
  							                     END
  							]]>
  							</if>
- 							
-										    ) AS A 
-										JOIN 
+
+										    ) AS A
+										JOIN
 										    (SELECT BAS_YY_SEQ, SSN_GBN
 											    FROM TB_BAS_YY_INFO
 											    WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
@@ -1391,12 +1438,12 @@
 										WHERE A.SSN_GBN = B.SSN_GBN
 										AND A.BAS_YY_SEQ = B.BAS_YY_SEQ)
 		     , PROD_SEQ       = (SELECT PROD_SEQ
-										FROM    
+										FROM
 										    (SELECT  PROD_SEQ, BAS_YY_SEQ, SSN_GBN
 											    FROM TB_PROD_INFO
 											    WHERE HDNG_GBN = #{HDNG_GBN}
 											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
-											    	    		
+
 			                <if test="'02'.equals(MEM_GBN)">
 			                <![CDATA[
  			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
@@ -1406,9 +1453,9 @@
  							                     END
  							]]>
  							</if>
- 							
-										    ) AS A 
-										JOIN 
+
+										    ) AS A
+										JOIN
 										    (SELECT BAS_YY_SEQ, SSN_GBN
 											    FROM TB_BAS_YY_INFO
 											    WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
@@ -1421,12 +1468,12 @@
 		     , HDNG_GBN       = #{HDNG_GBN}
 		     , ADD_BAS_YY         = LEFT(#{CHK_IN_DT},4)
 		     , ADD_BAS_YY_SEQ     = (SELECT DISTINCT(A.BAS_YY_SEQ) AS BAS_YY_SEQ
-										FROM    
+										FROM
 										    (SELECT  PROD_SEQ, BAS_YY_SEQ, SSN_GBN
 											    FROM TB_PROD_INFO
 											    WHERE HDNG_GBN = #{ADD_HDNG_GBN}
 											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
-											    	    		
+
 			                <![CDATA[
  			                AND PROD_COND = (CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
  							                     THEN 'DU10'
@@ -1434,9 +1481,9 @@
  							                     THEN 'DD10'
  							                     END)
  							]]>
- 							
-										    ) AS A 
-										JOIN 
+
+										    ) AS A
+										JOIN
 										    (SELECT BAS_YY_SEQ, SSN_GBN
 											    FROM TB_BAS_YY_INFO
 											    WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
@@ -1446,12 +1493,12 @@
 										WHERE A.SSN_GBN = B.SSN_GBN
 										AND A.BAS_YY_SEQ = B.BAS_YY_SEQ)
 		     , ADD_PROD_SEQ       = (SELECT PROD_SEQ
-										FROM    
+										FROM
 										    (SELECT  PROD_SEQ, BAS_YY_SEQ, SSN_GBN
 											    FROM TB_PROD_INFO
 											    WHERE HDNG_GBN = #{ADD_HDNG_GBN}
 											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
-											    	    		
+
 			                <![CDATA[
  			                AND PROD_COND = (CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
  							                     THEN 'DU10'
@@ -1459,11 +1506,11 @@
  							                     THEN 'DD10'
  							                     END)
  							]]>
- 							
+
                           						AND SSN_GBN = '3'
-                          						
-										    ) AS A 
-										JOIN 
+
+										    ) AS A
+										JOIN
 										    (SELECT BAS_YY_SEQ, SSN_GBN
 											    FROM TB_BAS_YY_INFO
 											    WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
@@ -1493,9 +1540,9 @@
 		     , UPD_ID         = #{LOGIN_USER      }
 		 WHERE REQ_DT   = #{REQ_DT}
 		   AND SEQ      = #{SEQ}
-		
+
 	</update>
-	
+
 	<update id="updateReserveFee" parameterType="BMap">
 	    UPDATE TB_REQ_FEE
 		   SET DEP_IN_DT  =  #{DEP_IN_DT}
@@ -1511,14 +1558,14 @@
 		   AND REQ_DT  = #{REQ_DT}
 		   AND REQ_SEQ = #{SEQ}
 	</update>
-	
+
 	<insert id="insertReserve" parameterType="BMap">
-	
+
 	<selectKey keyProperty="SEQ" resultType="int" order="BEFORE">
-        SELECT NVL(MAX(T1.SEQ),0) + 1 AS SEQ FROM TB_REQ_BOOKING_M T1 WHERE T1.REQ_DT = #{REQ_DT} 
+        SELECT NVL(MAX(T1.SEQ),0) + 1 AS SEQ FROM TB_REQ_BOOKING_M T1 WHERE T1.REQ_DT = #{REQ_DT}
     </selectKey>
-	
-	<![CDATA[ 
+
+	<![CDATA[
 		INSERT INTO TB_REQ_BOOKING_M
            ( REQ_DT
            , SEQ
@@ -1548,9 +1595,9 @@
            , NOW()
            , #{LOGIN_USER}
            )
-     ]]>  
+     ]]>
 	</insert>
-	
+
 	<update id="depositComplete" parameterType="BMap">
 		UPDATE TB_REQ_FEE
 		   SET DEP_AMT   = #{PAY_AMT}
@@ -1564,7 +1611,7 @@
 		 WHERE REQ_DT  = #{REQ_DT}
 		   AND REQ_SEQ = #{REQ_SEQ}
 	</update>
-	
+
 	<select id="checkBasYy" parameterType="BMap" resultType="BMap">
 	   SELECT T1.BAS_YY     AS BAS_YY
             , T1.BAS_YY_SEQ AS BAS_YY_SEQ
@@ -1573,7 +1620,7 @@
 		   OR #{CHK_IN_DT} BETWEEN T1.ST_DT2 AND T1.ED_DT2
 		   OR #{CHK_IN_DT} BETWEEN T1.ST_DT3 AND T1.ED_DT3
 	</select>
-	
+
 	<insert id="insertRplan" parameterType="BMap">
 		INSERT INTO TB_REQ_R_PLAN
            ( REQ_DT
@@ -1595,7 +1642,7 @@
            , #{UPD_ID  }
            )
 	</insert>
-	
+
 	<update id="depositRefund" parameterType="BMap">
 		UPDATE TB_REQ_FEE
 		   SET BAL_AMT   = BAL_AMT + PAY_AMT
@@ -1607,7 +1654,7 @@
 		 WHERE REQ_DT  = #{REQ_DT}
 		   AND REQ_SEQ = #{REQ_SEQ}
 	</update>
-	
+
 	<update id="updateReserveResortNum" parameterType="BMap">
 		UPDATE TB_REQ_BOOKING_M
 		   SET PICK_IN      = #{PICK_IN}
@@ -1617,7 +1664,7 @@
 		 WHERE REQ_DT  = #{REQ_DT}
 		   AND SEQ = #{REQ_SEQ}
 	</update>
-	
+
 	<update id="updateInvoiceDetailItem" parameterType="BMap">
 		UPDATE TB_REQ_FEE
 		   SET EXP_DT   = #{EXP_DT}
@@ -1627,17 +1674,17 @@
 		 WHERE REQ_DT  = #{REQ_DT}
 		   AND REQ_SEQ = #{SEQ}
 	</update>
-	
+
 	<select id="selectProdSeq" parameterType="BMap" resultType="BMap" >
 
 		SELECT PROD_SEQ
-		FROM    
+		FROM
 		    (SELECT  *
 			    FROM TB_PROD_INFO
 			    WHERE HDNG_GBN = #{HDNG_GBN}
 			    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
-		    ) AS A 
-		JOIN 
+		    ) AS A
+		JOIN
 		    (SELECT *
 			    FROM TB_BAS_YY_INFO
 			    WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
@@ -1653,18 +1700,18 @@
 		                     WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
 		                     THEN 'DD10'
 		                     END
-		  ]]>  
-		  </if>               
+		  ]]>
+		  </if>
 	</select>
-	
+
 	<select id="selectRplanCnt" parameterType="BMap" resultType="int">
 	    SELECT COUNT(1) AS CNT
 		  FROM TB_REQ_R_PLAN
 		 WHERE 1 = 1
 		   AND REQ_DT  = #{REQ_DT}
-		   AND REQ_SEQ = #{REQ_SEQ} 
+		   AND REQ_SEQ = #{REQ_SEQ}
 	</select>
-	
+
 	<delete id="deleteRplanCnt" parameterType="BMap">
 	    DELETE
 	      FROM TB_REQ_R_PLAN
@@ -1672,7 +1719,7 @@
 	       AND REQ_DT  = #{REQ_DT}
 	       AND REQ_SEQ = #{REQ_SEQ}
 	</delete>
-	
+
 	<delete id="deleteEtcAll" parameterType="BMap">
 	    DELETE FROM T1,T2,T3,T4,T5,T6
 		 USING TB_REQ_BOOKING_M AS T1
@@ -1690,12 +1737,12 @@
 		   AND T5.REQ_SEQ = T1.SEQ
 		  LEFT JOIN TB_REQ_ADD_FILE T6
 		    ON T6.REQ_DT  = T1.REQ_DT
-		   AND T6.REQ_SEQ = T1.SEQ 
+		   AND T6.REQ_SEQ = T1.SEQ
 		 WHERE 1 = 1
 		   AND T1.REQ_DT = #{REQ_DT}
 		   AND T1.SEQ    = #{SEQ}
 	</delete>
-	
+
 	<update id="deletePdfUid" parameterType="BMap">
 		UPDATE TB_REQ_INVOICE
 		   SET FILE_UID = NULL
@@ -1703,21 +1750,19 @@
 		   AND SEQ      = #{SEQ}
 	</update>
 
-	<select id="reserveNoRoomList" parameterType="BMap" resultType="BMap">
-    <include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+	<select id="reserveNoRoomList" parameterType="hashMap" resultType="hashMap">
     SELECT ROW_NUMBER() OVER(ORDER BY REQ_NO_DT) AS ROWNUM,
            REQ_NO_DT,
            ROOM_TYPE,
            REG_DTM,
            REG_ID,
            UPD_DTM,
-           UPD_ID 
+           UPD_ID
       FROM TB_REQ_NO_ROOM
      WHERE REQ_NO_DT BETWEEN #{FROM_DATE} AND #{TO_DATE}
   ORDER BY REQ_NO_DT, ROOM_TYPE
-    <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
-	
+
 	<insert id="insertNoRoomInfo" parameterType="List">
 	INSERT INTO TB_REQ_NO_ROOM
       	 ( REQ_NO_DT
@@ -1739,17 +1784,17 @@
          )
          </foreach>
 	</insert>
-	
+
 	<delete id="deleteNoRoomInfo" parameterType="BMap">
-DELETE 
+DELETE
   	  FROM TB_REQ_NO_ROOM
  	 WHERE 1=1
 	   AND REQ_NO_DT = #{REQ_NO_DT}
 	   AND ROOM_TYPE = #{ROOM_TYPE}
 </delete>
-	
-	
-	
+
+
+
 	<insert id="addReserveDetail" parameterType="BMap">
         INSERT INTO TB_REQ_BOOKING_D
                     ( REQ_DT
@@ -1780,8 +1825,8 @@ DELETE
                     , UPD_ID
                     )
              VALUES ( #{REQ_DT  }
-                    , #{SEQ     }
-                    , (SELECT NVL(MAX(DSEQ),0) AS SEQ FROM TB_REQ_BOOKING_D T1 WHERE REQ_DT = #{REQ_DT} AND SEQ = #{SEQ}) + 1
+                    , (SELECT NVL(MAX(T1.SEQ),0) AS SEQ FROM TB_REQ_BOOKING_M T1 WHERE T1.REQ_DT = #{REQ_DT})
+                    , #{DSEQ    }
 			          , #{COM_GBN         }
 			          , #{NUM_GBN         }
 			          , #{COM_HAN_NM      }
@@ -1793,43 +1838,9 @@ DELETE
 			          , #{FLIGHT_IN_HH    }
 			          , #{FLIGHT_OUT      }
 			          , #{FLIGHT_OUT_HH   }
-			          , ( LEFT(#{CHK_IN_DT},4)) 
+			          , ( LEFT(#{CHK_IN_DT},4))
 				      , ( (SELECT A.BAS_YY_SEQ
-										FROM    
-										    (SELECT  PROD_SEQ, BAS_YY_SEQ, SSN_GBN
-											    FROM TB_PROD_INFO
-											    WHERE HDNG_GBN = #{HDNG_GBN}
-											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)	
-			                <if test="'02'.equals(NUM_GBN)">
-			                <![CDATA[
- 			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
- 							                     THEN 'DU10'
- 							                     WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
- 							                     THEN 'DD10'
- 							                     END
- 							]]>
- 							</if>
-			                <if test="'04'.equals(NUM_GBN)">
-			                <![CDATA[
- 			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
- 							                     THEN 'DU10'
- 							                     WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
- 							                     THEN 'DD10'
- 							                     END
- 							]]>
- 							</if>
-										    ) AS A 
-										JOIN 
-										    (SELECT BAS_YY_SEQ, SSN_GBN
-											    FROM TB_BAS_YY_INFO
-											    WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
-											    OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
-											    OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
-										    ) AS B
-										WHERE A.SSN_GBN = B.SSN_GBN
-										AND A.BAS_YY_SEQ = B.BAS_YY_SEQ)) 
-				      , (SELECT PROD_SEQ
-										FROM    
+										FROM
 										    (SELECT  PROD_SEQ, BAS_YY_SEQ, SSN_GBN
 											    FROM TB_PROD_INFO
 											    WHERE HDNG_GBN = #{HDNG_GBN}
@@ -1852,8 +1863,42 @@ DELETE
  							                     END
  							]]>
  							</if>
-										    ) AS A 
-										JOIN 
+										    ) AS A
+										JOIN
+										    (SELECT BAS_YY_SEQ, SSN_GBN
+											    FROM TB_BAS_YY_INFO
+											    WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
+											    OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
+											    OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3
+										    ) AS B
+										WHERE A.SSN_GBN = B.SSN_GBN
+										AND A.BAS_YY_SEQ = B.BAS_YY_SEQ))
+				      , (SELECT PROD_SEQ
+										FROM
+										    (SELECT  PROD_SEQ, BAS_YY_SEQ, SSN_GBN
+											    FROM TB_PROD_INFO
+											    WHERE HDNG_GBN = #{HDNG_GBN}
+											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
+			                <if test="'02'.equals(NUM_GBN)">
+			                <![CDATA[
+ 			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
+ 							                     THEN 'DU10'
+ 							                     WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
+ 							                     THEN 'DD10'
+ 							                     END
+ 							]]>
+ 							</if>
+			                <if test="'04'.equals(NUM_GBN)">
+			                <![CDATA[
+ 			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
+ 							                     THEN 'DU10'
+ 							                     WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
+ 							                     THEN 'DD10'
+ 							                     END
+ 							]]>
+ 							</if>
+										    ) AS A
+										JOIN
 										    (SELECT BAS_YY_SEQ, SSN_GBN
 											    FROM TB_BAS_YY_INFO
 											    WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
@@ -1862,8 +1907,8 @@ DELETE
 										    ) AS B
 										WHERE A.SSN_GBN = B.SSN_GBN
 										AND A.BAS_YY_SEQ = B.BAS_YY_SEQ
-										
-		                         ) 
+
+		                         )
 			          , #{HDNG_GBN        }
 			          , #{LATE_CHECK_IN  }
 			          , #{LATE_CHECK_OUT  }
@@ -1875,8 +1920,8 @@ DELETE
 			          , #{LOGIN_USER      }
                     )
 	</insert>
-	
-	
+
+
 	<update id="updateReserveDetailInfo" parameterType="BMap">
 	    UPDATE TB_REQ_BOOKING_D
 		   SET COM_GBN        = #{COM_GBN         }
@@ -1892,11 +1937,11 @@ DELETE
 		     , FLIGHT_OUT_HH  = #{FLIGHT_OUT_HH   }
 		     , BAS_YY         = LEFT(#{CHK_IN_DT},4)
 		     , BAS_YY_SEQ     = (SELECT A.BAS_YY_SEQ
-										FROM    
+										FROM
 										    (SELECT  PROD_SEQ, BAS_YY_SEQ, SSN_GBN
 											    FROM TB_PROD_INFO
 											    WHERE HDNG_GBN = #{HDNG_GBN}
-											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)		
+											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
 			                <if test="'02'.equals(NUM_GBN)">
 			                <![CDATA[
  			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
@@ -1915,8 +1960,8 @@ DELETE
  							                     END
  							]]>
  							</if>
-										    ) AS A 
-										JOIN 
+										    ) AS A
+										JOIN
 										    (SELECT BAS_YY_SEQ, SSN_GBN
 											    FROM TB_BAS_YY_INFO
 											    WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
@@ -1926,11 +1971,11 @@ DELETE
 										WHERE A.SSN_GBN = B.SSN_GBN
 										AND A.BAS_YY_SEQ = B.BAS_YY_SEQ)
 		     , PROD_SEQ       = (SELECT PROD_SEQ
-										FROM    
+										FROM
 										    (SELECT  PROD_SEQ, BAS_YY_SEQ, SSN_GBN
 											    FROM TB_PROD_INFO
 											    WHERE HDNG_GBN = #{HDNG_GBN}
-											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)		
+											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
 			                <if test="'02'.equals(NUM_GBN)">
 			                <![CDATA[
  			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
@@ -1949,8 +1994,8 @@ DELETE
  							                     END
  							]]>
  							</if>
-										    ) AS A 
-										JOIN 
+										    ) AS A
+										JOIN
 										    (SELECT BAS_YY_SEQ, SSN_GBN
 											    FROM TB_BAS_YY_INFO
 											    WHERE #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
@@ -1970,19 +2015,19 @@ DELETE
 		 WHERE REQ_DT   = #{REQ_DT}
 		   AND SEQ      = #{SEQ}
 		   AND DSEQ      = #{DSEQ}
-		
+
 	</update>
-	
-	
+
+
 	<!-- 패키지가격계산 -->
 	<select id="selectPackageCharge" parameterType="BMap" resultType="BMap">
-	
+
         WITH RECURSIVE TEMP_CHK_DT AS (
             SELECT DATE_FORMAT(#{CHK_IN_DT}, '%Y%m%d') AS CHK_DT
              UNION
             SELECT DATE_FORMAT(DATE_ADD(TEMP_CHK_DT.CHK_DT, INTERVAL 1 DAY), '%Y%m%d') AS CHK_DT
               FROM TEMP_CHK_DT
-             WHERE DATE_FORMAT(DATE_ADD(TEMP_CHK_DT.CHK_DT, INTERVAL 1 DAY), '%Y%m%d') <![CDATA[<=]]> #{CHK_OUT_DT}-1 
+             WHERE DATE_FORMAT(DATE_ADD(TEMP_CHK_DT.CHK_DT, INTERVAL 1 DAY), '%Y%m%d') <![CDATA[<=]]> #{CHK_OUT_DT}-1
         )
         SELECT DISTINCT A.COM_AMT  AS PACKAGE_AMT /* 숙박비 */
           FROM (
@@ -1995,7 +2040,7 @@ DELETE
                </if>
                <if test = 'AGN_GB != null and "2".equals(AGN_GB)'>
                 MAX(AA.AGN_COM_AMT) AS COM_AMT						<!-- 일반에이전시금액 -->
-               </if>  
+               </if>
                 FROM tb_prod_info   AA
                 JOIN tb_bas_yy_info BB
                   ON AA.HDNG_GBN   = #{HDNG_GBN} /* 항목구분 */
@@ -2013,10 +2058,10 @@ DELETE
                                     END
                GROUP BY CC.CHK_DT
               ) A
-    
+
 	</select>
-	
-	
+
+
 	<!-- 멤버 숙박비계산 -->
 	<select id="selectMemRoomChargeCalc" parameterType="BMap" resultType="BMap">
 	<![CDATA[
@@ -2043,8 +2088,8 @@ DELETE
               ) A
     ]]>
 	</select>
-	
-	
+
+
 	<!-- 비라운딩, 소아 추가숙박비 계산 -->
 	<select id="selectNokidChargeCalc" parameterType="BMap" resultType="BMap">
 		<![CDATA[
@@ -2074,8 +2119,8 @@ DELETE
 	       ) A
 		]]>
 	</select>
-	
-	
+
+
 	<!-- 싱글 룸  추가 계산 -->
 	<select id="roomupCalc" parameterType="BMap" resultType="BMap">
 		<![CDATA[
@@ -2089,12 +2134,12 @@ DELETE
                ,B.ROOM_ADD_CNT   AS USE_NUM         /* 수량 */
                ,A.REF_CHR4       AS UNIT_NUM   	    /* 수량단위 */
 			   ,IFNULL(C.COM_AMT * B.ROOM_ADD_IL * B.ROOM_ADD_CNT, 0) AS TOT_AMT /* 총괄금액 */
-          FROM BC_COMM_L A, 
-		       TB_REQ_BOOKING_M B, 
+          FROM BC_COMM_L A,
+		       TB_REQ_BOOKING_M B,
 		       TB_PROD_INFO C,
 		       TB_BAS_YY_INFO D
          WHERE A.HEAD_CD = '500140'  -- 인보이스 항목
-		   AND A.CODE = 'ROOMADD02' 
+		   AND A.CODE = 'ROOMADD02'
 		   AND B.BAS_YY = C.BAS_YY
   		   AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
 		   AND B.REQ_DT = #{REQ_DT}
@@ -2108,7 +2153,7 @@ DELETE
                )
 		]]>
 	</select>
-	
+
 	<!-- 프리미엄  추가 계산 -->
 	<select id="primCalc" parameterType="BMap" resultType="BMap">
 		<![CDATA[
@@ -2122,12 +2167,12 @@ DELETE
                ,B.PRIM_ADD_CNT   AS USE_NUM         /* 수량 */
                ,A.REF_CHR4       AS UNIT_NUM   	    /* 수량단위 */
 			   ,IFNULL(C.COM_AMT * B.ROOM_ADD_IL * B.ROOM_ADD_CNT, 0) AS TOT_AMT /* 총괄금액 */
-          FROM BC_COMM_L A, 
-		       TB_REQ_BOOKING_M B, 
+          FROM BC_COMM_L A,
+		       TB_REQ_BOOKING_M B,
 		       TB_PROD_INFO C,
 		       TB_BAS_YY_INFO D
          WHERE A.HEAD_CD = '500140'  -- 인보이스 항목
-		   AND A.CODE = 'ROOMUP02' 
+		   AND A.CODE = 'ROOMUP02'
 		   AND B.BAS_YY = C.BAS_YY
   		   AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
 		   AND B.REQ_DT = #{REQ_DT}
@@ -2141,8 +2186,8 @@ DELETE
                )
 		]]>
 	</select>
-	
-	
+
+
 	<!-- Early Check In 추가 계산 -->
 	<select id="earlyCheckInCalc" parameterType="BMap" resultType="BMap">
 		<![CDATA[
@@ -2156,12 +2201,12 @@ DELETE
                ,#{ROOM_PERSON} as USE_NUM		/* 수량 */
                ,A.REF_CHR4    AS UNIT_NUM   	/* 수량단위 */
 			   ,IFNULL(C.COM_AMT * #{ROOM_PERSON}, 0) as TOT_AMT
-          FROM BC_COMM_L A, 
-		       TB_REQ_BOOKING_M B, 
+          FROM BC_COMM_L A,
+		       TB_REQ_BOOKING_M B,
 		       TB_PROD_INFO C,
 		       TB_BAS_YY_INFO D
           WHERE A.HEAD_CD = '500140'  -- 인보이스 항목
-		    AND A.CODE =  'LATECHECKIN01' 
+		    AND A.CODE =  'LATECHECKIN01'
 		    AND B.BAS_YY   = C.BAS_YY
 			AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
 			AND B.REQ_DT = #{REQ_DT}
@@ -2175,8 +2220,8 @@ DELETE
                 )
 		]]>
 	</select>
-	
-	
+
+
 	<!-- Late Check Out  추가 계산 -->
 	<select id="lateCheckOutCalc" parameterType="BMap" resultType="BMap">
 		<![CDATA[
@@ -2190,12 +2235,12 @@ DELETE
                ,#{ROOM_PERSON} as USE_NUM		/* 수량 */
                ,A.REF_CHR4    AS UNIT_NUM   	/* 수량단위 */
 			   ,IFNULL(C.COM_AMT * #{ROOM_PERSON}, 0) as TOT_AMT
-          FROM BC_COMM_L A, 
-		       TB_REQ_BOOKING_M B, 
+          FROM BC_COMM_L A,
+		       TB_REQ_BOOKING_M B,
 		       TB_PROD_INFO C,
 		       TB_BAS_YY_INFO D
           WHERE A.HEAD_CD = '500140'  -- 인보이스 항목
-		    AND A.CODE = #{LATE_CODE} 
+		    AND A.CODE = #{LATE_CODE}
 		    AND B.BAS_YY   = C.BAS_YY
 			AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
 			AND B.REQ_DT = #{REQ_DT}
@@ -2209,15 +2254,15 @@ DELETE
                 )
 		]]>
 	</select>
-	
-	
+
+
 	<!-- 미팅샌딩  추가 계산 -->
 	<select id="sendingCalc" parameterType="BMap" resultType="BMap">
-		<![CDATA[			 			  
+		<![CDATA[
 			SELECT DISTINCT
 			        B.CODE           AS ITEM_CD			/* 항목코드 */
 				  , B.CODE_NM        AS ITEM_NM			/* 항목명  */
-				  , B.REF_CHR2       AS AMT_SIGN		/* 통화기호 */ 
+				  , B.REF_CHR2       AS AMT_SIGN		/* 통화기호 */
 				  , A.USE_AMT        AS PER_AMT		    /* 이용금액 */
 				  , A.CAR_NUM        AS USE_DAY         /* 이용 */
 			      , B.REF_CHR3       AS UNIT_DAY  		/* 사용단위 */
@@ -2241,7 +2286,7 @@ DELETE
 			    and A.REQ_SEQ  = F.SEQ
 			    AND B.HEAD_CD  = '500140'
 			    AND C.HEAD_CD  = '500220'
-			    AND B.CODE = C.REF_CHR4 
+			    AND B.CODE = C.REF_CHR4
 			    AND C.CODE = D.PROD_COND
 			    AND D.HDNG_GBN = #{SEND_GBN}
 			    AND D.PROD_COND =  CASE WHEN D.HDNG_GBN != '18' AND A.PER_NUM > 3 THEN '4'
@@ -2255,15 +2300,15 @@ DELETE
 			  AND D.BAS_YY = YEAR(NOW())
 		]]>
 	</select>
-	
-	
+
+
 	<!-- 야간 미팅샌딩  추가 계산 -->
 	<select id="sendingSubCalc" parameterType="BMap" resultType="BMap">
-		<![CDATA[			      
+		<![CDATA[
 			SELECT DISTINCT
 			        B.CODE           AS ITEM_CD			/* 항목코드 */
 				  , B.CODE_NM        AS ITEM_NM			/* 항목명  */
-				  , B.REF_CHR2       AS AMT_SIGN		/* 통화기호 */ 
+				  , B.REF_CHR2       AS AMT_SIGN		/* 통화기호 */
 				  , A.USE_AMT        AS PER_AMT		    /* 이용금액 */
 				  , A.CAR_NUM        AS USE_DAY         /* 이용 */
 			      , B.REF_CHR3       AS UNIT_DAY  		/* 사용단위 */
@@ -2282,10 +2327,10 @@ DELETE
 			  and A.REQ_SEQ = F.SEQ
 			  AND B.HEAD_CD = '500140'
 			  AND C.HEAD_CD = '500220'
-			  AND B.CODE = C.REF_CHR4 
+			  AND B.CODE = C.REF_CHR4
 			  AND C.CODE = D.PROD_COND
 			  AND D.HDNG_GBN = #{SEND_GBN}
-			  AND D.PROD_COND = CASE WHEN IFNULL(A.PER_NUM,0) < 4 
+			  AND D.PROD_COND = CASE WHEN IFNULL(A.PER_NUM,0) < 4
 			                         THEN 'PD4'
 			                         ELSE 'PU4'
 			                          END
@@ -2294,11 +2339,11 @@ DELETE
 			  AND (    F.CHK_IN_DT BETWEEN E.ST_DT1 AND E.ED_DT1
 			        OR F.CHK_IN_DT BETWEEN E.ST_DT2 AND E.ED_DT2
 			        OR F.CHK_IN_DT BETWEEN E.ST_DT3 AND E.ED_DT3
-			      )      
+			      )
 		]]>
 	</select>
-	
-	
+
+
 	<!-- 인보이스 코드정보 조회 -->
 	<select id="selectInvoiceCodeInfo" parameterType="BMap" resultType="BMap">
 		 select DISTINCT A.CODE					/* 코드  */
@@ -2311,7 +2356,7 @@ DELETE
 		  FROM  BC_COMM_L A, tb_req_booking_d B, TB_PROD_INFO C
 		  WHERE A.HEAD_CD = '500140'  -- 인보이스 항목
 		    and A.CODE =  (case when B.NUM_GBN = '01' then 'PROD01'  	/* 지상비(멤버)  */
-		                        when B.NUM_GBN = '02' then 'PROD02'  	/* 지상비(일반)  */	
+		                        when B.NUM_GBN = '02' then 'PROD02'  	/* 지상비(일반)  */
 		                        else 'PROD03' end)                   	/* 지상비(숙박+식사)	*/
 		    AND B.BAS_YY   = C.BAS_YY
 			AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
@@ -2319,5 +2364,106 @@ DELETE
 		    and B.SEQ    = #{SEQ}
 		    and B.DSEQ   = #{DSEQ}
 	</select>
-			
+
+
+	<select id="selectHdngGbnList_M" parameterType="hashMap" resultType="hashMap">
+	<![CDATA[
+		SELECT CODE, CODE_NM
+		FROM BC_COMM_L
+		WHERE HEAD_CD = '500000'
+		AND REF_CHR1 = '01'
+		AND CODE = '28'
+	]]>
+	</select>
+
+	<select id="selectHdngGbnList_A" parameterType="hashMap" resultType="hashMap">
+	<![CDATA[
+		SELECT C.CODE, C.CODE_NM
+		FROM (SELECT BAS_YY, SSN_GBN, BAS_YY_SEQ FROM TB_BAS_YY_INFO WHERE BAS_YY = LEFT(#{CHK_IN_DT},4)
+											AND ( #{CHK_IN_DT} BETWEEN ST_DT1 AND ED_DT1
+											OR #{CHK_IN_DT} BETWEEN ST_DT2 AND ED_DT2
+											OR #{CHK_IN_DT} BETWEEN ST_DT3 AND ED_DT3)
+		    ) A
+		    ,(SELECT BAS_YY, SSN_GBN, BAS_YY_SEQ, HDNG_GBN FROM TB_PROD_INFO WHERE BAS_YY = LEFT(#{CHK_IN_DT},4)
+											AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
+															THEN 'DU10'
+															WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
+															THEN 'DD10'
+															END
+			) B
+			,(SELECT CODE, CODE_NM FROM BC_COMM_L WHERE HEAD_CD = '500000'
+										AND REF_CHR1 = '01'
+			) C
+		WHERE A.BAS_YY = B.BAS_YY
+		AND A.SSN_GBN = B.SSN_GBN
+		AND A.BAS_YY_SEQ = B.BAS_YY_SEQ
+		AND B.HDNG_GBN = C.CODE
+	]]>
+	</select>
+	
+	<delete id="deleteReserveDetail" parameterType="BMap">
+		DELETE
+	      FROM TB_REQ_BOOKING_D
+	     WHERE 1 = 1
+	       AND REQ_DT = #{REQ_DT}
+	       AND SEQ    = #{SEQ}
+	       <if test="DSEQ != null and DSEQ != ''">
+	       AND DSEQ   = #{DSEQ}
+	       </if>
+	</delete>
+	
+	<update id="updateReservePerson" parameterType="BMap">
+		UPDATE TB_REQ_BOOKING_M
+           SET TOT_PERSON     = #{TOT_PERSON}
+             , ${DEL_NUM_GBN} = #{DEL_PERSON}
+             , UPD_DTM        = now()
+             , UPD_ID         = #{LOGIN_USER}
+         WHERE REQ_DT = #{REQ_DT}
+           AND SEQ    = #{SEQ}
+	</update>
+	
+	<select id="packageResetList" parameterType="hashMap" resultType="hashMap">
+	<![CDATA[
+		SELECT  distinct
+		        A.CODE
+		      , A.CODE_NM
+		  FROM  bc_comm_l as A
+		      , tb_prod_info as B
+		      , tb_bas_yy_info as C
+		 WHERE 1 = 1
+		   and A.CODE = B.HDNG_GBN
+		   AND B.BAS_YY     = C.BAS_YY
+		   AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
+		   AND A.HEAD_CD = '500000'
+		   AND A.REF_CHR1 = '01'
+		   AND A.CODE NOT IN('28', '29', '30', '31')
+		   AND A.STATUS   = 'Y'
+		   AND (    #{CHK_IN_DT} BETWEEN C.ST_DT1 AND C.ED_DT1
+		         OR #{CHK_IN_DT} BETWEEN C.ST_DT2 AND C.ED_DT2
+		         OR #{CHK_IN_DT} BETWEEN C.ST_DT3 AND C.ED_DT3
+		       )
+		   AND B.PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
+		                          THEN 'DU10'
+		                          WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) < 10
+		                          THEN 'DD10' 
+		                           END  
+		   ORDER BY CODE asc
+	]]>
+	</select>
+	
+	<select id="noRoomChk" parameterType="hashMap" resultType="hashMap">
+	SELECT REQ_NO_DT
+            , ROOM_TYPE
+            , CASE WHEN ROOM_TYPE = '00' THEN '전체(트윈,킹)'
+                  WHEN ROOM_TYPE = '01' THEN '트윈'
+                  WHEN ROOM_TYPE = '02' THEN '킹'
+               ELSE 'N'
+               END AS ROOM_TYPE_NAME
+          FROM tb_req_no_room
+       WHERE 1=1
+         AND ROOM_TYPE IN ('00',#{room_type})
+         AND REQ_NO_DT BETWEEN #{chk_in_dt} AND #{chk_out_dt}
+       GROUP BY REQ_NO_DT,ROOM_TYPE
+       ORDER BY REQ_NO_DT
+	</select>
 </mapper>

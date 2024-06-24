@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -157,22 +158,6 @@ public class ReserveService {
 		return resultValue;
 	}
 
-//	public String selectGetCommonCode3(BMap param) throws Exception {
-////		List<CodeVO> codeList = reserveDao.selectGetCommonCode3(param);
-////		
-////		String resultValue = "";
-////		for (int i=0; i<codeList.size(); i++) {
-////			if (i == 0) {
-////				resultValue += "" + ":" + "-선택-";
-////				resultValue += ";" + codeList.get(i).getCode() + ":" + codeList.get(i).getValue();
-////			} else {
-////				resultValue += ";" + codeList.get(i).getCode() + ":" + codeList.get(i).getValue();
-////			}
-////		}
-////		return resultValue;
-//		return reserveDao.selectGetCommonCode3(param);
-//	}
-
 	/**
 	 * 공통코드 리스트 조회
 	 * @param param
@@ -241,6 +226,17 @@ public class ReserveService {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * 사용자 정보 검색
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap setUserInfo(BMap param) throws Exception {
+		
+		return reserveDao.selectUserInfo(param);
 	}
 	
 	/**
@@ -519,7 +515,7 @@ public class ReserveService {
 			
 			
 			// Early Check In 이용 시
-			if("1".equals((String)resultDeptDetail.get("LATE_CHECK_IN"))) {
+			if(("1".equals((String)resultDeptDetail.get("LATE_CHECK_IN"))) && (resultDeptDetail.get("LATE_CHECK_IN") != null)) {
 				
 				logger.info("===== EARLY 체크인 계산 =====");
 												
@@ -548,7 +544,7 @@ public class ReserveService {
 			
 			
 			// Late Check Out 이용시
-			if(!"3".equals((String)resultDeptDetail.get("LATE_CHECK_OUT"))) {
+			if((!"3".equals((String)resultDeptDetail.get("LATE_CHECK_OUT"))) && (resultDeptDetail.get("LATE_CHECK_OUT") != null)) {
 				
 				logger.info("===== LATE 체크아웃 계산 =====");
 												
@@ -585,7 +581,7 @@ public class ReserveService {
 			
 			
 			// 미팅샌딩 신청 시 
-			if(!"01".equals((String)resultDeptDetail.get("PICK_GBN"))) {
+			if((!"01".equals((String)resultDeptDetail.get("PICK_GBN"))) && (resultDeptDetail.get("PICK_GBN") != null)) {
 				
 				logger.info("===== 미팅샌딩 계산 =====");
 											
@@ -654,15 +650,30 @@ public class ReserveService {
 												
 			}
 			
+			// 총 금액 계산 후 삽입
+			BMap sumData = new BMap();
+			sumData.put("REQ_DT", reqDt);
+			sumData.put("SEQ", seq);
+			sumData.put("LOGIN_USER", LoginInfo.getUserId());
 			
+			int totAmt = reserveDao.invoiceSumTot(sumData);
+			int feeCnt = reserveDao.selectFeeListCnt(sumData);
+			
+			sumData.put("TOT_AMT", totAmt);
+			
+			 if(feeCnt == 0){ //fee table insert
+				reserveDao.insertFeeInfo(sumData);
+			}else if(feeCnt == 1){ //fee table update, 	예약금액(DEP_AMT) 업데이트
+				reserveDao.updateFeeInfo(sumData);
+			}
+
 			//인보이스 조회
-		    result = reserveDao.invoiceSelectList(param);		        
-		    
+		    result = reserveDao.invoiceSelectList(param);		        		  
 		}else {  //인보이스 항목 1건이상
 			
 		    result = reserveDao.invoiceSelectList(param);
 		}
-		
+
 		return result;
 	}
 	
@@ -766,20 +777,29 @@ public class ReserveService {
 	 * @return
 	 * @throws Exception
 	 */
-	public Boolean deleteInvoiceManager(BMap param ) throws Exception{
-		Boolean isValid = true;
+	public int deleteInvoiceManager(BMap param ) throws Exception{
+		int isStatus    = 1;
 
         try {
         	param.put("STATUS_V" , "D");
         	reserveDao.delInvoiceDetailHis(param);
 		    reserveDao.deleteInvoiceManager(param);
-		    reserveDao.deleteFeeInfo(param);
+
+		    int listCnt = reserveDao.selectInvoiceListCnt(param);
+		    
+		    if(listCnt == 0) {
+		    	reserveDao.deleteAllFeeInfo(param);
+		    	reserveDao.deleteInvRegDt(param);
+		    	isStatus = 0;
+		    } else {
+		    	reserveDao.deleteFeeInfo(param);
+		    }
 		} catch (Exception e) {
 		    // TODO: handle exception
 			e.printStackTrace();
-			isValid = false;
+			isStatus = -1;
 		}
-		return isValid;
+		return isStatus;
 	}
 	
 	
@@ -921,7 +941,7 @@ public class ReserveService {
 		
         try {
         	
-// master start /////
+// master start //
         	if(reserveInfo.getString("V_FLAG").equals("new")){ //insert
         		reserveDao.insertReserveInfo(reserveInfo);
         	}else if(reserveInfo.getString("V_FLAG").equals("detail")){ //update
@@ -933,54 +953,29 @@ public class ReserveService {
         			reserveDao.updateReserveFee(reserveInfo);
         		}
         	}
-// master end /////       	
-        	
-// detail start /////
+// master end //  	    	
+// detail start //
 			for(int i = 0; i < detail.size(); i++){
 				BMap detailMap = new BMap(detail.get(i));
 				detailMap.put("REQ_DT"    , (String) reserveInfo.get("REQ_DT"));
-				detailMap.put("SEQ"       , (String) reserveInfo.get("SEQ"));
+				detailMap.put("DSEQ"      , i + 1);
 				
 				String CHK_IN_DT = (String) reserveInfo.get("CHK_IN_DT");
 				String CHK_OUT_DT = (String) reserveInfo.get("CHK_OUT_DT");
-//				CHK_IN_DT = CHK_IN_DT.replaceAll(".", "");
-//				CHK_OUT_DT = CHK_OUT_DT.replaceAll(".", "");
 				
 				detailMap.put("CHK_IN_DT"       , CHK_IN_DT);
 				detailMap.put("CHK_OUT_DT"       , CHK_OUT_DT);
-				
 				detailMap.put("LOGIN_USER", LoginInfo.getUserId());
-//				detailMap.put("FILE_UID"  , (String) reserveInfo.get("FILE_UID"));
 				
 				feeCntList = reserveDao.selectFeeListCnt(detailMap);
 				
-//				sum_tot += Integer.parseInt((String) reserveInfo.get("TOT_AMT"));
-				
 				if(detailMap.getString("STATUS_V").equals("I")){
-					
 					reserveDao.addReserveDetail(detailMap);
-//					reserveDao.addInvoiceDetailHis(detailMap);
-					
 				}else if(detailMap.getString("STATUS_V").equals("U")){
 					reserveDao.updateReserveDetailInfo(detailMap);
-//					reserveDao.addInvoiceDetailHis(detailMap);
 				}
 			}
-			
-//			BMap paramMap = new BMap();
-//			paramMap.put("SEQ"       , (String) param.get("SEQ"));      
-//			paramMap.put("REQ_DT"    , (String) param.get("REQ_DT"));   
-//			paramMap.put("LOGIN_USER", LoginInfo.getUserId());          
-//			paramMap.put("TOT_AMT"   , sum_tot);
-//			paramMap.put("EXP_DT"    , (String) param.get("EXP_DT"));      
-//			paramMap.put("DEP_AMT"   , param.get("DEP_AMT"));      
-//			
-//			if(feeCntList == 0){ //fee table insert
-//				reserveDao.insertFeeInfo(paramMap);
-//			}else if(feeCntList == 1 && sum_tot != reserveDao.selectFeeTOT_AMT(paramMap)){ //fee table update
-//				reserveDao.updateFeeInfo(paramMap);
-//			}
-// detail end /////       	
+// detail end //	
         	
 		} catch (Exception e) {
 		    // TODO: handle exception
@@ -1334,7 +1329,7 @@ public class ReserveService {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<BMap> reserveNoRoomList(BMap param) throws Exception {
+	public List<BMap> reserveNoRoomList(Map<String, Object> param) throws Exception {
 		return reserveDao.reserveNoRoomList(param);
 	}
 	
@@ -1361,7 +1356,7 @@ public class ReserveService {
 			reserveDao.insertNoRoomInfo(list);
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.toString();
 			isValid = false;
 		}
 		
@@ -1373,9 +1368,76 @@ public class ReserveService {
 		try {
 			reserveDao.deleteNoRoomInfo(param);
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.toString();
 			isValid = false;
 		}
 		return isValid;
 	}
+
+	/**
+	 * 체크인 일자 변경 시 상품 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> selectHdngGbnList_M(BMap param) throws Exception{
+		return reserveDao.selectHdngGbnList_M(param);
+	}
+	public List<BMap> selectHdngGbnList_A(BMap param) throws Exception{
+		return reserveDao.selectHdngGbnList_A(param);
+	}
+
+	/**
+	 * 예약 데이터 동반자정보 삭제
+	 * @param param
+	 * @param detail 
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean deleteReserveDetail(BMap param, List<BMap> detail) throws Exception {
+		Boolean isValid = true;
+		try {
+			reserveDao.deleteReserveDetail(param);
+			
+			param.remove("DSEQ");
+			reserveDao.deleteReserveDetail(param);
+
+			for(int i = 0; i < detail.size(); i++){
+				BMap detailMap = new BMap(detail.get(i));
+
+				detailMap.put("LOGIN_USER", LoginInfo.getUserId());
+
+				reserveDao.addReserveDetail(detailMap);
+			}
+		} catch (Exception e) {
+			e.toString();
+			isValid = false;
+		}
+		return isValid;
+		}
+	
+	/**
+	 * 패키지 리스트 호출
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> packageResetList(BMap param) throws Exception {
+		return reserveDao.packageResetList(param);
+	}
+
+	public void updateReservePerson(BMap param) throws Exception {
+		reserveDao.updateReservePerson(param);
+	}
+	
+	/**
+	 * 객실 풀 체크
+	 * @param param
+	 * @return list
+	 * @throws Exception
+	 */
+	public List<Map<String, Object>> noRoomChk(Map<String, Object> param) throws Exception {
+		return reserveDao.noRoomChk(param);
+	}
+	
 }

@@ -1,13 +1,21 @@
 package bt.reserve.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import bt.btframework.utils.BMap;
@@ -99,25 +107,10 @@ public class ReserveRestController {
 		BMap paramData = new BMap();
 		paramData.put("SEQ"  	   , (String) reqData.get("SEQ"));
 		paramData.put("REQ_DT"	   , (String) reqData.get("REQ_DT"));
-//		paramData.put("CHK_IN_DT"  , (String)reqData.get("CHK_IN_DT"));
-//		paramData.put("CHK_OUT_DT" , (String)reqData.get("CHK_OUT_DT"));
-//		paramData.put("LOGIN_USER" , LoginInfo.getUserId());
-		
 		List<BMap> resultDeptDetail = reserveService.reserveSelectAddList(paramData);
-		
-//		paramData.put("FILE_UID", resultDeptDetail.get(0).getString("FILE_UID"));
-//		List<BMap> fileList = fileService.selectFileInfo(paramData);
 		
 		BRespData respData = new BRespData();
 		respData.put("result", resultDeptDetail);
-//		respData.put("fileResult", fileList);
-		
-	/*	BMap param = new BMap();
-		param.put("HEAD_CD"   , 500140);
-		param.put("REF_CHR1"  , (String)reqData.get("MEM_GBN"));
-		param.put("ORDER_GBN" , 1);
-		
-		respData.put("selectList"   , reserveService.selectGetCommonCode(param));*/
 		return respData;
 	}
 	
@@ -148,6 +141,26 @@ public class ReserveRestController {
 		return respData;
 	}
 	
+	/**
+	 * 사용자 정보 검색
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/setUserInfo.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData setUserInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BMap param = new BMap();
+		BRespData respData = new BRespData();
+		
+		param.put("S_USER_ID" , (String) reqData.get("S_USER_ID"));
+		respData.put("result", reserveService.setUserInfo(param));
+
+		logger.info("======= respData ==========" + respData);
+		
+		return respData;
+	}
 	
 	/**
 	 * 인보이스 현황 리스트 조회
@@ -248,16 +261,18 @@ public class ReserveRestController {
 		paramData.put("SEQ"        , (String) reqData.get("SEQ"));
 		paramData.put("REQ_DT"     , (String) reqData.get("REQ_DT"));
 		paramData.put("ITEM_CD"    , (String) reqData.get("ITEM_CD"));
-		paramData.put("TOT_AMT"    , reqData.get("TOT_AMT"));
+		paramData.put("DEL_AMT"    , reqData.get("DEL_AMT"));
+		paramData.put("EXP_DT"     , reqData.get("EXP_DT"));
+		paramData.put("DEP_AMT"    , reqData.get("DEP_AMT"));
+		paramData.put("CHG_PRC_STS"    , reqData.get("CHG_PRC_STS"));
 		paramData.put("PREV_ITEM_CD"  , (String) reqData.get("ITEM_CD"));
 		paramData.put("PREV_ORDER"    , (String) reqData.get("ORDER"));
 		paramData.put("ORDER"    		, (String) reqData.get("ORDER"));
 		
 		paramData.put("LOGIN_USER" , LoginInfo.getUserId());
 		
-		if(!reserveService.deleteInvoiceManager(paramData)){
-			respData.put("resultCd", "-1");
-		};
+		respData.put("resultCd", reserveService.deleteInvoiceManager(paramData));
+
 		return respData;
 	}
 	
@@ -327,7 +342,6 @@ public class ReserveRestController {
 		return respData;
 	}
 	
-	
 	/**
 	 * 예약 현황 상태 조회
 	 * @param reqData
@@ -357,7 +371,7 @@ public class ReserveRestController {
 	 */
 	@RequestMapping(value = "/updateReserveStatus.do", method = RequestMethod.POST)
 	@ResponseBody
-	public BRespData updateReserveStatus(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+	public BRespData updateInvRegDt(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BRespData respData = new BRespData();
 		
 		BMap paramData = new BMap();
@@ -366,9 +380,33 @@ public class ReserveRestController {
 		paramData.put("CHG_PRC_STS"  , reqData.get("CHG_PRC_STS"));
 		paramData.put("LOGIN_USER"   , LoginInfo.getUserId());
 		
+		if(!reserveService.updateInvRegDt(paramData)){
+			respData.put("dup", "Y");
+		};
+		return respData;
+	}
+	
+	/**
+	 * 미팅샌딩 데이터 저장 및 업데이트 
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/updateInvRegDt.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData updateReserveStatus(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BRespData respData = new BRespData();
+		
+		BMap paramData = new BMap();
+		paramData.put("SEQ"          , reqData.get("SEQ"));
+		paramData.put("REQ_DT"       , (String)reqData.get("REQ_DT"));
+		paramData.put("LOGIN_USER"   , LoginInfo.getUserId());
+		
 		if(!reserveService.updateReserveStatus(paramData)){
 			respData.put("dup", "Y");
 		};
+		
 		return respData;
 	}
 	
@@ -570,21 +608,22 @@ public class ReserveRestController {
 	
 	/**
 	 * 객실 풀관리 리스트 호출
-	 * @param model
+	 * @param param
 	 * @param request
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/noRoomList.do", method = RequestMethod.POST)
 	@ResponseBody
-	public BRespData reserveNoRoomList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
-		BMap param = reqData.getParamDataMap("param");
+	public BRespData reserveNoRoomList(@RequestParam Map<String, Object> param, Model model) throws Exception {
 		BRespData respData = new BRespData();
-		BMap param3 = new BMap();
-		param3.put("HEAD_CD" , 500070);
-		
-		respData.put("result"   , reserveService.reserveNoRoomList(param));
-		respData.put("roomtype" , reserveService.selectGetCommonCode(param3));
+
+		try {
+			respData.put("result"   , reserveService.reserveNoRoomList(param));
+		} catch (Exception e) {
+			respData.put("dup", "N");
+			respData.put("message", e.getMessage());
+		}
 		
 		return respData;
 	}
@@ -630,4 +669,94 @@ public class ReserveRestController {
 		};
 		return respData;
 	}
+	
+	/**
+	 * 체크인 일자 변경 시 상품 조회
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/hdngGbnList.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData selectHdngGbnList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{		
+		BRespData respData = new BRespData();
+		
+		BMap param = new BMap();
+		param.put("MEM_GBN", (String)reqData.get("MEM_GBN"));
+		param.put("CHK_IN_DT", reqData.get("CHK_IN_DT"));
+		param.put("CHK_OUT_DT", reqData.get("CHK_OUT_DT"));
+		
+		String memGbn = (String) param.get("MEM_GBN");
+		logger.info("memGbn   param : "+memGbn);
+	
+		if("01".equals(param.get("MEM_GBN"))) {		// 멤버
+			respData.put("hdngGbnList", reserveService.selectHdngGbnList_M(param));
+		}else{
+			respData.put("hdngGbnList", reserveService.selectHdngGbnList_A(param));
+		}
+		
+		return respData;
+	}
+
+	/**
+	 * 예약 데이터 동반자정보 삭제
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/deleteReserveDetail.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData deleteReserveDetail(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		
+		BRespData respData = new BRespData();
+		BMap param = new BMap();
+		//reserveInfo.put("V_FLAG"    , (String)reqData.get("V_FLAG"));
+
+		List<BMap> detail = reqData.getParamDataList("NEW_DETAIL");
+		
+		param.put("REQ_DT"      , reqData.get("REQ_DT"));
+		param.put("SEQ"         , reqData.get("SEQ"));
+		param.put("DSEQ"        , reqData.get("DSEQ"));
+		param.put("TOT_PERSON"  , reqData.get("TOT_PERSON"));
+		param.put("DEL_NUM_GBN" , reqData.get("DEL_NUM_GBN"));
+		param.put("DEL_PERSON"  , reqData.get("DEL_PERSON"));
+		param.put("LOGIN_USER", LoginInfo.getUserId());
+
+		if(!reserveService.deleteReserveDetail(param, detail)){
+			respData.put("dup", "Y");
+		}
+		else {
+			respData.put("dup", "N");
+			reserveService.updateReservePerson(param);
+			List<BMap> resultDeptDetail = reserveService.reserveSelectAddList(param);
+			respData.put("result", resultDeptDetail);
+		}
+		
+		return respData;
+	}
+	
+	@RequestMapping(value = "/noRoomChk.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BMap noRoomChk(@RequestParam Map<String, Object> param, HttpServletRequest req) throws Exception {
+		BMap bMap = new BMap();
+		String roomChkMsg = "";
+		// packageCharge  parameter : chk_in_dt, chk_out_dt, room_type
+		System.out.println(reserveService.noRoomChk(param));
+		List<Map<String, Object>> noRoomChk = reserveService.noRoomChk(param);
+		if(noRoomChk != null && (noRoomChk.size() > 0)) { 
+			StringBuilder sbRoomChkMsg = new StringBuilder();
+			for(Map<String, Object> map : noRoomChk) {
+				String roomTypeName  = map.get("ROOM_TYPE_NAME").toString().trim();
+				String reqNoDt = map.get("REQ_NO_DT").toString();
+				sbRoomChkMsg.append("[" + reqNoDt + "] 일자의 [" + roomTypeName + "] 객실이 예약마감되었습니다. \n");
+			}
+			roomChkMsg = sbRoomChkMsg.toString();
+		}
+		bMap.put("roomChkMsg", roomChkMsg);
+		bMap.put("result", "SUCCESS");
+		return bMap;
+	}
+	
 }

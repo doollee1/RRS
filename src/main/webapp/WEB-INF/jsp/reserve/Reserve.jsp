@@ -138,11 +138,15 @@
 		/* 그리드 로우 클릭시 상세조회 팝업 open */
 		$('#quotationGrid').jqGrid('setGridParam', {
 			ondblClickRow: function(rowid) {
+				
+				console.log("===== 예약목록 더블클릭 =====")
+				
 				var selRowData = $("#quotationGrid").jqGrid("getRowData",rowid);
 				param = {};                       
 				param.SEQ    = selRowData.SEQ;    
 				param.REQ_DT = selRowData.REQ_DT.replaceAll(".",""); 
-				reservePopup(param);              
+				//reservePopup(param);
+				reservePopup2(param);
 			}
 		}); 
 		cSearch();
@@ -273,8 +277,10 @@
 	}
 
 	function cAdd() {
-		reservePopup();
+		//reservePopup();
+		reservePopup2();
 	}
+	
 	function reservePopup(param) {
 		var url = "/reserve/reserveRegi.do";
 		//var pid = "p_reserveRegi"; //팝업 페이지의 취상위 div ID
@@ -284,5 +290,17 @@
 			cSearch();
 		});
 	}
+	
+	//신규 팝업
+	function reservePopup2(param) {
+		var url = "/reserve/reserveRegi2.do";
+		var pid = "p_reserveListRegi"; //팝업 페이지의 취상위 div ID 
+
+		popupOpen(url, pid, param, function(data) {
+			cSearch();
+		});
+	}
+	
+	
 </script>
 <c:import url="../import/frameBottom.jsp" />

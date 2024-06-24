@@ -11,13 +11,16 @@
 .pbtn_default {margin: 0 3px -1px 5px;padding: 3px 10px 3px 10px;border: 1px solid #a9cbeb !important;background: #bdd6ee !important;color: #2269b1;}
 .notice_file_del {margin:3px; margin-right:0px; font-size:11px;}
 .downLink {padding:0px 3px 0px 3px; font-size:15px;}
-.ct_grid_top_left {vertical-align: middle; background-position:left 10px;}
-.ct_grid_top_right {display:flex; flex-direction:column;}
 #pdfUpload {wdith:100%;}
 #ATTACHFILE {display:table-cell; float: right;padding-left:105px;}
 #ATTACHFILE .MultiFile-wrap {margin-top:5px; margin-left:5px; margin-bottom:5px;}
 #ATTACHFILE .MultiFile-wrap input[type=file] {width:300px;}
 #ATTACHFILE .MultiFile-label {font-size:15px;}
+
+#invoice_popup_top_wrap {display:flex; justify-content:space-between;}
+#invoice_popup_date_box {display:flex; flex-direction:column; gap:5px; padding-top:6px; background-position:left 12px;}
+#invoice_popup_date_box input[type=text] {margin-left:5px;}
+#invoice_row_box {text-align:right;}
 </style>
 
 <div id="p_invoicePopup">
@@ -37,14 +40,17 @@
 
 	<!-- 그리드 시작 -->
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
-		<div class="pop_grid_top_wrap">
-			<div class="ct_grid_top_left">
-			<div style="height:100%; padding-top:12px;">
-				 예약기한<input type="text" class="cmc_txt" id="POP_EXP_DT" name="POP_EXP_DT" data-type="date" style="width:20 .5%;"/>
-			 	예약금<input type="text" id="POP_DEP_AMT" name="POP_DEP_AMT" style="text-align: right" value="0" class="withComma" >
+		<div id="invoice_popup_top_wrap">
+			<div id="invoice_popup_date_box" class="ct_grid_top_left">
+				<div id="invoice_popup_dt">
+					발행일자<input type="text" class="cmc_txt" id="POP_INV_REG_DT" name="POP_INV_REG_DT" data-type="date" style="width:20 .5%;"/>
+				</div>
+				<div>
+					예약기한<input type="text" class="cmc_txt" id="POP_EXP_DT" name="POP_EXP_DT" data-type="date" style="width:20 .5%;"/>
+					예약금<input type="text" id="POP_DEP_AMT" name="POP_DEP_AMT" style="text-align: right" value="0" class="withComma" >
+				</div>
 			</div>
-			</div>
-			<div class="ct_grid_top_right">
+			<div id="invoice_row_box">
 				<input type="hidden" id="hFileUid" name="hFileUid" />
 				<div id="pdfUpload">
 					<div id="ATTACHFILE"></div>
@@ -54,7 +60,7 @@
 					<button class="btn btn-default" id="btn_addRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.addRow'/></button>
             		<button class="btn btn-default" id="btn_delRow" style="align:right" ><i class="fa fa-plus-square-o"></i><s:message code='button.delRow'/></button>
 				</div>
-            </div>
+			</div>
 		</div>
 		<div class="pop_grid_wrap">
 			<table id="invoiceGrid"></table>
@@ -98,8 +104,7 @@ $(function() {
 		email      = recevicedData.EMAIL;
 		chk_in_dt  = recevicedData.CHK_IN_DT;
 		chk_out_dt = recevicedData.CHK_OUT_DT;
-		prc_sts    = recevicedData.PRC_STS;
-		
+		prc_sts    = recevicedData.PRC_STS;	
 		
 		//04(예약신청), 05(입금대기)
 		if(prc_sts == "04" || prc_sts == "05"){  
@@ -108,12 +113,15 @@ $(function() {
 		//01(예약요청-일반), 02(예약요청-멤버), 03(예약가능), 06(예약확정), 07(환불요청), 08(환불완료), 09(예약취소), 96(예약완료-교민)
 		}else if(prc_sts == "01" || prc_sts == "02" || prc_sts == "03" || prc_sts == "06" || prc_sts == "07" || prc_sts == "08" || prc_sts == "09" || prc_sts == "96"){ 
 			//$("#POP_EXP_DT,#POP_DEP_AMT , #btn_send, #btn_preview , #btn_del , #btn_addRow , #btn_delRow").attr("disabled",true);
-			$("#POP_EXP_DT, #btn_send, #btn_preview , #btn_del ").attr("disabled",true);  //#POP_DEP_AMT 예약금 활성화
+			$("#POP_EXP_DT, #POP_INV_REG_DT, #btn_send, #btn_preview , #btn_del ").attr("disabled",true);  //#POP_DEP_AMT 예약금 활성화
 		}
 		
 		$("#POP_DEP_AMT").val(fn_comma(recevicedData.DEP_AMT));
 		if(!fn_empty(recevicedData.EXP_DT)){
 			$("#POP_EXP_DT").val(Util.converter.dateFormat1(Util.converter.dateFormat3(recevicedData.EXP_DT)));
+		}
+		if(!fn_empty(recevicedData.INV_REG_DT)){
+			$("#POP_INV_REG_DT").val(Util.converter.dateFormat1(Util.converter.dateFormat3(recevicedData.INV_REG_DT)));
 		}
 		
 		createGrid();
@@ -162,8 +170,16 @@ $(function() {
 			}
 			
 			btGrid.gridResizing('invoiceGrid');
-		    $("#PartnerSchGrid_pager_right").html('<div dir="ltr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(sum_tot)+'</div>');
+		    $("#PartnerSchGrid_pager_right").html('<tr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(sum_tot)+'</div>');
 	    });
+		
+		$('#POP_INV_REG_DT').datepicker({
+	        dateFormat : 'yy.mm.dd',
+		    showOn : 'both',
+		    disabled : 'disabled'
+		 }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
+		     function(e) {
+		 });
 		
 		$('#POP_EXP_DT').datepicker({
 	        dateFormat : 'yy.mm.dd',
@@ -171,6 +187,7 @@ $(function() {
 		 }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
 		     function(e) {
 		 });
+	
 	}
 	
 	$(".withComma").on("keyup" , function(){
@@ -394,20 +411,25 @@ $(function() {
     	}
 		args =  $("#"+rowId+"_ITEM_NM").val()
 		if(confirm("<s:message code='confirm.delRow' arguments='" + args + "' javaScriptEscape='false'/>")){
-			var url = '/reserve/deleteInvoiceManager.do';alert($("#invoiceGrid").jqGrid("getCell", rowId, "TOT_AMT"));
+			var url = '/reserve/deleteInvoiceManager.do';
 			var param = { "REQ_DT"  : req_dt
 					, "SEQ"     : seq
 					, "ITEM_CD" : $("#invoiceGrid").jqGrid("getCell", rowId, "PREV_ITEM_CD")
 					, "ORDER" 	: $("#invoiceGrid").jqGrid("getCell", rowId, "PREV_ORDER")
-					, "TOT_AMT" : $("#invoiceGrid").jqGrid("getCell", rowId, "TOT_AMT")
+					, "DEL_AMT" : $("#invoiceGrid").jqGrid("getCell", rowId, "TOT_AMT")
+					, "DEP_AMT" : $("#POP_DEP_AMT").val().replaceAll(",","")
+					, "EXP_DT"  : $("#POP_EXP_DT").val().replaceAll(".","")
+					, "CHG_PRC_STS" : "04"
 			        }
 			
 				fn_ajax(url, false, param, function(data, xhr){
 					if(data.resultCd == "-1"){
 						alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
-					}else{
+					} else if (data.resultCd == "1") {
 					    alert("<s:message code='product.info.delete'/>");
 						cSearch();
+					} else if (data.resultCd == "0") {
+						popupClose($('#p_invoicePopup').data('pid'));
 					}
 				});
 		}
@@ -677,7 +699,7 @@ $(function() {
 					alert("<s:message code='info.save'/>");  //저장하였습니다.
 					
 					//예약기간, 예약금, 전송, 미리보기 활성화
-					$("#POP_EXP_DT,#POP_DEP_AMT , #btn_send, #btn_preview").attr("disabled",false);
+					$("#POP_EXP_DT, #POP_DEP_AMT , #btn_send, #btn_preview").attr("disabled",false);
 
 					cSearch();
 				}

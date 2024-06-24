@@ -169,6 +169,7 @@ $(function() {
 
 		},
 		close : function() {
+			p_rtnData = [];
 			popupClose($(this).data('pid')); /* 필수로 들어가야함 */
 		},
 		open : function() {
@@ -319,6 +320,8 @@ $('#btn_userSearchPopup').on('click', function(e) {
 			$("#UPD_DTM").val(data.UPD_DTM);
 			
 			typeChage();
+			
+			idChkYN   = false;
 		}
 	});
 });

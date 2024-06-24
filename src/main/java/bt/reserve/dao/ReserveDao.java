@@ -1,5 +1,7 @@
 package bt.reserve.dao;
 import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -130,6 +132,16 @@ public class ReserveDao extends DBAbstractMapper {
 	}
 	
 	/**
+	 * 사용자 정보 검색
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap selectUserInfo(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.selectUserInfo", param);
+	}
+
+	/**
 	 * 인보이스 현황 최초 리스트 조회
 	 * @param param
 	 * @return
@@ -137,6 +149,16 @@ public class ReserveDao extends DBAbstractMapper {
 	 */
 	public void firstInvoiceSelectList(BMap param) throws Exception {
 		insert("ReserveMapper.firstInvoiceSelectList", param);
+	}
+	
+	/**
+	 * 인보이스 총합
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public int invoiceSumTot(BMap param) throws Exception {
+		return (int)selectByPk("ReserveMapper.invoiceSumTot", param);
 	}
 	/**
 	 * 멤버별 인보이스 셀렉트박스 리스트 조회
@@ -179,7 +201,7 @@ public class ReserveDao extends DBAbstractMapper {
 	}
 	
 	/**
-	 * 인보이스 히스토리 등록(delete)
+	 * 인보이스 히스토리 삭제(delete)
 	 * @param param
 	 * @throws Exception
 	 */
@@ -204,6 +226,15 @@ public class ReserveDao extends DBAbstractMapper {
 	 */
 	public void deleteInvoiceManager(BMap param) throws Exception{
 		delete("ReserveMapper.deleteInvoiceDetailInfo", param);
+	}
+	
+	/**
+	 * 인보이스 전체 디테일 삭제
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deleteAllFeeInfo(BMap param) throws Exception{
+		delete("ReserveMapper.deleteAllFeeInfo", param);
 	}
 	
 	/**
@@ -349,6 +380,15 @@ public class ReserveDao extends DBAbstractMapper {
 	 */
 	public void updateInvRegDt(BMap param) throws Exception{
 		update("ReserveMapper.updateInvRegDt", param);
+	}
+	
+	/**
+	 * invoice regDt delete
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deleteInvRegDt(BMap param) throws Exception{
+		update("ReserveMapper.deleteInvRegDt", param);
 	}
 	
 	/**
@@ -534,7 +574,7 @@ public class ReserveDao extends DBAbstractMapper {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public List<BMap> reserveNoRoomList(BMap param) throws Exception {
+	public List<BMap> reserveNoRoomList(Map<String, Object> param) throws Exception {
 		return list("ReserveMapper.reserveNoRoomList", param);
 	}
 	
@@ -695,5 +735,50 @@ public class ReserveDao extends DBAbstractMapper {
 	 */
 	public BMap selectInvoiceCodeInfo(BMap param) throws Exception {
 		return (BMap) selectByPk("ReserveMapper.selectInvoiceCodeInfo", param);
+	}
+
+	/**
+	 * 체크인 일자 변경 시 상품 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> selectHdngGbnList_M(BMap param ) throws Exception{
+		return list("ReserveMapper.selectHdngGbnList_M", param);
+	}
+	@SuppressWarnings("unchecked")
+	public List<BMap> selectHdngGbnList_A(BMap param ) throws Exception{
+		return list("ReserveMapper.selectHdngGbnList_A", param);
+	}
+
+	/**
+	 * 예약 데이터 동반자정보 삭제
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public void deleteReserveDetail(BMap param) throws Exception {
+		delete("ReserveMapper.deleteReserveDetail", param);
+	}
+	
+	/**
+	 * 패키지 리스트 호출
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> packageResetList(BMap param) throws Exception {
+		return list("ReserveMapper.packageResetList", param);
+	}
+
+	public void updateReservePerson(BMap param) throws Exception {
+		update("ReserveMapper.updateReservePerson",param);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Map<String, Object>> noRoomChk(Map<String, Object> param) throws Exception {
+		return list("ReserveMapper.noRoomChk",param);
 	}
 }

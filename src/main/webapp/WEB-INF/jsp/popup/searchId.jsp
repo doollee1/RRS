@@ -14,7 +14,6 @@
 	<form id="frmSearch">
 		<input type="hidden"  name="CURRENT_PAGE"  id="CURRENT_PAGE" />
 		<input type="hidden"  name="ROWS_PER_PAGE"  id="ROWS_PER_PAGE" />
-		<!------------->
 		<div class="tab_top_search">
 			<table>
 				<tbody>
@@ -36,10 +35,8 @@
 				</tbody>
 			</table>
 		</div>
-		<!-------------->	
 	</form>
 	<!-- Search condition end -->
-	
 	
 	<!-- grid start -->
 	<div id="ctm_mg_wrap">
@@ -80,6 +77,9 @@ $(function() {
 		open : function() {
 			createGrid1();
 			
+			$("#S_USER_ID").val($(this).data().S_USER_ID);
+			cSearch();
+			
 			/* grid1 Event */
 			$('#grid1').jqGrid('setGridParam', {
 				ondblClickRow: function(rowid, iRow, iCol, e) {
@@ -89,13 +89,13 @@ $(function() {
 			
 			$('#S_USER_ID').on('keypress', function (e) {
 				if(e.which == 13){
-					cSearch(null)
+					cSearch(null);
 				}
 			});
 			
 			$('#S_USER_NM').on('keypress', function (e) {
 				if(e.which == 13){
-					cSearch(null)
+					cSearch(null);
 				}
 			});
 		}
