@@ -175,7 +175,7 @@
 		var colModel = [ 
 		    {name : 'ROWNUM'    , width : 70  , align : 'center'}, 
 		    {name : 'MEM_NM'    , width : 70  , align : 'center'},
-		    {name : 'AGN_GB'    , width : 80  , align : 'center'},
+		    {name : 'AGN_GB_NM' , width : 80  , align : 'center'},
 		    {name : 'AGN_CD_NM' , width : 70  , align : 'center'}, 
 		    {name : 'REQ_DT'    , width : 100 , align : 'center'}, 
 		    {name : 'SEQ'       , width : 70  , align : 'center'}, 

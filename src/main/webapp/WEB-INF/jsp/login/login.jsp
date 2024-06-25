@@ -113,7 +113,9 @@ function login() {
     			}
     		}
     	} else {
+    		
     		alert(data.message);
+    		location.href = '/index.do';   //루트로 이동
     	}
 	});
 }

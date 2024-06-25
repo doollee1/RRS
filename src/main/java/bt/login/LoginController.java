@@ -56,11 +56,7 @@ public class LoginController {
 	 */
 	@RequestMapping(value = "/index.do")
 	public String index(ModelMap model) throws Exception{	
-		
-		//double erpPrice = Double.parseDouble(changeNormForm(String.valueOf("33,00")));
-		//double reqPrice = Double.parseDouble(changeNormForm(String.valueOf("32,50")));
-		
-		//System.err.println( (erpPrice - reqPrice) > 1);
+				
 		return "forward:/login/login.do";
 	}
 	
@@ -91,13 +87,28 @@ public class LoginController {
 	@RequestMapping(value = "/login/actionLogin.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData userOverlapCheck(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		
+		logger.info("======== 로그인처리 =======");
+		
 		BMap param = reqData.getParamDataMap("searchData");
 		BRespData respData = new BRespData();
 		
 		try{
 			HttpSession session = req.getSession();
-	        PrivateKey privateKey = (PrivateKey) session.getAttribute(LoginController.RSA_WEB_KEY);
-	 
+			
+			//세센종료시
+			logger.info("====== privateKey : "+session.getAttribute(LoginController.RSA_WEB_KEY));
+			if(session.getAttribute(LoginController.RSA_WEB_KEY) == null) {
+				
+				logger.info("======== 세센종료 재로그인 =======");
+				
+				respData.put("success", false);
+				respData.put("message", "세션이 종료됬습니다. 다시 로그인해주세요.");
+				return respData;
+			}
+			
+	        PrivateKey privateKey = (PrivateKey) session.getAttribute(LoginController.RSA_WEB_KEY);	       
+	        
 	        // 복호화
 	         param.put("PASSWORD", decryptRsa(privateKey, param.getString("PASSWORD")));
 	        
@@ -141,7 +152,7 @@ public class LoginController {
 				// 로그인정보를 세션에 저장
 				//session.setMaxInactiveInterval(10); 
 				//session.setMaxInactiveInterval(60*300);
-				session.setMaxInactiveInterval(60*120); // 2시간 세션시간
+				session.setMaxInactiveInterval(60*120);  //2시간 세션시간(60초 * 120)
 				session.setAttribute("loginVO", loginVO);
 			}
 			

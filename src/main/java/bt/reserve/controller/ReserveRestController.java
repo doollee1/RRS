@@ -709,20 +709,17 @@ public class ReserveRestController {
 	@RequestMapping(value = "/deleteReserveDetail.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData deleteReserveDetail(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
-		
 		BRespData respData = new BRespData();
 		BMap param = new BMap();
-		//reserveInfo.put("V_FLAG"    , (String)reqData.get("V_FLAG"));
-
+		
 		List<BMap> detail = reqData.getParamDataList("NEW_DETAIL");
 		
 		param.put("REQ_DT"      , reqData.get("REQ_DT"));
 		param.put("SEQ"         , reqData.get("SEQ"));
-		param.put("DSEQ"        , reqData.get("DSEQ"));
 		param.put("TOT_PERSON"  , reqData.get("TOT_PERSON"));
 		param.put("DEL_NUM_GBN" , reqData.get("DEL_NUM_GBN"));
 		param.put("DEL_PERSON"  , reqData.get("DEL_PERSON"));
-		param.put("LOGIN_USER", LoginInfo.getUserId());
+		param.put("LOGIN_USER"  , LoginInfo.getUserId());
 
 		if(!reserveService.deleteReserveDetail(param, detail)){
 			respData.put("dup", "Y");

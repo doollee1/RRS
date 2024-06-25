@@ -29,12 +29,18 @@
              WHERE 1 = 1
                AND HEAD_CD = '500020'
                AND CODE = T1.PRC_STS) AS STATE_NM /* 상태구분       */
+         , T1.AGN_GB                              /* 에이전시구분   */
+         , (SELECT CODE_NM
+	          FROM BC_COMM_L
+	         WHERE 1 = 1
+	           AND HEAD_CD = '500260'
+	           AND CODE = T1.AGN_GB)  AS AGN_GB_NM /* 에이전시구분명  */
          , T1.AGN_CD                              /* 에이전시코드   */
          , (SELECT CODE_NM
 	          FROM BC_COMM_L
 	         WHERE 1 = 1
 	           AND HEAD_CD = '500120'
-	           AND CODE = T1.AGN_CD)  AS AGN_CD_NM /* 에이전시구분  */
+	           AND CODE = T1.AGN_CD)  AS AGN_CD_NM /* 에이전시명  */
          , T1.PRC_STS                             /* 예약상태       */
          , T1.CHK_IN_DT                           /* 체크인일자     */
          , T1.CHK_OUT_DT                          /* 체크아웃일자   */
@@ -255,6 +261,7 @@
 	             WHERE 1 = 1
 	               AND HEAD_CD = '500020'
 	               AND CODE = T1.PRC_STS)             AS PRC_STS_NM        /* 상태구분                 */
+	         , T1.AGN_GB                              AS AGN_GB            /* 에이전시구분           */
 	         , T1.AGN_CD                              AS AGN_CD            /* 에이전시코드           */
 	         , (SELECT CODE_NM
 	              FROM BC_COMM_L
@@ -347,6 +354,7 @@
                    AND TT1.REQ_DT  = T1.REQ_DT
                    AND TT1.REQ_SEQ = T1.SEQ)          AS PER_NUM           /* 미팅샌딩 인원합계      */
 	         , T3.DEP_IN_DT                           AS DEP_IN_DT         /* 예약금입금일자         */
+	         , T3.PAY_DEP_AMT						  AS PAY_DEP_AMT	   /* 입금예약금 (20240625 추가) */
 	         , T3.EXP_DT                              AS EXP_DT            /* 예약 기한              */
 	         , NVL(T3.DEP_AMT,0)                      AS DEP_AMT           /* 예약금액               */
 	         , CASE WHEN NVL(T3.PAY_AMT,0) = '0'
@@ -1167,7 +1175,6 @@
 	</select>
 
 	<insert id="insertReserveInfo" parameterType="BMap">
-
 		INSERT INTO TB_REQ_BOOKING_M
 		          ( REQ_DT
 		          , SEQ
@@ -1176,6 +1183,7 @@
 		          , REQ_ENG_NM
 		          , REQ_TEL_NO
 		          , MEM_GBN
+		          , AGN_GB
 		          , AGN_CD
 		          , PRC_STS
 		          , CHK_IN_DT
@@ -1233,6 +1241,7 @@
 		          , #{REQ_ENG_NM      }
 		          , #{REQ_TEL_NO      }
 		          , #{MEM_GBN         }
+		          , #{AGN_GB          }
 		          , #{AGN_CD          }
 		          , (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' ELSE NULL END )
 		          , #{CHK_IN_DT       }
@@ -1395,6 +1404,7 @@
 		     , REQ_ENG_NM     = #{REQ_ENG_NM      }
 		     , REQ_TEL_NO     = #{REQ_TEL_NO      }
 		     , MEM_GBN        = #{MEM_GBN         }
+		     , AGN_GB         = #{AGN_GB          }
 		     , AGN_CD         = #{AGN_CD          }
 		     , CHK_IN_DT      = #{CHK_IN_DT       }
 		     , CHK_OUT_DT     = #{CHK_OUT_DT      }
@@ -1825,8 +1835,15 @@ DELETE
                     , UPD_ID
                     )
              VALUES ( #{REQ_DT  }
-                    , (SELECT NVL(MAX(T1.SEQ),0) AS SEQ FROM TB_REQ_BOOKING_M T1 WHERE T1.REQ_DT = #{REQ_DT})
-                    , #{DSEQ    }
+             	   <choose>
+				       <when test="SEQ != null and SEQ != ''">
+				           ,#{SEQ }
+				       </when>
+				       <otherwise>
+			              ,(SELECT NVL(MAX(T1.SEQ),0) AS SEQ FROM TB_REQ_BOOKING_M T1 WHERE T1.REQ_DT = #{REQ_DT})
+				       </otherwise>
+				   </choose>
+                      , #{DSEQ    }
 			          , #{COM_GBN         }
 			          , #{NUM_GBN         }
 			          , #{COM_HAN_NM      }
@@ -2407,9 +2424,6 @@ DELETE
 	     WHERE 1 = 1
 	       AND REQ_DT = #{REQ_DT}
 	       AND SEQ    = #{SEQ}
-	       <if test="DSEQ != null and DSEQ != ''">
-	       AND DSEQ   = #{DSEQ}
-	       </if>
 	</delete>
 	
 	<update id="updateReservePerson" parameterType="BMap">

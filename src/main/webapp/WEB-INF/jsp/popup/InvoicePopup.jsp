@@ -129,6 +129,7 @@ $(function() {
 		
 		//첨부파일 업로드 부분 만드는
 		$("#ATTACHFILE").mkFileUpload("PDF", "/reserve/uploadPdf.do", "pdf",1);
+		$("#fileupload_PDF").attr("style", "cursor:default");
 
 		ajaxUpload();
 	}

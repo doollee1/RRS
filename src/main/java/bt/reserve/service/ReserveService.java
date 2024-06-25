@@ -957,14 +957,15 @@ public class ReserveService {
 // detail start //
 			for(int i = 0; i < detail.size(); i++){
 				BMap detailMap = new BMap(detail.get(i));
-				detailMap.put("REQ_DT"    , (String) reserveInfo.get("REQ_DT"));
-				detailMap.put("DSEQ"      , i + 1);
+				detailMap.put("REQ_DT", (String) reserveInfo.get("REQ_DT"));
+				detailMap.put("DSEQ"  , i + 1);
+				detailMap.put("SEQ"   , reserveInfo.get("SEQ"));
 				
 				String CHK_IN_DT = (String) reserveInfo.get("CHK_IN_DT");
 				String CHK_OUT_DT = (String) reserveInfo.get("CHK_OUT_DT");
 				
-				detailMap.put("CHK_IN_DT"       , CHK_IN_DT);
-				detailMap.put("CHK_OUT_DT"       , CHK_OUT_DT);
+				detailMap.put("CHK_IN_DT" , CHK_IN_DT);
+				detailMap.put("CHK_OUT_DT", CHK_OUT_DT);
 				detailMap.put("LOGIN_USER", LoginInfo.getUserId());
 				
 				feeCntList = reserveDao.selectFeeListCnt(detailMap);
@@ -1399,9 +1400,6 @@ public class ReserveService {
 		try {
 			reserveDao.deleteReserveDetail(param);
 			
-			param.remove("DSEQ");
-			reserveDao.deleteReserveDetail(param);
-
 			for(int i = 0; i < detail.size(); i++){
 				BMap detailMap = new BMap(detail.get(i));
 
