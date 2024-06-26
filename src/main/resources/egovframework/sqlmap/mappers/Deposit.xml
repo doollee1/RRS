@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="DepositMapper">
+	
+	<!-- 입금상단 조회 -->
+	<select id="selectDepositHdrInfo" parameterType="BMap" resultType="BMap">
+	   SELECT	  
+	 	   NVL(DEP_AMT , 0) AS DEP_AMT         /* 예약금액             */
+         , NVL(TOT_AMT , 0) - NVL(DCT_AMT , 0) - NVL(PAY_AMT , 0) AS BAL_AMT         /* 잔금     */
+         , NVL(DCT_AMT , 0) AS DCT_AMT         /* 할인금액                     */         
+         , NVL(TOT_AMT , 0) AS TOT_AMT         /* 총금액                       */
+         , (SELECT NVL(SUM(TOT_AMT), 0) 
+           FROM TB_REQ_INVOICE WHERE REQ_DT = #{REQ_DT} AND SEQ = #{SEQ}) AS INVOICE_AMT  /* 견적금액 */  
+       FROM TB_REQ_FEE          
+	   WHERE REQ_DT  = #{REQ_DT}
+	     AND REQ_SEQ = #{SEQ}
+	</select>
+	
+	
+	<!-- 입금목록 조회 -->
+	<select id="selectDepositList" parameterType="BMap" resultType="BMap">
+		SELECT B.REQ_DSEQ	     			AS SEQ				/* 상세일련번호 */
+		      ,B.PAY_DT			 			AS PAY_DT	 		/* 입금일자 	*/		      
+			  ,(SELECT CODE_NM
+	              FROM BC_COMM_L
+	            WHERE HEAD_CD = '500270'
+	              AND CODE = B.PAY_TYPE)    AS PAY_TYPE_NM 		/* 입금구분명      */ 
+			  ,(CASE WHEN B.PAY_TYPE = '02' THEN B.PAY_AMT * -1	
+			   	 	ELSE B.PAY_AMT END)		AS PAY_AMT			/* 입금금액 	*/
+			  ,NVL(B.DCT_AMT, 0) 			AS DCT_AMT  		/* 할인금액 	*/
+			  ,(SELECT NVL(SUM(TOT_AMT), 0)
+           		FROM TB_REQ_INVOICE WHERE REQ_DT = #{REQ_DT} AND SEQ = #{SEQ}) 			AS INVOICE_AMT		/* 견적금액 */
+			  ,B.BAL_AMT  		 			AS BAL_AMT			/* 잔여금액  	*/
+			  ,DATE_FORMAT(B.REG_DTM, "%Y%m%d")    AS REG_DTM   /* 등록일  */ 
+	    FROM TB_REQ_FEE A, TB_REQ_FEE_D B
+	    WHERE A.REQ_DT = B.REQ_DT
+	      AND A.REQ_SEQ = B.REQ_SEQ
+	      AND A.REQ_DT = #{REQ_DT}					/* 예약일자  */
+	      AND A.REQ_SEQ = #{SEQ}			 	 	/* 예약순번  */
+	      <if test = 'PAY_TYPE != null and !"00".equals(PAY_TYPE)'>
+	      AND B.PAY_TYPE = #{PAY_TYPE}              /* 입금유형, 전체(00)가 아닌경우  */ 
+	      </if>
+	    ORDER BY B.REQ_DSEQ ASC              		/* 예약상세 순번 */         		  
+	</select>
+	
+	
+	<!-- 누적(총입금)금액 조회 -->
+	<select id="selectAccuAmt" parameterType="BMap" resultType="string">
+		
+	    SELECT
+		<if test = 'PAY_TYPE != null and "02".equals(PAY_TYPE)'> 
+			NVL(MAX(A.SUM), 0) - NVL(MAX(B.SUM), 0) - #{PAY_AMT}  AS ACCU_AMT    /* 환불  */
+		</if>
+		<if test = 'PAY_TYPE != null and !"02".equals(PAY_TYPE)'> 
+			NVL(MAX(A.SUM), 0) - NVL(MAX(B.SUM), 0) + #{PAY_AMT}  AS ACCU_AMT    /* 입금, 예약 */
+		</if>
+	    FROM
+		    (SELECT  NVL(SUM(PAY_AMT), 0) as SUM 
+			         ,REQ_DT
+			         ,REQ_SEQ
+			 FROM  TB_REQ_FEE_D 
+			 WHERE REQ_DT = #{REQ_DT}
+		  	   AND REQ_SEQ = #{SEQ}
+			   AND PAY_TYPE !='02') A,   
+			(SELECT NVL(SUM(PAY_AMT), 0) as SUM
+			        ,REQ_DT
+			        ,REQ_SEQ  
+			 FROM  TB_REQ_FEE_D 
+			 WHERE REQ_DT = #{REQ_DT}
+		  	   AND REQ_SEQ = #{SEQ}
+		  	   AND PAY_TYPE ='02') B   		
+		    	 	           			
+	</select>
+	
+	
+	<!-- 예약누적(총입금)금액조회 -->
+	<select id="selectPayAccuAmt" parameterType="BMap" resultType="string">
+		
+		SELECT NVL(SUM(PAY_AMT), 0) AS ACCU_AMT
+		FROM TB_REQ_FEE_D
+	    WHERE REQ_DT  = #{REQ_DT}
+	      AND REQ_SEQ = #{SEQ}			    
+	      AND PAY_TYPE = "03"   /* 예약  */	    
+	</select>
+	
+	
+	<!-- 비용 상세 등록 -->
+	<insert id="insertTbReqFeeD" parameterType="BMap">	
+        INSERT INTO TB_REQ_FEE_D( 
+        		REQ_DT
+              , REQ_SEQ
+              , REQ_DSEQ
+              , PAY_TYPE        /* 입금구분  	*/
+              , PAY_DT		  /* 입금일자  */	
+              , PAY_AMT		  /* 입금금액  */
+              , DCT_AMT		  /* 할인금액  */
+              , ACCU_AMT        /* 누적(납부)금액  */
+              , BAL_AMT         /* 잔액      */ 
+              , REG_DTM
+              , REG_ID
+              )
+       VALUES ( #{REQ_DT  }
+              , #{SEQ     }
+              , (SELECT NVL(MAX(REQ_DSEQ),0) AS SEQ FROM TB_REQ_FEE_D T1 WHERE REQ_DT = #{REQ_DT} AND REQ_SEQ = #{SEQ}) + 1
+              , #{PAY_TYPE}
+              , #{PAY_DT}
+              , #{PAY_AMT}
+              , #{DCT_AMT}
+              , #{ACCU_AMT}
+              , #{BAL_AMT}
+              , NOW()
+              , #{LOGIN_USER}
+       )
+	</insert>
+	
+	
+	<!-- 비용테이블 수정 -->
+	<update id="updateTbReqFee" parameterType="BMap">
+	    UPDATE TB_REQ_FEE	    
+           SET
+           <if test='PAY_AMT != null and !"".equals(PAY_AMT)'>	           	   
+              PAY_AMT  = #{PAY_AMT}
+           </if> 
+           <if test='DCT_AMT != null and !"".equals(DCT_AMT)'>	           	   
+             , DCT_AMT  = #{DCT_AMT}
+           </if>                        
+             , UPD_DTM  = NOW()
+             , UPD_ID   = #{LOGIN_USER}
+         WHERE REQ_DT   = #{REQ_DT}
+           AND REQ_SEQ  = #{SEQ}
+	</update>
+	
+	
+	<!-- 입금예약정보 -->
+	<update id="updatePayDepInfo" parameterType="BMap">
+	    UPDATE TB_REQ_FEE	    
+           SET
+               PAY_DEP_AMT  = #{PAY_DEP_AMT}
+             , DEP_IN_DT  = #{DEP_IN_DT}
+             , UPD_DTM  = NOW()
+             , UPD_ID   = #{LOGIN_USER}
+         WHERE REQ_DT   = #{REQ_DT}
+           AND REQ_SEQ  = #{SEQ}
+	</update>
+	
+	
+	<!-- 예약상태 수정 -->
+	<update id="updatePrcSts" parameterType="BMap">
+	    UPDATE TB_REQ_BOOKING_M
+           SET PRC_STS  = #{PRC_STS}
+             , UPD_DTM  = NOW()
+             , UPD_ID   = #{LOGIN_USER}
+         WHERE REQ_DT   = #{REQ_DT}
+           AND SEQ  = #{SEQ}
+	</update>
+	
+	
+	<!-- 예상상태명 가져오기 -->
+	<select id ="selectPrcStsNm" parameterType="BMap" resultType="string">
+		SELECT (SELECT CODE_NM
+	              FROM BC_COMM_L
+	             WHERE 1 = 1
+	               AND HEAD_CD = '500020'
+	               AND CODE = T1.PRC_STS)             AS PRC_STS_NM        /* 상태구분                 */
+	    FROM TB_REQ_BOOKING_M T1  
+	    WHERE REQ_DT  = #{REQ_DT}
+           AND SEQ  = #{SEQ}         
+	</select>
+	
+	
+	<!-- 비용상세 갯수 조회 -->
+	<select id ="selectTbReqFeeDCnt" parameterType="BMap" resultType="string">
+		SELECT COUNT(*) CNT
+		FROM TB_REQ_FEE_D
+		WHERE REQ_DT   = #{REQ_DT}
+          AND REQ_SEQ  = #{SEQ}
+	</select>
+	
+	
+	<!-- 마지막 비용상세정보 가져오기 -->
+	<select id ="selectLastTbReqFeedInfo" parameterType="BMap" resultType="BMap">
+		SELECT REQ_DT		/* 예약일자  */
+			  ,REQ_SEQ		/* 예약순번 */
+			  ,REQ_DSEQ		/* 예약상세순번 */
+			  ,PAY_TYPE		/* 예약상세순번 */
+			  ,PAY_DT		/* 예약일자 */
+			  ,PAY_AMT		/* 입금금액 */
+			  ,DCT_AMT		/* 할인금액 */
+			  ,ACCU_AMT     /* 누적납부금액 */
+			  ,BAL_AMT		/* 잔금  */
+	    FROM TB_REQ_FEE_D
+	     WHERE REQ_DT   = #{REQ_DT}
+          AND  REQ_SEQ  = #{SEQ}	     
+          AND  REQ_DSEQ = (SELECT NVL(MAX(REQ_DSEQ),0) AS SEQ FROM TB_REQ_FEE_D T1 WHERE REQ_DT = #{REQ_DT} AND REQ_SEQ = #{SEQ})		   
+	</select>
+	
+</mapper>
