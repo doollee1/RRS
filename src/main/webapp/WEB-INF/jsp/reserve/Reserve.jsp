@@ -233,7 +233,7 @@
 		var stdt = $("#RESERVE_STDT").val().replaceAll(/\./gi, '')
 		var eddt = $("#RESERVE_EDDT").val().replaceAll(/\./gi, '')
 		if(stdt > eddt){
-			alert("시작일자가 종료일자보다 큽니다. 날짜를 확인해주세요.");
+			alert("시작 일자가 종료 일자보다 큽니다. 날짜를 확인해 주세요.");
 			return false;
 		}
 		return true;

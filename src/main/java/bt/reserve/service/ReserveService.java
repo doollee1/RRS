@@ -1073,7 +1073,7 @@ public class ReserveService {
 	 * 기준년도 체크로직
 	 * @param param
 	 * @return
-	 * @throws Exception
+	 * @throws ExceptionselectGetCommonCode
 	 */
 	public boolean checkBasYy(BMap param) throws Exception{
 		boolean result = false;

@@ -33,7 +33,29 @@
 				</td>
 			</tr>
 		</table>
-		<h4>※예약확정은 입금완료로 처리됩니다.</h4>
+		<b id="advice_pop" style="opacity:75%;">&nbsp;
+			※   [<b style="color: red; font-weight: bold;">예약요청</b>]에서 상태변경 시 : 예약가능,예약취소
+			  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			  [<b style="color: red; font-weight: bold;">예약가능</b>]에서 상태변경 시 : 예약신청,예약취소
+			  &nbsp;&nbsp;&nbsp;&nbsp;
+			  [<b style="color: red; font-weight: bold;">예약신청</b>]에서 상태변경 시 : 예약입금대기,예약취소<br/>
+			  &nbsp;&nbsp;&nbsp;&nbsp;
+			  [<b style="color: red; font-weight: bold;">예약입금대기</b>]에서 상태변경 시 : 예약신청 ,예약확정,예약취소
+			  &nbsp;&nbsp;&nbsp;&nbsp;
+			  [<b style="color: red; font-weight: bold;">예약확정</b>]에서 상태변경 시 : 예약입금대기, 환불요청, 환불완료, 입금완료, 예약취소<br/>
+			  &nbsp;&nbsp;&nbsp;&nbsp;
+			  [<b style="color: red; font-weight: bold;">환불요청</b>]에서 상태변경 시 : 예약입금대기, 예약확정, 환불완료
+			  &nbsp;&nbsp;&nbsp;
+			  [<b style="color: red; font-weight: bold;">환불완료</b>]에서 상태변경 시 : 환불요청
+			  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			  [<b style="color: red; font-weight: bold;">예약취소</b>]에서 상태변경 시 : 예약입금대기, 예약확정<br/>
+			  &nbsp;&nbsp;&nbsp;&nbsp;
+			  [<b style="color: red; font-weight: bold;">입금완료</b>]에서 상태변경 시 : 환불요청, 환불완료, 예약취소<br/>
+			  &nbsp;&nbsp;&nbsp;&nbsp;
+		</b>
+			
 	</div>
 </div>
 
@@ -82,27 +104,46 @@ $(function() {
 		var param = { };
 		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
-				alert("ajax 통신 error!");
+				alert("조회에 실패했습니다. 시스템 관리자에게 문의해 주세요.");
 			}else{
-				// 01 예약요청-일반, 02 예약요청-멤버, 03 예약가능, 04 예약신청, 05 예약입금대기
+				// 01 예약요청(일반), 02 예약요청(멤버), 03 예약가능(일반), 04 예약신청(일반), 05 예약입금대기
 				// 06 예약확정       , 07 환불요청       , 08 환불완료, 09 예약취소, 10 입금완료
 				var vhtml;
 				vhtml += '<option value="" >--<s:message code="system.select"/>--</option>'
 				$.each(data.result , function ( i , v){
-					if(prc_sts == "01"){ // 예약요청-일반 >> 예약가능, 예약취소
+					if(prc_sts == "01"){ // 예약요청(일반) >> 예약가능, 예약취소
 						if(v.CODE == "03" || v.CODE == "09"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
-					} else if(prc_sts =="03"){ // 예약가능 >> 예약신청, 예약취소
-						if(v.CODE == "04" || v.CODE == "09"){
+					} else if(prc_sts =="02"){ // 예약요청(멤버) >> 예약입금대기, 예약취소
+						if(v.CODE == "05" || v.CODE == "09"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
-					} else if(prc_sts =="04"){ // 예약신청 >> 예약입금대기, 예약취소
+					} else if(prc_sts =="03"){ // 예약가능(일반) >> 예약요청(일반), 예약신청, 예약취소
+						if(v.CODE == "01" || v.CODE == "04" || v.CODE == "09"){
+							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
+						}
+					} else if(prc_sts =="04"){ // 예약신청(일반) >> 예약입금대기, 예약가능(일반/에이전트 일때), 예약취소
+						if(mem_gbn == "02" || mem_gbn == "04"){
+							if(v.CODE == "03"){
+								vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
+							}
+						} 
 						if(v.CODE == "05" || v.CODE == "09"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
 					} else if(prc_sts =="05"){ // 예약입금대기 >> 예약신청, 예약확정, 예약취소
-						if(v.CODE == "04" || v.CODE == "06" || v.CODE == "09"){
+						if(mem_gbn == "01"){
+							if(v.CODE == "02"){
+								vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
+							}
+						} else {
+							if(v.CODE == "04"){
+								vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
+							}
+						}
+					
+						if(v.CODE == "06" || v.CODE == "09"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
 					} else if(prc_sts =="06"){ // 예약확정 >> 예약입금대기, 환불요청, 환불완료, 예약취소, 입금완료

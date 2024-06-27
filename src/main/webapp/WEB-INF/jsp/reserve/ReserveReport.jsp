@@ -329,7 +329,7 @@
 	function fn_detail(rowid){
 		var selRowData = $("#reserveReportGrid").jqGrid("getRowData",rowid);
 		
-	    var url = "/reserve/reserveRegi.do";
+	    var url = "/reserve/reserveRegi3.do";
 	    var pid = "p_reserveListRegi"; //팝업 페이지의 취상위 div ID
 	    var param = {};                       
 		param.SEQ    = selRowData.SEQ;    

@@ -217,6 +217,7 @@ $(function() {
 		//예약상태가 입금완료(10) 일 경우 입금등록버튼 비활성화
 		if(!fn_empty(recevicedData.PRC_STS)){
 			if(recevicedData.PRC_STS == "08" || recevicedData.PRC_STS == "09" || recevicedData.PRC_STS == "10"){
+				$(".ui-dialog-buttonset > button#save").attr("disabled", true);
 				$("#btn_payreg").attr("disabled",true);
 			}	
 		}

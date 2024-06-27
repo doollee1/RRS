@@ -704,57 +704,64 @@ $(function() {
 		req_dt = receivedData.REQ_DT; // 신청 일 (키값)
 		seq    = receivedData.SEQ;    // 신청 순번 (키값)
         
+		//예약 현황의 상세보기로 넘어왔다면 필요없는 부분 disabled 하기
+		// 유저ID, 회원구분 
+		$("#USER_ID , #MEM_GBN").attr("disabled", true); 
+		//예약자 한글명 / 예약일자 / 회원구분 / 에이전시
+		$("#REQ_HAN_NM, #REQ_DT, #MEM_GBN, #AGN_GB, #AGN_CD").attr("disabled",true);
+		//ID / 예약자영문명 / 예약자 전화
+		$("#REQ_DT, #REQ_ENG_NM, #REQ_TEL_NO").attr("disabled",true);
+		//체크인 일자 / 체크아웃 일자
+		$("#PICK_IN, #PICK_OUT").attr("disabled",true);
+		//도착항공기편 / 출발항공기편
+		$("#FLIGHT_IN, #FLIGHT_IN_HH").attr("disabled",true);
+		$("#FLIGHT_OUT, #FLIGHT_OUT_HH").attr("disabled",true);
+		//early체크인 / late체크아웃
+		$("#LATE_CHECK_IN, #LATE_CHECK_OUT").attr("disabled",true);
+		//픽업차량 도착 / 픽업차량 출발
+		$("#PICK_IN, #PICK_OUT").attr("disabled",true);
+		//인원내역 / 총인원
+		$("#M_PERSON, #G_PERSON").attr("disabled", true);
+		$("#N_PERSON, #K_PERSON, #I_PERSON").attr("disabled", true);
+		$("#TOT_PERSON").attr("disabled", true);
+		//기본상품 / 추가패키지상품 / 미팅샌딩
+		$("#HDNG_GBN, #ADD_HDNG_GBN, #PICK_GBN, #PER_NUM_CNT").attr("disabled",true);
+		//객실타입 / 싱글룸추가 / 프리미엄추가
+		$("#ROOM_TYPE, #TWIN_KING_CNT, #ROOM_ADD_IL, #ROOM_ADD_CNT, #PRIM_ADD_IL, #PRIM_ADD_CNT").attr("disabled",true);
+		//주말라운딩변경 / 인보이스 발행일자
+		$("#RND_CHG_YN1, #RND_CHG_YN2, #INV_REG_DT").attr("disabled",true);
+		//예약기한 / 예약금입금일자 / 요청예약금액
+		$("#EXP_DT, #DEP_IN_DT, #DEP_AMT").attr("disabled",true);
+		//입금예약금 / 입금예약상태
+		$("#PAY_DEP_AMT, #PRC_STS_NM").attr("disabled",true);
+		//추가사항
+		$("#REMARK").attr("disabled",true);
+		//동반자정보 / 자동생성 / 행추가 / 행삭제
+		$("#btn_com_add, #btn_List_addRow, #btn_List_delRow").attr("disabled",true);
+		//동반자정보 그리드
+		//저장 / 삭제
+		$("#save, #delete").attr("disabled",true);
+
 		$('#REQ_DT').val($.datepicker.formatDate('yy.mm.dd', new Date())).attr("readonly" , true); // 예약일자 오늘 값으로 셋팅 (변경불가)
 		$("#TWIN_CNT").val("0");
 		$("#KING_CNT").val("0");
 		$("#btn_adduser").hide();
 		
-		if(fn_empty(seq || req_dt)){ //신규
-		    $(".ui-dialog-title").text('<s:message code='reservation.registration'/>');
-		    $("#CHK_IN_DT"      ).val(Util.converter.dateFormat1(today));
-		    $("#CHK_OUT_DT"     ).val(Util.converter.dateFormat1(today));
-		    $(".image"          ).hide();
-		    $(".status"         ).hide();
-		    vflag = "new";
-			// 예약금일금일자, 요청예약금, 예약기한, 인보이스날짜 (변경불가)
-		    $("#DEP_IN_DT , #DEP_AMT , #EXP_DT , #INV_REG_DT").attr("disabled", true);
-		    $("#HDNG_GBN"  ).attr("disabled",true);
-		    $("#ADD_HDNG_GBN"  ).attr("disabled",true);
-			$("#insertPickGbn").attr("disabled", true);	// [등록]
-			$("#btn_create").attr("disabled", true);	// [생성]
-			$("#btn_pay").attr("disabled", true);		// [입금관리]
-			$("#changeStatus").attr("disabled", true);	// [상태변경]
-			$("#advice1").show();
-			$("#advice2").hide();
-			$("#btn_adduser").show();
-			$("#delete").hide();
-			$("#REQ_HAN_NM").attr("disabled",false);
-		}else{ // 상세
-			//예약 현황의 상세보기로 넘어왔다면 필요없는 부분 disabled 하기
-			if(receivedData.DETAIL == 'Y'){
-				//아이디찾기 / 미팅샌딩등록 / 인보이스생성 / 상태변경 / 동반자 자동생성 / 행추가,행삭제 버튼 / 저장 버튼  :: 컨트롤 불가
-				$("#btn_search, #insertPickGbn, #btn_create, #changeStatus, #btn_com_add, #btn_List_addRow, #btn_List_delRow, #save ").attr("disabled", true);
-			}
-		    $("#USER_ID , #MEM_GBN").attr("disabled", true); // 유저ID, 회원구분  수정불가
-		    $(".ui-dialog-title").text('<s:message code='reservation.detail'/>'); // [예약상세] 타이틀 삽입
-		    $("#btn_search").hide(); // 아이디 찾기 버튼 숨김
-		    $("#advice1").hide();
-			$("#advice2").show();
-			$("#btn_adduser").hide();
-			$("#REQ_HAN_NM").attr("disabled",true);
-			$("#M_PERSON").attr("disabled", true);
-			$("#G_PERSON").attr("disabled", true);
-			$("#N_PERSON").attr("disabled", true);
-			$("#K_PERSON").attr("disabled", true);
-			$("#I_PERSON").attr("disabled", true);
-			
-		    initSelect(); /* *********** 예약 상세내역 조회 *********** */
-		    vflag = "detail";
-		}
-		
+		$("#btn_search").attr("disabled",true);
+		$("#changeStatus").attr("disabled",true);
+	    $(".ui-dialog-title").text('<s:message code='reservation.detail'/>'); // [예약상세] 타이틀 삽입
+	    $("#btn_search").hide(); // 아이디 찾기 버튼 숨김
+	    $("#advice1").hide();
+		$("#advice2").hide();
+		$("#btn_adduser").hide();
+
+	    initSelect(); /* *********** 예약 상세내역 조회 *********** */
+	    vflag = "detail";
+		    
 		$('#DEP_IN_DT').datepicker({
 		    dateFormat : 'yy.mm.dd',
-		    showOn : 'both'
+		    showOn : 'both',
+		    disabled : 'disabled'
 		}).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
 		    function(e) {
 		});
@@ -771,18 +778,16 @@ $(function() {
 		    dateFormat : 'yy.mm.dd',
 		    showOn  : 'both',
 		    minDate : 0,
-		    maxDate : '+1y'
+		    maxDate : '+1y',
+		    disabled : 'disabled'
 		}).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
 		    function(e) {
 		});
 		
 		createGrid();
   		cSearch();
+  		
 		$("#reserveGrid_pager_left").hide();
-		$("#TOT_PERSON"     ).attr("disabled",true);
-		$("#AGN_GB").val("");
-		$("#AGN_CD").val("");
-		$("#ADD_HDNG_GBN").val("");
 		
 		if($("#MEM_GBN").val() == '01'){
 			if($("#G_PERSON").val() > 0){
@@ -900,27 +905,6 @@ $(function() {
      		}
      	}
 
-     	// 01 멤버, 02 일반, 04 에이젼시
-     	if(data.MEM_GBN == '01'){ 
-			$("#AGN_GB").val("");
-			$("#AGN_CD").val("");
-			$("#HDNG_GBN").attr("disabled",true);
-			$("#AGN_GB").attr("disabled",true);
-			$("#AGN_CD").attr("disabled",true);
-		}else if(data.MEM_GBN == '02'){ 
-			$("#AGN_GB").val("");
-			$("#AGN_CD").val("");
-			$("#AGN_GB").attr("disabled",true);
-			$("#AGN_CD").attr("disabled",true);
-			$("#M_PERSON").attr("disabled",true);
-			REQ_HAN_NM
-		}else if(data.MEM_GBN == '04'){ 
-			$("#M_PERSON").attr("disabled",true);
-			$("#HDNG_GBN").attr("disabled",false);
-			$("#ADD_HDNG_GBN").attr("disabled",true);
-			$("#AGN_GB").attr("disabled",false);
-			$("#AGN_CD").attr("disabled",false);
-		}
      	
      	/* 상품정보 재셋팅 */
      	if(data.MEM_GBN == '01'){
@@ -982,15 +966,6 @@ $(function() {
 			$("#HDNG_GBN").val(setHdngGbn);
 			$("#ADD_HDNG_GBN").attr("disabled",true);
 		}
-     	
-     	if($("#PRC_STS_NM").val().trim() == "입금완료" || $("#PRC_STS_NM").val().trim() == "환불완료" || $("#PRC_STS_NM").val().trim() == "예약취소"){
-     		$("#ADD_HDNG_GBN").attr("disabled",true);
-     		$("#btn_List_addRow").attr("disabled",true);
-     		$("#btn_List_delRow").attr("disabled",true);	
-     	}else{
-     		$("#btn_List_addRow").attr("disabled",false);
-     		$("#btn_List_delRow").attr("disabled",false);
-     	}
 	}
 
 	/*******************************************************
@@ -2236,17 +2211,17 @@ $(function() {
 						, { name: 'SEQ'          , width : 24 , align: 'center', hidden:true, editoptions:{readonly: true}}
 						, { name: 'DSEQ'         , width : 24 , align: 'center', editable:false, editoptions:{readonly: true}}
 						, { name: 'COM_GBN'      , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${COM_GBN}'}}
-						, { name: 'NUM_GBN'      , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${NUM_GBN}'}}
-						, { name: 'COM_HAN_NM'   , width : 120, align: 'center', editable:true, editoptions:{maxlength:100}}
-						, { name: 'COM_ENG_NM'   , width : 120, align: 'center', editable:true, editoptions:{maxlength:100}}
-						, { name: 'COM_TEL_NO'   , width : 120, align: 'center', editable:true, editoptions:{maxlength:100}}
-						, { name: 'CHK_IN_DT'    , width : 84 , align: 'center', editable:true, editoptions:{maxlength:100}}
-						, { name: 'CHK_OUT_DT'   , width : 84 , align: 'center', editable:true, editoptions:{maxlength:100}}
-						, { name: 'FLIGHT_IN'    , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN}'}}
-						, { name: 'FLIGHT_IN_HH' , width : 74 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_HH}'}}
-						, { name: 'FLIGHT_OUT'   , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT}'}}
-						, { name: 'FLIGHT_OUT_HH', width : 74 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
-						, { name: 'ADD_FILE_SEQ' , width : 84 , align: 'center', editable:true, edittype:"button",
+						, { name: 'NUM_GBN'      , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${NUM_GBN}'}}
+						, { name: 'COM_HAN_NM'   , width : 120, align: 'center', editable:false, editoptions:{maxlength:100}}
+						, { name: 'COM_ENG_NM'   , width : 120, align: 'center', editable:false, editoptions:{maxlength:100}}
+						, { name: 'COM_TEL_NO'   , width : 120, align: 'center', editable:false, editoptions:{maxlength:100}}
+						, { name: 'CHK_IN_DT'    , width : 84 , align: 'center', editable:false, editoptions:{maxlength:100}}
+						, { name: 'CHK_OUT_DT'   , width : 84 , align: 'center', editable:false, editoptions:{maxlength:100}}
+						, { name: 'FLIGHT_IN'    , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN}'}}
+						, { name: 'FLIGHT_IN_HH' , width : 74 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_HH}'}}
+						, { name: 'FLIGHT_OUT'   , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT}'}}
+						, { name: 'FLIGHT_OUT_HH', width : 74 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
+						, { name: 'ADD_FILE_SEQ' , width : 84 , align: 'center', editable:false, edittype:"button",
 									editoptions:{
 										dataEvents:[{
 											type:"click",
@@ -2259,12 +2234,12 @@ $(function() {
 										}]
 									}
 						}
-						, { name: 'HDNG_GBN'      , width : 120, align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn_g}'}}
-						, { name: 'LATE_CHECK_IN' , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_IN}'}}
-						, { name: 'LATE_CHECK_OUT', width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_OUT}'}}
-						, { name: 'ROOM_TYPE'     , width : 120, align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${ROOM_TYPE}'}}
-						, { name: 'CONFIRM_NO'    , width : 120, align: 'center', editable:true, editoptions:{maxlength:100}}
-						, { name: 'STATUS_V'      , width : 80 , align: 'center', editable:true, editoptions:{readonly: true}}
+						, { name: 'HDNG_GBN'      , width : 120, align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn_g}'}}
+						, { name: 'LATE_CHECK_IN' , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_IN}'}}
+						, { name: 'LATE_CHECK_OUT', width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_OUT}'}}
+						, { name: 'ROOM_TYPE'     , width : 120, align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${ROOM_TYPE}'}}
+						, { name: 'CONFIRM_NO'    , width : 120, align: 'center', editable:false, editoptions:{maxlength:100}}
+						, { name: 'STATUS_V'      , width : 80 , align: 'center', editable:false, editoptions:{readonly: true}}
 					];
 		
 		var gSetting = {

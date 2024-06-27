@@ -1274,7 +1274,7 @@
 											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
 
 
-			                <if test="'02'.equals(MEM_GBN)">
+			                <if test="'02'.equals(MEM_GBN) or '04'.equals(MEM_GBN)">
 			                <![CDATA[
  			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
  							                     THEN 'DU10'
@@ -1302,7 +1302,7 @@
 											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
 
 
-			                <if test="'02'.equals(MEM_GBN)">
+			                <if test="'02'.equals(MEM_GBN) or '04'.equals(MEM_GBN)">
 			                <![CDATA[
  			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
  							                     THEN 'DU10'
@@ -1434,7 +1434,7 @@
 											    WHERE HDNG_GBN = #{HDNG_GBN}
 											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
 
-			                <if test="'02'.equals(MEM_GBN)">
+			                <if test="'02'.equals(MEM_GBN) or '04'.equals(MEM_GBN)">
 			                <![CDATA[
  			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
  							                     THEN 'DU10'
@@ -1461,7 +1461,7 @@
 											    WHERE HDNG_GBN = #{HDNG_GBN}
 											    AND BAS_YY = LEFT(#{CHK_IN_DT},4)
 
-			                <if test="'02'.equals(MEM_GBN)">
+			                <if test="'02'.equals(MEM_GBN) or '04'.equals(MEM_GBN)">
 			                <![CDATA[
  			                AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
  							                     THEN 'DU10'

@@ -270,7 +270,8 @@ $(function() {
 				                 var val1 = element.value;
 				                 var num = new Number(val1);
 				                 if(isNaN(num)){
-				                  alert("Please enter a valid number");
+				                  //alert("Please enter a valid number");
+				                  alert("숫자를 입력해 주세요.");
 				                  element.value = ''; }
 				                })
 				               }, maxlength:5
@@ -285,7 +286,7 @@ $(function() {
 				                 var val1 = element.value;
 				                 var num = new Number(val1);
 				                 if(isNaN(num)){
-				                  alert("Please enter a valid number");
+				                  alert("숫자를 입력해 주세요.");
 				                  element.value = ''; }
 				                })
 				               }, maxlength:15 
@@ -297,7 +298,7 @@ $(function() {
 				                 var val1 = element.value;
 				                 var num = new Number(val1);
 				                 if(isNaN(num)){
-				                  alert("Please enter a valid number");
+				                  alert("숫자를 입력해 주세요.");
 				                  element.value = ''; }
 				                })
 				               }, maxlength:5
@@ -310,7 +311,7 @@ $(function() {
 				                 var val1 = element.value;
 				                 var num = new Number(val1);
 				                 if(isNaN(num)){
-				                  alert("Please enter a valid number");
+				                  alert("숫자를 입력해 주세요.");
 				                  element.value = ''; }
 				                })
 				               }, maxlength:5
@@ -446,7 +447,7 @@ $(function() {
 
 		//pdf파일 업로드 확인
 		if(!fileUid){
-			alert("pdf 파일업로드 후 저장버튼을 클릭해주세요.");
+			alert("pdf 파일 업로드 후 저장 버튼을 클릭해 주세요.");
 			return false;
 		}
 		
@@ -658,7 +659,7 @@ $(function() {
 		if(confirm("<s:message code='confirm.save'/>")){
 			fn_ajax(url, false, param, function(data, xhr){
 				if(data.dup == 'Y'){
-					alert("인보이스 저장 오류, 시스템관리자에게 문의주세요.");   
+					alert("인보이스 저장 오류입니다. 시스템 관리자에게 문의해 주세요.");   
 				}else{
 					alert("<s:message code='info.save'/>");  //저장하였습니다.
 					//예약기간, 예약금, 전송, 미리보기 활성화
@@ -727,7 +728,7 @@ function fileDelete2(url, fileUid, fileName){
 		
 		//PDF파일 삭제 후 invocie 팝업창 닫기
 		fn_ajax(url, false, param, function(data, xhr){
-			alert("삭제하였습니다.");
+			alert("삭제에 성공했습니다.");
 			//alert("Deleted.");
 			popupClose($("#p_invoicePopup").attr('id'));
 		});

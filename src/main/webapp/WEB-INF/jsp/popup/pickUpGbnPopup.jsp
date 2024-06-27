@@ -352,7 +352,7 @@ $(function() {
 		            };
 		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
-				alert("상세조회 오류 입니다. 시스템 관리자에게 문의해주세요.");
+				alert("상세 조회 오류입니다. 시스템 관리자에게 문의해 주세요.");
 			}else{
 				var vhtml;
 				vhtml = '<option value="" data = "01" dataDetail = "01" com_amt = 0>--<s:message code="system.select"/>--</option>'
@@ -392,7 +392,7 @@ $(function() {
 	                };
      	fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
-				alert("상세조회 오류 입니다. 시스템 관리자에게 문의해주세요.");
+				alert("상세 조회 오류입니다. 시스템 관리자에게 문의해 주세요.");
 			}else{
 				if(!fn_empty(data.result)){
 					$("#PRD_CNT").val(data.result.length).trigger("change");
@@ -509,7 +509,7 @@ $(function() {
 		if(!fn_empty(prd_cnt)){
 			for (var i = 1; i < parseInt(prd_cnt) + 1 ; i++) {
 				if($("#PER_NUM"+i).val() == "0" || fn_empty($("#PER_NUM"+i).val())){
-					alert("인원수를 입력해주세요.");
+					alert("인원수를 입력해 주세요.");
 			        return false;
 			    }
 			    
@@ -542,20 +542,20 @@ $(function() {
 		    	
 		    	if(prd_cnt == 2){
 	 		    	if(data[0].PROD_SEQ == data[1].PROD_SEQ){
-						alert("같은상품은 선택할 수 없습니다.");
+						alert("같은 상품은 선택할 수 없습니다.");
 						return false;
 	 		    	}
 				}else if(prd_cnt == 3){
 	 		    	if(data[0].PROD_SEQ == data[1].PROD_SEQ || data[0].PROD_SEQ == data[2].PROD_SEQ || data[1].PROD_SEQ == data[2].PROD_SEQ){
-						alert("같은상품은 선택할 수 없습니다.");
+						alert("같은 상품은 선택할 수 없습니다.");
 						return false;
 	 		    	}
 		    	}else if(prd_cnt == 4){
 		    		if(data[0].PROD_SEQ == data[1].PROD_SEQ || data[0].PROD_SEQ == data[2].PROD_SEQ || data[0].PROD_SEQ == data[3].PROD_SEQ){
-						alert("같은상품은 선택할 수 없습니다.");
+						alert("같은 상품은 선택할 수 없습니다.");
 						return false;
 	 		    	}else if(data[1].PROD_SEQ == data[2].PROD_SEQ || data[1].PROD_SEQ == data[3].PROD_SEQ || data[2].PROD_SEQ == data[3].PROD_SEQ){
-						alert("같은상품은 선택할 수 없습니다.");
+						alert("같은 상품은 선택할 수 없습니다.");
 						return false;
 	 		    	}
 		    	}
@@ -564,8 +564,6 @@ $(function() {
 		}
 		return true;
 	}		    
-	
 });
-
 
 </script>

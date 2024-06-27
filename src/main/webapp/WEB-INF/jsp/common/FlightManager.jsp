@@ -136,7 +136,7 @@
 	  	];
 		var gSetting = {
 		        pgflg          : true,
-		        exportflg      : true, //엑셀, pdf 출력 버튼 노출여부
+		        exportflg      : false, //엑셀, pdf 출력 버튼 노출여부
 		        colsetting     : false,
 				searchInit     : false,
 				resizeing      : true,
