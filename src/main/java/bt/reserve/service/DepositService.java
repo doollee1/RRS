@@ -85,15 +85,15 @@ public class DepositService {
 		BMap depositHdrInfo = this.selectDepositHdrInfo(param);
 		long depAmt = depositHdrInfo.get("DEP_AMT") == null? 0 : Long.parseLong(depositHdrInfo.getString("DEP_AMT"));		
 		long dctAmt = param.get("DCT_AMT") == null? 0 : Long.parseLong(param.getString("DCT_AMT"));				
+		String payDt   =  param.get("PAY_DT") == null? "" : param.getString("PAY_DT");
 		String payType =  param.get("PAY_TYPE") == null? "" : param.getString("PAY_TYPE"); 
-		
-		
-		logger.info("===== 예약금액 : "+depAmt);
-		logger.info("===== 할인금액 : "+dctAmt);
-		logger.info("===== 입금유형 : "+ ("01".equals(payType)?"입금" : ("02".equals(payType)?"환급" : "예약")));		
-		
-		
 		long payAmt = (param.get("PAY_AMT") == null? 0 : Long.parseLong(param. getString("PAY_AMT")));
+		
+		
+		logger.info("===== 입금일자 : "+payDt);
+		logger.info("===== 입금유형 : "+ ("01".equals(payType)?"입금" : ("02".equals(payType)?"환급" : "예약")));	
+		logger.info("===== 예약금액 : "+depAmt);
+		logger.info("===== 할인금액 : "+dctAmt);									
 		logger.info("===== 입금금액 : "+payAmt);
 		
 		
@@ -200,7 +200,6 @@ public class DepositService {
 		
 		//입금예약금 조회
 		String payAccutAmt  =  depositDao.selectPayAccuAmt(param);	
-		String depInDt = new SimpleDateFormat("yyyyMMdd").format(new Date());  //입금예약일자
 		
 		//예약상태의 누적금액이 예약금액보다 크거나 같을 경우 
 		if(depAmt <= Long.parseLong(payAccutAmt)) {
@@ -224,7 +223,7 @@ public class DepositService {
 		
 		//비용메인 입금예약금, 예약금입금일자 업데이트
 		param.put("PAY_DEP_AMT", Long.parseLong(payAccutAmt));  //입금예약금
-		param.put("DEP_IN_DT", depInDt);  //입금예약일자
+		param.put("DEP_IN_DT", payDt);  //예약금입금일자
 		int updateRslt = depositDao.updatePayDepInfo(param);			
 		logger.info("==== 입금예약금, 예약금일금일자 업데이트 결과 : "+updateRslt);
 		
@@ -273,18 +272,13 @@ public class DepositService {
 		logger.info("======= 팝업반환결과 서비스 ==========");
 		
 		BMap depositHdrInfo = this.selectDepositHdrInfo(param);
-		long depAmt = depositHdrInfo.get("DEP_AMT") == null? 0 : Long.parseLong(depositHdrInfo.getString("DEP_AMT"));
-		logger.info("===== 예약금액 : "+depAmt);
-		
-		String payAccutAmt  =  depositDao.selectPayAccuAmt(param);	
-		String depInDt = new SimpleDateFormat("yyyyMMdd").format(new Date());  //입금예약일자
+		String depInDt = depositHdrInfo.get("DEP_IN_DT") == null? "" : depositHdrInfo.getString("DEP_IN_DT");		
+		String payAccutAmt  =  depositDao.selectPayAccuAmt(param);					
+		String prcStsNm = depositDao.selectPrcStsNm(param); //예약상태명 조회
 		
 		
-		//예약상태명 조회
-		String prcStsNm = depositDao.selectPrcStsNm(param);
-		
-		
-		logger.info("==== 입금예약금액 : "+payAccutAmt);
+		logger.info("==== 예약금입금일자 : "+depInDt);
+		logger.info("==== 입금예약금액 : "+payAccutAmt);		
 		logger.info("==== 예약상태명 : "+prcStsNm);
 		
 		

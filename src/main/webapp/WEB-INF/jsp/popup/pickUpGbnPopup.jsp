@@ -3,7 +3,7 @@
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
 <%
 /**
- * @Name : ReserveRegiPopup
+ * @Name : pickUpGgnPopup
  */
 %>
 <style>
@@ -257,7 +257,6 @@ $(function() {
 		$("#USE_AMT2").val(fn_comma($('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').attr("com_amt")));
 		$("#USE_AMT3").val(fn_comma($('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').attr("com_amt")));
 		$("#USE_AMT4").val(fn_comma($('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').attr("com_amt")));
-		
 	});
 	
 	$("#PROD_SEQ1").on("change" , function(){
@@ -282,6 +281,7 @@ $(function() {
 		}else{
 			vfee2 = 0;
 		}
+		console.log("PROD_SEQ2");
 		$("#USE_AMT2").val(vfee2);
 	});
 
@@ -329,10 +329,6 @@ $(function() {
 		$("#PROD_SEQ3").attr("disabled" , temp);
 		$("#PROD_SEQ4").attr("disabled" , temp);
 		
-		$("#PROD_SEQ2").attr("readonly" , temp);
-		$("#PROD_SEQ3").attr("readonly" , temp);
-		$("#PROD_SEQ4").attr("readonly" , temp);
-		
 		$("#PER_NUM1" ).attr("readonly" , temp);
 		$("#CAR_NUM1" ).attr("readonly" , temp);
 		$("#PER_NUM2" ).attr("readonly" , temp);
@@ -356,7 +352,7 @@ $(function() {
 		            };
 		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
-				alert("ajax 통신 error!");
+				alert("상세조회 오류 입니다. 시스템 관리자에게 문의해주세요.");
 			}else{
 				var vhtml;
 				vhtml = '<option value="" data = "01" dataDetail = "01" com_amt = 0>--<s:message code="system.select"/>--</option>'
@@ -381,9 +377,10 @@ $(function() {
 		gv_tot_person = recevicedData.TOT_PERSON;
 		gv_pick_gbn = recevicedData.PICK_GBN;
 		
+		selec_init("01");
 		
 		if(!fn_empty(recevicedData.PRC_STS)){
-			if(recevicedData.PRC_STS == "05" || recevicedData.PRC_STS == "06" ||recevicedData.PRC_STS == "07"){
+			if(recevicedData.PRC_STS == "08" || recevicedData.PRC_STS == "09" ||recevicedData.PRC_STS == "10"){
 				$(".ui-dialog-buttonset > button#save").attr("disabled", true);
 			}	
 		}
@@ -395,7 +392,7 @@ $(function() {
 	                };
      	fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
-				alert("ajax 통신 error!");
+				alert("상세조회 오류 입니다. 시스템 관리자에게 문의해주세요.");
 			}else{
 				if(!fn_empty(data.result)){
 					$("#PRD_CNT").val(data.result.length).trigger("change");
@@ -444,9 +441,12 @@ $(function() {
 	
 	function selec_init(data){ // 초기화
 		$('#PROD_SEQ1 option[value='+ data +']:eq(0)').prop("checked", true);
+	
 		$("#PER_NUM1" ).val("0");
+		$("#CAR_NUM1" ).val("0");
 		$("#ADD_AMT1" ).val("0");
 		$("#USE_AMT1" ).val("0");
+		
 		$("#PER_NUM2" ).val("0");
 		$("#CAR_NUM2" ).val("0");
 		$("#ADD_AMT2" ).val("0");
@@ -461,6 +461,7 @@ $(function() {
 		$("#CAR_NUM4" ).val("0");
 		$("#ADD_AMT4" ).val("0");
 		$("#USE_AMT4" ).val("0");
+		
 		$(".doubleCnt").hide();
 		if(data != "01") $("#PRD_CNT").val("1");
 		else             $("#PRD_CNT").val("");

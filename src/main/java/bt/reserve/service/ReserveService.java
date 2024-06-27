@@ -235,7 +235,6 @@ public class ReserveService {
 	 * @throws Exception
 	 */
 	public BMap setUserInfo(BMap param) throws Exception {
-		
 		return reserveDao.selectUserInfo(param);
 	}
 	
@@ -1436,6 +1435,16 @@ public class ReserveService {
 	 */
 	public List<Map<String, Object>> noRoomChk(Map<String, Object> param) throws Exception {
 		return reserveDao.noRoomChk(param);
+	}
+	
+	/**
+	 * 예약상세 삭제
+	 * @param param
+	 * @return 
+	 * @throws Exception
+	 */
+	public void deleteReserveInfo(Map<String, Object> param) throws Exception {
+		reserveDao.deleteReserveInfo(param);
 	}
 	
 }

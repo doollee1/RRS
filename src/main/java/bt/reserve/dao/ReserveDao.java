@@ -776,9 +776,25 @@ public class ReserveDao extends DBAbstractMapper {
 	public void updateReservePerson(BMap param) throws Exception {
 		update("ReserveMapper.updateReservePerson",param);
 	}
-
+	
+	/**
+	 * 예약등록시 객실풀 확인
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
 	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> noRoomChk(Map<String, Object> param) throws Exception {
 		return list("ReserveMapper.noRoomChk",param);
+	}
+	
+	/**
+	 * 예약 상세 데이터 삭제
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public void deleteReserveInfo(Map<String, Object> param) throws Exception {
+		delete("ReserveMapper.deleteReserveInfo", param);
 	}
 }

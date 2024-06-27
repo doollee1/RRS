@@ -154,11 +154,8 @@ public class ReserveRestController {
 		BMap param = new BMap();
 		BRespData respData = new BRespData();
 		
-		param.put("S_USER_ID" , (String) reqData.get("S_USER_ID"));
+		param.put("S_HAN_NAME" , (String) reqData.get("S_HAN_NAME"));
 		respData.put("result", reserveService.setUserInfo(param));
-
-		logger.info("======= respData ==========" + respData);
-		
 		return respData;
 	}
 	
@@ -353,7 +350,7 @@ public class ReserveRestController {
 	public BRespData selectReserveStatus(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
 		BMap paramData = new BMap();
 		paramData.put("HEAD_CD", 500020);
-		paramData.put("CODE"   , Integer.parseInt(String.valueOf(reqData.get("CODE"))));
+		//paramData.put("CODE"   , Integer.parseInt(String.valueOf(reqData.get("CODE"))));
 		
 		List<BMap> resultStateList = reserveService.selectGetCommonCode(paramData);
 
@@ -734,13 +731,20 @@ public class ReserveRestController {
 		return respData;
 	}
 	
+	/**
+	 * 예약등록시 객실풀 확인
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/noRoomChk.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BMap noRoomChk(@RequestParam Map<String, Object> param, HttpServletRequest req) throws Exception {
 		BMap bMap = new BMap();
 		String roomChkMsg = "";
 		// packageCharge  parameter : chk_in_dt, chk_out_dt, room_type
-		System.out.println(reserveService.noRoomChk(param));
+		
 		List<Map<String, Object>> noRoomChk = reserveService.noRoomChk(param);
 		if(noRoomChk != null && (noRoomChk.size() > 0)) { 
 			StringBuilder sbRoomChkMsg = new StringBuilder();
@@ -756,4 +760,25 @@ public class ReserveRestController {
 		return bMap;
 	}
 	
+	/**
+	 * 예약 상세 데이터 삭제
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/deleteReserveInfo.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData deleteReserveInfo(@RequestParam Map<String, Object> param, Model model) throws Exception {
+	    BRespData respData = new BRespData();
+
+	    try {
+	        reserveService.deleteReserveInfo(param);
+	        respData.put("result", "SUCCESS");
+	    } catch (Exception e) {
+	        respData.put("result", "FAIL");
+	    }
+	    
+	    return respData;
+	}
 }

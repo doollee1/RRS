@@ -642,7 +642,7 @@
      		  ,EMAIL
  		 FROM tb_member as T1
 		WHERE 1 = 1
-  		  AND USER_ID LIKE CONCAT('%',#{S_USER_ID},'%')
+  		  AND HAN_NAME LIKE CONCAT('%',#{S_HAN_NAME},'%')
 	</select>
 
 	<update id="updateInvoiceDetailInfo" parameterType="BMap">
@@ -1243,7 +1243,14 @@
 		          , #{MEM_GBN         }
 		          , #{AGN_GB          }
 		          , #{AGN_CD          }
-		          , (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' ELSE NULL END )
+		   <choose>
+		       <when test="PRC_STS == '04'">
+		          , #{PRC_STS}
+		       </when>
+		       <otherwise>
+		          , (CASE WHEN #{MEM_GBN} = '01' THEN '04' WHEN #{MEM_GBN} = '02' THEN '01' ELSE NULL END )
+		       </otherwise>
+		   </choose>
 		          , #{CHK_IN_DT       }
 		          , #{CHK_OUT_DT      }
 		          , #{ROOM_TYPE       }
@@ -2467,17 +2474,40 @@ DELETE
 	
 	<select id="noRoomChk" parameterType="hashMap" resultType="hashMap">
 	SELECT REQ_NO_DT
-            , ROOM_TYPE
-            , CASE WHEN ROOM_TYPE = '00' THEN '전체(트윈,킹)'
-                  WHEN ROOM_TYPE = '01' THEN '트윈'
-                  WHEN ROOM_TYPE = '02' THEN '킹'
-               ELSE 'N'
-               END AS ROOM_TYPE_NAME
-          FROM tb_req_no_room
-       WHERE 1=1
-         AND ROOM_TYPE IN ('00',#{room_type})
-         AND REQ_NO_DT BETWEEN #{chk_in_dt} AND #{chk_out_dt}
-       GROUP BY REQ_NO_DT,ROOM_TYPE
-       ORDER BY REQ_NO_DT
+         , ROOM_TYPE
+         , CASE WHEN ROOM_TYPE = '00' THEN '전체(트윈,킹)'
+                WHEN ROOM_TYPE = '01' THEN '트윈'
+                WHEN ROOM_TYPE = '02' THEN '킹'
+                ELSE 'N'
+            END AS ROOM_TYPE_NAME
+      FROM TB_REQ_NO_ROOM
+     WHERE 1=1
+       AND ROOM_TYPE IN ('00',#{room_type})
+       AND REQ_NO_DT BETWEEN #{chk_in_dt} AND #{chk_out_dt}
+     GROUP BY REQ_NO_DT, ROOM_TYPE
+     ORDER BY REQ_NO_DT
 	</select>
+	
+	<delete id="deleteReserveInfo" parameterType="hashMap">
+	DELETE FROM T1, T2, T3, T4, T5, T6
+		  USING TB_REQ_BOOKING_M   AS T1
+	  LEFT JOIN TB_REQ_BOOKING_D   AS T2
+		     ON T2.REQ_DT  = T1.REQ_DT
+		    AND T2.SEQ     = T1.SEQ
+	  LEFT JOIN TB_REQ_INVOICE     AS T3
+		     ON T3.REQ_DT  = T1.REQ_DT
+		    AND T3.SEQ     = T1.SEQ
+	  LEFT JOIN TB_REQ_INVOICE_HIS AS T4
+		     ON T4.REQ_DT  = T1.REQ_DT
+		    AND T4.SEQ     = T1.SEQ
+	  LEFT JOIN TB_REQ_FEE         AS T5
+		     ON T5.REQ_DT  = T1.REQ_DT
+		    AND T5.REQ_SEQ = T1.SEQ
+	  LEFT JOIN TB_REQ_PICKUP      AS T6
+		     ON T6.REQ_DT  = T1.REQ_DT
+		    AND T6.REQ_SEQ = T1.SEQ
+		  WHERE 1 = 1
+		    AND T1.REQ_DT = #{REQ_DT}
+		    AND T1.SEQ    = #{SEQ}
+	</delete>
 </mapper>

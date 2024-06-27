@@ -110,10 +110,14 @@ $(function() {
 		if(prc_sts == "04" || prc_sts == "05"){  
 			//$("#POP_EXP_DT,#POP_DEP_AMT , #btn_send, #btn_preview").attr("disabled",true);
 			$("#btn_send, #btn_preview").attr("disabled",true);
-		//01(예약요청-일반), 02(예약요청-멤버), 03(예약가능), 06(예약확정), 07(환불요청), 08(환불완료), 09(예약취소), 96(예약완료-교민)
-		}else if(prc_sts == "01" || prc_sts == "02" || prc_sts == "03" || prc_sts == "06" || prc_sts == "07" || prc_sts == "08" || prc_sts == "09" || prc_sts == "96"){ 
+		//01(예약요청-일반), 02(예약요청-멤버), 03(예약가능), 06(예약확정), 07(환불요청)
+		}else if(prc_sts == "01" || prc_sts == "02" || prc_sts == "03" || prc_sts == "06" || prc_sts == "07"){ 
 			//$("#POP_EXP_DT,#POP_DEP_AMT , #btn_send, #btn_preview , #btn_del , #btn_addRow , #btn_delRow").attr("disabled",true);
-			$("#POP_EXP_DT, #POP_INV_REG_DT, #btn_send, #btn_preview , #btn_del ").attr("disabled",true);  //#POP_DEP_AMT 예약금 활성화
+			$("#POP_EXP_DT, #POP_INV_REG_DT, #btn_send, #btn_preview , #btn_del ").attr("disabled",true);
+		}
+		//08(환불완료), 09(예약취소), 10(입금완료)
+		else if(prc_sts == "08" || prc_sts == "09" || prc_sts == "10"){ 
+			$("#btn_save, #btn_del").attr("disabled",true);  //저장, 삭제 버튼 비활성화
 		}
 		
 		$("#POP_DEP_AMT").val(fn_comma(recevicedData.DEP_AMT));
@@ -146,8 +150,6 @@ $(function() {
 				   };
 		fn_ajax(url, true, param, function(data, xhr){
 			$.each(data.result , function(i , val){
-				//val.TOT_AMT = parseInt(val.TOT_AMT).toLocaleString();
-				//val.PER_AMT = parseInt(val.PER_AMT).toLocaleString();
 				val.STATUS_V = "R";
 				sum_tot += val.TOT_AMT;
 			});
@@ -372,7 +374,6 @@ $(function() {
 		}
 	});
 	
-	
 	$("#btn_delRow").on("click" , function(){
 		var rowId =$("#invoiceGrid").jqGrid('getGridParam','selrow');
 		var args = "";
@@ -439,13 +440,10 @@ $(function() {
 	
 	//이메일 전송하기
 	$("#btn_send").on("click" , function(){
-	
 		console.log("======= 전송하기 =======");
-		
 		var fileUid = $('#hFileUid').val();
 		console.log("=== hFileUid : "+fileUid);
-		
-		
+
 		//pdf파일 업로드 확인
 		if(!fileUid){
 			alert("pdf 파일업로드 후 저장버튼을 클릭해주세요.");
@@ -521,36 +519,7 @@ $(function() {
 		{
 			param.WK_GBN = "R";
 			fn_formSubmit('/report/retrieveCustomerReportAll.do', param);
-		} /* else {
-			if(!confirm("<s:message code='confirm.send'/>")){
-				return false;
-			}
-			var url = "/report/retrieveCustomerReportSend.do";
-			fn_ajax(url, false, param, function(data, xhr){
-			    if(!data.resultCd){
-					alert("<s:message code='error.sendmail' javaScriptEscape='false'/>"); 
-				}else{
-					alert("<s:message code='success.sendemail'/>");
-					cSearch();
-				}
-			});
-		} */
-		
-		
-		/* setTimeout(function() { 
-			if(!(data.id == "btn_preview"))
-			{
-				var url = "/report/retrieveCustomerReportSend.do";
-				fn_ajax(url, false, param, function(data, xhr){
-				    if(!data.resultCd){
-						alert("<s:message code='error.sendmail' javaScriptEscape='false'/>"); 
-					}else{
-						alert("<s:message code='success.sendemail'/>");
-						cSearch();
-					}
-				});
-			}
-		}, 1500); */
+		} 
 	}
 	
 	$("#invoiceGrid").bind("change , keyup" , function(){
@@ -639,12 +608,6 @@ $(function() {
 			});
 		});
 		
-		
-		//인보이스 팝업에서 저장을 위해 주석처리
-		/* if(cnt == 0){
-			alert("<s:message code='errors.noChange' javaScriptEscape='false'/>"); //변경내역이 없습니다.
-			return;
-		} */
 		if(errChk > 0){
 			var args = '<s:message code="invoice.item_cd"/>';
 			alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>"); //항목코드는 필수 입력값입니다.
@@ -695,14 +658,14 @@ $(function() {
 		if(confirm("<s:message code='confirm.save'/>")){
 			fn_ajax(url, false, param, function(data, xhr){
 				if(data.dup == 'Y'){
-					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>");   //Save is not complete.\\nErp validation is Missing.
+					alert("인보이스 저장 오류, 시스템관리자에게 문의주세요.");   
 				}else{
 					alert("<s:message code='info.save'/>");  //저장하였습니다.
-					
 					//예약기간, 예약금, 전송, 미리보기 활성화
 					$("#POP_EXP_DT, #POP_DEP_AMT , #btn_send, #btn_preview").attr("disabled",false);
-
 					cSearch();
+					popupClose($('#p_invoicePopup').data('pid'));
+					
 				}
 			});
 		}
@@ -769,15 +732,5 @@ function fileDelete2(url, fileUid, fileName){
 			popupClose($("#p_invoicePopup").attr('id'));
 		});
 	}
-}
-	
-function fn_formSubmit2(url, data) {
-	var form = '<form action="' + url + '" id="form" method="post">';
-	$.each(data, function(key, value) {
-		form += '<input type="hidden" name="' + key + '" value="' + value + '" />';
-	});
-	form += '</form>';
-	alert(2);
-	//$(form).appendTo('body').submit().remove();
 }
 </script>

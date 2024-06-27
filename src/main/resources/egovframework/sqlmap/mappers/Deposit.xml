@@ -5,8 +5,9 @@
 	
 	<!-- 입금상단 조회 -->
 	<select id="selectDepositHdrInfo" parameterType="BMap" resultType="BMap">
-	   SELECT	  
-	 	   NVL(DEP_AMT , 0) AS DEP_AMT         /* 예약금액             */
+	   SELECT
+	       DEP_IN_DT AS DEP_IN_DT	  		   /* 예약금입금일자     */
+	 	 , NVL(DEP_AMT , 0) AS DEP_AMT         /* 예약금액             */
          , NVL(TOT_AMT , 0) - NVL(DCT_AMT , 0) - NVL(PAY_AMT , 0) AS BAL_AMT         /* 잔금     */
          , NVL(DCT_AMT , 0) AS DCT_AMT         /* 할인금액                     */         
          , NVL(TOT_AMT , 0) AS TOT_AMT         /* 총금액                       */

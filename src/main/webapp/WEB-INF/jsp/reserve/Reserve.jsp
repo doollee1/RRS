@@ -53,7 +53,7 @@
 						    </select>
 						</td>
 						<td class="blank_td"></td>
-						<td class="small_td" id="STATUS"><p><s:message code="reservation.state"/></p></td>
+						<td class="small_td" id="STATUS"><p>입금예약상태</p></td>
 						<td class="medium_td">
 						    <select id="PRC_STS" name="PRC_STS" class="">
 						        <option value="">전체</option>
@@ -155,7 +155,8 @@
 	function createQuotationGrid() {
 		var colName = [ 
             '<s:message code="reservation.seq"/>',
-	        '<s:message code="reservation.mem_gbn"/>',
+	        '입금예약상태', 
+            '<s:message code="reservation.mem_gbn"/>',
 	        '에이전시구분',
 	        '에이전시명',
 	        '<s:message code="reservation.date"/>',
@@ -168,12 +169,12 @@
 	        '<s:message code="reservation.amount"/>',
 	        '<s:message code="reservation.totAmount"/>',
 	        '<s:message code="reservation.flight"/>',
-	        '<s:message code="reservation.state"/>', 
 	        '인보이스 발행일자',
 	        '<s:message code="reservation.prodCnt"/>',
 		];
 		var colModel = [ 
 		    {name : 'ROWNUM'    , width : 70  , align : 'center'}, 
+		    {name : 'STATE_NM'  , width : 100 , align : 'center', ref : 'linkq'},
 		    {name : 'MEM_NM'    , width : 70  , align : 'center'},
 		    {name : 'AGN_GB_NM' , width : 80  , align : 'center'},
 		    {name : 'AGN_CD_NM' , width : 70  , align : 'center'}, 
@@ -187,7 +188,6 @@
 		    {name : 'DEP_AMT'   , width : 100 , align : 'right'}, 
 		    {name : 'TOT_AMT'   , width : 100 , align : 'right'}, 
 		    {name : 'FLIGHT_OUT', width : 100 , align : 'center'}, 
-		    {name : 'STATE_NM'  , width : 100 , align : 'center', ref : 'linkq'},
 		    {name : 'INV_REG_DT', width : 120 , align : 'center'}, 
 		    {name : 'PROD_SEQ'  , width : 100 , align : 'center', ref : 'linkq', hidden : true} 
 		    ];

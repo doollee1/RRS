@@ -78,26 +78,52 @@ $(function() {
 	
 	function cSearch(receivcedData){
 		var url = "/reserve/selectReserveStatus.do";
-		var param = {"CODE"   : prc_sts
-				    };
+		//var param = {"CODE"   : prc_sts };
+		var param = { };
 		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
 				alert("ajax 통신 error!");
 			}else{
+				// 01 예약요청-일반, 02 예약요청-멤버, 03 예약가능, 04 예약신청, 05 예약입금대기
+				// 06 예약확정       , 07 환불요청       , 08 환불완료, 09 예약취소, 10 입금완료
 				var vhtml;
 				vhtml += '<option value="" >--<s:message code="system.select"/>--</option>'
 				$.each(data.result , function ( i , v){
-					if(mem_gbn == "01"){ // 멤버 
-                        if((parseInt(v.CODE) <= 10) && v.CODE != "02" && v.CODE != "06"){
-                        	vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
-                        }
-					}else if(mem_gbn == "02"){ // 일반
-						if((parseInt(v.CODE) <= 10) && v.CODE != "02" && v.CODE != "06"){	
-                        	vhtml += '<option value = '+ v.CODE+'>'+v.CODE_NM+'</option>';
-                        }
-					}else if(mem_gbn == "03"){ //교민
-						if(((10 < parseInt(v.CODE)) && (parseInt(v.CODE) <= 20)) || v.CODE == "96"){
-							vhtml += '<option value = '+ v.CODE +'>'+v.CODE_NM+'</option>';
+					if(prc_sts == "01"){ // 예약요청-일반 >> 예약가능, 예약취소
+						if(v.CODE == "03" || v.CODE == "09"){
+							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
+						}
+					} else if(prc_sts =="03"){ // 예약가능 >> 예약신청, 예약취소
+						if(v.CODE == "04" || v.CODE == "09"){
+							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
+						}
+					} else if(prc_sts =="04"){ // 예약신청 >> 예약입금대기, 예약취소
+						if(v.CODE == "05" || v.CODE == "09"){
+							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
+						}
+					} else if(prc_sts =="05"){ // 예약입금대기 >> 예약신청, 예약확정, 예약취소
+						if(v.CODE == "04" || v.CODE == "06" || v.CODE == "09"){
+							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
+						}
+					} else if(prc_sts =="06"){ // 예약확정 >> 예약입금대기, 환불요청, 환불완료, 예약취소, 입금완료
+						if(v.CODE == "05" || v.CODE == "07" || v.CODE == "08" || v.CODE == "09" || v.CODE == "10"){
+							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
+						}
+					} else if(prc_sts =="07"){ // 환불요청 >> 예약입금대기, 예약확정, 환불완료
+						if(v.CODE == "05" || v.CODE == "06" || v.CODE == "08"){
+							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
+						}
+					} else if(prc_sts =="08"){ // 환불완료 >> 환불요청
+						if(v.CODE == "07"){
+							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
+						}
+					} else if(prc_sts =="09"){ // 예약취소 >> 예약입금대기, 예약확정
+						if(v.CODE == "05" || v.CODE == "06"){
+							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
+						}
+					} else if(prc_sts == "10"){ // 입금완료 >> 환불요청, 환불완료, 예약취소
+						if(v.CODE == "07" || v.CODE == "08" || v.CODE == "09"){
+							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
 					}
 				});
@@ -118,6 +144,10 @@ $(function() {
 	}
 	
 	function updateStatus(){
+		if($("#CHG_PRC_STS option:selected").val() == ""){
+			alert("변경상태를 선택해주세요.");
+			return;
+		}
 		var url = "/reserve/updateReserveStatus.do";
 		var param = {"REQ_DT"      : req_dt
 				   , "SEQ"         : parseInt(seq)

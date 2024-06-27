@@ -308,13 +308,6 @@ public class ReserveController {
 	 */
 	@RequestMapping(value = "/reserve/InvoicePopup.do")
 	public String invoicePopup(ModelMap model,HttpServletRequest request) throws Exception{
-		/*BMap param = new BMap();
-		param.put("HEAD_CD" , 500140);
-		param.put("REF_CHR" , "REF_CHR2");
-		param.put("VAL"     , "\\");
-		param.put("KOR_1"   , "\\\\");
-		param.put("KOR_2"   , "$");*/
-
 		BMap param2 = new BMap();
 		param2.put("HEAD_CD" , 500140);
 		param2.put("REF_CHR" , "REF_CHR3");
@@ -329,9 +322,6 @@ public class ReserveController {
 		param3.put("KOR_1"   , "인");
 		param3.put("KOR_2"   , "개");
 		
-		
-		
-		//model.addAttribute("REF_CHR2"   , reserveService.selectGetCommonCode1(param ));
 		model.addAttribute("REF_CHR3"   , reserveService.selectGetCommonCode1(param2));
 		model.addAttribute("REF_CHR4"   , reserveService.selectGetCommonCode1(param3));
 		return "/popup/InvoicePopup";

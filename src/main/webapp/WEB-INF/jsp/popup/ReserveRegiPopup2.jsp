@@ -35,11 +35,12 @@
 			    </colgroup>
 			    
 			    <tr class="idTest">
-		   	     	<th>ID</th>
+		   	     	<th>예약자한글명</th>
 					<td class="medium_td" colspan="5">
-						<input type="text" id="USER_ID" name="USER_ID" style="width:160px; margin: 0 5px"/>
+						<input type="text" id="REQ_HAN_NM" name="REQ_HAN_NM" class="cmc_txt text-center" style="width:160px; margin: 0 5px"/>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<button type="button" class="btn btn-warning" id="btn_search" style="opacity:60%; width:115px; height:25px">아이디찾기</button>	
+						<button type="button" class="btn btn-warning" id="btn_search" style="opacity:80%; width:115px; height:25px">회원찾기</button>
+						<button type="button" class="btn btn-danger" id="btn_adduser" style="opacity:80%; width:115px; height:25px">회원가입</button>	
 					</td>
 				</tr>
 				
@@ -77,9 +78,9 @@
 				</tr>
 				
 				<tr>
-				    <th><s:message code='reservation.Kname'/></th><!-- 예약자한글명 -->
+				    <th>ID</th>
 					<td>
-						<input type="text" class="cmc_txt text-center" id="REQ_HAN_NM" name="REQ_HAN_NM" style="width:160px; margin: 0 5px" />
+						<input type="text" class="cmc_txt text-center" id="USER_ID" name="USER_ID" style="width:160px; margin: 0 5px" />
 					</td>
 					<th><s:message code='reservation.Ename'/></th><!-- 예약자영문명 -->
 					<td>
@@ -101,7 +102,7 @@
 					<td colspan="3">
 						<input type="text" class="cmc_txt text-center" id="CHK_OUT_DT"     name="CHK_OUT_DT" data-type="date" style="width:145px;"/>
 						<input type="text" class="cmc_txt text-center" id="PRV_CHK_OUT_DT" name="CHK_OUT_DT" data-type="date" style="width:145px; display: none;"/>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="opacity:50%; color: red; font-weight: bold;">※ 체크아웃 날짜를 지정해야 상품 선택이 가능합니다.</b>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="opacity:70%; color: red; font-weight: bold;">※ 체크아웃 날짜를 지정해야 상품 선택이 가능합니다.</b>
 					</td>
 				</tr>
 				
@@ -139,7 +140,7 @@
 								</option>
 							</c:forEach>
 						</select>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="opacity:50%; color: red; font-weight: bold;">※ 항공기편 시간 정보는 필수가 아닙니다.</b>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="opacity:70%; color: red; font-weight: bold;">※ 항공기편 시간 정보는 필수가 아닙니다.</b>
 					</td>
 				</tr>
 				
@@ -161,7 +162,7 @@
 								<option value="${i.CODE}" <c:if test="${i.CODE eq '3'}">selected</c:if> >${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="opacity:50%; color: red; font-weight: bold;">※ 영유아를 제외한 2인 1실 기준 인보이스가 산정됩니다.</b>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="opacity:70%; color: red; font-weight: bold;">※ 영유아를 제외한 2인 1실 기준 인보이스가 산정됩니다.</b>
 				    </td>
 				</tr>
 				
@@ -183,7 +184,7 @@
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="opacity:50%; color: red; font-weight: bold;">※ 픽업차량 정보는 필수가 아닙니다.</b>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="opacity:70%; color: red; font-weight: bold;">※ 픽업차량 정보는 필수가 아닙니다.</b>
 					</td>	
 				</tr>
 
@@ -287,7 +288,7 @@
 				    <div style="display:inline-flex;" >
 						<input type="checkbox"  name="RND_CHG_YN1" id="RND_CHG_YN1" style="margin:0 5px; cursor:Pointer">토요일 오전 &nbsp;&nbsp;&nbsp;&nbsp;
 						<input type="checkbox"  name="RND_CHG_YN2" id="RND_CHG_YN2" style="cursor:Pointer">&nbsp;일요일 오전 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<b style="opacity:50%; color: red; font-weight: bold;">※ 미체크시 기본은 오후로 지정됩니다.</b>
+						<b style="opacity:70%; color: red; font-weight: bold;">※ 미체크시 기본은 오후로 지정됩니다.</b>
 					</div>
 					</td>
 					
@@ -301,12 +302,12 @@
 				<tr>
 				    <th><s:message code='reservation.expdt'/></th><!-- 예약기한 -->
 				    <td>
-				    <input type="text" class="cmc_txt"  id="EXP_DT" name="EXP_DT" data-type="date" style="width:120px; margin:0 5px" readonly="readonly"/>
+				    <input type="text" class="cmc_txt"  id="EXP_DT" name="EXP_DT" class="text-center" data-type="date" style="width:120px; margin:0 5px" readonly="readonly"/>
 				    </td>
 				   
 				    <th><s:message code='reservation.depositDate'/></th><!-- 예약금일금일자 -->
 				    <td>
-				        <input type="text" class="cmc_txt"  id="DEP_IN_DT" name="DEP_IN_DT" data-type="date" style="width:145px; margin:0 5px"/>
+				        <input type="text" class="cmc_txt"  id="DEP_IN_DT" name="DEP_IN_DT" data-type="date" class="text-center" style="width:145px; margin:0 5px" readonly="readonly"/>
 				    </td>
 				    
 					
@@ -325,10 +326,10 @@
 				    
 				    <th>입금관리</th>
 				    <td>
-				    	<button type="button" class="btn btn-success" id="btn_pay"  style="width:160px; height:25px; opacity:70%; margin: 0 20px">입금관리</button>
+				    	<button type="button" class="btn btn-success" id="btn_pay"  style="width:160px; height:25px; opacity:80%; margin: 0 20px">입금관리</button>
 				    </td>
 				    
-				    <th><s:message code='reservation.state'/></th>
+				    <th>입금예약상태</th>
 				    <td>
 						<input type="text" id="PRC_STS_NM" name="PRC_STS_NM" style="width:100px; margin: 0 5px" readonly/>
 					    <button type="button" class="btn btn-primary openPop" id="changeStatus" style="opacity:80%; width:70px;">상태변경</button>
@@ -349,14 +350,14 @@
 				</tr>
 				<tr>
 					<td style="height:20px;" colspan="5">
-						<b id="advice1" style="opacity:80%; color: green; font-weight: bold;">&nbsp;※ [예약등록]에서 미팅샌딩 [<b style="color: #e2703a; font-weight: bold;">등록</b>], 
-						인보이스 [<b style="color: #e2703a; font-weight: bold;">생성</b>], [<b style="color: #e2703a; font-weight: bold;">상태변경</b>], 
-						[<b style="color: #e2703a; font-weight: bold;">입금관리</b>]는 <b style="color: #e2703a; font-weight: bold;">저장</b> 후 예약상세에서 진행해주세요.</b>
+						<b id="advice1" style="opacity:90%; color: green; font-weight: bold;">&nbsp;※ [예약등록]에서 미팅샌딩 [<b style="color: red; font-weight: bold;">등록</b>], 
+						인보이스 [<b style="color: red; font-weight: bold;">생성</b>], [<b style="color: red; font-weight: bold;">상태변경</b>], 
+						[<b style="color: red; font-weight: bold;">입금관리</b>]는 <b style="color: red; font-weight: bold;">저장</b> 후 예약상세에서 진행해주세요.</b>
 						
-						<b id="advice2" style="opacity:80%; color: green; font-weight: bold;">&nbsp;※ [예약상세]에서  <b style="color: #e2703a; font-weight: bold;">인원내역</b> 수정 시 
-						<b style="color: #e2703a; font-weight: bold;">동반자정보</b>에서 
-						[<b style="color: #e2703a; font-weight: bold;">행추가</b>], 
-						[<b style="color: #e2703a; font-weight: bold;">행삭제</b>]를 통하여 진행해주세요.</b>
+						<b id="advice2" style="opacity:90%; color: green; font-weight: bold;">&nbsp;※ [예약상세]에서  <b style="color: red; font-weight: bold;">인원내역</b> 수정 시 
+						<b style="color: red; font-weight: bold;">동반자정보</b>에서 
+						[<b style="color: red; font-weight: bold;">행추가</b>], 
+						[<b style="color: red; font-weight: bold;">행삭제</b>]를 통하여 진행해주세요.</b>
 					</td>
 				</tr>
 			</table>
@@ -388,7 +389,6 @@ $(function() {
 	var seq;
 	var req_dt;
 	var vflag;
-
 	var list_seq;
 	var list_req_dt;
 	var mem_gbn;
@@ -448,6 +448,15 @@ $(function() {
 					saveReserveInfo(); /* 저장 버튼 이벤트 */
 				}
 			},
+			'<s:message code='button.delete'/>' :{
+				text: '<s:message code='button.delete'/>',
+				id : 'delete',
+				click:function(){
+					if(confirm("[삭제] 진행 시 영구 삭제 됩니다. 진행하시겠습니까?")){
+						deleteReserveInfo();
+					}
+				}
+			},
 			'<s:message code='button.close'/>' : {
 				text: '<s:message code='button.close'/>',
 				click: function() {
@@ -472,15 +481,16 @@ $(function() {
 	 * @See     : setUserInfo.do 
 	 * -----------------------------------------------------*
 	 *******************************************************/
-	$("#USER_ID").on("keyup",function(key){
+	$("#REQ_HAN_NM").on("keyup",function(key){
 		if(key.keyCode==13) {
 			var url = "/reserve/setUserInfo.do";
-			var param = {"S_USER_ID":$("#USER_ID").val()};
+			var param = {"S_HAN_NAME":$("#REQ_HAN_NM").val()};
 			fn_ajax(url, true, param, function(data, xhr){
 				setData = data.result;
 				delProgram();
 				if (setData.cnt < 1) {			// 입력한 사용자 검색 결과가 없을때
 					alert("검색 된 사용자가 없습니다.");
+					$("#USER_ID").val("");
 					$("#MEM_GBN").val("");
 					$("#REQ_HAN_NM").val("");
 					$("#REQ_ENG_NM").val("");
@@ -505,8 +515,8 @@ $(function() {
 					$("#KING_CNT").val("0");
 					$("#DEP_IN_DT"  ).attr("disabled",true);
 				} else if (setData.cnt == 1) {	// 입력한 사용자 검색 결과가 1명일때
+					$("#USER_ID").val(setData.USER_ID);
 					$("#MEM_GBN").val(setData.MEM_GBN);
-					$("#REQ_HAN_NM").val(setData.HAN_NAME);
 					$("#REQ_ENG_NM").val(setData.ENG_NAME);
 					$("#REQ_TEL_NO").val(setData.TEL_NO);
 					$("#MEM_GBN").val(setData.MEM_GBN);
@@ -694,6 +704,7 @@ $(function() {
 		$('#REQ_DT').val($.datepicker.formatDate('yy.mm.dd', new Date())).attr("readonly" , true); // 예약일자 오늘 값으로 셋팅 (변경불가)
 		$("#TWIN_CNT").val("0");
 		$("#KING_CNT").val("0");
+		$("#btn_adduser").hide();
 		
 		if(fn_empty(seq || req_dt)){ //신규
 		    $(".ui-dialog-title").text('<s:message code='reservation.registration'/>');
@@ -712,6 +723,9 @@ $(function() {
 			$("#changeStatus").attr("disabled", true);	// [상태변경]
 			$("#advice1").show();
 			$("#advice2").hide();
+			$("#btn_adduser").show();
+			$("#delete").hide();
+			$("#REQ_HAN_NM").attr("disabled",false);
 		}else{ // 상세
 			//예약 현황의 상세보기로 넘어왔다면 필요없는 부분 disabled 하기
 			if(receivedData.DETAIL == 'Y'){
@@ -723,6 +737,8 @@ $(function() {
 		    $("#btn_search").hide(); // 아이디 찾기 버튼 숨김
 		    $("#advice1").hide();
 			$("#advice2").show();
+			$("#btn_adduser").hide();
+			$("#REQ_HAN_NM").attr("disabled",true);
 			$("#M_PERSON").attr("disabled", true);
 			$("#G_PERSON").attr("disabled", true);
 			$("#N_PERSON").attr("disabled", true);
@@ -876,16 +892,9 @@ $(function() {
 
     	//상태표시
      	if(!fn_empty(data.PRC_STS)){
-     		if(data.PRC_STS == "06" || data.PRC_STS == "08" || data.PRC_STS == "09" || data.PRC_STS == "96"){
-     			$("#frmReserveInfo").find("input,select,textarea").attr("disabled" , true);
-     		}else if(data.PRC_STS == "07" ){
+     		if(data.PRC_STS == "08" || data.PRC_STS == "09" || data.PRC_STS == "10"){
      			$("#frmReserveInfo").find("input,select,textarea").attr("disabled" , true);
      		}
-     		
-     		// 상태에 따라 인보이스 비활성화
-     		if (data.PRC_STS == "96" ||data.PRC_STS == "06" ||data.PRC_STS == "07" ||data.PRC_STS == "08" ||data.PRC_STS == "09" ||data.PRC_STS == "10") {
-     			$("#btn_create").attr("disabled" , true);
- 			}
      	}
 
      	// 01 멤버, 02 일반, 04 에이젼시
@@ -1485,6 +1494,7 @@ $(function() {
 				    , "MEM_GBN"         : $("#MEM_GBN").val()
 				    , "AGN_GB"          : $("#AGN_GB").val()
 				    , "AGN_CD"          : $("#AGN_CD").val()
+				    , "PRC_STS"         : '04'
 				    , "CHK_IN_DT"       : $("#CHK_IN_DT").val().replaceAll(".","")
 				    , "CHK_OUT_DT"      : $("#CHK_OUT_DT").val().replaceAll(".","")
 				    , "ROOM_TYPE"       : $("#ROOM_TYPE").val()
@@ -1582,6 +1592,33 @@ $(function() {
 	}
 	
 	/*******************************************************
+	 *-----------------------------------------------------*
+	 * @Subject : [삭제] 버튼 이벤트
+	 * @Goal    : 화면 하단 부 [삭제] 클릭 시 발생되는 이벤트
+	 * @Brief   : 예약일자와 예약순번으로 DB에 저장된 데이터 삭제
+	 * @See     : /reserve/deleteReserveInfo.do
+	 * -----------------------------------------------------*
+	 *******************************************************/
+	function deleteReserveInfo(){
+		$.ajax({
+			type : "post",
+			url  : "/reserve/deleteReserveInfo.do",
+			data : {"REQ_DT" : $("#REQ_DT").val().replaceAll(".","")
+				  , "SEQ"    : seq
+			},
+			dataType : "json"
+		}).done(function(data){
+			if(data.result == 'SUCCESS'){
+				alert("삭제가 완료되었습니다.");
+				popupClose($('#p_reserveListRegi').data('pid'));
+			}
+			else{
+				alert("삭제에 실패하였습니다. 시스템관리자에게 문의해주세요.");
+			}
+		});
+	 }
+	 
+	 /*******************************************************
 	 *-----------------------------------------------------*
 	 * @Subject : Validation [유효성] 체크 시작
 	 * @Goal    : 화면 내 필수 값 체크 및 유효성 검사
@@ -1738,7 +1775,6 @@ $(function() {
 		var _val = this.value.trim();
 		this.value = autoHypenTel(_val);
 	});
-	
 	
 	/*******************************************************
 	 *-----------------------------------------------------*
@@ -1922,6 +1958,102 @@ $(function() {
 			}
 		});
 	});	
+	
+	/*******************************************************
+	 *-----------------------------------------------------*
+	 * @Subject : [회원가입] 버튼 이벤트
+	 * @Goal    : [회원가입] 버튼 이벤트
+	 * @Brief   : 화면 내 [회원가입] 버튼 클릭 시 표출되는 팝업
+	 * @See     : /rrs/UserPopup.do
+	 * -----------------------------------------------------*
+	 *******************************************************/
+	$("#btn_adduser").on("click", function(){
+			var url = "/rrs/UserPopup.do";
+			var pid = "p_User";  //팝업 페이지의 취상위 div ID
+			var param = {"USER_ID" : ""};
+			popupOpen(url, pid, param, function(data) {
+				if(!fn_empty(data)){
+					delProgram();
+					$("#USER_ID").val(data.USER_ID);
+					$("#MEM_GBN").val(data.MEM_GBN);
+					$("#REQ_HAN_NM").val(data.REQ_HAN_NM);
+					$("#REQ_ENG_NM").val(data.REQ_ENG_NM);
+					$("#REQ_TEL_NO").val(data.REQ_TEL_NO);
+					if(data.MEM_GBN == "01"){
+						$("#AGN_GB").val("");
+						$("#AGN_CD").val("");
+				    	$("#AGN_GB").attr("disabled",true);
+				    	$("#AGN_CD").attr("disabled",true);
+				    	$("#HDNG_GBN").val("28");
+				    	$("#HDNG_GBN"     ).attr("disabled",true);
+				    	$("#ADD_HDNG_GBN").val("");
+						$("#ADD_HDNG_GBN").attr("disabled",true);
+						$("#M_PERSON").val("1");
+						$("#G_PERSON").val("0");
+						$("#N_PERSON").val("0");
+						$("#K_PERSON").val("0");
+						$("#I_PERSON").val("0");
+						$("#TOT_PERSON").val("1");
+						$("#DEP_IN_DT"  ).attr("disabled",false);
+					}else if(data.MEM_GBN == "02"){
+						$("#AGN_GB").val("");
+						$("#AGN_CD").val("");
+				    	$("#AGN_GB").attr("disabled",true);
+				    	$("#AGN_CD").attr("disabled",true);
+				    	$("#M_PERSON").attr("disabled",true);
+				    	$("#HDNG_GBN").val("");
+						$("#HDNG_GBN").attr("disabled",true);
+						$("#ADD_HDNG_GBN").val("");
+						$("#ADD_HDNG_GBN").attr("disabled",true);
+						$("#M_PERSON").val("0");
+						$("#G_PERSON").val("1");
+						$("#N_PERSON").val("0");
+						$("#K_PERSON").val("0");
+						$("#I_PERSON").val("0");
+						$("#TOT_PERSON").val("1");
+						$("#DEP_IN_DT"  ).attr("disabled",false);
+					}else if(data.MEM_GBN == "04"){
+						$("#AGN_GB").attr("disabled",false);
+				    	$("#AGN_CD").attr("disabled",false);
+						$("#HDNG_GBN").val("");
+						$("#HDNG_GBN").attr("disabled",true);
+						$("#ADD_HDNG_GBN").val("");
+						$("#ADD_HDNG_GBN").attr("disabled",true);
+						$("#M_PERSON").attr("disabled",false);
+						$("#M_PERSON").val("0");
+						$("#G_PERSON").val("0");
+						$("#N_PERSON").val("0");
+						$("#K_PERSON").val("0");
+						$("#I_PERSON").val("0");
+						$("#TOT_PERSON").val("0");
+						$("#TWIN_KING_CNT").val("0");
+						$("#TWIN_CNT").val("0");
+						$("#KING_CNT").val("0");
+						$("#DEP_IN_DT"  ).attr("disabled",false);
+					}else{
+						$("#AGN_GB").val("");
+						$("#AGN_CD").val("");
+						$("#AGN_GB").attr("disabled",true);
+				    	$("#AGN_CD").attr("disabled",true);
+				    	$("#HDNG_GBN").val("");
+						$("#HDNG_GBN").attr("disabled",true);
+						$("#ADD_HDNG_GBN").val("");
+						$("#ADD_HDNG_GBN").attr("disabled",true);
+						$("#M_PERSON").val("0");
+						$("#G_PERSON").val("0");
+						$("#N_PERSON").val("0");
+						$("#K_PERSON").val("0");
+						$("#I_PERSON").val("0");
+						$("#TOT_PERSON").val("0");
+						$("#TWIN_KING_CNT").val("0");
+						$("#TWIN_CNT").val("0");
+						$("#KING_CNT").val("0");
+						$("#DEP_IN_DT"  ).attr("disabled",true);
+					}
+					fn_roomTypeCnt();
+				}
+			});
+	});
 	
 	/*******************************************************
 	 *-----------------------------------------------------*
@@ -2116,7 +2248,6 @@ $(function() {
 						  { name: 'REQ_DT'       , width : 24 , align: 'center', hidden:true, editoptions:{readonly: true}}
 						, { name: 'SEQ'          , width : 24 , align: 'center', hidden:true, editoptions:{readonly: true}}
 						, { name: 'DSEQ'         , width : 24 , align: 'center', editable:false, editoptions:{readonly: true}}
-						//, { name: 'COM_GBN'      , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${COM_GBN}'}}
 						, { name: 'COM_GBN'      , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${COM_GBN}'}}
 						, { name: 'NUM_GBN'      , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${NUM_GBN}'}}
 						, { name: 'COM_HAN_NM'   , width : 120, align: 'center', editable:true, editoptions:{maxlength:100}}
@@ -2383,19 +2514,19 @@ $(function() {
 					
 					if(del_num_gbn == '01'){	// 01 멤버, 02 일반, 03 비라운딩, 04 소아, 05 영유아
 						del_num_gbn = "M_PERSON";
-						del_person    = m_person - 1;
+						del_person  = m_person - 1;
 					} else if(del_num_gbn == '02'){
 						del_num_gbn = "G_PERSON";
-						del_person    = g_person - 1;
+						del_person  = g_person - 1;
 					} else if(del_num_gbn == '03'){
 						del_num_gbn = "N_PERSON";
-						del_person    = n_person - 1;
+						del_person  = n_person - 1;
 					} else if(del_num_gbn == '04'){
 						del_num_gbn = "K_PERSON";
-						del_person    = k_person - 1;
+						del_person  = k_person - 1;
 					} else if(del_num_gbn == '05'){
 						del_num_gbn = "I_PERSON";
-						del_person    = i_person - 1;
+						del_person  = i_person - 1;
 					}
 					
 					var url = "/reserve/deleteReserveDetail.do";
@@ -2441,7 +2572,6 @@ $(function() {
 			        , "SEQ"             : seq
 			        , "ADD_FILE_SEQ"    : addfileseq
 	                };
-	    
 		popupOpen(url, pid, param, function(data) {
 			reserveSelectAirlineImg2(addfileseq);
 		});
