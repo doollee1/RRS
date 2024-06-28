@@ -268,7 +268,7 @@ function cSearch(){
 			
 			content += '\n\n' + 'Approve comment';
 			content += '\n\n' + $("#USER_NAME").val() + ' (' + getNow() + ') '  + rejectRsn;
-			console.log(data.result.APPR_COMNT);
+			
 			if ( data.result.APPR_COMNT != '' ) {
 				var comnt = data.result.APPR_COMNT;
 				var comment = comnt.split("^");

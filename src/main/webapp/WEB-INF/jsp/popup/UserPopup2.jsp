@@ -193,8 +193,7 @@ function popupSearch() {
 	
 	var formData = formIdAllToMap('frmUserSearch');
 	var param = {"param":formData};
-	
-	console.log(param);
+
 	fn_ajax(url, false, param, function(data, xhr){
 		var gridData = data.result;
 		$('#popGrid1').jqGrid('clearGridData');

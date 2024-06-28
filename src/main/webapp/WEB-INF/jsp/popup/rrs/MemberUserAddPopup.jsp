@@ -12,7 +12,7 @@
 			<table class="tab_top_search" width="100%">
 				<tbody>
 					<tr>
-						<td class="small_td">맴버ID</td>
+						<td class="small_td">멤버ID</td>
 			      		<td><p><input type="text" id="MEMBER_ID" name="MEMBER_ID" maxlength="5" noSpecial></p></td>
 			      	</tr>
 					<tr>

@@ -181,13 +181,23 @@
 	   	  ORDER BY NM.PRIORITY, SY.PRIORITY, PR2.PRIORITY, PR1.PRIORITY
 	</select>
 	
-	<!-- 마이 메뉴 : 삭제 -->
+	<!-- 마이 메뉴 : 전체삭제 -->
 	<delete id="delMyMenuList" parameterType="String">
 	/* System.xml -> delMyMenuList */
 		<![CDATA[
 		DELETE FROM SY_MYMENU WHERE USER_ID = #{USER_ID}
 		]]>
 	</delete>
+	
+	
+	<!-- 마이 메뉴 : 개별삭제 -->
+	<delete id="delMyMenu" parameterType="BMap">
+	/* System.xml -> delMyMenu */
+		<![CDATA[
+		DELETE FROM SY_MYMENU WHERE USER_ID = #{USER_ID} AND PROG_CD = #{PROG_CD}
+		]]>
+	</delete>
+	
 	
 	<!-- 마이 메뉴 : 저장 -->
 	<insert id="saveMyMenuList" parameterType="BMap">

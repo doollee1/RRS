@@ -366,8 +366,7 @@
 			if (!data.RESULT) {
 				return;
 			}
-			
-			console.log(data.RESULT);
+
 			function getTableByName(arr, name) {
 				var find;
 				Array.prototype.some.call(arr, function(v) {

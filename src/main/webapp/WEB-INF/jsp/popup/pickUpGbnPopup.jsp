@@ -4,10 +4,12 @@
 <%
 /**
  * @Name : pickUpGgnPopup
+ * @HAN_Name : 미팅샌딩등록
  */
 %>
 <style>
 .pbtn_default {margin: 0 3px -1px 5px;padding: 3px 10px 3px 10px;border: 1px solid #a9cbeb !important;background: #bdd6ee !important;color: #2269b1;}
+.cmc_txt {text-align:right;}
 </style>
 <div id="p_pickUpGbnPopup">
 	<form id="frmPickupFrm" action="#">
@@ -281,7 +283,6 @@ $(function() {
 		}else{
 			vfee2 = 0;
 		}
-		console.log("PROD_SEQ2");
 		$("#USE_AMT2").val(vfee2);
 	});
 

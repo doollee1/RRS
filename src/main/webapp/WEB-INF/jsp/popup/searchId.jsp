@@ -52,7 +52,7 @@ $(function() {
 	var today = String(day.getFullYear()) + String(("0" + (1 + day.getMonth())).slice(-2)) + String(("0" + day.getDate()).slice(-2)); 
 	
 	$('#p_searchIdPopup').dialog({
-		title :'<s:message code='reservation.searchId'/>',
+		title :'회원찾기',
 		autoOpen : false,
 		height: 470,
 		width: 1076.4,
@@ -77,7 +77,7 @@ $(function() {
 		open : function() {
 			createGrid1();
 			
-			$("#S_USER_ID").val($(this).data().S_USER_ID);
+			$("#S_USER_NM").val($(this).data().S_HAN_NAME);
 			cSearch();
 			
 			/* grid1 Event */

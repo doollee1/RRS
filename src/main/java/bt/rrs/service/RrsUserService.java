@@ -176,12 +176,13 @@ public class RrsUserService {
 	public BMap uploadMemberUserExcel(HttpServletRequest req) throws Exception {
 		POIExcelRRS upload = new POIExcelRRS();
 		MultipartHttpServletRequest mpRequest = (MultipartHttpServletRequest) req;
-		String[] header = new String[]{"HAN_NAME", "ENG_NAME", "TEL_NO"};
+		String[] header = new String[]{"MEMBER_ID", "HAN_NAME", "ENG_NAME", "TEL_NO"};
 		List<MultipartFile> files =  mpRequest.getFiles("fileupload[]");
 		
 		BMap result = new BMap();
 		for(MultipartFile file : files) {
 			List<BMap> list = upload.excelUpload(file, header);
+
 			// 순회하면서 데이터에 문제 있으면 return
 			for (BMap bMap : list) {
 				// excel upload data validation
@@ -192,23 +193,21 @@ public class RrsUserService {
 				}
 				
 				// 중복 검사
-				int count = rrsUserDao.selectMemberUserCnt(bMap);
+				int count = rrsUserDao.selectMemberIDCnt(bMap);
 				if(count > 0) {
 					// 실패 => return
-					validationResultMap.put("result", "failure");
-					validationResultMap.put("message", "중복된 멤버회원이 존재합니다.\n이름: " + bMap.getString("HAN_NAME"));
+					validationResultMap.put("result" , "failure");
+					validationResultMap.put("message", "중복된 멤버회원이 존재합니다.\n멤버ID: " + bMap.getString("MEMBER_ID"));
 					return validationResultMap;
 				}
 			}
 			
 			// 데이터에 문제 없으면 입력
 			for (BMap bMap : list) {
-				if(bMap.size() >= 3) { 
-					// 등록, 수정 유저 정보
-					bMap.put("LOGIN_USER", LoginInfo.getUserId());
-					
-					rrsUserDao.insertMemberUserInfo(bMap);
-				}
+				// 등록, 수정 유저 정보
+				bMap.put("LOGIN_USER", LoginInfo.getUserId());
+				
+				rrsUserDao.insertMemberUserInfo(bMap);
 			}
 		}
 		result.put("result", "success");
@@ -219,27 +218,38 @@ public class RrsUserService {
 		BMap resultMap = new BMap();
 		resultMap.put("result", "failure");
 		
-		String HAN_NAME = bMap.getString("HAN_NAME");
-		String ENG_NAME = bMap.getString("ENG_NAME");
-		String TEL_NO = bMap.getString("TEL_NO");
+		String MEMBER_ID = bMap.getString("MEMBER_ID");
+		String HAN_NAME  = bMap.getString("HAN_NAME");
+		String ENG_NAME  = bMap.getString("ENG_NAME");
+		String TEL_NO    = bMap.getString("TEL_NO");
 		
 		// empty value
-		if(HAN_NAME.length() == 0) {
+		if(MEMBER_ID == null || MEMBER_ID.equals("null") || MEMBER_ID.equals("")) {
+			resultMap.put("message", "멤버ID를 입력해주세요.\n멤버ID: " + MEMBER_ID);
+			return resultMap;
+		}
+		
+		if(HAN_NAME == null || HAN_NAME.equals("null") || HAN_NAME.equals("")) {
 			resultMap.put("message", "이름을 입력해주세요.\n이름: " + HAN_NAME);
 			return resultMap;
 		}
 		
-		if(ENG_NAME.length() == 0) {
+		if(ENG_NAME == null || ENG_NAME.equals("null") || ENG_NAME.equals("")) {
 			resultMap.put("message", "영문이름을 입력해주세요.\n영문이름: " + ENG_NAME);
 			return resultMap;
 		}
 		
-		if(TEL_NO.length() == 0) {
+		if(TEL_NO == null || TEL_NO.equals("null") || TEL_NO.equals("")) {
 			resultMap.put("message", "전화번호를 입력해주세요.\n전화번호: " + TEL_NO);
 			return resultMap;
 		}
 		
 		// maxlength
+		if(MEMBER_ID.length() > 5) {
+			resultMap.put("message", "멤버ID는 5자리로 입력해야 합니다.\n멤버ID: " + HAN_NAME);
+			return resultMap;
+		}
+		
 		if(HAN_NAME.length() > 20) {
 			resultMap.put("message", "이름 길이를 20이하로 입력해주세요.\n이름: " + HAN_NAME);
 			return resultMap;
@@ -252,6 +262,12 @@ public class RrsUserService {
 		
 		if(TEL_NO.length() > 20) {
 			resultMap.put("message", "전화번호 길이를 20이하로 입력해주세요.\n전화번호: " + TEL_NO);
+			return resultMap;
+		}
+		
+		// 멤버ID 정규식
+		if(!Pattern.matches("^[a-zA-Z]{1}+[0-9]{4}", MEMBER_ID)) {
+			resultMap.put("message", "멤버ID는 알파벳 1자리+숫자 4자리로 입력해주세요\n멤버ID: " + MEMBER_ID);
 			return resultMap;
 		}
 		

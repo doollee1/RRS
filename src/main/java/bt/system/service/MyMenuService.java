@@ -2,15 +2,27 @@ package bt.system.service;
 
 
 import java.util.List;
+
 import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import bt.btframework.utils.BMap;
-import bt.btframework.utils.LoginInfo;
 import bt.system.dao.MyMenuDao;
 
+/**
+ * 마이메뉴 서비스
+ * 
+ * @author DOOLLEE2
+ *
+ */
 @Service("MyMenuService")
 public class MyMenuService {
 
+	private static final Logger logger = LoggerFactory.getLogger(MyMenuService.class);
+	
 	@Resource(name = "MyMenuDao")
 	private MyMenuDao mymenuDao;
 	
@@ -39,15 +51,32 @@ public class MyMenuService {
 		}	
 	}
 	
-	//마이 메뉴 리스트 저장
+		
+	/**
+	 * 마이메뉴 개별 저장 서비스
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
 	public Boolean saveMyMenuData(BMap param) throws Exception {
+		
+		logger.info("====== 마이메뉴 개별 저장서비스 =====");
 		
 		Boolean isValid = true;
 		int cnt = mymenuDao.selectMyMenuData(param);
+		logger.info("===== 갯수 : "+cnt);
 		
 		if(cnt == 0){
+			
+			//마이메뉴 개별 저장
 			mymenuDao.saveMyMenuList(param);
 		}else{
+			
+			//마이메뉴 개별 삭제
+			int resultDel = mymenuDao.delMyMenu(param);
+			logger.info("===== 마이메뉴개별삭제 결과 : "+resultDel);
+			
 			isValid = false;
 		}
 		return isValid;

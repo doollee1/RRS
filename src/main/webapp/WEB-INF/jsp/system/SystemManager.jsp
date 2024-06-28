@@ -386,7 +386,6 @@
 		
 		var colNms = $("#grid1").jqGrid('getGridParam','colNames');
 		var colid = $("#grid1")[0].p.colModel;
-		//console.log(colid);
 		var _string =  '%' ;
 		//남아있는 제품 입력 폼 idx 값 가져오기
 		for(var i= 0 ; i < colid.length; i++) {
@@ -397,7 +396,6 @@
 			}
 		}
 		_string +=  '%' ;
-		//console.log(_string);
 		//var pramDataList = "[" + _string + "]";
 		return _string;
 	}

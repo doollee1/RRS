@@ -112,6 +112,5 @@
 			btGrid.gridResizing('CreditCustomerSearchPopup_customerList');
 		}
 	});
-	console.log('CreditCustomerSearchPopup');
 })();
 </script>

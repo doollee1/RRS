@@ -144,7 +144,7 @@
 		
 		var formData = formIdAllToMap('frmSearch');
 		var param = {"param":formData};
-		console.log(param);
+
 		fn_ajax(url, true, param, function(data, xhr){
 			if (!data.RESULT) {
 				return;

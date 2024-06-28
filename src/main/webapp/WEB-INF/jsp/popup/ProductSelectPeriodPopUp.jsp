@@ -93,8 +93,6 @@ function createGrid(){
 				'<s:message code='product.eddt1'/>',
 				'<s:message code='product.stdt2'/>',
 				'<s:message code='product.eddt2'/>',
-				'<s:message code='product.stdt3'/>',
-				'<s:message code='product.eddt3'/>',
 				'BAS_YY',
 				'BAS_YY_SEQ',
 				]
@@ -104,8 +102,6 @@ function createGrid(){
 		{ name: 'ED_DT1', width: 7, align: 'center'},
 		{ name: 'ST_DT2', width: 7, align: 'center'},
 		{ name: 'ED_DT2', width: 7, align: 'center'},
-		{ name: 'ST_DT3', width: 7, align: 'center'},
-		{ name: 'ED_DT3', width: 7, align: 'center'},
 		{ name: 'BAS_YY', hidden:true},
 		{ name: 'BAS_YY_SEQ', hidden:true},
   	];

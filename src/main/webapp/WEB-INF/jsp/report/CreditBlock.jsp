@@ -232,7 +232,7 @@
 				var vtwegSub;
 				vtwegSub = data.RESULT[4].rows[i].KNKLI.substring(3,10);  
 				data.RESULT[4].rows[i].KNKLI = vtwegSub;
-				console.log(data.RESULT[4]);
+
 				vtwegSub = data.RESULT[4].rows[i].KUNAG.substring(3,10);  
 				data.RESULT[4].rows[i].KUNAG = vtwegSub;
 			}

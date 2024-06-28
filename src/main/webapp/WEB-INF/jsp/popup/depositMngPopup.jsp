@@ -163,9 +163,6 @@ $(function() {
 	
 	//입금등록 클릭
 	$("#btn_payreg").click(function() {
-	    
-		console.log("===== 입금등록버튼 클릭 =====");
-		
 		var pay_dt  = $("#PAY_DT").val().replaceAll(".","");
 	    var pay_amt = $("#PAY_AMT").val().replaceAll(",","");
 	    var dct_amt = $("#DCT_AMT").val().replaceAll(",","");
@@ -192,7 +189,6 @@ $(function() {
 	    }; 
 			        
 	    fn_ajax(url, true, param, function(data, xhr){
-	    	console.log("result : "+JSON.stringify(data));
 			if(data.MESSAGE != "OK"){
 				alert("입금등록 통신오류발생, 시스템관리자에게 문의해주세요.");
 			} else{
@@ -243,7 +239,6 @@ $(function() {
 	               , "SEQ"    : gv_seq
 	                };
      	fn_ajax(url, true, param, function(data, xhr){
-     		console.log("result : "+JSON.stringify(data));
 			if(data.MESSAGE != "OK"){
 				alert("입금 정보조회 오류, 시스템 관리자에게 문의해주세요.");
 			} else{

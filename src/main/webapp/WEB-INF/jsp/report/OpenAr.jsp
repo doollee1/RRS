@@ -150,7 +150,6 @@
 			return;
 		}
 		
-		console.log(param);
 		fn_ajax('/common/retrieveOpenArList.do', true, param, function(data) {
 			if (!data.RESULT) {
 				return;

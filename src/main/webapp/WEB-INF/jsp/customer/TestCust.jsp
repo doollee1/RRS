@@ -179,7 +179,6 @@
 				alert('Test Success');
 			},
 			error: function( jqXHR, textStatus, errorThrown ) {
-				console.log( textStatus + ", " + errorThrown + ", " +jqXHR );
 				alert( textStatus + ", " + errorThrown );
 			}
 		}); 

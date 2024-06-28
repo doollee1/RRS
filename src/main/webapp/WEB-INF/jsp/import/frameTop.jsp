@@ -103,15 +103,23 @@
 				var url = '/system/saveMyMenuData.do';
 				var param = {'PROG_CD':'${param.progcd}'};
 
-				fn_ajax(url, false, param, function(data, xhr){ 
-					if(data.dup == 'Y'){
-						alert('<s:message code="info.dupbook"/>');
+				fn_ajax(url, false, param, function(data, xhr){
+					if(data.result == 'D'){    //기존 data.dup == 'Y'    
+						
+						//alert('<s:message code="info.dupbook"/>');
+						alert('<s:message code="info.delbook"/>');																									
+						top.document.location.reload();  //화면갱신
+						
 					}else{
-						alert('<s:message code="info.savebook"/>');
-						if (confirm("<s:message code='info.refresh'/>")){
+						
+						/* if (confirm("<s:message code='info.refresh'/>")){
 							top.document.location.reload();
-						}
+						} */
+						alert('<s:message code="info.savebook"/>');
+						top.document.location.reload();  //화면갱신
+						
 					}
+					
 				});
 			}
 			

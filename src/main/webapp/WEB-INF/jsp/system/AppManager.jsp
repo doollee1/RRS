@@ -418,7 +418,7 @@
 		fn_ajax(url, false, param, function(data, xhr){
 			$("#S_PROG_GROUP").find("option").remove();
 			$("#S_PROG_GROUP").append("<option value='' selected='selected'>All</option>");
-			for(var i = 0; i < data.menulist.length; i++){console.log(data.menulist);
+			for(var i = 0; i < data.menulist.length; i++){
 				$("#S_PROG_GROUP").append("<option value='" + data.menulist[i].code + "'>" + data.menulist[i].value + "</option>");
 			}
 		});

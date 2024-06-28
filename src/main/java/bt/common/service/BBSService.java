@@ -79,10 +79,8 @@ public class BBSService {
 			BMap map = new BMap();
 			CommonsMultipartFile cmf = (CommonsMultipartFile) file;			
 			String filename = cmf.getOriginalFilename();			
-//			System.out.println(filename+": fname");
 			
 			long filesize = cmf.getSize();
-//			System.out.println(filesize+": filesize");
 			
 	    	String temp = StringUtils.getUUID();	    	
 	    	String ext = FileManager.getExtension(filename);	    	
@@ -142,10 +140,8 @@ public class BBSService {
 			BMap map = new BMap();
 			CommonsMultipartFile cmf = (CommonsMultipartFile) file;			
 			String filename = cmf.getOriginalFilename();			
-//			System.out.println(filename+": fname");
 			
 			long filesize = cmf.getSize();
-//			System.out.println(filesize+": filesize");
 			
 	    	String temp = StringUtils.getUUID();	    	
 	    	String ext = FileManager.getExtension(filename);	    	
@@ -253,9 +249,11 @@ public class BBSService {
             fis = new FileInputStream(downloadFile);             
             FileCopyUtils.copy(fis, out);
         } catch(FileNotFoundException e){
-        	System.out.println(e.getMessage());
-        } catch(Exception e) {             
-        	System.out.println(e.getMessage());             
+        	e.getStackTrace();
+        	//System.out.println(e.getMessage());
+        } catch(Exception e) {
+        	e.getStackTrace();
+        	//System.out.println(e.getMessage());             
         } finally {             
             if (fis != null) {                 
                 try { fis.close(); } catch (Exception e) {}

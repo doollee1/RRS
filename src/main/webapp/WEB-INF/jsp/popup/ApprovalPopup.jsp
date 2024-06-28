@@ -101,7 +101,6 @@ function updateApproval(){
 									 ,"DOC_GR": $("#DOC_GR").val()
 									 ,"APLV_TP":$("input:radio[name=APLV_TP]:checked").val()
 									 ,"REJECT_RSN":$("#REJECT_RSN").val()}};
-				console.log(param);
 				fn_ajax(url, false, param, function(data, xhr){
 					if(data.ALEADY == 'Y'){
 						alert("<s:message code='errors.approval'/>");

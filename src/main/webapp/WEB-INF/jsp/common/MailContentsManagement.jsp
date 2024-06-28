@@ -371,7 +371,6 @@ function cSave() {
 								, "mailBody" : mailBody
 								}
 					};
-		//console.log(param);
 		var url = '/common/saveMailContents.do';
 		
 		fn_ajax(url, false, param, function(data, xhr){
@@ -390,13 +389,9 @@ function grid1_onCilckRow(e, rowid, status){
 
 	var rowData = $("#grid1").getRowData(rowid);
 	var url = "/common/selectMailContents.do";
-
 	var param = {"param":rowData};
-	
-	console.log(param);
-	
+
 	fn_ajax(url, false, param, function(data, xhr){
-		
 		//초기화
 		$("#frmMail")[0].reset();
 		
@@ -413,7 +408,6 @@ function grid1_onCilckRow(e, rowid, status){
 		}else{
 			alert('<s:message code="info.nodata.msg"/>');
 		}
-		
 	});
 }
 
@@ -448,7 +442,6 @@ function titleSearch() {
 				'MAIL_CD': $("#MAIL_CD").val()
 			  , 'MAIL_LANG': $("#MAIL_LANG").val()
 				};
-	
 	fn_ajax(url, false, param, function(data, xhr){
 		reloadGrid("grid2", data.result);
 	});
@@ -492,7 +485,6 @@ function mailPreview() {
 		param.window = window;
 
 		popupOpen(url, pid, param, function(e, selectedData) {
-			//console.log('selectedData::'+selectedData);		
 		});	
 	}
 	
@@ -557,7 +549,6 @@ function hdCheckboxAll(e, gid) {
 
 //그리드 체크박스 이벤트
 function grid_cbox_onclick(gid, rowid, colkey) {
-	
 }
 
 function setHideRow(tId){

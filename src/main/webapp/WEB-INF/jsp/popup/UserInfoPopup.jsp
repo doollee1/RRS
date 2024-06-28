@@ -285,7 +285,6 @@ function selectUserInfo(compCd, userId, userTp){
 	var url = "/common/selectUserInfo.do"
 	
 	fn_ajax(url, false, param, function(data, xhr){
-		console.log(data.result[0]);
 		fn_dataBind('frmUserInfo', data.result[0]);
 	});
 }

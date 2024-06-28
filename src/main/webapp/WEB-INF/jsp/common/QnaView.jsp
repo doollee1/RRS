@@ -111,16 +111,14 @@ $(function() {
 		open : function(a) {
 			QNA_SEQ    = $(this).data("QNA_SEQ");
 			gv_seq		= $(this).data("QNA_SEQ");
-			console.log(QNA_SEQ);
+
 			fn_init();
 			
 			var url="/common/QnaViewDetail.do";
 			var param={"QNA_SEQ":QNA_SEQ};
 			
 			fn_ajax(url, true, param, function(data, xhr){
-				console.log(data.result);
 				var qnaInfo=data.result;
-				
 				
 				if(!fn_empty(data.answer)){
 					var answerInfo=data.answer;
@@ -128,13 +126,9 @@ $(function() {
 					$('#CONTENTS2').html(answerInfo[0].CONTENT);
 					$('#answerInsert').hide();
 				}else{
-			
 					$('#frmNoticeA').hide();
 				}
-				
-				console.log(qnaInfo[0].CONTENT);
 
-				
 				fn_dataBind('frmNoticeP', qnaInfo[0]);
 				
 				$('#CONTENTS').html(qnaInfo[0].CONTENT);
@@ -174,15 +168,11 @@ $(function() {
 		str = str.replace(/(?:\r\n|\r|\n)/g, '<br/>');
 		$('#ANSWER').val(str);
 
-
 		var formData = formIdAllToMap('answerInsert');
-		console.log(formData);
 		var param = {};
 		
 		param.QNA_SEQ=gv_seq;
 		param.CONTENT=formData.REMARK;
-		
-		console.log(param.CONTENT)
 
 		if(confirm("<s:message code='confirm.save'/>")){
 			var url = '/common/qnaAnswerInsert.do';

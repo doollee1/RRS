@@ -95,8 +95,7 @@ $(function() {
 					var gridData = [$('#BOMGrid').getRowData(selRows)];
 					if(selRows > 0){
 						p_rtnData = gridData;
-						console.log(p_rtnData[0]["MATL_NM"]);
-						
+
 						parent.$("#S-MATL_CD").val(p_rtnData[0]["MATL_CD"]);
 						parent.$('#MATL_NM').text(p_rtnData[0]["MATL_NM"]);
 						parent.$('#BOM_QTY').val(p_rtnData[0]["BOM_QTY"]);

@@ -63,9 +63,9 @@ function ajaxUpload() {
 		//submit이후의 처리
 		success: function(data, statusText){
 			if(!data.success) {
-				alert('upload fail: '+ data.message)
+				alert('업로드에 실패했습니다. : '+ data.message)
 			} else {
-				alert('upload success')
+				alert('업로드에 성공했습니다.')
 			}
 			popupClose($('#MemberUserExcelUploadPopup').data('pid'));
 		},

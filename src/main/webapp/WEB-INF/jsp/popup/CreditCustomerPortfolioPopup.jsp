@@ -134,8 +134,7 @@
         return s.substr(s.length - 2);
     }
 	
-	function fromPopulateList(selected, evnt) {
-		// console.log(selected);
+	function fromPopulateList(selected, evnt) {ted);
 		var seldate = selected;
 		var datearr = seldate.split(".");
 		var day = datearr[0];
@@ -145,12 +144,10 @@
 		newDate.setDate(newDate.getDate() + 7);
 		
 		var Result = pad(newDate.getDate())+ '.' + pad((newDate.getMonth()+1)) + '.' + newDate.getFullYear();
-		console.log(Result);		
 		$('#CreditCustomerPortfolioPopup_to').datepicker('setDate', Result); /**/
 	}
 	
 	function toPopulateList(selected, evnt) {
-		// console.log(selected);
 		var seldate = selected;
 		var datearr = seldate.split(".");
 		var day = datearr[0];
@@ -160,7 +157,6 @@
 		newDate.setDate(newDate.getDate() - 7);
 		
 		var Result = pad(newDate.getDate())+ '.' + pad((newDate.getMonth()+1)) + '.' + newDate.getFullYear();
-		console.log(Result);
 		$('#CreditCustomerPortfolioPopup_from').datepicker('setDate', Result);
 	}
 	
@@ -379,6 +375,5 @@
 			});
 		}
 	});
-	console.log('CreditCustomerPortfolioPopup');
 })();
 </script>

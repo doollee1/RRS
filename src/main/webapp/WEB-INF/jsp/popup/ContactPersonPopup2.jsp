@@ -215,7 +215,7 @@ function popupSearch() {
 	var v_searchData = formIdToMap('frmContactMGSearch');
 	var sendData = {'param':v_searchData};
 	var url = '/customer/selectContactPersonPopup2.do';
-	console.log(formIdToMap('frmContactMGSearch'));
+	
 	fn_ajax(url, false, sendData, function(data, xhr) {
 		var gridData = data.result;
 		$('#grid_ContactPersonMG').jqGrid('clearGridData');

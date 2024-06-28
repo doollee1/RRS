@@ -5,6 +5,8 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,8 +22,17 @@ import bt.btframework.utils.LoginInfo;
 import bt.system.service.MyMenuService;
 import bt.system.service.SystemService;
 
+/**
+ * 마이메뉴 Controller
+ * 
+ * @author DOOLLEE2
+ *
+ */
 @Controller
 public class MyMenuController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(MyMenuController.class);
+	
 	@Resource(name = "MyMenuService")
 	private MyMenuService mymenuService;
 
@@ -82,17 +93,32 @@ public class MyMenuController {
 		return respData;
 	}
 	
-	//마이 메뉴 저장 - 한건씩
+	
+	/**
+	 * 마이메뉴 개별 저장
+	 * 
+	 * @param reqData
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/system/saveMyMenuData.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData saveMyMenuData(@RequestBody BReqData reqData, HttpServletRequest request) throws Exception {
+		
+		logger.info("====== 마이메뉴 개별 저장 =====");
+		logger.info("====== param : "+reqData);
+		
+		
 		BMap paramData = new BMap();
 		paramData.put("PROG_CD", (String) reqData.get("PROG_CD"));
 		paramData.put("USER_ID", LoginInfo.getUserId());
 		
+		
 		BRespData respData = new BRespData();
 		if(!mymenuService.saveMyMenuData(paramData)){
-			respData.put("dup", "Y");
+			//respData.put("dup", "Y");
+			respData.put("result", "D");
 		};
 		return respData;
 	}

@@ -400,7 +400,6 @@
 		var param = {"param" : { "mail_yn":"Y" } };
 		
 		fn_ajax(url, true, param, function(data, xhr){
-			console.log(data)
 		});			
 	}
 </script>

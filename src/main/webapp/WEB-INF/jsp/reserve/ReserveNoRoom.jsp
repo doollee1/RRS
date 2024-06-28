@@ -149,13 +149,11 @@ $(function() {
 function fn_Init(){
 	var fromDay = getMonthFirstDay();
 	var toDay   = getToday();
-	//console.log(fromDay);
-	//console.log(toDay);
+
 	$("#fromDate").val(Util.converter.dateFormat1(Util.converter.dateFormat3(fromDay)));
 	$("#toDate").val(Util.converter.dateFormat1(Util.converter.dateFormat3(toDay)));
 
 	createRoomGrid();
-
 	cSearch();
 }
 
@@ -254,7 +252,6 @@ $("#inputRow").click(function(){
 			return;
 		}
 	}
-	
 	
 	var data = {"ROOM_TYPE"    : $("#noRoomType").val(),
 			    "REQ_NO_DT"    : date,

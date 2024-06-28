@@ -150,10 +150,6 @@
 	
 	//공지사항 삭제
 	function cDel(){
-		
-		console.log("===== 공지사항 삭제 =====");
-		console.log("notice_no : "+$("#hNoticeNo").val());
-		
 		if ($("#hNoticeNo").val() == "") return;
 		
 		if(confirm("삭제하시겠습니까?")){
@@ -164,8 +160,6 @@
 			};
 			
 			fn_ajax(url, false, param, function(data, xhr){
-				
-				console.log("data  : "+JSON.stringify(data));
 				if(data.result == "success"){
 					
 					alert("삭제 성공하였습니다.");
@@ -189,7 +183,7 @@
 		};
 		
 		fn_ajax(url, false, param, function(data, xhr) {
-			console.error(arguments);
+			
 		});
 	}
 </script>

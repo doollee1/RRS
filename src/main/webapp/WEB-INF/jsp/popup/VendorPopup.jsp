@@ -207,7 +207,7 @@ function popupSearch() {
 	var v_searchData = formIdToMap('frmVendorMGSearch');
 	var sendData = {'param':v_searchData};
 	var url = '/customer/selectVendorPopup.do';
-	console.log(formIdToMap('frmVendorMGSearch'));
+
 	fn_ajax(url, true, sendData, function(data, xhr) {
 		var gridData = data.result;
 		$('#grid_VendorMG').jqGrid('clearGridData');

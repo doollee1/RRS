@@ -36,11 +36,20 @@ public class MyMenuDao extends DBAbstractMapper {
 	}
 
 	/**
-	 * 마이 메뉴 삭제 (DELETE)
+	 * 마이 메뉴 전체삭제 (DELETE)
 	 */
 	public void delMyMenuList(BMap param) {
 		delete("SystemMapper.delMyMenuList", param);
 	}
+	
+	
+	/**
+	 * 마이 메뉴 개별삭제 (DELETE)
+	 */
+	public int delMyMenu(BMap param) {
+		return delete("SystemMapper.delMyMenu", param);
+	}
+	
 	
 	/**
 	 * 마이 메뉴 정보 카운트

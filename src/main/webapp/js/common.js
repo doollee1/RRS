@@ -2137,7 +2137,6 @@ function fn_popDept(code, name) {
 	var pid = 'deptPopup';
 	
 	popupOpen(url, pid, sendData, function(data) {
-		console.log("DATA: " + data + ' CODE: ' + code + ' NAME: '+ name);
 		if (data.length == 1) {
 			$('[name="' + code + '"]').val(data[0].DEPT_CD);
 			$('[name="' + name + '"]').text(data[0].DEPT_NM);

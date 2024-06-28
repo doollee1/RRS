@@ -1769,7 +1769,6 @@ $(function() {
 	 * -----------------------------------------------------*
 	 *******************************************************/
 	$("#btn_create").click(function() {
-		console.log("====== 인보이스 생성버튼 클릭 ======")
 		/* ********* 인보이스 팝업 OPEN ********* */
 		var url = "/reserve/InvoicePopup.do";
 		var pid = "p_invoicePopup";
@@ -1798,7 +1797,6 @@ $(function() {
 		var isReserveDetlYn = "";
 		fn_ajax(url3, false, param3, function(data, xhr) {
 			isReserveDetlYn = data.result;
-			console.log("=== 예약상세여부 : "+isReserveDetlYn);									
 		});
 		
 		if(isReserveDetlYn != "Y"){  //예약상세여부가 'Y'가 아닐시
@@ -1910,10 +1908,7 @@ $(function() {
 	 * -----------------------------------------------------*
 	 *******************************************************/
 	$("#btn_pay").click(function() {
-		console.log("===== 입금관리버튼클릭 ======")
-		
-		var invRegDt = $("#INV_REG_DT").val();		
-		console.log("===== 인보이스 발행일자 : "+invRegDt);
+		var invRegDt = $("#INV_REG_DT").val();
 		
 		if(fn_empty(invRegDt)){
 			alert("인보이스 발행을 해주세요.");
@@ -1929,7 +1924,6 @@ $(function() {
 			        };
 	    
 		popupOpen(url, pid, param, function(data) {
-			console.log("result : "+JSON.stringify(data));
 			if(!fn_empty(data)){
 				
 				$("input[name='PAY_DEP_AMT']").val(data.PAY_DEP_AMT); //입금예약금 세팅

@@ -489,7 +489,6 @@
 		var sendData = {'CUST_CD':$('#CUST_CD').val()};
 		
 		fn_ajax(url, false, sendData, function(data, xhr){
-			console.log(data.RESULT[0]);
 			$('#STREET_NM').val(data.RESULT[0].STREET_NM);
 			$('#HAUS_NO').val(data.RESULT[0].HAUS_NO);
 			$('#POST_CD').val(data.RESULT[0].POST_CD);
@@ -507,7 +506,6 @@
 			var url = '/customer/saveContactPerson.do';
 			var param = {'paramData':formdata
 						,'CUST_CD' : $("#CUST_CD").val()};
-			console.log(param);
 			fn_ajax(url, false, param, function(data, xhr){
 				alert("<s:message code='info.save'/>");
 				searchPerson();

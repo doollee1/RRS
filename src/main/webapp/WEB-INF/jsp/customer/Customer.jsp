@@ -1219,8 +1219,6 @@ var args;
 				btGrid.gridQueryPaging($('#contactReportGrid'), 'selectContactReportTab', data.resultContactReportGrid);  // 그리드 페이징 설정
 				
 				if ( data.resultInteractionLog != null ) {
-					//console.log(data.resultInteractionLog);
-					
 					fn_dataBindByPrefix('frmContRpt', 'SL07-', data.resultInteractionLog);
 					
 					var note = data.resultInteractionLog.REPORT_NOTE;
@@ -3294,9 +3292,7 @@ var args;
 			}
 			
 			$.each(selecedData, function(k, v) {
-				//console.log(selecedData);
 				// STREET_NM + ' ' + HAUS_NO + ' / ' + COUNTRY + '-' + POST_CD + ' ' + CITY_NM
-				
 				('CUST_CD' == k) ? obj.val(v) : '';
 				('CUST_NM' == k) ? objNm.text(v) : '';
 
@@ -3438,7 +3434,7 @@ var args;
 		var url = "/popup/ContactPersonPopup2.do";
 		var pid = "ContactPersonPopup2";  //팝업 페이지의 취상위 div ID
 		var param = {CUST_CD : $("#S-ACCOUNT").val()};
-		//console.log(param);
+		
 		popupOpen(url, pid, param, function(data){
 			if(!fn_empty(data)){
 				$('[name="' + code + '"]').val(data[0].CODE);

@@ -387,7 +387,7 @@
 		fn_ajax(url, false, param, function(data, xhr){
 			$("#S_PROG_GROUP").find("option").remove();
 			$("#S_PROG_GROUP").append("<option value='' selected='selected'>==전체==</option>");
-			for(var i = 0; i < data.menulist.length; i++){console.log(data.menulist);
+			for(var i = 0; i < data.menulist.length; i++){
 				$("#S_PROG_GROUP").append("<option value='" + data.menulist[i].code + "'>" + data.menulist[i].value + "</option>");
 			}
 		});
@@ -415,7 +415,6 @@
 		
 		var colNms = $("#grid2").jqGrid('getGridParam','colNames');
 		var colid = $("#grid2")[0].p.colModel;
-		console.log(colid);
 		var _string =  '%' ;
 		//남아있는 제품 입력 폼 idx 값 가져오기
 		for(var i= 0 ; i < colid.length; i++) {
@@ -426,7 +425,6 @@
 			}
 		}
 		_string +=  '%' ;
-		console.log(_string);
 		//var pramDataList = "[" + _string + "]";
 		return _string;
 	}

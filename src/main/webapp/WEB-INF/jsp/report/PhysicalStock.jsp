@@ -142,8 +142,6 @@
 			if (!data.RESULT) {
 				return;
 			}
-
-			console.log(data.RESULT);
 			
 			var mchbData;
 			Array.prototype.some.call(data.RESULT, function(v) {

@@ -56,7 +56,7 @@ $(function() {
 				    };
 		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
-				alert("ajax 통신 error!");
+				alert("이미지를 불러오는데 실패했습니다. 시스템 관리자에게 문의해 주세요.");
 			}else{
 				if(!fn_empty(data.result)){
 				    $("#arr_img").attr("src", "/upload/" + data.result.ADD_FILE_PATH2 + data.result.ADD_FILE_NM);

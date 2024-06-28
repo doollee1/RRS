@@ -361,7 +361,7 @@ $(function() {
 				clearForm($('#frmOneTimeCustomerPopupHeader'));
 				$('#SHIPEXT').val($(this).data("SHIPEXT"));
 			}
-			console.log('newid == ' + newId);			
+
 			if ( newId == 'NEW' ) {
 				// clearForm($('#frmOneTimeCustomerPopupHeader'));				
 				$('#frmOneTimeCustomerPopupHeader').reset();

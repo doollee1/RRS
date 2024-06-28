@@ -164,8 +164,6 @@ $(function(){
 						'<s:message code="product.eddt1"/>',
 						'<s:message code="product.stdt2"/>',
 						'<s:message code="product.eddt2"/>',
-						'<s:message code="product.stdt3"/>',
-						'<s:message code="product.eddt3"/>',
 						'BAS_YY',
 						'BAS_YY_SEQ',
 						'STATUS_P'
@@ -216,34 +214,6 @@ $(function(){
 		      }
 			},
 			{ name: 'ED_DT2', width: 7, align: 'center', editable:true,
-				editoptions:{
-					dataInit: function(element){
-						$(element).keyup(function(){
-							var val1 = element.value;
-							var num = new Number(val1);
-							if(isNaN(num)){
-								alert("숫자만 입력 가능합니다.");
-								element.value = ''; 
-							}
-						})
-					}, maxlength:8
-				}
-			},
-			{ name: 'ST_DT3', width: 7, align: 'center', editable:true,
-				editoptions:{
-					dataInit: function(element){
-						$(element).keyup(function(){
-							var val1 = element.value;
-							var num = new Number(val1);
-							if(isNaN(num)){
-								alert("숫자만 입력 가능합니다.");
-								element.value = ''; 
-							}
-						 })
-					}, maxlength:8
-				}
-			},
-			{ name: 'ED_DT3', width: 7, align: 'center', editable:true,
 				editoptions:{
 					dataInit: function(element){
 						$(element).keyup(function(){
@@ -413,18 +383,6 @@ $(function(){
 					return;
 				} else if (gridDataChk[i]["ST_DT2"] >= gridDataChk[i]["ED_DT2"]) {
 					alert("종료일2는 시작일2와 같거나 과거일 수 없습니다.")
-					cSearch();	
-					return;
-				}
-			}
-			
-			if(!fn_empty(gridDataChk[i]["ST_DT3"]) && !fn_empty(gridDataChk[i]["ED_DT3"])){
-				if (gridDataChk[i]["ST_DT3"] <= gridDataChk[i]["ED_DT2"]) {
-					alert("시작일3은 종료일2보다 과거일 수 없습니다.")
-					cSearch();
-					return;
-				} else if (gridDataChk[i]["ST_DT3"] >= gridDataChk[i]["ED_DT3"]) {
-					alert("종료일3은 시작일2와 같거나 과거일 수 없습니다.")
 					cSearch();	
 					return;
 				}

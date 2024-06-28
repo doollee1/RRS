@@ -144,9 +144,7 @@ $(function() {
 			setDeliPlantCombo($(this).data("SALES_ORG_CD"), $(this).data("DISTRB_CH"), $(this).data("PLANT_CD"), true)
 			
 			creatematerialGrid();
-			
-			console.log($(this).data("PLANT_CD"));
-			
+
 			$('#S_MATL_POP-MATL_CD_ST').val($(this).data("MATL_CD"));
 			$('#S_MATL_POP-MATL_CD_END').val($(this).data("MATL_CD"));
 			$('#S_MATL_POP-SALES_ORG_CD').val($(this).data("SALES_ORG_CD"));
@@ -255,9 +253,8 @@ $(function() {
 				}
 			});
 			
-			
 			$('#S_MATL_POP-MATL_DESC').focus();
-			console.log('ll'+$('#S_MATL_POP-PLANT_CD').val());
+
 		},
 		close: function(e, ui) {
 			/* 필수로 들어가야함 */

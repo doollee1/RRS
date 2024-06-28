@@ -130,7 +130,6 @@
 		
 		$("#btnFormData").click(function(e){
 			var data = formIdToMap("frmSearch");
-			console.log(data);
 		});
 		
 		$("#btnAjax").click(function(e){

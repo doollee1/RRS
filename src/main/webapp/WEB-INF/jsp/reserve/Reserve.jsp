@@ -138,9 +138,6 @@
 		/* 그리드 로우 클릭시 상세조회 팝업 open */
 		$('#quotationGrid').jqGrid('setGridParam', {
 			ondblClickRow: function(rowid) {
-				
-				console.log("===== 예약목록 더블클릭 =====")
-				
 				var selRowData = $("#quotationGrid").jqGrid("getRowData",rowid);
 				param = {};                       
 				param.SEQ    = selRowData.SEQ;    

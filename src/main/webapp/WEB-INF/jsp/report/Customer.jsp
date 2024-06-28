@@ -220,7 +220,6 @@
 	// Search
 	////////////////////////////////////////////////////////////////////
 	window.cSearch = function() {
-		console.log('search')
 		var param = {};
 		Array.prototype.forEach.call(searchElms, function(elm) {
 			var value = elm.value;
@@ -257,13 +256,11 @@
 		Util.component.createCombobox(searchElms, true);
 		createcustomerReportGrid();
 		$('[data-searchcolumn]').on('keypress', function(e) { if(e.keyCode === 13) { cSearch() } }); 
-		console.log('123123');
 	}
 	
 	//공통버튼 - 엑셀 다운 클릭
 // 	function cExcelSample() {
 	window.cExcelSample = function() {
-		console.log('excel');
 // 		if (confirm("<s:message code='info.excel'/>")  == true) { 
 			
 // 			var colNms = excelToMap();

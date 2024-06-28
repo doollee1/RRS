@@ -441,10 +441,7 @@ $(function() {
 	
 	//이메일 전송하기
 	$("#btn_send").on("click" , function(){
-		console.log("======= 전송하기 =======");
 		var fileUid = $('#hFileUid').val();
-		console.log("=== hFileUid : "+fileUid);
-
 		//pdf파일 업로드 확인
 		if(!fileUid){
 			alert("pdf 파일 업로드 후 저장 버튼을 클릭해 주세요.");
@@ -472,13 +469,11 @@ $(function() {
 				return false;
 			}
 		}
-		
-		console.log("param : "+JSON.stringify(param));
-		
-		
+
 		if(!confirm("<s:message code='confirm.send'/>")){  //전송하시겠습니까?
 			return false;
 		}
+		
 		var url = "/report/retrieveEmailPdfReportSend.do";  //pdf이메일전송
 		fn_ajax(url, false, param, function(data, xhr){
 		    if(!data.resultCd){
@@ -587,14 +582,11 @@ $(function() {
 		var args = '';
 		$.each(gridData , function(i , json){
 			$.each(json, function(k , value){
-				
-				//console.log("json[STATUS_V] : "+json["STATUS_V"]);
 				if(k == "STATUS_V" && json[k] !='R'){
 					cnt++;
 					return;
 				}
-			
-				//console.log("json[ITEM_CD] : "+json["ITEM_CD"]);
+
 				if(k == "ITEM_CD" && json[k].indexOf("Object") >-1 ){
 					errChk++;
 					return;
@@ -604,7 +596,6 @@ $(function() {
 					if(k == "PER_AMT" || k == "TOT_AMT") json[k] = parseInt(value.replaceAll("," , ""));
 					else                                 json[k] = parseInt(value);
 				}
-				
 				
 			});
 		});

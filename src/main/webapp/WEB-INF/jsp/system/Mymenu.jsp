@@ -193,7 +193,7 @@ function cSave() {
 		var sid = 'sid_saveMyMenuList';
 		var url = '/system/saveMyMenuList.do';
 		var sendData = {'paramData':formdata, 'paramDataList':gridData2};
-		console.log(sendData);
+
 		fn_sendData(sid, url, sendData);
 	}
 }
@@ -291,8 +291,7 @@ function fn_callback(sid, data, message, code) {
 	// 검색
 	if (sid == 'sid_getMenuList') {
 		var gridData = data.resultMenuList;
-		
-		//console.log(gridData);
+
 		$('#grid1').jqGrid('clearGridData');
 		$('#grid1').jqGrid('setGridParam', {data:gridData});
 		$('#grid1').trigger('reloadGrid');

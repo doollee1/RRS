@@ -82,21 +82,21 @@ $(function() {
 function fn_Init(){
 	var fromDay=getOneWeekBefore();
 	var toDay = getToday();
-	console.log(fromDay);
-	console.log(toDay);
 	var lastMonth = getlastMonth();
+	
+	setCommBtn('Add', false);
 	
 	$("#fromDate").val(Util.converter.dateFormat1(Util.converter.dateFormat3(fromDay)));
 	$("#toDate").val(Util.converter.dateFormat1(Util.converter.dateFormat3(toDay)));
+	
 	createQuotationGrid();
 	
 	$('#quotationGrid').jqGrid('setGridParam', {
 		ondblClickRow: function(rowid) {
-			
 			var selRowData = $("#quotationGrid").jqGrid("getRowData",rowid);
 			param = {};                       
 			param.QNA_SEQ    = selRowData.QNA_SEQ;
-			console.log(param);
+
 			reservePopup(param);              
 		}
 	}); 
@@ -194,7 +194,6 @@ function reservePopup(param) {
 	var pid = "noticePopup"; //팝업 페이지의 취상위 div ID
 
 	popupOpen(url, pid, param, function(data) {
-		console.log(url);
 		cSearch();
 	});
 }

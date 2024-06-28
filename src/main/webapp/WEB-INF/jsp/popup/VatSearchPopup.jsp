@@ -183,6 +183,5 @@ function grid_cbox_onclick(gid, rowid, colkey) {
 			reloadGrid('VatSearchPopup_customerList', $(this).data('custVatList'));
 		}
 	});
-	console.log('VatSearchPopup');
 })();
 </script>

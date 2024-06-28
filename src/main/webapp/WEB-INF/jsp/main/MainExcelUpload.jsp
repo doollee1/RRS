@@ -64,7 +64,6 @@ function ajaxUpload(){
 		//submit이후의 처리
 		success: function(data, statusText){
 			//popupClose($('#excelupload').data('pid'), data);
-			console.log(data);
 			alert("complete");
 		},
         //ajax error

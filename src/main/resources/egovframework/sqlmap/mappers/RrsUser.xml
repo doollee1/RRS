@@ -159,12 +159,6 @@
 		 WHERE MEMBER_ID = #{MEMBER_ID}
 	</select>
 	
-	<select id="selectMemberUserIDCnt" parameterType="BMap" resultType="int">
-		SELECT COUNT(1)
-		  FROM tb_admin_reg_member 
-		 WHERE MEMBER_ID = #{MEMBER_ID}
-	</select>
-	
 	<select id="selectMemberUserInfoCnt" parameterType="BMap" resultType="int">
 		SELECT COUNT(1)
 		  FROM tb_admin_reg_member 
