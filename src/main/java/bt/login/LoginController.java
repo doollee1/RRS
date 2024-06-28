@@ -15,7 +15,6 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller ;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
@@ -44,9 +43,7 @@ public class LoginController {
 	
 	@Resource(name = "CommonService")
 	private CommonService commonService;
-	
-	@Value("${spring.profiles.active}")
-	private String activeProfile;   //프로파일
+		
 		
 	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 	
@@ -84,8 +81,7 @@ public class LoginController {
 		
 		logger.info("======== 로그인화면 =======");
 		initRsa(request);
-				
-		logger.info("========= 프로파일 : "+activeProfile);
+						
 		return "/login/login";
 	}
 	
