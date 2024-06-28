@@ -10,11 +10,14 @@
 <style>
 .pbtn_default {margin: 0 3px -1px 5px;padding: 3px 10px 3px 10px;border: 1px solid #a9cbeb !important;background: #bdd6ee !important;color: #2269b1;}
 .cmc_txt {text-align:right;}
+.pickUpTable tr:nth-child(3n+1) {border-bottom: 4px double #C1D0DC;}
+.pickUpTable tr:first-child {border-top: 4px solid #a1b4bd; border-bottom: 4px solid #a1b4bd;}
+
 </style>
 <div id="p_pickUpGbnPopup">
 	<form id="frmPickupFrm" action="#">
 		<div id="pop_ct_form_wrap">
-			<table class="pop_tblForm">
+			<table class="pop_tblForm pickUpTable">
 				<colgroup>
 					<col width="20%" />
 			        <col width="30%" />

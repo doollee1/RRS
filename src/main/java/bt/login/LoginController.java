@@ -38,6 +38,7 @@ import egovframework.com.utl.slm.EgovMultiLoginPreventor;
 
 @Controller
 public class LoginController {
+	
 	@Resource(name = "LoginService")
 	private LoginService loginService;
 	

@@ -4,6 +4,7 @@
 <%
 /**
  * @Name : MemberUserPopup
+ * @Description : 멤버 회원 정보 팝업
  */
 %>
 <div id="memberUserPopup">
@@ -84,7 +85,7 @@ $(function() {
 function grid_MemberUser_Load() {
 	var colName = [
 		'순번',
-		'맴버ID',
+		'멤버ID',
 		'이름',
 		'영문이름',
 		'전화번호',

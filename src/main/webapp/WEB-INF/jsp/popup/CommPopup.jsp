@@ -4,6 +4,7 @@
 <%
 /**
  * @Name : CommPopup
+ * @Description : 코드목록 팝업
  */
 %>
 <div id="commPopup">

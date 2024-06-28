@@ -3,7 +3,8 @@
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
 <%
 /**
- * @Name : chgStatusPopup
+ * @Name : arrImgPopup
+ * @Description : 항공권이미지 팝업
  */
 %>
 <style>

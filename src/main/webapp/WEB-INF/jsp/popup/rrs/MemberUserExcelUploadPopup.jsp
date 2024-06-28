@@ -16,7 +16,7 @@
 <script type="text/javascript">
 $(function() {
 	$('#MemberUserExcelUploadPopup').dialog({
-		title: 'Upload Excel',
+		title: '멤버 회원 정보 엑셀 업로드',
 		autoOpen: false,
 		height: 160,
 		width: 450,

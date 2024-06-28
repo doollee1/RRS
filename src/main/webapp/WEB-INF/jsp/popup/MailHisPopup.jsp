@@ -3,7 +3,7 @@
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
 <%
 /**
- * @Name : 
+ * @Name : MailHisPopup
  */
 %>
 <style>

@@ -5,6 +5,7 @@
 <%
 /**
  * @Name : rrs/UserInfoPopup
+ * @Description : 회원가입 팝업
  */
 %>
 <div id="p_UserInfo">
@@ -30,7 +31,7 @@
 							    <option value="${i.CODE}"<c:if test="${i.CODE eq '02'}">selected</c:if>>${i.CODE_NM}</option>
 						    </c:forEach>
 						</select>
-						<button type="button" class="btn btn-success" id="btn_userSearchPopup">맴버찾기</button>	
+						<button type="button" class="btn btn-success" id="btn_userSearchPopup">멤버찾기</button>	
 					</td>
 					<th>이름</th>
 					<td>
@@ -173,7 +174,7 @@
 
 	$(function() {
 		$('#p_UserInfo').dialog({
-			title :'회원 정보',
+			title :'회원가입',
 			autoOpen : false,
 			width: 940,
 			modal : true,
@@ -199,6 +200,7 @@
 			},
 			open : function() {
 				if(!fn_empty($(this).data("USER_ID"))) {
+					$(".ui-dialog-title").text("회원정보수정");
 					// 회원 수정 팝업인 경우
 					selectUserInfo($(this).data("USER_ID"));	// USER_ID로 조회
 					$("#USER_ID_POP").attr("readonly", true);		// USER_ID_POP readonly
@@ -296,7 +298,7 @@
 		if(confirm("<s:message code='confirm.save'/>")){
 				fn_ajax(url, false, param, function(data, xhr){
 					if((data.isExistMemberID == 'Y') && !(formData.MEMBER_ID == formData.Ex_MEMBER_ID)){
-						alert("중복되는 맴버ID입니다."); 
+						alert("중복되는 멤버ID입니다."); 
 					} else {
 						alert("<s:message code='info.save'/>");
 						p_rtnData = {   "USER_ID"    : $('#USER_ID_POP'  ).val()
@@ -323,7 +325,7 @@
 		return (val != '' && val != 'undefined' && pattern.test(val));
 	}
 
-	// 맴버 찾기 클릭 
+	// 멤버 찾기 클릭 
 	$('#btn_userSearchPopup').on('click', function(e) {
 		var url = "/rrs/UserInfoSearchPopup.do";
 		var pid = "UserInfoSearchPopup";

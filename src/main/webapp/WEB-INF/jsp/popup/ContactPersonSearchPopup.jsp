@@ -1,7 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
-
+<%
+	/**
+	 * @Name : ContactPearson Search
+	 * @Description : 거절사유 팝업창
+	 */
+%>
 <div id="ContactPearsonSearchPopup">
 	<form id="frmSearch" action="#" style="display: none;">
 		<input type="hidden" name="CURRENT_PAGE"  id="CURRENT_PAGE" />

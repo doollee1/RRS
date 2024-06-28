@@ -4,6 +4,7 @@
 <%
 /**
  * @Name : MemberUserAddPopup
+ * @Description : 멤버 회원 정보 등록 팝업
  */
 %>
 <div id="MemberUserAddPopup">
@@ -108,7 +109,7 @@ $(document).on("focusout", '[class^=onlyNum]', function() {
 
 $(function() {
 	$('#MemberUserAddPopup').dialog({
-		title:'멤버 회원 정보 등록',
+		title:'멤버 회원 정보',
 		autoOpen: false,
 		height: 350,
 		width: 450,
@@ -180,7 +181,7 @@ function saveMemberUserInfo(){
 	
 	// validation check
 	if($('#MEMBER_ID').val() === "") {
-		alert("맴버ID를 입력해주세요.");
+		alert("멤버ID를 입력해주세요.");
 		return;
 	}
 	if(!(/^[a-zA-Z]+[0-9]{4}$/).test($('#MEMBER_ID').val())) {
@@ -219,7 +220,7 @@ function saveMemberUserInfo(){
 			if(data.isExistMember == 'Y'){
 				alert("이미 등록된 멤버회원이 존재합니다."); 
 			} else if((data.isExistMemberID == 'Y') && !(formData.MEMBER_ID == formData.Ex_MEMBER_ID)){
-				alert("중복되는 맴버ID입니다."); 
+				alert("중복되는 멤버ID입니다."); 
 			} else {
 				alert("<s:message code='info.save'/>");
 				popupClose($('#MemberUserAddPopup').data('pid'));			

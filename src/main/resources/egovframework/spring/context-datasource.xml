@@ -4,54 +4,29 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
         http://www.springframework.org/schema/jdbc  http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd">
 
-	<!-- <bean id="transactionManager" 
+	<bean id="transactionManager" 
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 	   <property name="dataSource" ref="dataSource"/>
-	</bean> -->
+	</bean>
 		
-	<beans profile="dev">	
-		<bean class="bt.btframework.utils.dataSource.CryptoDataSource" id="dataSource" destroy-method="close">
-	        <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"></property>
-	        <!-- <property name="url" value="qhURKVhLXLSpaoUhT52JUvGkB29VjHEDh8HQ/O6tizqGyIOHnRhYnOxTWZnFT/n/XF8iwFqtVhIeJug1f+D+01dAKx/0tcVY25DFnXPQnx0=" /> --> <!--기존-->
-	        <property name="url" value="qhURKVhLXLSpaoUhT52JUvGkB29VjHEDh8HQ/O6tizqGyIOHnRhYnOxTWZnFT/n/7hs5JxKKKT4xBAh/qU4kk/HiyBTaOHHUZOQYanuJd0Y=" /><!--변경-->
-	        <property name="username" value="ZMXn79uIJca0dATB5toaFw=="/> 
-	        <property name="password" value="5kyT79oE55VyMYEaCK4KKg=="/>         
-	        <!-- validationQuery:유효 검사용 쿼리( 1개 이상의 row를 반환하는 쿼리를 넣어주면 된다. ) -->
-	        <property name="validationQuery" value="select 1"/>
-	        <!-- testWhileIdle:컨넥션이 놀고 있을때 -_-; validationQuery 를 이용해서 유효성 검사를 할지 여부. -->
-	        <property name="testWhileIdle" value="true"/>
-	        <!-- timeBetweenEvictionRunsMillis:해당 밀리초마다 validationQuery 를 이용하여 유효성 검사 진행 -->
-	        <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
-	        <!-- 커넥션풀이 제공할 최대 커넥션개수 -->
-	        <property name="maxActive" value="30" />
-	        <!-- 사용되지 않고 풀에 저장될수 있는 최대 커넥션 개수 -->
-	        <property name="maxIdle" value="10" />
-	        <!-- 풀에 커넥션이 존재하지 않을때, 커넥션이 풀에 다시 리턴되기까지 대기 시간 -->
-	        <property name="maxWait" value="1000" />
-	    </bean>
-    </beans>
-    
-    
-    <beans profile="prod">	
-		<bean class="bt.btframework.utils.dataSource.CryptoDataSource" id="dataSource" destroy-method="close">
-	        <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"></property>
-	        <property name="url" value="qhURKVhLXLSpaoUhT52JUvGkB29VjHEDh8HQ/O6tizqGyIOHnRhYnOxTWZnFT/n/XF8iwFqtVhIeJug1f+D+01dAKx/0tcVY25DFnXPQnx0=" /> <!--기존-->
-	        <!-- <property name="url" value="qhURKVhLXLSpaoUhT52JUvGkB29VjHEDh8HQ/O6tizqGyIOHnRhYnOxTWZnFT/n/7hs5JxKKKT4xBAh/qU4kk/HiyBTaOHHUZOQYanuJd0Y=" /> --><!--변경-->
-	        <property name="username" value="ZMXn79uIJca0dATB5toaFw=="/> 
-	        <property name="password" value="5kyT79oE55VyMYEaCK4KKg=="/>         
-	        <!-- validationQuery:유효 검사용 쿼리( 1개 이상의 row를 반환하는 쿼리를 넣어주면 된다. ) -->
-	        <property name="validationQuery" value="select 1"/>
-	        <!-- testWhileIdle:컨넥션이 놀고 있을때 -_-; validationQuery 를 이용해서 유효성 검사를 할지 여부. -->
-	        <property name="testWhileIdle" value="true"/>
-	        <!-- timeBetweenEvictionRunsMillis:해당 밀리초마다 validationQuery 를 이용하여 유효성 검사 진행 -->
-	        <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
-	        <!-- 커넥션풀이 제공할 최대 커넥션개수 -->
-	        <property name="maxActive" value="30" />
-	        <!-- 사용되지 않고 풀에 저장될수 있는 최대 커넥션 개수 -->
-	        <property name="maxIdle" value="10" />
-	        <!-- 풀에 커넥션이 존재하지 않을때, 커넥션이 풀에 다시 리턴되기까지 대기 시간 -->
-	        <property name="maxWait" value="1000" />
-	    </bean>
-    </beans>
+	<bean class="bt.btframework.utils.dataSource.CryptoDataSource" id="dataSource" destroy-method="close">
+        <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"></property>
+        <!-- <property name="url" value="qhURKVhLXLSpaoUhT52JUvGkB29VjHEDh8HQ/O6tizqGyIOHnRhYnOxTWZnFT/n/XF8iwFqtVhIeJug1f+D+01dAKx/0tcVY25DFnXPQnx0=" /> --> <!--기존-->
+        <property name="url" value="qhURKVhLXLSpaoUhT52JUvGkB29VjHEDh8HQ/O6tizqGyIOHnRhYnOxTWZnFT/n/7hs5JxKKKT4xBAh/qU4kk/HiyBTaOHHUZOQYanuJd0Y=" /><!--변경-->
+        <property name="username" value="ZMXn79uIJca0dATB5toaFw=="/> 
+        <property name="password" value="5kyT79oE55VyMYEaCK4KKg=="/>         
+        <!-- validationQuery:유효 검사용 쿼리( 1개 이상의 row를 반환하는 쿼리를 넣어주면 된다. ) -->
+        <property name="validationQuery" value="select 1"/>
+        <!-- testWhileIdle:컨넥션이 놀고 있을때 -_-; validationQuery 를 이용해서 유효성 검사를 할지 여부. -->
+        <property name="testWhileIdle" value="true"/>
+        <!-- timeBetweenEvictionRunsMillis:해당 밀리초마다 validationQuery 를 이용하여 유효성 검사 진행 -->
+        <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+        <!-- 커넥션풀이 제공할 최대 커넥션개수 -->
+        <property name="maxActive" value="30" />
+        <!-- 사용되지 않고 풀에 저장될수 있는 최대 커넥션 개수 -->
+        <property name="maxIdle" value="10" />
+        <!-- 풀에 커넥션이 존재하지 않을때, 커넥션이 풀에 다시 리턴되기까지 대기 시간 -->
+        <property name="maxWait" value="1000" />
+    </bean>
         
 </beans>

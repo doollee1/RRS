@@ -4,6 +4,7 @@
 <%
 /**
  * @Name : UserInfoSearchPopup
+ * @Description : 멤버 찾기 팝업
  */
 %>
 <div id="UserInfoSearchPopup">
@@ -41,7 +42,7 @@
 <script type="text/javascript">
 $(function() {
 	$('#UserInfoSearchPopup').dialog({
-		title:'맴버 찾기',
+		title:'멤버 찾기',
 		autoOpen: false,
 		height: 400,
 		width: 700,

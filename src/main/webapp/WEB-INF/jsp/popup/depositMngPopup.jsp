@@ -4,6 +4,7 @@
 <%
 /**
  * @Name : depositMngPopup
+ * @Description : 입금관리 팝업
  */
 %>
 <style>

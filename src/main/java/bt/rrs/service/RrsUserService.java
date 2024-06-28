@@ -76,7 +76,7 @@ public class RrsUserService {
 			}
 		}
 		
-		// 중복되는 맴버ID 있는지 체크
+		// 중복되는 멤버ID 있는지 체크
 		int memberIDCnt = rrsUserDao.selectMemberUserInfoCnt(param);
 		if(memberIDCnt > 0) {
 			bMap.put("result", "isExistMemberID");
@@ -134,7 +134,7 @@ public class RrsUserService {
 		// 등록, 수정 유저 정보
 		param.put("LOGIN_USER", LoginInfo.getUserId());
 
-		// 중복되는 맴버ID 있는지 체크
+		// 중복되는 멤버ID 있는지 체크
 		int memberIDCnt = rrsUserDao.selectMemberIDCnt(param);
 		if(memberIDCnt > 0) {
 			if(param.get("MEMBER_ID") == param.get("Ex_MEMBER_ID")) {

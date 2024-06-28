@@ -17,7 +17,7 @@
 <script type="text/javascript">
 $(function() {
 	$('#excelupload').dialog({
-		title: 'Upload Excel',
+		title: '엑셀 업로드',
 		autoOpen: false,
 		height: 250,
 		width: 450,

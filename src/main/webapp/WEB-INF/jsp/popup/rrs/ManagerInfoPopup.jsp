@@ -4,6 +4,7 @@
 <%
 /**
  * @Name : UserInfoPopup
+ * @Description : 사용자정보 팝업
  */
 %>
 <div id="p_UserInfo">
@@ -112,6 +113,7 @@ $(function() {
 				$("#COMP_CD").val("${loginVO.compCd}");
 				$("#ISNEW").val("0");
 				$("#btn_init").hide();
+				$(".ui-dialog-title").text("사용자정보 등록");
 			}else{
 				$("#USER_TP").val($(this).data("USER_TP"));
 				$("#AUTH").val($(this).data("AUTH"));

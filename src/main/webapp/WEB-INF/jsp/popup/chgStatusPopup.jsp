@@ -4,6 +4,7 @@
 <%
 /**
  * @Name : chgStatusPopup
+ * @Description : 예약관리-상태변경 팝업
  */
 %>
 <style>

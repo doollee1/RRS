@@ -105,7 +105,7 @@ public class RrsUserDao extends DBAbstractMapper {
 	}
 	
 	/**
-	 * 맴버ID 중복체크
+	 * 멤버ID 중복체크
 	 * @param param
 	 * @return
 	 * @throws Exception

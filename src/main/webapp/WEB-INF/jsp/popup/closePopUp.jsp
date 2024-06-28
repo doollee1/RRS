@@ -3,8 +3,8 @@
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
 <%
 	/**
-	 * @Name : ProductPopUp
-	 * @Description : 제품관리 검색팝업
+	 * @Name : closePopUp
+	 * @Description : 거절사유 팝업창
 	 */
 %>
 

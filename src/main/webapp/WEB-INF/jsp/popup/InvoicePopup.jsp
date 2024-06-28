@@ -444,7 +444,7 @@ $(function() {
 		var fileUid = $('#hFileUid').val();
 		//pdf파일 업로드 확인
 		if(!fileUid){
-			alert("pdf 파일 업로드 후 저장 버튼을 클릭해 주세요.");
+			alert("pdf 파일 업로드 후 전송 버튼을 클릭해 주세요.");
 			return false;
 		}
 		
