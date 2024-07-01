@@ -147,11 +147,11 @@ $(function() {
 });
 
 function fn_Init(){
-	var fromDay = getMonthFirstDay();
-	var toDay   = getToday();
+	var toDay = preMonth(); 	//이전달 첫날
+	var lastMonth = getlastMonth();	//이번달 마지막날
 
-	$("#fromDate").val(Util.converter.dateFormat1(Util.converter.dateFormat3(fromDay)));
-	$("#toDate").val(Util.converter.dateFormat1(Util.converter.dateFormat3(toDay)));
+	$("#fromDate").val(Util.converter.dateFormat1(Util.converter.dateFormat3(toDay).substr(0,6)+'01'));
+	$("#toDate").val(Util.converter.dateFormat1(Util.converter.dateFormat3(lastMonth)));
 
 	createRoomGrid();
 	cSearch();
@@ -343,20 +343,6 @@ function findType(room){
 		return "킹";
 	break;
 	}
-}
-
-//현재 월의 1일 구하기
-function getMonthFirstDay(){
-	var today = new Date();
-	var dd = '01';
-	var mm = today.getMonth() + 1;
-	var yyyy = today.getFullYear();
-
-	if(mm < 10) {
-		mm='0'+mm
-	}
-
-	return dd + '.' + mm + '.'+yyyy;
 }
 
 function fn_dataSet(data){

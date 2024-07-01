@@ -1120,7 +1120,7 @@ $(function() {
 						, { name: 'NUM_GBN'      , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${NUM_GBN}'}}
 						, { name: 'COM_HAN_NM'   , width : 120, align: 'center', editable:false, editoptions:{maxlength:100}}
 						, { name: 'COM_ENG_NM'   , width : 120, align: 'center', editable:false, editoptions:{maxlength:100}}
-						, { name: 'COM_TEL_NO'   , width : 120, align: 'center', editable:false, editoptions:{maxlength:100}}
+						, { name: 'COM_TEL_NO'   , width : 120, align: 'center', editable:false, formatter:telFormat, editoptions:{maxlength:100}}
 						, { name: 'CHK_IN_DT'    , width : 84 , align: 'center', editable:false, editoptions:{maxlength:100}}
 						, { name: 'CHK_OUT_DT'   , width : 84 , align: 'center', editable:false, editoptions:{maxlength:100}}
 						, { name: 'FLIGHT_IN'    , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN}'}}
@@ -1164,7 +1164,63 @@ $(function() {
 		// 그리드 생성 및 초기화
 		btGrid.createGrid('reserveGrid', colName, colModel, gSetting);
 	}
+	
+	function telFormat(str){
+		str = str.replace(/[^0-9]/g, '');
+		var tmp = '';
 
+		if (str.substring(0, 2) == 02) {
+		    // 서울 전화번호일 경우 10자리까지만 나타나고 그 이상의 자리수는 자동삭제
+		    if (str.length < 3) {
+		        return str;
+		    } else if (str.length < 6) {
+		        tmp += str.substr(0, 2);
+		        tmp += '-';
+		        tmp += str.substr(2);
+		        return tmp;
+		    } else if (str.length < 10) {
+		        tmp += str.substr(0, 2);
+		        tmp += '-';
+		        tmp += str.substr(2, 3);
+		        tmp += '-';
+		        tmp += str.substr(5);
+		        return tmp;
+		    } else {
+		        tmp += str.substr(0, 2);
+		        tmp += '-';
+		        tmp += str.substr(2, 4);
+		        tmp += '-';
+		        tmp += str.substr(6, 4);
+		        return tmp;
+		    }
+		} else {
+		// 핸드폰 및 다른 지역 전화번호 일 경우
+		    if (str.length < 4) {
+		        return str;
+		    } else if (str.length < 7) {
+		        tmp += str.substr(0, 3);
+		        tmp += '-';
+		        tmp += str.substr(3);
+		        return tmp;
+		    } else if (str.length < 11) {
+		        tmp += str.substr(0, 3);
+		        tmp += '-';
+		        tmp += str.substr(3, 3);
+		        tmp += '-';
+		        tmp += str.substr(6);
+		        return tmp;
+		    } else {
+		        tmp += str.substr(0, 3);
+		        tmp += '-';
+		        tmp += str.substr(3, 4);
+		        tmp += '-';
+		        tmp += str.substr(7);
+		        return tmp;
+		    }
+		}
+		return str;
+	}
+	
 	function reserveSelectAirlineImg(fileseq){
 		var url = "/reserve/arrImg.do";
 	    var pid = "p_arrImgPopup";

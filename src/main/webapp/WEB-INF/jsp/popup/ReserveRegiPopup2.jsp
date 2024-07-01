@@ -443,7 +443,7 @@ $(function() {
 				id : 'save',
 				click: function() {
 					$("#reserveGrid").jqGrid('setGridParam', {
-						afterEditCell:function(rowid, cellname, value, iRow, iCol){
+						afterEditCell : function(rowid, cellname, value, iRow, iCol){
 							$("#"+rowid+"_"+cellname).blur(function(){
 								$("#reserveGrid").jqGrid("saveCell",iRow,iCol);
 								});
@@ -733,6 +733,8 @@ $(function() {
 			$("#btn_adduser").show();
 			$("#delete").hide();
 			$("#REQ_HAN_NM").attr("disabled",false);
+			$("#USER_ID").attr("disabled",true);
+			$("#MEM_GBN").attr("disabled",true);
 		}else{ // 상세
 		    $("#USER_ID , #MEM_GBN").attr("disabled", true); // 유저ID, 회원구분  수정불가
 		    $(".ui-dialog-title").text('<s:message code='reservation.detail'/>'); // [예약상세] 타이틀 삽입
@@ -1489,7 +1491,15 @@ $(function() {
 	 * -----------------------------------------------------*
 	 *******************************************************/
 	function saveReserveInfo(){
+		//저장전 '<input ~' 없애기
+		var ids = jQuery("#reserveGrid").jqGrid("getDataIDs");
+			for(var i = 0 ; i < ids.length ; i++){
+				$("#reserveGrid").jqGrid("saveRow",ids[i]);
+		}
+			
+		//유효성 체크
 		if(!isValidation())return;
+		
 		var obj   = { "USER_ID"         : $("#USER_ID").val()
 				    , "REQ_DT"          : $("#REQ_DT").val().replaceAll(".","")
 				    , "SEQ"             : seq
@@ -1536,6 +1546,7 @@ $(function() {
 		}
 		
 		btGrid.gridSaveRow('reserveGrid');
+		
 		var gridData  = $("#reserveGrid").getRowData();
 		var ids = $("#reserveGrid").jqGrid("getDataIDs");
 		var gridDataChk = [];
@@ -1720,6 +1731,7 @@ $(function() {
 		var n_person = parseInt($("#N_PERSON").val().replaceAll("," , ""));
 		var k_person = parseInt($("#K_PERSON").val().replaceAll("," , ""));
 		var i_person = parseInt($("#I_PERSON").val().replaceAll("," , ""));
+		
 		if(m_person == 0 && g_person == 0 && n_person == 0 && k_person == 0 && i_person == 0){
 			alert("인원내역을 입력해주세요.");
 			return false;
@@ -1741,6 +1753,13 @@ $(function() {
 				alert("동반자 인원구분을 입력을 해주세요.");
 				return false;
 			}
+		}
+		
+		//동반자정보가 최소한 한명이라도 있는지 체크
+		var count = $("#reserveGrid").getGridParam("reccount");
+		if(count == 0){
+			alert("최소 한 명의 동반자정보를 입력해주세요.");
+			return false;
 		}
 		
 		return true;
@@ -2229,7 +2248,7 @@ $(function() {
 						, { name: 'NUM_GBN'      , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${NUM_GBN}'}}
 						, { name: 'COM_HAN_NM'   , width : 120, align: 'center', editable:true, editoptions:{maxlength:100}}
 						, { name: 'COM_ENG_NM'   , width : 120, align: 'center', editable:true, editoptions:{maxlength:100}}
-						, { name: 'COM_TEL_NO'   , width : 120, align: 'center', editable:true, editoptions:{maxlength:100}}
+						, { name: 'COM_TEL_NO'   , width : 120, align: 'center', editable:true, formatter:telFormat, unformat: unTelFormat, editoptions:{maxlength:100}}
 						, { name: 'CHK_IN_DT'    , width : 84 , align: 'center', editable:true, editoptions:{maxlength:100}}
 						, { name: 'CHK_OUT_DT'   , width : 84 , align: 'center', editable:true, editoptions:{maxlength:100}}
 						, { name: 'FLIGHT_IN'    , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN}'}}
@@ -2274,6 +2293,30 @@ $(function() {
 		btGrid.createGrid('reserveGrid', colName, colModel, gSetting);
 	}
 	
+	function telFormat(object){
+		//var format1 = /^(\d{2,3})(\d{3,4})(\d{4})$/;
+		//var format2 = /^(\d{2,3})-(\d{3,4})-(\d{4})$/;
+		
+		if(object == ''){
+			return '';
+		}
+		else if( object.length > 20 ){
+			alert("입력하신 전화번호가 깁니다.");
+			return '';
+		}
+		else{
+			return autoHypenTel(object);
+		}
+	}
+	
+	function unTelFormat(object){
+		if(object == ''){
+			return '';
+		}
+		else{
+			return object.replaceAll("-","");
+		}
+	}
 	// 그리드 row 삭제
 	function delProgram(){
 		var ids = $("#reserveGrid").jqGrid("getDataIDs"); // 해당 그리드의 전체 로우의 아이디 조회
@@ -2337,19 +2380,19 @@ $(function() {
 				g_COM_TEL_NO = $("#REQ_TEL_NO").val();
 			}
 			
-			g_DSEQ = i + 1;
-			g_CHK_IN_DT = $("#CHK_IN_DT").val().replaceAll("." , "");
-			g_CHK_OUT_DT = $("#CHK_OUT_DT").val().replaceAll("." , "");
-			g_FLIGHT_IN = $("#FLIGHT_IN").val();
-			g_FLIGHT_IN_HH = $("#FLIGHT_IN_HH").val();
-			g_FLIGHT_OUT = $("#FLIGHT_OUT").val();
-			g_FLIGHT_OUT_HH = $("#FLIGHT_OUT_HH").val();
-			g_ADD_FILE_SEQ = $("#ADD_FILE_SEQ").val();
+			g_DSEQ           = i + 1;
+			g_CHK_IN_DT      = $("#CHK_IN_DT").val().replaceAll("." , "");
+			g_CHK_OUT_DT     = $("#CHK_OUT_DT").val().replaceAll("." , "");
+			g_FLIGHT_IN      = $("#FLIGHT_IN").val();
+			g_FLIGHT_IN_HH   = $("#FLIGHT_IN_HH").val();
+			g_FLIGHT_OUT     = $("#FLIGHT_OUT").val();
+			g_FLIGHT_OUT_HH  = $("#FLIGHT_OUT_HH").val();
+			g_ADD_FILE_SEQ   = $("#ADD_FILE_SEQ").val();
 			g_LATE_CHECK_IN  = $("#LATE_CHECK_IN").val();	//early 체크인
 			g_LATE_CHECK_OUT = $("#LATE_CHECK_OUT").val();	//late 체크아웃
-			g_ROOM_TYPE = $("#ROOM_TYPE").val();
-			g_CONFIRM_NO = $("#CONFIRM_NO").val();
-			g_STATUS_V = "I";
+			g_ROOM_TYPE      = $("#ROOM_TYPE").val();
+			g_CONFIRM_NO     = $("#CONFIRM_NO").val();
+			g_STATUS_V       = "I";
 			
 			data = { "DSEQ"            : g_DSEQ 
 					, "SEQ"            : seq  
@@ -2357,7 +2400,7 @@ $(function() {
 					, "NUM_GBN"        : g_NUM_GBN 
 					, "COM_HAN_NM"     : g_COM_HAN_NM 
 					, "COM_ENG_NM"     : g_COM_ENG_NM 
-					, "COM_TEL_NO"     : g_COM_TEL_NO 
+					, "COM_TEL_NO"     : g_COM_TEL_NO
 					, "CHK_IN_DT"      : g_CHK_IN_DT 
 					, "CHK_OUT_DT"     : g_CHK_OUT_DT 
 					, "FLIGHT_IN"      : g_FLIGHT_IN 
@@ -2409,6 +2452,7 @@ $(function() {
 		
 		g_DSEQ           = count+1;		//순번
 		g_SEQ            = seq;			//해당 예약의 일련변호
+		g_COM_TEL_NO     = "";			//전화번호
 		g_CHK_IN_DT      = $("#CHK_IN_DT").val().replaceAll("." , "");		//체크인일자
 		g_CHK_OUT_DT     = $("#CHK_OUT_DT").val().replaceAll("." , "");		//체크아웃일자
 		g_FLIGHT_IN      = $("#FLIGHT_IN").val();		//도착항공기

@@ -125,11 +125,11 @@
 	});
 	
 	function fn_Init(){
-		var toDay = getToday();
-		var lastMonth = getlastMonth();
-		
+		var toDay = preMonth(); 	//이전달 첫날
+		var lastMonth = getlastMonth();	//이번달 마지막날
+
 		$("#RESERVE_STDT").val(Util.converter.dateFormat1(Util.converter.dateFormat3(toDay).substr(0,6)+'01'));
-		$("#RESERVE_EDDT").val(Util.converter.dateFormat1(Util.converter.dateFormat3(toDay)));
+		$("#RESERVE_EDDT").val(Util.converter.dateFormat1(Util.converter.dateFormat3(lastMonth)));
 		$('#SEARCH option:eq(0)').prop("selected" , true);
         createQuotationGrid();
 		

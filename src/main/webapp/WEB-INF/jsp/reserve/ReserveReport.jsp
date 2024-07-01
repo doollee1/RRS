@@ -105,10 +105,10 @@
 	});
 	
 	function fn_Init(){
-		var fromDay = getMonthFirstDay();
-		var toDay   = getToday();
+		var fromDay = preMonth(); 	//이전달 첫날
+		var toDay   = getlastMonth();	//이번달 마지막날
 		
-		origin_FROM_DT = Util.converter.dateFormat1(Util.converter.dateFormat3(fromDay));
+		origin_FROM_DT = Util.converter.dateFormat1(Util.converter.dateFormat3(fromDay).substr(0,6)+'01');
 		origin_TO_DT   = Util.converter.dateFormat1(Util.converter.dateFormat3(toDay));
 		
 		$("#FROM_DT").val(origin_FROM_DT);
@@ -533,21 +533,6 @@
 	        result = undefined;
 	    }
 	    return result;
-	}
-	
-	
-	//현재 월의 1일 구하기
-	function getMonthFirstDay(){
-		var today = new Date();
-		var dd = '01';
-		var mm = today.getMonth() + 1;
-		var yyyy = today.getFullYear();
-
-		if(mm < 10) {
-			mm='0'+mm
-		}
-
-		return dd + '.' + mm + '.'+yyyy;
 	}
 </script>
 <c:import url="../import/frameBottom.jsp" />

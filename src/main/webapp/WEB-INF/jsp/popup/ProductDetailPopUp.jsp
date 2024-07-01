@@ -13,7 +13,6 @@
 		</div>
 	</div>
 	
-	<!---------->
 	<form id="frmProductDetail" action="#">
 		<div id="pop_ct_form_wrap">
 			<input type="hidden" name="BAS_YY_UP" id="BAS_YY_UP" value="" />
@@ -30,7 +29,6 @@
 				<col width="15%">
 				<col width="30%">
 			</colgroup>
-				<!---<caption></caption> --->
 				<tr>
 					<th style="text-align:center;"><s:message code="product.baseyear"/></th>
 					<td>&nbsp;
@@ -157,16 +155,8 @@ $(function(){
 		condFilter();
 	})
 
-// 	// 유효성 검사
-// 	$(".check").on('change', function(){
-//         var scriptTag2 = /[~^&()|<>?]/; 
-//         var regExp_tel1 = /^[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}$/;
-//         var checkText = "";
-//         var thisVal = $(this).val();
-        
-      
-//         }
-// 	})
+	var toYear =  new Date().getFullYear();
+	$("#BAS_YY_IN").val(toYear);
 	
 	// 등록, 수정 분기
 	$('#productDetailPopUp').dialog({

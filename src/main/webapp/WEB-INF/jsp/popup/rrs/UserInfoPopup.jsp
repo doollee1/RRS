@@ -100,7 +100,7 @@
 					</td>
 					<th></th>
 				</tr>
-				<p id="mem_gbn_announce" style="color:#ff7f00; margin-top:4px;"></p>
+				<p id="mem_gbn_announce" style="color:red; margin-top:4px; font-weight: bold;"></p>
 			</table>
 			<input type="hidden" id="Ex_MEMBER_ID" name="Ex_MEMBER_ID" />
 		</div>
@@ -199,11 +199,12 @@
 				popupClose($(this).data('pid')); /* 필수로 들어가야함 */
 			},
 			open : function() {
+				$("#mem_gbn_announce").text("");
 				if(!fn_empty($(this).data("USER_ID"))) {
 					$(".ui-dialog-title").text("회원 정보 수정");
 					// 회원 수정 팝업인 경우
 					selectUserInfo($(this).data("USER_ID"));	// USER_ID로 조회
-					$("#USER_ID_POP").attr("readonly", true);		// USER_ID_POP readonly
+					$("#USER_ID_POP").attr("readonly", true);	// USER_ID_POP readonly
 					$("#btn_idCheck").hide();
 					// 회원 구분 disabled
 					$("#MEM_GBN_POP").attr("disabled", true);
@@ -224,6 +225,9 @@
 					
 					// 신규 등록 or 수정
 					$("#isNew").val("N");
+				}else{
+					$("#isNew").val("Y");
+					$("#mem_gbn_announce").text("※ 회원 신규 생성 시 비밀번호 초기값 : [ fam1! ] 입니다.");
 				}
 				$("#btn_userSearchPopup").hide();
 			}

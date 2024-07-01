@@ -80,14 +80,14 @@ $(function() {
 });
 
 function fn_Init(){
-	var fromDay=getOneWeekBefore();
-	var toDay = getToday();
-	var lastMonth = getlastMonth();
+	//var fromDay   = getOneWeekBefore();
+	var toDay     = preMonth(); 	//이전달 첫날
+	var lastMonth = getlastMonth();	//이번달 마지막날
 	
 	setCommBtn('Add', false);
 	
-	$("#fromDate").val(Util.converter.dateFormat1(Util.converter.dateFormat3(fromDay)));
-	$("#toDate").val(Util.converter.dateFormat1(Util.converter.dateFormat3(toDay)));
+	$("#fromDate").val(Util.converter.dateFormat1(Util.converter.dateFormat3(toDay).substr(0,6)+'01'));
+	$("#toDate").val(Util.converter.dateFormat1(Util.converter.dateFormat3(lastMonth)));
 	
 	createQuotationGrid();
 	

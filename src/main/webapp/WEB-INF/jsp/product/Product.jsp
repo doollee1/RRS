@@ -104,7 +104,8 @@
 --%>
 //초기 로드
 $(function() {
-		
+	var toYear =  new Date().getFullYear();
+	$("#BAS_YY").val(toYear);
 	//조회, 등록, 미리보기, 기준년도관리
 	$('#cBtnSearch').text("조회");
 	$('#cBtnAdd').text("등록");

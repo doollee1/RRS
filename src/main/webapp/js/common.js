@@ -2171,14 +2171,12 @@ function getYearFirst(){
 	return  '01.01.'+yyyy;
 }
 
+//이번달 마지막날 구하기
 function getlastMonth(){
 	var today = new Date();
-	var lastMonth = today.getMonth() - 1;
-	today.setMonth(lastMonth);
-	
-	var dd = today.getDate();
 	var mm = today.getMonth() + 1;
 	var yyyy = today.getFullYear();
+	var dd = new Date(yyyy, mm, 0).getDate();
 
 	if(dd < 10) {
 		dd='0'+dd
@@ -2681,4 +2679,22 @@ function rmNum(text){
 	}
 
 	return rtnVal;
+}
+
+//이전달 구하기
+function preMonth(){
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth();
+	var yyyy = today.getFullYear();
+
+	if(dd < 10) {
+		dd='0'+dd
+	}
+	
+	if(mm < 10) {
+		mm='0'+mm
+	}
+	
+	return dd + '.' + mm + '.'+yyyy;
 }
