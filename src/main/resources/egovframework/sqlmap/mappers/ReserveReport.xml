@@ -3,9 +3,9 @@
 
 <mapper namespace="ReserveReportMapper">
 	<select id="reserveReportSelectList" parameterType="BMap" resultType="BMap">
-    <include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
 		SELECT 
-			ROW_NUMBER() OVER(ORDER BY T1.REQ_DT ASC, T1.SEQ ASC) AS ROWNUM	/* 순번 */
+			ROW_NUMBER() OVER(ORDER BY T1.REQ_DT DESC, T1.SEQ DESC) AS ROWNUM	/* 순번 */
 			,T1.REQ_DT	/* 예약일자 */
 			,T1.SEQ		/* 예약순번 */
 			,(
@@ -96,9 +96,9 @@
 		<if test='S_DATE_GBN == "S_CHK_IN"'>
 		WHERE T1.CHK_IN_DT BETWEEN #{FROM_DT} AND #{TO_DT}
 		</if>
-		
+		ORDER BY T1.REQ_DT DESC, T1.SEQ DESC
     <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
-	</select>
+</select>
 	
 	<select id="selectListNumberOfReserveInMonth" parameterType="BMap" resultType="BMap">
 		SELECT REQ_DT

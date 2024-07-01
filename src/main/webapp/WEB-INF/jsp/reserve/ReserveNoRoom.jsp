@@ -111,13 +111,14 @@
 </div>
 
 <style type="text/css">
-    a { color:#000000;text-decoration:none; }
+    a { color:#000000; text-decoration:none; }
     .calendarBtn { cursor:pointer; }
     .ct_grid_top_left {display:block;}
     #right_wrap { width:45%; float:right; display: grid; justify-content: center; align-items: center; margin-top:28px; }
     #inputRow {float: right; height:25px; margin:10px 62px 0 0;}
     #updateRow {height: 30px; width: 50px; float: right; margin:10px 62px 0 0;}
     #showRoom {margin-left:10px; height:25px;}
+    #roomGrid {width:100%;}
 </style>
 <script type="text/javascript">
 
@@ -167,22 +168,22 @@ function createRoomGrid() {
 			'상태'
 			];
 	var colModel = [
-	    {name : 'ROWNUM'       , width : '10%' , align : 'center'},
-	    {name : 'REQ_NO_DT'    , width : '35%' , align : 'center'},
+	    {name : 'ROWNUM'       , width : 20 , align : 'center'},
+	    {name : 'REQ_NO_DT'    , width : 50 , align : 'center'},
 	    {name : 'ROOM_TYPE'    , align : 'center', hidden:true },
-	    {name : 'ROOM_TYPE_NM' , width : '35%' , align : 'center'},
-	    {name : 'DELETE'       , width : '20%' , align : 'center', formatter:delRow},
+	    {name : 'ROOM_TYPE_NM' , width : 50 , align : 'center'},
+	    {name : 'DELETE'       , width : 20 , align : 'center', formatter:delRow},
 	    {name : 'STATE'        , align : 'center', hidden:true }
 	    ];
 	var gSetting = {
-			pgflg:true,
+			pgflg          : true,
 			exportflg      : false, //엑셀, pdf 출력 버튼 노출여부
 			colsetting     : false, // 컬럼 설정 버튼 노출여부
 			searchInit     : false, // 데이터 검색 버튼 노출여부
 			resizeing      : true,
 			rownumbers     : false,
 			shrinkToFit    : true,
-			autowidth      : true,
+			autowidth      : false,
 			queryPagingGrid: false, // 쿼리 페이징 처리 여부
 			height : 500
 	};
