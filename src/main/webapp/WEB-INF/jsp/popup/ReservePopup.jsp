@@ -18,12 +18,11 @@
 <div id="p_reserveListRegi" class="reserveListRegi_default">
 	<form id="frmReserveInfo" action="#">
 		<div id="pop_ct_form_wrap">
-			<input type="hidden" name="PRC_STS"      id="PRC_STS"    value="" />
-			<input type="hidden" name="EMAIL"        id="EMAIL"      value="" />  
-			<input type="hidden" name="PAY_AMT"  id="PRV_PAY_AMT"      value="" />  
-			<input type="hidden" name="DCT_AMT"  id="PRV_DCT_AMT"      value="" />  
-			<input type="hidden" name="BAL_AMT"  id="PRV_BAL_AMT"      value="" />  
-<!-- 			<input type="text" name="SEQ"  id="SEQ"      value="" />   -->
+			<input type="hidden" name="PRC_STS"  id="PRC_STS"     value="" />
+			<input type="hidden" name="EMAIL"    id="EMAIL"       value="" />  
+			<input type="hidden" name="PAY_AMT"  id="PRV_PAY_AMT" value="" />  
+			<input type="hidden" name="DCT_AMT"  id="PRV_DCT_AMT" value="" />  
+			<input type="hidden" name="BAL_AMT"  id="PRV_BAL_AMT" value="" />  
 			
 			<table class="pop_tblForm" >
 				<colgroup>
@@ -103,7 +102,8 @@
 					<td colspan="3">
 						<input type="text" class="cmc_txt text-center" id="CHK_OUT_DT"     name="CHK_OUT_DT" data-type="date" style="width:145px;"/>
 						<input type="text" class="cmc_txt text-center" id="PRV_CHK_OUT_DT" name="CHK_OUT_DT" data-type="date" style="width:145px; display: none;"/>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="opacity:70%; color: red; font-weight: bold;">※ 체크아웃 날짜를 지정해야 상품 선택이 가능합니다.</b>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<b style="opacity:70%; color: red; font-weight: bold;">※ 체크아웃 날짜를 지정해야 상품 선택이 가능합니다.</b>
 					</td>
 				</tr>
 				
@@ -141,7 +141,8 @@
 								</option>
 							</c:forEach>
 						</select>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="opacity:70%; color: red; font-weight: bold;">※ 항공기편 시간 정보는 필수가 아닙니다.</b>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<b style="opacity:70%; color: red; font-weight: bold;">※ 항공기편 시간 정보는 필수가 아닙니다.</b>
 					</td>
 				</tr>
 				
@@ -163,7 +164,8 @@
 								<option value="${i.CODE}" <c:if test="${i.CODE eq '3'}">selected</c:if> >${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="opacity:70%; color: red; font-weight: bold;">※ 영유아를 제외한 2인 1실 기준 인보이스가 산정됩니다.</b>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<b style="opacity:70%; color: red; font-weight: bold;">※ 영유아를 제외한 2인 1실 기준 인보이스가 산정됩니다.</b>
 				    </td>
 				</tr>
 				
@@ -185,7 +187,8 @@
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="opacity:70%; color: red; font-weight: bold;">※ 픽업차량 정보는 필수가 아닙니다.</b>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<b style="opacity:70%; color: red; font-weight: bold;">※ 픽업차량 정보는 필수가 아닙니다.</b>
 					</td>	
 				</tr>
 
@@ -370,9 +373,9 @@
 						<b style="color: #e2703a; font-weight: bold;">동반자정보</b>
 					</div>
 					<div class="ct_grid_top_right" style="right; width:87%; float:left; margin-bottom:-6px; padding-top:1px; padding-bottom:-6px; ">
-						<button type="button" class="btn btn-default" id="btn_com_add"style="align:right">동반자 자동생성</button>
-						<button type="button" class="btn btn-default" id="btn_List_addRow" style="align:right" ><s:message code='button.addRow'/></button>
-		            	<button type="button" class="btn btn-default" id="btn_List_delRow" style="align:right" ><s:message code='button.delRow'/></button>
+						<button type="button" class="btn btn-default" id="btn_com_add"     style="align:right">동반자 자동생성</button>
+						<button type="button" class="btn btn-default" id="btn_List_addRow" style="align:right"><s:message code='button.addRow'/></button>
+		            	<button type="button" class="btn btn-default" id="btn_List_delRow" style="align:right"><s:message code='button.delRow'/></button>
 		            </div>
 				</div>
 				<div class="pop_grid_wrap">
@@ -439,23 +442,12 @@ $(function() {
 				text: '<s:message code='system.save'/>',
 				id : 'save',
 				click: function() {
-					$("#reserveGrid").jqGrid('setGridParam', {
-						afterEditCell:function(rowid, cellname, value, iRow, iCol){
-							$("#"+rowid+"_"+cellname).blur(function(){
-								$("#reserveGrid").jqGrid("saveCell",iRow,iCol);
-								});
-							},
-					});
-					saveReserveInfo(); /* 저장 버튼 이벤트 */
 				}
 			},
 			'<s:message code='button.delete'/>' :{
 				text: '<s:message code='button.delete'/>',
 				id : 'delete',
 				click:function(){
-					if(confirm("[삭제] 진행 시 영구 삭제 됩니다. 진행하시겠습니까?")){
-						deleteReserveInfo();
-					}
 				}
 			},
 			'<s:message code='button.close'/>' : {
@@ -483,13 +475,13 @@ $(function() {
 	 * -----------------------------------------------------*
 	 *******************************************************/
 	function fn_init(receivedData){
-		var day = new Date();
+		var day   = new Date();
 		var today = String(day.getFullYear()) + String(("0" + (1 + day.getMonth())).slice(-2)) + String(("0" + day.getDate()).slice(-2)); 
-		req_dt = receivedData.REQ_DT; // 신청 일 (키값)
-		seq    = receivedData.SEQ;    // 신청 순번 (키값)
+		req_dt    = receivedData.REQ_DT; // 신청 일 (키값)
+		seq       = receivedData.SEQ;    // 신청 순번 (키값)
         
-		//예약 현황의 상세보기로 넘어왔다면 필요없는 부분 disabled 하기
-		// 유저ID, 회원구분 
+		//예약 현황의 상세보기로 넘어왔다면 모든 부분 disabled
+		// 유저ID
 		$("#USER_ID").attr("disabled", true); 
 		//예약자 한글명 / 예약일자 / 회원구분 / 에이전시
 		$("#REQ_HAN_NM, #REQ_DT, #MEM_GBN, #AGN_GB, #AGN_CD").attr("disabled",true);
@@ -873,129 +865,6 @@ $(function() {
 		    }
 		}
 		return str;
-	}
-
-	 /*******************************************************
-	 *-----------------------------------------------------*
-	 * @Subject : Validation [유효성] 체크 시작
-	 * @Goal    : 화면 내 필수 값 체크 및 유효성 검사
-	 * @Brief   : 데이터 정확성 및 필수항목에대한 체크 진행
-	 * @See     : NONE
-	 * -----------------------------------------------------*
-	 *******************************************************/
-	function isValidation(){ 
-		if(vflag == "new"){
-			var usrId = $("#USER_ID").val();
-			if(fn_empty(usrId)){
-				alert("ID찾기 팝업에서 ID를 입력해주세요.");
-				return false;
-			}
-		}
-		
-		if(fn_empty($("#REQ_TEL_NO").val())){
-			alert("전화번호를 입력해주세요.");
-			return false;
-		}
-		 
-		if(fn_empty($("#REQ_HAN_NM").val())){
-			alert("한글이름을 입력해주세요.");
-			return false;
-		}
-		
-		if(fn_empty($("#REQ_ENG_NM").val())){
-			alert("영어이름을 입력해주세요.");
-			return false;
-		}
-		
-		var mem_gbn = $("#MEM_GBN").val();
-		if(fn_empty(mem_gbn)){
-			alert("회원구분을 선택해주세요.");
-			return false;
-		}
-		
-		var chk_in_dt = $("#CHK_IN_DT").val();
-		if(fn_empty(chk_in_dt)){
-			alert("체크인 날짜를 선택해주세요.");
-			return false;
-		}
-		
-		var chk_out_dt = $("#CHK_OUT_DT").val();
-		if(fn_empty(chk_out_dt)){
-			alert("체크아웃 날짜를 선택해주세요.");
-			return false;
-		}
-		
-		if(chk_in_dt == chk_out_dt){
-			alert("체크인 날짜와 체크아웃 날짜가 같습니다.")
-			return false;
-		}
-		
-		if(chk_in_dt > chk_out_dt){
-			alert("체크아웃 날짜보다 체크인 날짜가 큽니다.")
-			return false;
-		}
-		
-		var roomtype = $("#ROOM_TYPE").val();
-		
-		if(fn_empty(roomtype)){
-			alert("객실타입을 선택해주세요.");
-			return false;
-		}
-		
-		var hdng_gbn = $("#HDNG_GBN").val();
-		if(fn_empty(hdng_gbn)){
-			alert("상품을 선택해주세요.");
-			return false;
-		}
-		
-		var g_person_v = parseInt($("#G_PERSON").val().replaceAll("," , ""));
-		var add_hdng_gbn = $("#ADD_HDNG_GBN").val();
-		if(mem_gbn == "01" && g_person_v > 0 && fn_empty(add_hdng_gbn)){ //멤버회원 이면서 일반 동반자가 있을 떄  일반동반자의 상품확인
-			alert("동반자의 상품을 선택해주세요.");
-			return false;
-		}
-		
-		if(mem_gbn != "01"){
-			if(hdng_gbn == "28"){
-				alert("해당상품은 멤버전용 상품입니다.");
-				return false;
-			}
-		}
-		
-		if(mem_gbn == "04" && fn_empty($("#AGN_GB").val())){
-			alert("에이전시를 선택해주세요.");
-			return false;
-		}
-		
-		var m_person = parseInt($("#M_PERSON").val().replaceAll("," , ""));
-		var g_person = parseInt($("#G_PERSON").val().replaceAll("," , ""));
-		var n_person = parseInt($("#N_PERSON").val().replaceAll("," , ""));
-		var k_person = parseInt($("#K_PERSON").val().replaceAll("," , ""));
-		var i_person = parseInt($("#I_PERSON").val().replaceAll("," , ""));
-		if(m_person == 0 && g_person == 0 && n_person == 0 && k_person == 0 && i_person == 0){
-			alert("인원내역을 입력해주세요.");
-			return false;
-		}
-		
-		var twin_cnt = parseInt($("#TWIN_CNT").val().replaceAll("," , ""));
-		var king_cnt = parseInt($("#KING_CNT").val().replaceAll("," , ""));
-		if($("#ROOM_TYPE").val() != "" && twin_cnt == 0 && king_cnt == 0){
-		    alert("트윈/킹 룸 개수를 입력해주세요.");
-		    return false;
-		}
-		
-		//동반자정보 그리드 저장 전 인원구분 / 한글명이 적혀있는지 체크
-		var ids = jQuery("#reserveGrid").jqGrid("getDataIDs");
-		for(var i = 0 ; i < ids.length ; i++){
-			//필수인 예약자 행의 값 저장
-			$("#reserveGrid").jqGrid("saveRow",ids[0]);
-			if($('#reserveGrid').jqGrid('getRowData', ids[i]).NUM_GBN == ''){
-				alert("동반자 인원구분을 입력을 해주세요.");
-				return false;
-			}
-		}
-		
-		return true;
 	}
 
 	/*******************************************************

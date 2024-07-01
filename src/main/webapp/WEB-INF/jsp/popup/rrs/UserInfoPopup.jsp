@@ -200,7 +200,7 @@
 			},
 			open : function() {
 				if(!fn_empty($(this).data("USER_ID"))) {
-					$(".ui-dialog-title").text("회원정보수정");
+					$(".ui-dialog-title").text("회원 정보 수정");
 					// 회원 수정 팝업인 경우
 					selectUserInfo($(this).data("USER_ID"));	// USER_ID로 조회
 					$("#USER_ID_POP").attr("readonly", true);		// USER_ID_POP readonly
