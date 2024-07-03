@@ -797,4 +797,39 @@ public class ReserveDao extends DBAbstractMapper {
 	public void deleteReserveInfo(Map<String, Object> param) throws Exception {
 		delete("ReserveMapper.deleteReserveInfo", param);
 	}
+	
+	/**
+	 * 예약관리-상태변경 잔금 조회
+	 * @param paramAmt
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public int selectBalAmt(BMap paramAmt) throws Exception {
+		return (int)selectByPk("ReserveMapper.selectBalAmt", paramAmt);
+	}
+	
+	/**
+	 * 예약첨부파일 등록
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertTbReqAddFile(Map<String, Object> param) throws Exception{
+		
+		return insert("ReserveMapper.insertTbReqAddFile", param);
+	}
+	
+	
+	/**
+	 * 예약첨부파일 일련번호 업데이트
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateAddFileSeq(Map<String, Object> param) throws Exception{
+		return update("ReserveMapper.updateAddFileSeq", param);
+	}
 }

@@ -121,10 +121,16 @@
 	    UPDATE TB_REQ_FEE	    
            SET
            <if test='PAY_AMT != null and !"".equals(PAY_AMT)'>	           	   
-              PAY_AMT  = #{PAY_AMT}
+              PAY_AMT  = #{PAY_AMT}			/* 입금금액  */
            </if> 
            <if test='DCT_AMT != null and !"".equals(DCT_AMT)'>	           	   
-             , DCT_AMT  = #{DCT_AMT}
+             , DCT_AMT  = #{DCT_AMT}		/* 할인금액  */
+           </if>
+           <if test='BAL_IN_DT != null and !"".equals(BAL_IN_DT)'>	           	   
+             , BAL_IN_DT  = #{BAL_IN_DT}	/* 잔금입금일자 */
+           </if>
+           <if test='BAL_AMT != null and !"".equals(BAL_AMT)'>	           	   
+             , BAL_AMT  = #{BAL_AMT}		/* 잔금 */
            </if>                        
              , UPD_DTM  = NOW()
              , UPD_ID   = #{LOGIN_USER}

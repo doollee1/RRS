@@ -114,6 +114,7 @@
     a { color:#000000; text-decoration:none; }
     .calendarBtn { cursor:pointer; }
     .ct_grid_top_left {display:block;}
+    .ui-jqgrid .ui-jqgrid-hbox { padding : 0px;}
     #right_wrap { width:45%; float:right; display: grid; justify-content: center; align-items: center; margin-top:28px; }
     #inputRow {float: right; height:25px; margin:10px 62px 0 0;}
     #updateRow {height: 30px; width: 50px; float: right; margin:10px 62px 0 0;}
@@ -168,11 +169,11 @@ function createRoomGrid() {
 			'상태'
 			];
 	var colModel = [
-	    {name : 'ROWNUM'       , width : 20 , align : 'center'},
-	    {name : 'REQ_NO_DT'    , width : 50 , align : 'center'},
+	    {name : 'ROWNUM'       , width : 85 , align : 'center'},
+	    {name : 'REQ_NO_DT'    , width : 220 , align : 'center'},
 	    {name : 'ROOM_TYPE'    , align : 'center', hidden:true },
-	    {name : 'ROOM_TYPE_NM' , width : 50 , align : 'center'},
-	    {name : 'DELETE'       , width : 20 , align : 'center', formatter:delRow},
+	    {name : 'ROOM_TYPE_NM' , width : 220 , align : 'center'},
+	    {name : 'DELETE'       , width : 95 , align : 'center', formatter:delRow},
 	    {name : 'STATE'        , align : 'center', hidden:true }
 	    ];
 	var gSetting = {
@@ -182,8 +183,8 @@ function createRoomGrid() {
 			searchInit     : false, // 데이터 검색 버튼 노출여부
 			resizeing      : true,
 			rownumbers     : false,
-			shrinkToFit    : true,
-			autowidth      : false,
+			shrinkToFit    : false,
+			autowidth      : true,
 			queryPagingGrid: false, // 쿼리 페이징 처리 여부
 			height : 500
 	};

@@ -6,12 +6,19 @@
      <Console name="console" target="SYSTEM_OUT">
          <PatternLayout pattern="%d %5p [%c] %m%n" />
      </Console>
-     <RollingFile name="file" fileName="/opt/apache-tomcat-8.5.32/logs/rrs/${date:yyyy}/${date:MM}/rrs.log"
-        						filePattern="/opt/apache-tomcat-8.5.32/logs/rrs/${date:yyyy}/${date:MM}/rrs_%d{yyyyMMdd}.log">
+     <RollingFile name="file" fileName="/opt/apache-tomcat-8.5.32/logs/rrs/rrs.log"
+        						filePattern="/opt/apache-tomcat-8.5.32/logs/rrs/rrs_%d{yyyyMMdd}.log">
         	<PatternLayout charset="UTF-8" pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
 			<Policies>
 				<TimeBasedTriggeringPolicy />
-			</Policies>						
+			</Policies>
+			<DefaultRolloverStrategy max="7" fileIndex="max" >
+			  	<Delete basePath = "/opt/apache-tomcat-8.5.32/logs/rrs" maxDepth = "1">
+			  		<!-- 30일이 경과한 로그파일은 자동 삭제 -->
+			  		<IfFileName glob="*.log"/>   <!-- 삭제할 파일명 -->
+			  		<IfLastModified age = "30d"/>
+			  	</Delete>
+		  	</DefaultRolloverStrategy>
    		</RollingFile>
    </Appenders>
    

@@ -138,28 +138,28 @@ public class ReserveController {
 		param17.put("REF_CHR1", 01);
 		param17.put("REF_CHR2", "PROD02");
 		
-		model.addAttribute("COM_GBN"   , reserveService.selectGetCommonCodeCom_Gbn(param));			//회원구분
-		model.addAttribute("NUM_GBN"   , reserveService.selectGetCommonCode2(param11));			//인원구분
-		model.addAttribute("FLIGHT_IN"   , reserveService.selectGetCommonCode2(param7));		//출발항공편
+		model.addAttribute("COM_GBN"        , reserveService.selectGetCommonCodeCom_Gbn(param));			//회원구분
+		model.addAttribute("NUM_GBN"        , reserveService.selectGetCommonCode2(param11));			//인원구분
+		model.addAttribute("FLIGHT_IN"      , reserveService.selectGetCommonCode2(param7));		//출발항공편
 		model.addAttribute("FLIGHT_IN_HH"   , reserveService.selectGetCommonCodeHH(param7));	//출발항공시간
-		model.addAttribute("FLIGHT_OUT"   , reserveService.selectGetCommonCode2(param8));		//도착항공편
-		model.addAttribute("FLIGHT_OUT_HH"   , reserveService.selectGetCommonCodeHH(param7));	//도착항공시간
-		model.addAttribute("ROOM_TYPE"   , reserveService.selectGetCommonCode2(param3));		//객실타입
-		model.addAttribute("LATE_CHECK_IN"   , reserveService.selectGetCommonCode2(param12));		//LATE_CHECK_IN
-		model.addAttribute("LATE_CHECK_OUT"   , reserveService.selectGetCommonCode2(param13));		//LATE_CHECK_OUT
-		model.addAttribute("list_hdng_gbn_m"   , reserveService.selectGetCommonCode2(param14));		//그리드 상품 멤버
-		model.addAttribute("list_hdng_gbn_g"   , reserveService.selectGetCommonCode2(param15));		//그리드 상품 일반
-		model.addAttribute("list_hdng_gbn_n"   , reserveService.selectGetCommonCode2(param16));		//그리드 상품 비라운딩
-		model.addAttribute("mgn_gbn"     , reserveService.selectGetCommonCode(param));
-		model.addAttribute("region"      , reserveService.selectGetCommonCode(param2));
-		model.addAttribute("roomtype"    , reserveService.selectGetCommonCode(param3));
-		model.addAttribute("agency"      , reserveService.selectGetCommonCode(param4));
-		model.addAttribute("hdng_gbn"     , reserveService.selectGetCommonCode(param5));
-		model.addAttribute("cartype"     , reserveService.selectGetCommonCode(param6));
-		model.addAttribute("flight_in"   , reserveService.selectGetCommonCode(param7));
-		model.addAttribute("flight_out"  , reserveService.selectGetCommonCode(param8));
-		model.addAttribute("late_flight" , reserveService.selectGetCommonCode(param9));
-		model.addAttribute("agency_gbn"  , reserveService.selectGetCommonCode(param10));
+		model.addAttribute("FLIGHT_OUT"     , reserveService.selectGetCommonCode2(param8));		//도착항공편
+		model.addAttribute("FLIGHT_OUT_HH"  , reserveService.selectGetCommonCodeHH(param7));	//도착항공시간
+		model.addAttribute("ROOM_TYPE"      , reserveService.selectGetCommonCode2(param3));		//객실타입
+		model.addAttribute("LATE_CHECK_IN"  , reserveService.selectGetCommonCode2(param12));		//LATE_CHECK_IN
+		model.addAttribute("LATE_CHECK_OUT" , reserveService.selectGetCommonCode2(param13));		//LATE_CHECK_OUT
+		model.addAttribute("list_hdng_gbn_m", reserveService.selectGetCommonCode2(param14));		//그리드 상품 멤버
+		model.addAttribute("list_hdng_gbn_g", reserveService.selectGetCommonCode2(param15));		//그리드 상품 일반
+		model.addAttribute("list_hdng_gbn_n", reserveService.selectGetCommonCode2(param16));		//그리드 상품 비라운딩
+		model.addAttribute("mgn_gbn"        , reserveService.selectGetCommonCode(param));
+		model.addAttribute("region"         , reserveService.selectGetCommonCode(param2));
+		model.addAttribute("roomtype"       , reserveService.selectGetCommonCode(param3));
+		model.addAttribute("agency"         , reserveService.selectGetCommonCode(param4));
+		model.addAttribute("hdng_gbn"       , reserveService.selectGetCommonCode(param5));
+		model.addAttribute("cartype"        , reserveService.selectGetCommonCode(param6));
+		model.addAttribute("flight_in"      , reserveService.selectGetCommonCode(param7));
+		model.addAttribute("flight_out"     , reserveService.selectGetCommonCode(param8));
+		model.addAttribute("late_flight"    , reserveService.selectGetCommonCode(param9));
+		model.addAttribute("agency_gbn"     , reserveService.selectGetCommonCode(param10));
 		model.addAttribute("hdng_gbn_g"     , reserveService.selectGetCommonCode3(param17));
 		
 		return "/popup/ReserveRegiPopup";
@@ -450,6 +450,24 @@ public class ReserveController {
 	public String arrImgPopup(ModelMap model,HttpServletRequest request) throws Exception{
 		return "/popup/arrImgPopup";
 	}
+	
+	
+	/**
+	 * 항공권 이미지업로드 팝업 호출
+	 * 
+	 * @param model
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/reserve/arrImgUploadPopup.do")
+	public String arrImgUploadPopup(ModelMap model,HttpServletRequest request) throws Exception{
+		
+		logger.info("====== 항공권이미지 업로드 팝업 호출=======");
+		
+		return "/popup/arrImgUploadPopup";
+	}
+	
 	
 	/**
 	 * 아이디 팝업 호출

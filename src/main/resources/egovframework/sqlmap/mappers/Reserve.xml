@@ -2510,4 +2510,57 @@ DELETE
 		    AND T1.REQ_DT = #{REQ_DT}
 		    AND T1.SEQ    = #{SEQ}
 	</delete>
+	
+	<select id="selectBalAmt" parameterType="BMap" resultType="int">
+		SELECT BAL_AMT
+		  FROM TB_REQ_FEE_D 
+		 WHERE 1 = 1
+		   AND REQ_DT  = #{REQ_DT}
+		   AND REQ_SEQ = #{SEQ}
+	</select>
+	
+	<insert id="insertTbReqAddFile" parameterType="hashMap">
+		<selectKey resultType="string" keyProperty="file_seq" order="BEFORE">
+            SELECT IFNULL(MAX(ADD_FILE_SEQ) + 1 ,1) 
+              FROM tb_req_add_file /* 예약첨부파일(항공권) */
+             WHERE REQ_DT   = #{req_dt     }
+               AND REQ_SEQ  = #{seq        }
+		</selectKey>	
+        INSERT INTO tb_req_add_file /* 예약첨부파일(항공권) */
+        (
+           REQ_DT    /* 예약일자 */
+         , REQ_SEQ   /* 순번 */
+         , ADD_FILE_SEQ /* 첨부파일일련번호 */
+         , ADD_FILE_NM   /* 첨부파일명 */
+         , ADD_FILE_REAL_NM   /* 첨부파일실제명 */
+         , ADD_FILE_PATH   /* 첨부파일경로 */
+         , ADD_FILE_PATH2   /* 첨부파일경로2 */
+         , REG_DTM   /* 등록일시 */
+         , REG_ID    /* 등록자ID */
+        ) VALUES
+        (
+           #{req_dt          }
+         , #{seq             }
+         , #{file_seq        }
+         , #{add_file_nm     }
+         , #{add_file_real_nm}
+         , #{add_file_path   }
+         , #{add_file_path2  }
+         , NOW()
+         , #{user_id         }
+        )
+	</insert>
+	
+	
+	<!-- 예약첨부파일 일련번호  업데이트  -->
+	<update id="updateAddFileSeq" parameterType="hashMap">
+		UPDATE TB_REQ_BOOKING_D
+		  SET ADD_FILE_SEQ = #{file_seq}		/* 첨부파일일련번호 */
+		  	 , UPD_DTM        = NOW()
+             , UPD_ID         = #{user_id       }
+		WHERE REQ_DT = #{req_dt}
+		  AND SEQ    = #{seq}
+		  AND DSEQ   = #{dseq} 	
+	</update>
+	
 </mapper>

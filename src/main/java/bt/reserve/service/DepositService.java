@@ -152,7 +152,9 @@ public class DepositService {
 		
 		paramFee.put("REQ_DT", param.getString("REQ_DT"));
 		paramFee.put("SEQ", param.getString("SEQ"));
-		paramFee.put("PAY_AMT", accuAmt);  	//잔액
+		paramFee.put("PAY_AMT", accuAmt);  	//입금금액(누적금액)
+		paramFee.put("BAL_IN_DT", payDt);  	//잔금입금일자
+		paramFee.put("BAL_AMT", balAmt);  	//잔금
 		paramFee.put("LOGIN_USER", LoginInfo.getUserId());
 		
 		
@@ -161,7 +163,7 @@ public class DepositService {
 			
 			logger.info("===== 이전할인금액과 신규할인금액이 같지 않음=====");
 			
-			paramFee.put("DCT_AMT", dctAmt);  //메인 할인금액					
+			paramFee.put("DCT_AMT", dctAmt);  //할인금액					
 		} 
 		
 		int resultUpd = depositDao.updateTbReqFee(paramFee);
@@ -219,19 +221,23 @@ public class DepositService {
 		}
 		
 		
-		//비용메인 입금예약금, 예약금입금일자 업데이트
-		param.put("PAY_DEP_AMT", Long.parseLong(payAccutAmt));  //입금예약금
-		param.put("DEP_IN_DT", payDt);  //예약금입금일자
-		int updateRslt = depositDao.updatePayDepInfo(param);			
-		logger.info("==== 입금예약금, 예약금일금일자 업데이트 결과 : "+updateRslt);
-		
-		
-		if(updateRslt < 1) {
+		//입금예약금이 0보다 클시 비용메인 입금예약금, 예약금입금일자 업데이트
+		if(Long.parseLong(payAccutAmt) > 0) {
 			
-			logger.info("===== 입금예약금, 예약금일금일자 업데이트실패 =====");
+			param.put("PAY_DEP_AMT", Long.parseLong(payAccutAmt));  //입금예약금
+			param.put("DEP_IN_DT", payDt);  //예약금입금일자
+			int updateRslt = depositDao.updatePayDepInfo(param);			
+			logger.info("==== 입금예약금, 예약금일금일자 업데이트 결과 : "+updateRslt);
 			
-			resultRegist.put("RESULT", " FAIL");
-			return resultRegist;
+			
+			if(updateRslt < 1) {
+				
+				logger.info("===== 입금예약금, 예약금일금일자 업데이트실패 =====");
+				
+				resultRegist.put("RESULT", " FAIL");
+				return resultRegist;
+			}
+		
 		}
 		
 		
@@ -239,7 +245,7 @@ public class DepositService {
 		if(balAmt <=0) {
 			
 			param.put("PRC_STS", "10");  //입금완료(10)
-			updateRslt = depositDao.updatePrcSts(param);
+			int updateRslt = depositDao.updatePrcSts(param);
 			
 			logger.info("==== 입금완료 상태로 변경 결과 : "+updateRslt);
 			

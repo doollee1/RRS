@@ -53,7 +53,7 @@
 			  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			  [<b style="color: red; font-weight: bold;">예약취소</b>]에서 상태변경 시 : 예약입금대기, 예약확정<br/>
 			  &nbsp;&nbsp;&nbsp;&nbsp;
-			  [<b style="color: red; font-weight: bold;">입금완료</b>]에서 상태변경 시 : 환불요청, 환불완료, 예약취소<br/>
+			  [<b style="color: red; font-weight: bold;">입금완료</b>]에서 상태변경 시 : 예약확정, 환불요청, 환불완료, 예약취소<br/>
 			  &nbsp;&nbsp;&nbsp;&nbsp;
 		</b>
 			
@@ -67,6 +67,7 @@ $(function() {
 	var prc_sts;
 	var prc_sts_nm;
 	var mem_gbn;
+	var bal_amt;
 	
 	$('#p_changeStatusPopup').dialog({
 		title :'<s:message code='reservation.stateTitle'/>',
@@ -102,11 +103,16 @@ $(function() {
 	function cSearch(receivcedData){
 		var url = "/reserve/selectReserveStatus.do";
 		//var param = {"CODE"   : prc_sts };
-		var param = { };
+		var param = { "SEQ"    : seq
+				    , "REQ_DT" : req_dt
+				
+		};
 		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
 				alert("조회에 실패했습니다. 시스템 관리자에게 문의해 주세요.");
 			}else{
+				//잔금
+				bal_amt = data.bal_amt;
 				// 01 예약요청(일반), 02 예약요청(멤버), 03 예약가능(일반), 04 예약신청(일반), 05 예약입금대기
 				// 06 예약확정       , 07 환불요청       , 08 환불완료, 09 예약취소, 10 입금완료
 				var vhtml;
@@ -163,8 +169,8 @@ $(function() {
 						if(v.CODE == "05" || v.CODE == "06"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
-					} else if(prc_sts == "10"){ // 입금완료 >> 환불요청, 환불완료, 예약취소
-						if(v.CODE == "07" || v.CODE == "08" || v.CODE == "09"){
+					} else if(prc_sts == "10"){ // 입금완료 >> 예약확정, 환불요청, 환불완료, 예약취소
+						if(v.CODE == "06" || v.CODE == "07" || v.CODE == "08" || v.CODE == "09"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
 					}
@@ -196,7 +202,20 @@ $(function() {
 				   , "PRC_STS"     : prc_sts 
 				   , "CHG_PRC_STS" : $("#CHG_PRC_STS option:selected").val()
 				    };
-		if(confirm("<s:message code='confirm.save'/>")){
+		if( $("#CHG_PRC_STS option:selected").val() == "10" && bal_amt != 0){
+			if( confirm("입금이 완료되지 않았습니다. 계속 상태변경을 진행하시겠습니까?") ){
+				fn_ajax(url, true, param, function(data, xhr){
+					if(data.dup == 'Y'){
+						alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
+					}else{
+						alert("<s:message code='info.save'/>");
+						p_rtnData = {};
+						popupClose($('#p_changeStatusPopup').data('pid'));
+					}
+				});
+			}
+		}
+		else if(confirm("<s:message code='confirm.save'/>")){
 			fn_ajax(url, true, param, function(data, xhr){
 				if(data.dup == 'Y'){
 					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 

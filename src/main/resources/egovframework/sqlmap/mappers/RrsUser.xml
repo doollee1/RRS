@@ -4,21 +4,21 @@
 <mapper namespace="RrsUserMapper">
 	<select id="selectUserInfo" parameterType="BMap" resultType="BMap">
 	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
-		SELECT ROW_NUMBER() OVER(ORDER BY HAN_NAME asc) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
-			  ,USER_ID
-			  ,MEMBER_ID
-			  ,MEM_GBN
-			  ,HAN_NAME
-			  ,ENG_NAME
-			  ,TEL_NO
-			  ,EMAIL
-			  ,PASSWD
-			  ,RET_YN
-			  ,PERINFO_AGREE_YN
-			  ,REG_ID
-			  ,REG_DTM
-			  ,UPD_ID
-			  ,UPD_DTM
+		SELECT ROW_NUMBER() OVER(ORDER BY T1.HAN_NAME asc) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			  ,T1.USER_ID
+			  ,T1.MEMBER_ID
+			  ,T1.MEM_GBN
+			  ,T1.HAN_NAME
+			  ,T1.ENG_NAME
+			  ,T1.TEL_NO
+			  ,T1.EMAIL
+			  ,T1.PASSWD
+			  ,T1.RET_YN
+			  ,T1.PERINFO_AGREE_YN
+			  ,T1.REG_ID
+			  ,T1.REG_DTM
+			  ,T1.UPD_ID
+			  ,T1.UPD_DTM
 			  ,(
 					SELECT CODE_NM
 					FROM BC_COMM_L
@@ -27,18 +27,20 @@
 					AND CODE = T1.MEM_GBN
 				) AS MEM_NM
 		FROM tb_member as T1
+		left JOIN bc_user   as T2 ON T2.USER_ID = T1.USER_ID
 		WHERE 1 = 1
+		  AND T2.USER_ID is NULL
 		<if test='S_USER_ID != null and S_USER_ID != ""'>
-		   AND USER_ID LIKE CONCAT('%',#{S_USER_ID},'%')
+		   AND T1.USER_ID LIKE CONCAT('%',#{S_USER_ID},'%')
 		</if>
 		<if test='S_USER_NM != null and S_USER_NM != ""'>
-		   AND ((HAN_NAME LIKE CONCAT('%',#{S_USER_NM},'%')) OR (ENG_NAME LIKE CONCAT('%',#{S_USER_NM},'%')))
+		   AND ((T1.HAN_NAME LIKE CONCAT('%',#{S_USER_NM},'%')) OR (T1.ENG_NAME LIKE CONCAT('%',#{S_USER_NM},'%')))
 		</if>
 		<if test='S_MEM_GBN != null and S_MEM_GBN != ""'>
-		   AND MEM_GBN = #{S_MEM_GBN}
+		   AND T1.MEM_GBN = #{S_MEM_GBN}
 		</if>
 		<if test='USER_ID != null and USER_ID != ""'>
-		   AND USER_ID = #{USER_ID}
+		   AND T1.USER_ID = #{USER_ID}
 		</if>
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>

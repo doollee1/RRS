@@ -1,14 +1,13 @@
 package bt.reserve.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
@@ -16,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
@@ -350,12 +352,19 @@ public class ReserveRestController {
 	public BRespData selectReserveStatus(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
 		BMap paramData = new BMap();
 		paramData.put("HEAD_CD", 500020);
+		
+		BMap paramAmt = new BMap();
+		paramAmt.put("SEQ"   , reqData.get("SEQ"));
+		paramAmt.put("REQ_DT", reqData.get("REQ_DT"));
 		//paramData.put("CODE"   , Integer.parseInt(String.valueOf(reqData.get("CODE"))));
 		
 		List<BMap> resultStateList = reserveService.selectGetCommonCode(paramData);
-
+		int balAmt = reserveService.selectBalAmt(paramAmt); 
+		
 		BRespData respData = new BRespData();
 		respData.put("result", resultStateList);
+		respData.put("bal_amt", balAmt);
+		
 		return respData;
 	}
 	
@@ -780,5 +789,34 @@ public class ReserveRestController {
 	    }
 	    
 	    return respData;
+	}
+	
+	
+	/**
+	 * 관리자 이미지 등록 ajax
+	 * 
+	 * @param list
+	 * @param file
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/adminImageReservationAjax.do", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> adminImageReservationAjax(@RequestPart Map<String, Object> param, @RequestPart(required = false) MultipartFile file, HttpServletRequest req) throws Exception {
+		
+		logger.info("======= 관리자 이미지 등록 ajax =======");
+		logger.info("======= param : "+param.toString());
+		logger.info("======= file : "+file.toString());
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+						
+		param.put("user_id" , LoginInfo.getUserId()); //세션의 사용자 ID를 파라미터로 세팅
+		param.put("file"    , file);  					 //파일을 파라미터로 설정					
+		
+		
+		//관리자 이미지 등록
+		resultMap = reserveService.adminImageReservation(param);		
+		return resultMap;
 	}
 }

@@ -735,6 +735,7 @@ $(function() {
 			$("#REQ_HAN_NM").attr("disabled",false);
 			$("#USER_ID").attr("disabled",true);
 			$("#MEM_GBN").attr("disabled",true);
+			$('#DEP_IN_DT').datepicker({showOn : 'both',disabled : 'disabled'});
 		}else{ // 상세
 		    $("#USER_ID , #MEM_GBN").attr("disabled", true); // 유저ID, 회원구분  수정불가
 		    $(".ui-dialog-title").text('<s:message code='reservation.detail'/>'); // [예약상세] 타이틀 삽입
@@ -748,6 +749,7 @@ $(function() {
 			$("#N_PERSON").attr("disabled", true);
 			$("#K_PERSON").attr("disabled", true);
 			$("#I_PERSON").attr("disabled", true);
+			$('#DEP_IN_DT').datepicker({showOn : 'both',disabled : 'disabled'});
 			
 		    initSelect(); /* *********** 예약 상세내역 조회 *********** */
 		    vflag = "detail";
@@ -2261,9 +2263,21 @@ $(function() {
 											type:"click",
 											fn:function(e){
 												if (parseInt(this.value) > 0) {
+													
 													this.title = "이미지보기";
 													reserveSelectAirlineImg(this.value);
-												}
+												
+												} else {
+													
+													var rowId =$("#reserveGrid").jqGrid('getGridParam','selrow');
+													var dSeq = $("#reserveGrid").jqGrid("getCell", rowId, "DSEQ");
+													
+													console.log("===== rowId : "+rowId);
+													console.log("===== dSeq : "+dSeq);
+													
+													//항공권이미지 업로드 팝업 
+													reserveAirlineImgUpload(dSeq);
+												} 
 											}
 										}]
 									}
@@ -2584,6 +2598,26 @@ $(function() {
 	    	}
 		}
 	});
+	
+	
+	
+	
+	//항공권업로드 팝업호출
+	function reserveAirlineImgUpload(dseq){
+		
+		console.log("===== 항공권업로드 팝업호출=====");
+		
+		var url = "/reserve/arrImgUploadPopup.do";
+	    var pid = "p_arrImgPopup";
+	    var param = { "REQ_DT"          : req_dt
+			        , "SEQ"             : seq
+			        , "DSEQ"    : dseq
+	                };
+		popupOpen(url, pid, param, function(data) {
+			initSelect();
+		});
+	} 
+	
 	
 	function reserveSelectAirlineImg(fileseq){
 		var url = "/reserve/arrImg.do";

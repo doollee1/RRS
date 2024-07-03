@@ -141,7 +141,6 @@ $(function() {
 	function cSearch(currentPage){
 		var url = "/reserve/invoiceSelectList.do";
 		var formData = formIdAllToMap('frmSearch');
-		var sum_tot = 0;
 		var param = {"SEQ"     : seq
 				   , "REQ_DT"  : req_dt
 				   , "MEM_GBN" : mem_gbn
@@ -149,16 +148,13 @@ $(function() {
 				   , "CHK_OUT_DT" : chk_out_dt
 				   };
 		fn_ajax(url, true, param, function(data, xhr){
-			$.each(data.result , function(i , val){
-				val.STATUS_V = "R";
-				sum_tot += val.TOT_AMT;
-			});
 			reloadGrid("invoiceGrid", data.result);
-			
 			var colModel = $("#invoiceGrid").jqGrid('getGridParam', 'colModel'); 
+			
 			for(var i =0; i < data.result.length; i++){
 				jQuery("#invoiceGrid").setCell(i+1);
 			}
+			var totSum = $("#invoiceGrid").jqGrid('getCol','TOT_AMT', false, 'sum');
 			
 			//첨부파일이 있으면 output()함수로 첨부파일을 표시해준다
 			file = data.fileResult;
@@ -173,7 +169,7 @@ $(function() {
 			}
 			
 			btGrid.gridResizing('invoiceGrid');
-		    $("#PartnerSchGrid_pager_right").html('<tr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(sum_tot)+'</div>');
+		    $("#PartnerSchGrid_pager_right").html('<div" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(totSum)+'</div>');
 	    });
 		
 		$('#POP_INV_REG_DT').datepicker({
@@ -191,6 +187,7 @@ $(function() {
 		     function(e) {
 		 });
 	
+		$("#PartnerSchGrid_pager_right").append('<div dir="ltr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(totSum)+'</div>');
 	}
 	
 	$(".withComma").on("keyup" , function(){

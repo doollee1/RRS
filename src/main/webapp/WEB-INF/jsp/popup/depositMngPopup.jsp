@@ -56,6 +56,7 @@
 					<th><s:message code='deposit.payreg'/></th>
 					<td>
 						<button type="button" class="btn btn-success" id="btn_payreg"  style="width:160px; opacity:70%; margin: 0 20px">입금등록</button>
+						<input type="hidden" id="DEP_AMT"   name="DEP_AMT"    />
 					</td>
 				</tr>
 				<tr>
@@ -164,26 +165,40 @@ $(function() {
 	
 	//입금등록 클릭
 	$("#btn_payreg").click(function() {
-		var pay_dt  = $("#PAY_DT").val().replaceAll(".","");
-	    var pay_amt = $("#PAY_AMT").val().replaceAll(",","");
-	    var dct_amt = $("#DCT_AMT").val().replaceAll(",","");
+		
+		var pay_dt   = $("#PAY_DT").val().replaceAll(".","");
+	    var pay_type = $("#PAY_TYPE").val();
+		var pay_amt  = $("#PAY_AMT").val().replaceAll(",","");
+	    var dct_amt  = $("#DCT_AMT").val().replaceAll(",","");
+	    var dep_amt  = $("#DEP_AMT").val().replaceAll(",","");
 	    
+	    //입금일자 확인
 	    if(fn_empty(pay_dt)){
 	    	
 	    	alert("입금일자를 확인해주세요.");
 			return false;
 	    }
 	    
+	    //입금금액 확인
 	    if(parseInt(pay_amt) == 0){
 	    	
 	    	alert("입금금액을 확인해주세요.");
 			return false;
 	    }
 	    
+	    
+	    //입금구분이 예약(03)이고 예약금액이 없을 경우
+		if((pay_type == '03') && (parseInt(dep_amt) == 0)){
+	    	
+	    	alert("예약금액이 없어 입금이 불가합니다.");
+			return false;
+	    }
+	    
+	    
 		var url = "/deposit/registDepositAjax.do";
 	    var param = { "SEQ"         : gv_seq
 			        , "REQ_DT"      : gv_req_dt
-			        , "PAY_TYPE" 	: $("#PAY_TYPE").val()
+			        , "PAY_TYPE" 	: pay_type
 			        , "PAY_DT" 		: pay_dt
 			        , "PAY_AMT"     : pay_amt
 			        , "DCT_AMT"     : dct_amt
@@ -246,6 +261,7 @@ $(function() {
 				if(!fn_empty(data.result)){
 					$("input[name='INVOICE_AMT']").val(numberWithCommas(data.result.INVOICE_AMT));  //견적금액
 					$("input[name='BAL_AMT']").val(numberWithCommas(data.result.BAL_AMT));  //잔액금액
+					$("input[name='DEP_AMT']").val(numberWithCommas(data.result.DEP_AMT));  //예약금액
 					//입금록록 조회
 					cSearch('00');  //전체					
 				}else{

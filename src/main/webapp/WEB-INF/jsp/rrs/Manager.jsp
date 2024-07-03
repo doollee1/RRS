@@ -4,6 +4,7 @@
 <%
 	/**
 	 * @Name : Manager
+	 * @관리자정보
 	 */
 %>
 <c:import url="../import/frameTop.jsp">

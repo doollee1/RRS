@@ -4,6 +4,7 @@
 <%
 	/**
 	 * @Name : User
+	 * 회원정보
 	 */
 %>
 <c:import url="../import/frameTop.jsp">

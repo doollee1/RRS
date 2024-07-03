@@ -11,7 +11,7 @@
 .pbtn_default {margin: 0 3px -1px 5px;padding: 3px 10px 3px 10px;border: 1px solid #a9cbeb !important;background: #bdd6ee !important;color: #2269b1;}
 .cmc_txt {text-align:right;}
 .pickUpTable tr:nth-child(3n+1) {border-bottom: 4px double #C1D0DC;}
-.pickUpTable tr:first-child {border-top: 4px solid #a1b4bd; border-bottom: 4px solid #a1b4bd;}
+.pickUpTable tr:first-child {border: solid 2px #59a5cd;}
 
 </style>
 <div id="p_pickUpGbnPopup">
@@ -24,10 +24,11 @@
 			        <col width="20%" />
 			        <col width="30%" />
 			    </colgroup>
+		   		
 		   		<tr>
-		   	     	<th><s:message code='meetSanding.meet'/></th>
-					<td class="medium_td">
-						<select id="PICK_GBN_1" name="PICK_GBN_1" class="cmc_combo" style="width:62%;">
+		   	     	<th class="text-center" style="font-weight:bold; background: #cfeff8; border: solid 2px #59a5cd;"><s:message code='meetSanding.meet'/></th>
+					<td>
+						<select id="PICK_GBN_1" name="PICK_GBN_1" class="cmc_combo" style="width:62%; margin: 5px;">
 						    <c:forEach var="i" items="${region}">
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
@@ -37,9 +38,10 @@
 						<input type="hidden" id="HD_PROD_SEQ3" name="HD_PROD_SEQ3">
 						<input type="hidden" id="HD_PROD_SEQ4" name="HD_PROD_SEQ4">
 					</td>
-					<th><s:message code='meetSanding.prdCnt'/></th>
+				
+					<th class="text-center" style="font-weight:bold; background: #cfeff8; border: solid 2px #59a5cd;"><s:message code='meetSanding.prdCnt'/></th>
 					<td>
-					    <select id="PRD_CNT" name="PRD_CNT" class="cmc_combo" style="width:62%;">
+					    <select id="PRD_CNT" name="PRD_CNT" class="cmc_combo" style="width:62%; margin: 5px;">
 						    <option value="">--<s:message code='system.select'/>--</option>
 						    <option value="1">1</option>
 						    <option value="2">2</option>
@@ -48,6 +50,11 @@
 						</select>
 					</td>
 				</tr>
+				
+				<tr>
+					<td style="padding: 4px 0;"></td>
+				</tr>
+				
 				<tr>
 				    <th><s:message code='meetSanding.prdGbn'/></th>
 					<td>

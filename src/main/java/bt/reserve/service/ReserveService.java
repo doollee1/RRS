@@ -5,12 +5,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1438,13 +1441,152 @@ public class ReserveService {
 	}
 	
 	/**
-	 * 예약상세 삭제
+	 * 예약관리-상태변경 잔금 조회
 	 * @param param
 	 * @return 
 	 * @throws Exception
 	 */
 	public void deleteReserveInfo(Map<String, Object> param) throws Exception {
 		reserveDao.deleteReserveInfo(param);
+	}
+
+	/**
+	 * 예약상세 삭제
+	 * @param param
+	 * @return 
+	 * @throws Exception
+	 */
+	public int selectBalAmt(BMap paramAmt) throws Exception {
+		return reserveDao.selectBalAmt(paramAmt);
+	}
+	
+	
+	/**
+	 * 관리자 이미지등록 
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */	
+	public Map<String, Object> adminImageReservation(Map<String, Object> paramMap) throws Exception {
+		// TODO Auto-generated method stub
+		logger.info("========== 관리자 이미지등록 서비스 ==========");
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		
+		// 이미지 업로드
+		MultipartFile file = (MultipartFile)paramMap.get("file");
+		if(file != null) {
+			
+			// 이미지 업로드
+			Map<String, Object>imageMap = this.imageUpload((MultipartFile)paramMap.get("file"));
+			paramMap.putAll(imageMap);
+			
+			// 이미지테이블 등록
+			int resultImgReg  = reserveDao.insertTbReqAddFile(paramMap);
+			logger.info("===== 이미지테이블 등록결과 : "+resultImgReg);
+			
+			if(resultImgReg < 1) {
+				
+				resultMap.put("result", "FAIL");
+				return resultMap;
+			}
+		}
+		
+		
+		//예약상세  업데이트(첨부파일일련번호)
+		int resultBookingDUpd = reserveDao.updateAddFileSeq(paramMap);
+		logger.info("===== 예약상세 업데이트결과 : "+resultBookingDUpd);
+		
+		if(resultBookingDUpd < 1) {
+			
+			resultMap.put("result", "FAIL");
+			return resultMap;
+		}
+		
+		
+		//성공
+		resultMap.put("result", "SUCCESS");
+		return resultMap;
+	}
+	
+	
+	
+	/**
+	 * 항공권이미지 업로드
+	 * 
+	 * @param image
+	 * @return
+	 */
+	public Map<String, Object> imageUpload(MultipartFile image) {
+		Map<String, Object> rMap = new HashMap<String, Object>();
+				
+		try {
+			//로컬여부 확인
+			InetAddress addr = InetAddress.getLocalHost();
+			String strIp = addr.getHostAddress();
+			logger.info("===== IP : "+strIp);
+			String isLocalYn = strIp.startsWith("192") ? "Y" : "N";
+			
+			
+			String path  = env.getProperty("UPLOAD.PATH"    );  //업로드 기존 path
+			
+			//로컬일 경우 경로, 년, 월 구분자'/'을 "\\"로 변환
+			path = "Y".equals(isLocalYn) ? "C:\\opt\\tomcat\\webapps\\upload\\" : path;
+			
+			String path2 = env.getProperty("UPLOAD.NAS_PATH");  //업로드 기존 path(NAS)
+			rMap.put("add_file_path", path2);
+									
+			String toDay   = new SimpleDateFormat("yyyyMMdd").format(new Date());
+			String strYyyy = toDay.substring(0, 4) + File.separator;    // 기존"/"
+			String strMm   = toDay.substring(4, 6) + File.separator;    // 기존 "/"
+						
+			
+			rMap.put("add_file_path2", strYyyy + strMm);
+			rMap.put("add_file_real_nm", image.getOriginalFilename());
+			
+			path = path + strYyyy;								
+			logger.info("===== 파일 현재년 Path : "+path);			
+			logger.info("===== 파일 현재년 Path 유무 : "+new File(path).exists());
+			
+			
+			//폴더가 없을경우 폴더 생성
+			if(!new File(path).exists()) {
+				new File(path).mkdir(); // 년폴더								
+			}
+			
+			
+			path = path + strMm;
+			logger.info("===== 파일 현재월 Path : "+path);
+			logger.info("===== 파일 현재월 Path 유무 : "+new File(path).exists());
+			
+			
+			if(!new File(path).exists()) {
+				new File(path).mkdir(); // 월폴더
+			}
+			
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS"); //SSS가 밀리세컨드 표시
+			Calendar calendar = Calendar.getInstance();
+			String fileNm   = dateFormat.format(calendar.getTime()).toString() + "." + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf(".") + 1);
+			rMap.put("add_file_nm", fileNm);
+									
+			String filePath = path + fileNm;
+			logger.info("====== filePath : "+filePath);
+			
+			//파일 전송
+			File realFile = new File(filePath);
+			image.transferTo(realFile);
+			
+			//파일 권한설정
+			realFile.setExecutable(true, false);
+			realFile.setWritable  (true, false);
+			realFile.setReadable  (true, false);
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+			return rMap;
+		}
+		return rMap;
 	}
 	
 }
