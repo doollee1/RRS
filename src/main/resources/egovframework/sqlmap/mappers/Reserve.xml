@@ -2510,7 +2510,7 @@ DELETE
 	</delete>
 	
 	<select id="selectBalAmt" parameterType="BMap" resultType="int">
-		SELECT BAL_AMT
+		SELECT NVL(BAL_AMT,0)
 		  FROM TB_REQ_FEE
 		 WHERE 1 = 1
 		   AND REQ_DT  = #{REQ_DT}

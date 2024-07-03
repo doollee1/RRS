@@ -2269,7 +2269,17 @@ $(function() {
 												if (parseInt(this.value) > 0) {
 													this.title = "이미지보기";
 													reserveSelectAirlineImg(this.value);
-												}
+												} else {
+													
+													var rowId =$("#reserveGrid").jqGrid('getGridParam','selrow');
+													var dSeq = $("#reserveGrid").jqGrid("getCell", rowId, "DSEQ");
+													
+													console.log("===== rowId : "+rowId);
+													console.log("===== dSeq : "+dSeq);
+													
+													//항공권이미지 업로드 팝업 
+													reserveAirlineImgUpload(dSeq);
+												} 
 											}
 										}]
 									}
@@ -2590,6 +2600,24 @@ $(function() {
 	    	}
 		}
 	});
+	
+	
+	//항공권업로드 팝업호출
+	function reserveAirlineImgUpload(dseq){
+		
+		console.log("===== 항공권업로드 팝업호출=====");
+		
+		var url = "/reserve/arrImgUploadPopup.do";
+	    var pid = "p_arrImgPopup";
+	    var param = { "REQ_DT"          : req_dt
+			        , "SEQ"             : seq
+			        , "DSEQ"    : dseq
+	                };
+		popupOpen(url, pid, param, function(data) {
+			initSelect();
+		});
+	} 
+	
 	
 	function reserveSelectAirlineImg(fileseq){
 		var url = "/reserve/arrImg.do";

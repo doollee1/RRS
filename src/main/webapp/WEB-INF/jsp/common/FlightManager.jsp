@@ -8,7 +8,7 @@
 	 */
 %>
 <c:import url="../import/frameTop.jsp">
-	<c:param name="progcd" value="SY08" />
+	<c:param name="progcd" value="RV05" />
 </c:import>
 
 <!-- 검색조건 영역 시작 -->
