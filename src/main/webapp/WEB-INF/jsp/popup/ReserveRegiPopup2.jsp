@@ -835,9 +835,9 @@ $(function() {
 	 *******************************************************/
 	function fn_dataSet(data){
     	$.each(data, function(key , val){
-    		if( key == "M_PERSON"     || key == "G_PERSON"      || key == "N_PERSON"    || key == "K_PERSON"  || key == "I_PERSON"  || 
-    			key == "TOT_PERSON"   || key == "TWIN_KING_CNT" || key == "TWIN_CNT"    || key == "KING_CNT"  || key == "DEP_AMT"   || 
-    			key == "ROOM_ADD_CNT" || key == "ROOM_ADD_CNT"  || key == "PRIM_ADD_IL" || key == "PRIM_ADD_CNT") {
+    		if( key == "M_PERSON"    || key == "G_PERSON"      || key == "N_PERSON"    || key == "K_PERSON"   || key == "I_PERSON"  || 
+    			key == "TOT_PERSON"  || key == "TWIN_KING_CNT" || key == "TWIN_CNT"    || key == "KING_CNT"   || key == "DEP_AMT"   || 
+    			key == "PAY_DEP_AMT" || key == "ROOM_ADD_CNT"  || key == "ROOM_ADD_CNT"|| key == "PRIM_ADD_IL"|| key == "PRIM_ADD_CNT") {
     			$('[name='+ key +']').val (fn_comma(val));
     		}else if(key == "REQ_TEL_NO"){ // 예약자전화
 	    		$('[name='+ key +']').val (formatPhoneNumber(val));
@@ -1511,7 +1511,7 @@ $(function() {
 				    , "MEM_GBN"         : $("#MEM_GBN").val()
 				    , "AGN_GB"          : $("#AGN_GB").val()
 				    , "AGN_CD"          : $("#AGN_CD").val()
-				    , "PRC_STS"         : '04'
+				    , "PRC_STS"         : $("#PRC_STS").val()
 				    , "CHK_IN_DT"       : $("#CHK_IN_DT").val().replaceAll(".","")
 				    , "CHK_OUT_DT"      : $("#CHK_OUT_DT").val().replaceAll(".","")
 				    , "ROOM_TYPE"       : $("#ROOM_TYPE").val()
@@ -1896,7 +1896,7 @@ $(function() {
 			        , "PRC_STS"      : $("#PRC_STS"     ).val()
 			        , "TOT_PERSON"   : $("#TOT_PERSON"  ).val().replaceAll("," , "")
 			        , "CHK_IN_DT"    : $("#CHK_IN_DT"   ).val().replaceAll(".","")
-			        , "CHK_OUT_DT"    : $("#CHK_OUT_DT"   ).val().replaceAll(".","")
+			        , "CHK_OUT_DT"   : $("#CHK_OUT_DT"   ).val().replaceAll(".","")
 	                };
 	    if(fn_empty(seq) || fn_empty(req_dt)) {
 	    	alert("미팅샌딩등록은 상세화면에서 가능합니다.");
@@ -2082,6 +2082,7 @@ $(function() {
 			    	$("#HDNG_GBN"     ).attr("disabled",true);
 			    	$("#ADD_HDNG_GBN").val("");
 					$("#ADD_HDNG_GBN").attr("disabled",true);
+					$("#PRC_STS").val("02");
 					$("#M_PERSON").val("1");
 					$("#G_PERSON").val("0");
 					$("#N_PERSON").val("0");
@@ -2099,6 +2100,7 @@ $(function() {
 					$("#HDNG_GBN").attr("disabled",true);
 					$("#ADD_HDNG_GBN").val("");
 					$("#ADD_HDNG_GBN").attr("disabled",true);
+					$("#PRC_STS").val("04");
 					$("#M_PERSON").val("0");
 					$("#G_PERSON").val("1");
 					$("#N_PERSON").val("0");
@@ -2114,6 +2116,7 @@ $(function() {
 					$("#ADD_HDNG_GBN").val("");
 					$("#ADD_HDNG_GBN").attr("disabled",true);
 					$("#M_PERSON").attr("disabled",false);
+					$("#PRC_STS").val("04");
 					$("#M_PERSON").val("0");
 					$("#G_PERSON").val("0");
 					$("#N_PERSON").val("0");
@@ -2133,6 +2136,7 @@ $(function() {
 					$("#HDNG_GBN").attr("disabled",true);
 					$("#ADD_HDNG_GBN").val("");
 					$("#ADD_HDNG_GBN").attr("disabled",true);
+					$("#PRC_STS").val("04");
 					$("#M_PERSON").val("0");
 					$("#G_PERSON").val("0");
 					$("#N_PERSON").val("0");
@@ -2263,21 +2267,9 @@ $(function() {
 											type:"click",
 											fn:function(e){
 												if (parseInt(this.value) > 0) {
-													
 													this.title = "이미지보기";
 													reserveSelectAirlineImg(this.value);
-												
-												} else {
-													
-													var rowId =$("#reserveGrid").jqGrid('getGridParam','selrow');
-													var dSeq = $("#reserveGrid").jqGrid("getCell", rowId, "DSEQ");
-													
-													console.log("===== rowId : "+rowId);
-													console.log("===== dSeq : "+dSeq);
-													
-													//항공권이미지 업로드 팝업 
-													reserveAirlineImgUpload(dSeq);
-												} 
+												}
 											}
 										}]
 									}
@@ -2598,26 +2590,6 @@ $(function() {
 	    	}
 		}
 	});
-	
-	
-	
-	
-	//항공권업로드 팝업호출
-	function reserveAirlineImgUpload(dseq){
-		
-		console.log("===== 항공권업로드 팝업호출=====");
-		
-		var url = "/reserve/arrImgUploadPopup.do";
-	    var pid = "p_arrImgPopup";
-	    var param = { "REQ_DT"          : req_dt
-			        , "SEQ"             : seq
-			        , "DSEQ"    : dseq
-	                };
-		popupOpen(url, pid, param, function(data) {
-			initSelect();
-		});
-	} 
-	
 	
 	function reserveSelectAirlineImg(fileseq){
 		var url = "/reserve/arrImg.do";

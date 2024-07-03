@@ -274,7 +274,7 @@ $(function() {
 	//비용상세 마지막레코드 조회
 	function selectLastTbReqFeeInfo(){
 		var url = "/deposit/selectLastTbReqFeeInfoAjax.do";
-     	var param = {"REQ_DT"     : gv_req_dt 
+     	var param = {"REQ_DT" : gv_req_dt 
 	               , "SEQ"    : gv_seq
 	                };
      	fn_ajax(url, true, param, function(data, xhr){
@@ -363,14 +363,14 @@ $(function() {
 					];
 
 		var colModel = [
-						  { name: 'SEQ',      width : 30 , align: 'center' , editable : true, editoptions:{readonly: true}}
-						, { name: 'PAY_DT',  width : 120, align: 'left'   , editable:true, editoptions:{readonly: true}}
-						, { name: 'PAY_TYPE_NM',  width : 120, align: 'left' , editable:true, editoptions:{readonly: true}}
-						, { name: 'PAY_AMT', width : 120, align: 'right' ,  formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{readonly: true}}
-						, { name: 'DCT_AMT', width : 120, align: 'right' ,  formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{readonly: true}}
-						, { name: 'INVOICE_AMT', width : 120, align: 'right' ,  formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{readonly: true}}
-						, { name: 'BAL_AMT', width : 120, align: 'right' ,  formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{readonly: true}}
-						, { name: 'REG_DTM',  width : 140, align: 'center' ,  editoptions:{readonly: true}}						
+						  { name: 'SEQ'        , width : 30 , align: 'center' , editable : true, editoptions:{readonly: true}}
+						, { name: 'PAY_DT'     , width : 120, align: 'center' , editable:true, editoptions:{readonly: true}}
+						, { name: 'PAY_TYPE_NM', width : 120, align: 'center' , editable:true, editoptions:{readonly: true}}
+						, { name: 'PAY_AMT'    , width : 120, align: 'right'  ,  formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{readonly: true}}
+						, { name: 'DCT_AMT'    , width : 120, align: 'right'  ,  formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{readonly: true}}
+						, { name: 'INVOICE_AMT', width : 120, align: 'right'  ,  formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{readonly: true}}
+						, { name: 'BAL_AMT'    , width : 120, align: 'right'  ,  formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{readonly: true}}
+						, { name: 'REG_DTM'    , width : 140, align: 'center' ,  editoptions:{readonly: true}}						
 						
 					];
 		

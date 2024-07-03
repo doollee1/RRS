@@ -169,7 +169,7 @@ $(function() {
 			}
 			
 			btGrid.gridResizing('invoiceGrid');
-		    $("#PartnerSchGrid_pager_right").html('<div" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(totSum)+'</div>');
+		    $("#PartnerSchGrid_pager_right").html('<div dir="ltr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(totSum)+'</div>');
 	    });
 		
 		$('#POP_INV_REG_DT').datepicker({
@@ -186,8 +186,6 @@ $(function() {
 		 }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
 		     function(e) {
 		 });
-	
-		$("#PartnerSchGrid_pager_right").append('<div dir="ltr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(totSum)+'</div>');
 	}
 	
 	$(".withComma").on("keyup" , function(){
@@ -261,7 +259,7 @@ $(function() {
 					];
 
 		var colModel = [
-						  { name: 'SEQ',      width : 1 , align: 'center' , hidden : true, editoptions:{readonly: true}}
+						  { name: 'SEQ',      width : 1  , align: 'center' , hidden : true, editoptions:{readonly: true}}
 						, { name: 'ORDER',    width : 50 , align: 'center' , editable:true, editoptions:{dataInit: function(element) {
 			                $(element).keyup(function(){
 				                 var val1 = element.value;
@@ -274,9 +272,9 @@ $(function() {
 				               }, maxlength:5
 						      }
 						  }
-						, { name: 'ITEM_CD',  width : 220, align: 'left'   , editable:true , edittype:"select", formatter : "select"}
-						, { name: 'ITEM_NM',  width : 220, align: 'left' , editable:true, editoptions:{maxlength:100}}
-						, { name: 'AMT_SIGN', width : 50 , align: 'center' , editable:true, edittype:"select" ,  editoptions:{value:{"￦" : "￦"}}} 
+						, { name: 'ITEM_CD',  width : 220, align: 'left'  , editable:true, edittype:"select", formatter : "select"}
+						, { name: 'ITEM_NM',  width : 220, align: 'left'  , editable:true, editoptions:{maxlength:100}}
+						, { name: 'AMT_SIGN', width : 50 , align: 'center', editable:true, edittype:"select" ,  editoptions:{value:{"￦" : "￦"}}} 
 						, { name: 'PER_AMT',  width : 70 , align: 'right' , editable:true, formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{    
 				            dataInit: function(element) {
 				                $(element).keyup(function(){
@@ -289,7 +287,7 @@ $(function() {
 				               }, maxlength:15 
 				              }
                            } 
-						, { name: 'USE_DAY',  width : 60 , align: 'center' , editable:true,editoptions:{    
+						, { name: 'USE_DAY',  width : 60 , align: 'center', editable:true,editoptions:{    
 				            dataInit: function(element) {
 				                $(element).keyup(function(){
 				                 var val1 = element.value;
@@ -301,8 +299,8 @@ $(function() {
 				               }, maxlength:5
 				              }
                            }
-						, { name: 'UNIT_DAY', width : 50 , align: 'center'  , editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${REF_CHR3}'}}
-						, { name: 'USE_NUM'	,  width : 60 , align: 'center' , editable:true, editoptions:{    
+						, { name: 'UNIT_DAY', width : 50 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${REF_CHR3}'}}
+						, { name: 'USE_NUM' , width : 60 , align: 'center', editable:true, editoptions:{    
 				            dataInit: function(element) {
 				                $(element).keyup(function(){
 				                 var val1 = element.value;
@@ -314,14 +312,13 @@ $(function() {
 				               }, maxlength:5
 				              }
                            }
-						, { name: 'UNIT_NUM', width : 50 , align: 'center' ,  editable:true,edittype:"select" , formatter : "select",  editoptions:{value:'${REF_CHR4}'}}
-						, { name: 'TOT_AMT',  width : 120, align: 'right' ,  formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{readonly: true}}
-						, { name: 'REG_DTM',  width : 140, align: 'center' ,  editoptions:{readonly: true}}
-						, { name: 'UPD_DTM',  width : 140, align: 'center' ,  editoptions:{readonly: true}}
+						, { name: 'UNIT_NUM', width : 50 , align: 'center',  editable:true,edittype:"select" , formatter : "select",  editoptions:{value:'${REF_CHR4}'}}
+						, { name: 'TOT_AMT' , width : 120, align: 'right' ,  formatter:'integer', formatoptions:{thousandsSeparator:",", decimalPlaces: 0}, editoptions:{readonly: true}}
+						, { name: 'REG_DTM' , width : 140, align: 'center',  editoptions:{readonly: true}}
+						, { name: 'UPD_DTM' , width : 140, align: 'center',  editoptions:{readonly: true}}
 						, { name: 'PREV_ITEM_CD',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
-						, { name: 'PREV_ORDER',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
-						, { name: 'STATUS_V',  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
-						
+						, { name: 'PREV_ORDER'  ,  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
+						, { name: 'STATUS_V'    ,  width : 100, align: 'center',  hidden : true ,editoptions:{readonly: true}}
 					];
 		
 		var gSetting = {
@@ -343,37 +340,31 @@ $(function() {
 		$('#invoiceGrid').jqGrid('setGroupHeaders', {
 			useColSpanStyle: true, 
 			groupHeaders:[
-				{startColumnName: 'USE_DAY', numberOfColumns: 4, titleText: '사용'},
+				{startColumnName: 'USE_DAY'
+				, numberOfColumns: 4
+				, titleText: '사용'},
 				]
 		});
 	}
 	
+	//행추가
 	$("#btn_addRow").on("click" , function(){
 		btGrid.gridSaveRow('invoiceGrid');
-		var rowId = $('#invoiceGrid').jqGrid('getGridParam', 'selrow');
+		var rowId   = $('#invoiceGrid').jqGrid('getGridParam', 'selrow');
 		var rowData = $("#invoiceGrid").getRowData(rowId);
-		var data = {"SEQ" : seq  , "STATUS_V" : "I"};
+		var count   = $("#invoiceGrid").getGridParam("records");
+		
+		var data = {"SEQ"      : seq 
+				  , "STATUS_V" : "I"
+				  , "ORDER"    : count + 1
+				  };
+		
 		btGrid.gridAddRow("invoiceGrid", "last", data);
 	});
 	
-	$("#btn_save").on("click" , function(){
-		//첨부파일이 없을 경우
-		if($("#ATTACHFILE input[type=file]").val() == null || $("#ATTACHFILE input[type=file]").val() == ""){
-			insertVoiceInfo();
-		}else{
-			//기존 첨부파일이 있는 경우
-			if(!fn_empty(file)){
-				insertVoiceInfo();
-			}
-			//첨부파일을 추가하는 경우
-			else{
-				$("#multiform_PDF").submit();
-			}
-		}
-	});
-	
+	//행삭제
 	$("#btn_delRow").on("click" , function(){
-		var rowId =$("#invoiceGrid").jqGrid('getGridParam','selrow');
+		var rowId = $("#invoiceGrid").jqGrid('getGridParam','selrow');
 		var args = "";
 		if (rowId == null) {
 			args = '<s:message code='title.row'/>';
@@ -392,10 +383,29 @@ $(function() {
 		}
 	});
 	
+	//저장
+	$("#btn_save").on("click" , function(){
+		//첨부파일이 없을 경우
+		if($("#ATTACHFILE input[type=file]").val() == null || $("#ATTACHFILE input[type=file]").val() == ""){
+			insertVoiceInfo();
+		}else{
+			//기존 첨부파일이 있는 경우
+			if(!fn_empty(file)){
+				insertVoiceInfo();
+			}
+			//첨부파일을 추가하는 경우
+			else{
+				$("#multiform_PDF").submit();
+			}
+		}
+	});
+	
 	//닫기
 	$("#btn_close").on("click" , function(){
 		popupClose($('#p_invoicePopup').data('pid'));
 	});
+	
+	//삭제
 	$("#btn_del").on("click" , function(){
 		var rowId =$("#invoiceGrid").jqGrid('getGridParam','selrow');
 		var args    = "";
@@ -434,7 +444,6 @@ $(function() {
 				});
 		}
 	});
-	
 	
 	//이메일 전송하기
 	$("#btn_send").on("click" , function(){
@@ -482,7 +491,6 @@ $(function() {
 		});
 		
 	});
-	
 	
 	//공통버튼 - 엑셀 다운 클릭
 	window.cExcelSample = function(data) {
@@ -538,9 +546,9 @@ $(function() {
 			full_tot_amt += parseInt(fn_uncomma($(this).jqGrid('getCell', ids[i] ,'TOT_AMT')));
 		}
 		$("#sumtot_amt").text('Total Price: '+fn_comma(full_tot_amt));
-	    $("#sumtot_amt").append('<div dir="ltr" id="sumtot_amt" style="text-align:right">Total Price: '+fn_comma(full_tot_amt)+'</div>');
 	});
 	
+	//인보이스 데이터 저장
 	function insertVoiceInfo(result){
 		btGrid.gridSaveRow('invoiceGrid');
 		var gridData  = $("#invoiceGrid").getRowData();
@@ -550,11 +558,13 @@ $(function() {
 		var errChk=0;
 		
 		for(var i = 0; i < ids.length; i++){
+			$("#invoiceGrid").jqGrid('setCell' , ids[i] , 'ORDER' , i + 1);
 			gridDataChk.push($("#invoiceGrid").getRowData(ids[i]));
 		}
 		
 		var exp_dt = $("#POP_EXP_DT").val().replaceAll(".","");
 	    var dep_amt = parseInt($("#POP_DEP_AMT").val().replaceAll(",",""));
+	    
 	    if(fn_empty(exp_dt)){
 	    	alert("예약기한을 확인해주세요.");
 			return false;

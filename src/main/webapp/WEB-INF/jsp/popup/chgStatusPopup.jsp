@@ -209,7 +209,6 @@ $(function() {
 						alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
 					}else{
 						alert("<s:message code='info.save'/>");
-						p_rtnData = {};
 						popupClose($('#p_changeStatusPopup').data('pid'));
 					}
 				});
@@ -221,7 +220,7 @@ $(function() {
 					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
 				}else{
 					alert("<s:message code='info.save'/>");
-					p_rtnData = {};
+					//p_rtnData = {};
 					popupClose($('#p_changeStatusPopup').data('pid'));
 				}
 			});

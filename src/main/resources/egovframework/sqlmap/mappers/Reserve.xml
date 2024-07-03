@@ -353,9 +353,9 @@
 				 WHERE 1 = 1
                    AND TT1.REQ_DT  = T1.REQ_DT
                    AND TT1.REQ_SEQ = T1.SEQ)          AS PER_NUM           /* 미팅샌딩 인원합계      */
-	         , T3.DEP_IN_DT                           AS DEP_IN_DT         /* 예약금입금일자         */
-	         , T3.PAY_DEP_AMT						  AS PAY_DEP_AMT	   /* 입금예약금 (20240625 추가) */
-	         , T3.EXP_DT                              AS EXP_DT            /* 예약 기한              */
+	         , NVL(T3.DEP_IN_DT,'')                   AS DEP_IN_DT         /* 예약금입금일자         */
+	         , NVL(T3.PAY_DEP_AMT,0)				  AS PAY_DEP_AMT	   /* 입금예약금 (20240625 추가) */
+	         , NVL(T3.EXP_DT,'')                      AS EXP_DT            /* 예약 기한              */
 	         , NVL(T3.DEP_AMT,0)                      AS DEP_AMT           /* 예약금액               */
 	         , CASE WHEN NVL(T3.PAY_AMT,0) = '0'
 	           THEN NVL(T3.TOT_AMT,0) - NVL(T3.DCT_AMT,0)
@@ -1122,20 +1122,15 @@
            AND REQ_SEQ  = #{SEQ}
 	</update>
 
-	<update id="deleteAllFeeInfo" parameterType="BMap">
-	    UPDATE TB_REQ_FEE
-           SET TOT_AMT    = 0
-             , BAL_AMT    = 0
-             , DCT_AMT    = 0
-             , PAY_AMT    = 0
-             , DEP_AMT    = 0
-             , EXP_DT     = ""
-             , DEP_IN_DT  = ""
-             , UPD_DTM  = NOW()
-             , UPD_ID   = #{LOGIN_USER}
-         WHERE REQ_DT   = #{REQ_DT}
-           AND REQ_SEQ  = #{SEQ}
-	</update>
+	<delete id="deleteAllFeeInfo" parameterType="BMap">
+	    DELETE FROM T1,T2
+		 USING TB_REQ_FEE   AS T1
+     LEFT JOIN TB_REQ_FEE_D AS T2
+		    ON T2.REQ_DT  = T1.REQ_DT
+		   AND T2.REQ_SEQ = T1.REQ_SEQ
+         WHERE T1.REQ_DT  = #{REQ_DT}
+           AND T1.REQ_SEQ = #{SEQ}
+	</delete>
 
 	<update id="updateInvRegDt" parameterType="BMap">
 	    UPDATE TB_REQ_BOOKING_M
@@ -1248,7 +1243,7 @@
 		          , #{PRC_STS}
 		       </when>
 		       <otherwise>
-		          , (CASE WHEN #{MEM_GBN} = '01' THEN '04' WHEN #{MEM_GBN} = '02' THEN '01' ELSE NULL END )
+		          , (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' ELSE NULL END )
 		       </otherwise>
 		   </choose>
 		          , #{CHK_IN_DT       }
@@ -2489,7 +2484,7 @@ DELETE
 	</select>
 	
 	<delete id="deleteReserveInfo" parameterType="hashMap">
-	DELETE FROM T1, T2, T3, T4, T5, T6
+	DELETE FROM T1, T2, T3, T4, T5, T6, T7
 		  USING TB_REQ_BOOKING_M   AS T1
 	  LEFT JOIN TB_REQ_BOOKING_D   AS T2
 		     ON T2.REQ_DT  = T1.REQ_DT
@@ -2506,6 +2501,9 @@ DELETE
 	  LEFT JOIN TB_REQ_PICKUP      AS T6
 		     ON T6.REQ_DT  = T1.REQ_DT
 		    AND T6.REQ_SEQ = T1.SEQ
+	  LEFT JOIN TB_REQ_FEE_D       AS T7
+	         ON T7.REQ_DT  = T1.REQ_DT
+	        AND T7.REQ_SEQ = T1.SEQ
 		  WHERE 1 = 1
 		    AND T1.REQ_DT = #{REQ_DT}
 		    AND T1.SEQ    = #{SEQ}
@@ -2513,7 +2511,7 @@ DELETE
 	
 	<select id="selectBalAmt" parameterType="BMap" resultType="int">
 		SELECT BAL_AMT
-		  FROM TB_REQ_FEE_D 
+		  FROM TB_REQ_FEE
 		 WHERE 1 = 1
 		   AND REQ_DT  = #{REQ_DT}
 		   AND REQ_SEQ = #{SEQ}

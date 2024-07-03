@@ -948,12 +948,6 @@ public class ReserveService {
         		reserveDao.insertReserveInfo(reserveInfo);
         	}else if(reserveInfo.getString("V_FLAG").equals("detail")){ //update
         		reserveDao.updateReserveInfo(reserveInfo);
-        		feeCnt = reserveDao.selectFeeListCnt(reserveInfo);
-        		if(feeCnt == 0){
-        			reserveDao.insertFeeInfoDetail(reserveInfo);
-        		}else if(feeCnt == 1){
-        			reserveDao.updateReserveFee(reserveInfo);
-        		}
         	}
 // master end //  	    	
 // detail start //
