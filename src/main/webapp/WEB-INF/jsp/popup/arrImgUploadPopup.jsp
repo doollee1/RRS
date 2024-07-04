@@ -106,11 +106,12 @@ $(function() {
 				if(data.result == "SUCCESS") {					
 					
 					alert("이미지 등록이 완료되었습니다."); 
-					top.document.location.reload();  //화면갱신
+					popupClose($('#p_arrImgPopup').data('pid'));  //팝업닫기
+					
 				} else {
 					
 					alert("이미지 등록이 실패하였습니다. 관리자에게 문의 하세요.");
-					top.document.location.reload();  //화면갱신
+					popupClose($('#p_arrImgPopup').data('pid'));  //팝업닫기
 				}
 		 	}
 		});
