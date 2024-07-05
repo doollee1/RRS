@@ -117,9 +117,19 @@ public class LoginController {
 			
 	        PrivateKey privateKey = (PrivateKey) session.getAttribute(LoginController.RSA_WEB_KEY);	       
 	        
-	        // 복호화
-	         param.put("PASSWORD", decryptRsa(privateKey, param.getString("PASSWORD")));
 	        
+	        // 복호화, 예외처리
+	        try {	        	
+	        	param.put("PASSWORD", decryptRsa(privateKey, param.getString("PASSWORD")));
+	        } catch(Exception e) {
+	        	
+	        	e.printStackTrace();
+	        	
+	        	respData.put("success", false);
+				respData.put("message", "세션이 종료됬습니다. 다시 로그인해주세요.");
+				return respData;
+	        }
+	         
 	        // 다시 암호화
 	         param.put("PASSWORD", EgovFileScrty.encryptPassword(param.getString("PASSWORD"), param.getString("USER_ID")));
 	        
