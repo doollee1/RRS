@@ -96,10 +96,19 @@ public class ProductService {
 	 * Product Info 삭제
 	 * @param param
 	 * @return 
+	 * @return 
 	 * @throws Exception
 	 */
-	public void deleteProductInfo(BMap param) throws Exception{
-		productDao.deleteProductInfo(param); // 상품 수정;
+	public Boolean deleteProductInfo(BMap param) throws Exception{
+		Boolean isValid = true;
+		try {
+			productDao.deleteProductInfo(param); // 상품 삭제;
+		}
+		catch (Exception e) {
+			e.getStackTrace();
+			isValid = false;
+		}
+		return isValid;
 	}
 	
 	

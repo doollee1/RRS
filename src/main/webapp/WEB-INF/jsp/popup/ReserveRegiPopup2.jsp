@@ -2215,39 +2215,15 @@ $(function() {
 						, { name: 'FLIGHT_IN_HH' , width : 74 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_HH}'}}
 						, { name: 'FLIGHT_OUT'   , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT}'}}
 						, { name: 'FLIGHT_OUT_HH', width : 74 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
-						, { name: 'ADD_FILE_SEQ' , width : 84 , align: 'center', editable:true, edittype:"button", 
-									/* 
-									    editoptions:{
-										dataEvents:[{
-											type:"click",
-											fn:function(e){
-												if (parseInt(this.value) > 0) {
-													this.title = "이미지보기";
-													reserveSelectAirlineImg(this.value);
-												} else {
-													
-													var rowId =$("#reserveGrid").jqGrid('getGridParam','selrow');
-													var dSeq = $("#reserveGrid").jqGrid("getCell", rowId, "DSEQ");
-													
-													console.log("===== rowId : "+rowId);
-													console.log("===== dSeq : "+dSeq);
-													
-													//항공권이미지 업로드 팝업 
-													reserveAirlineImgUpload(dSeq);
-												} 
-											}
-										}]
-									} */
+						, { name: 'ADD_FILE_SEQ' , width : 84 , align: 'center', editable:true, edittype:"button", 									
 									formatter: function (cellval, options, rowObject) {	
 							  			var se = "";
 										
 							  			var dSeq = rowObject.DSEQ;
 										var fileSeq = rowObject.ADD_FILE_SEQ;
-										
-										
-										console.log("===== dSeq : "+dSeq);
-										console.log("===== fileSeq : "+fileSeq);
-										
+																				
+										//console.log("===== dSeq : "+dSeq);
+										//console.log("===== fileSeq : "+fileSeq);										
 										
 										if (parseInt(fileSeq) > 0) {
 											
@@ -2665,12 +2641,7 @@ $(function() {
 
 //항공권 미리보기 팝업
 function reserveSelectAirlineImg(fileseq){
-	
-	console.log("===== 항공권 미리보기 팝업 호출 =====");
-	console.log("===== req_dt : "+req_dt);
-	console.log("===== seq : "+seq);
-	console.log("===== fileseq : "+fileseq);
-	
+			
 	var url = "/reserve/arrImg.do";
     var pid = "p_arrImgPopup";
     var addfileseq = fileseq;
@@ -2678,8 +2649,7 @@ function reserveSelectAirlineImg(fileseq){
 		        , "SEQ"             : seq
 		        , "ADD_FILE_SEQ"    : addfileseq
                 };
-	popupOpen(url, pid, param, function(data) {
-		//reserveSelectAirlineImg2(req_dt, seq, addfileseq);
+	popupOpen(url, pid, param, function(data) {		
 		cSearch();
 	});
 }
@@ -2687,12 +2657,7 @@ function reserveSelectAirlineImg(fileseq){
 
 //항공권업로드 팝업호출
 function reserveAirlineImgUpload(dseq){
-	
-	console.log("===== 항공권업로드 팝업호출=====");
-	console.log("===== req_dt : "+req_dt);
-	console.log("===== seq : "+seq);
-	console.log("===== dseq : "+dseq);
-	
+			
 	var url = "/reserve/arrImgUploadPopup.do";
     var pid = "p_arrImgPopup";
     var param = { "REQ_DT"          : req_dt
@@ -2714,11 +2679,7 @@ function reserveAirlineImgUpload(dseq){
  * -----------------------------------------------------*
  *******************************************************/
 function cSearch(currentPage){
-	 
-	 console.log("===== 예약현황리스트 조회=====");
-	 console.log("===== req_dt : "+req_dt);
-	console.log("===== seq : "+seq);
-	 
+	 	 
 	var url = "/reserve/reserveSelectAddList.do";
 	var formData = formIdAllToMap('frmSearch');
 	var reserve_sum_tot = 0;

@@ -151,4 +151,32 @@ public class DepositDao extends DBAbstractMapper {
 	public BMap selectLastTbReqFeedInfo(BMap param) throws Exception {
 		return (BMap) selectByPk("DepositMapper.selectLastTbReqFeedInfo", param);
 	}
+	
+	/**
+	 * 비용 상세 내역 삭제
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deleteTbReqFeeD(BMap param) throws Exception{
+		delete("DepositMapper.deleteTbReqFeeD", param);
+	}
+	
+	/**
+	 * 비용 상세 삭제시 입금 정보 수정
+	 * 
+	 * @param param
+	 * @throws Exception
+	 */
+	public void deleteTbReqFee(BMap param) throws Exception{
+		update("DepositMapper.deleteTbReqFee", param);
+	}
+	
+	/**
+	 * 비용 상세 삭제 시 잔여 금액 수정
+	 * @param param
+	 * @throws Exception
+	 */
+	public void updateTbReqFeeDBalAmt(BMap param) throws Exception{
+		update("DepositMapper.updateTbReqFeeDBalAmt", param);
+	}
 }

@@ -7,13 +7,13 @@
     SELECT T3.*
       FROM (
     SELECT ROW_NUMBER() OVER(ORDER BY T1.REQ_DT DESC, T1.SEQ DESC) AS ROWNUM
-         , T1.REQ_DT                              /* 예약일자 	   */
-         , T1.SEQ                                 /* 일련번호 	   */
-         , T1.USER_ID                             /* 사용자ID    */
+         , T1.REQ_DT                              /* 예약일자       */
+         , T1.SEQ                                 /* 일련번호       */
+         , T1.USER_ID                             /* 사용자ID       */
          , T1.REQ_HAN_NM                          /* 예약자한글명   */
          , T1.REQ_ENG_NM                          /* 예약자영문명   */
          , T1.REQ_TEL_NO                          /* 예약자전화번호 */
-         , T1.MEM_GBN                             /* 회원구분        */
+         , T1.MEM_GBN                             /* 회원구분       */
          , (SELECT CODE
               FROM BC_COMM_L
              WHERE 1 = 1
@@ -34,49 +34,49 @@
 	          FROM BC_COMM_L
 	         WHERE 1 = 1
 	           AND HEAD_CD = '500260'
-	           AND CODE = T1.AGN_GB)  AS AGN_GB_NM /* 에이전시구분명  */
-         , T1.AGN_CD                              /* 에이전시코드   */
+	           AND CODE = T1.AGN_GB)  AS AGN_GB_NM /* 에이전시구분명 */
+         , T1.AGN_CD                               /* 에이전시코드   */
          , (SELECT CODE_NM
 	          FROM BC_COMM_L
 	         WHERE 1 = 1
 	           AND HEAD_CD = '500120'
-	           AND CODE = T1.AGN_CD)  AS AGN_CD_NM /* 에이전시명  */
-         , T1.PRC_STS                             /* 예약상태       */
-         , T1.CHK_IN_DT                           /* 체크인일자     */
-         , T1.CHK_OUT_DT                          /* 체크아웃일자   */
-         , T1.ROOM_TYPE                           /* 객실타입       */
-         , T1.FLIGHT_IN                           /* 도착항공기편   */
-         , T1.FLIGHT_IN_HH                        /* 도착항공기시간 */
-         , T1.FLIGHT_OUT                          /* 출발항공기편   */
-         , T1.FLIGHT_OUT_HH                       /* 출발항공기시간 */
-         , T1.TOT_PERSON                          /* 총인원        */
-         , T1.BAS_YY                              /* 기준년도      */
-         , T1.BAS_YY_SEQ                          /* 기준년도SEQ   */
-         , T1.PROD_SEQ                            /* 상품순번                    */
-         , T1.HDNG_GBN                            /* 항목구분                    */
-         , T1.ADD_BAS_YY                          /* ADD_기준년도           */
-         , T1.ADD_BAS_YY_SEQ                      /* ADD_기준년도SEQ  */
-         , T1.ADD_PROD_SEQ                        /* ADD_상품순번            */
-         , T1.ADD_HDNG_GBN                        /* ADD_항목구분            */
-         , T1.PICK_GBN                            /* 미팅샌딩구분              */
-         , T1.TWIN_CNT                            /* 트윈갯수                    */
-         , T1.KING_CNT                            /* 킹갯수                       */
-         , T1.ROOM_ADD_IL                         /* 룸추가일수                 */
-         , T1.ROOM_ADD_CNT                        /* 룸추가갯수                 */
-         , T1.PRIM_ADD_IL                         /* 프리미엄추가일수        */
-         , T1.PRIM_ADD_CNT                        /* 프리미엄추가추가갯수  */
-         , T1.PICK_IN                             /* 픽업차량-도착            */
-         , T1.PICK_OUT                            /* 픽업차량-출발            */
-         , T1.LATE_CHECK_IN                       /* Late체크인여부        */
-         , T1.LATE_CHECK_OUT                      /* Late체크아웃여부     */
-         , T1.REMARK                              /* 비고(추가요구사항)  */
-         , T1.INV_REG_DT                          /* 인보이스발행일자         */
-         , T1.RND_CHG_YN1                         /* 라운딩변경(토오전)여부 */
-         , T1.RND_CHG_YN2                         /* 라운딩변경(일오전)여부 */
-         , T1.REG_DTM                             /* 등록일시                        */
-         , T1.REG_ID                              /* 등록자ID          */
-         , T1.UPD_DTM                             /* 수정일시                        */
-         , T1.UPD_ID                              /* 수정자ID          */
+	           AND CODE = T1.AGN_CD)  AS AGN_CD_NM /* 에이전시명      */
+         , T1.PRC_STS                              /* 예약상태        */
+         , T1.CHK_IN_DT                            /* 체크인일자      */
+         , T1.CHK_OUT_DT                           /* 체크아웃일자    */
+         , T1.ROOM_TYPE                            /* 객실타입        */
+         , T1.FLIGHT_IN                            /* 도착항공기편    */
+         , T1.FLIGHT_IN_HH                         /* 도착항공기시간  */
+         , T1.FLIGHT_OUT                           /* 출발항공기편    */
+         , T1.FLIGHT_OUT_HH                        /* 출발항공기시간  */
+         , T1.TOT_PERSON                           /* 총인원          */
+         , T1.BAS_YY                               /* 기준년도        */
+         , T1.BAS_YY_SEQ                           /* 기준년도SEQ     */
+         , T1.PROD_SEQ                             /* 상품순번        */
+         , T1.HDNG_GBN                             /* 항목구분        */
+         , T1.ADD_BAS_YY                           /* ADD_기준년도    */
+         , T1.ADD_BAS_YY_SEQ                       /* ADD_기준년도SEQ */
+         , T1.ADD_PROD_SEQ                         /* ADD_상품순번    */
+         , T1.ADD_HDNG_GBN                         /* ADD_항목구분    */
+         , T1.PICK_GBN                             /* 미팅샌딩구분    */
+         , T1.TWIN_CNT                             /* 트윈갯수        */
+         , T1.KING_CNT                             /* 킹갯수          */
+         , T1.ROOM_ADD_IL                          /* 룸추가일수      */
+         , T1.ROOM_ADD_CNT                         /* 룸추가갯수      */
+         , T1.PRIM_ADD_IL                          /* 프리미엄추가일수*/
+         , T1.PRIM_ADD_CNT                         /* 프리미엄추가추가갯수   */
+         , T1.PICK_IN                              /* 픽업차량-도착          */
+         , T1.PICK_OUT                             /* 픽업차량-출발          */
+         , T1.LATE_CHECK_IN                        /* Late체크인여부         */
+         , T1.LATE_CHECK_OUT                       /* Late체크아웃여부       */
+         , T1.REMARK                               /* 비고(추가요구사항)     */
+         , T1.INV_REG_DT                           /* 인보이스발행일자       */
+         , T1.RND_CHG_YN1                          /* 라운딩변경(토오전)여부 */
+         , T1.RND_CHG_YN2                          /* 라운딩변경(일오전)여부 */
+         , T1.REG_DTM                              /* 등록일시               */
+         , T1.REG_ID                               /* 등록자ID               */
+         , T1.UPD_DTM                              /* 수정일시               */
+         , T1.UPD_ID                               /* 수정자ID               */
          , ( SELECT TT1.CODE
 	           FROM BC_COMM_L TT1
 	              , TB_PROD_INFO TT2
@@ -2340,15 +2340,15 @@ DELETE
 			      , TB_PROD_INFO AS D
 			      , TB_BAS_YY_INFO AS E
 			      , TB_REQ_BOOKING_M AS F
-			  where A.REQ_DT = #{REQ_DT}
-			  AND A.REQ_SEQ = #{SEQ}
-			  and A.REQ_DT 	= F.REQ_DT
-			  and A.REQ_SEQ = F.SEQ
-			  AND B.HEAD_CD = '500140'
-			  AND C.HEAD_CD = '500220'
-			  AND B.CODE = C.REF_CHR4
-			  AND C.CODE = D.PROD_COND
-			  AND D.HDNG_GBN = #{SEND_GBN}
+			where A.REQ_DT    = #{REQ_DT}
+			  AND A.REQ_SEQ   = #{SEQ}
+			  and A.REQ_DT 	  = F.REQ_DT
+			  and A.REQ_SEQ   = F.SEQ
+			  AND B.HEAD_CD   = '500140'
+			  AND C.HEAD_CD   = '500220'
+			  AND B.CODE      = C.REF_CHR4
+			  AND C.CODE      = D.PROD_COND
+			  AND D.HDNG_GBN  = #{SEND_GBN}
 			  AND D.PROD_COND = CASE WHEN IFNULL(A.PER_NUM,0) < 4
 			                         THEN 'PD4'
 			                         ELSE 'PU4'
@@ -2365,18 +2365,18 @@ DELETE
 
 	<!-- 인보이스 코드정보 조회 -->
 	<select id="selectInvoiceCodeInfo" parameterType="BMap" resultType="BMap">
-		 select DISTINCT A.CODE					/* 코드  */
-		       ,A.CODE_NM 						/* 코듸명 */
-		       ,A.REF_CHR2 as AMT_SIGN			/* 화폐단위 */
-		       ,A.REF_CHR3    AS UNIT_DAY  		/* 사용단위  */
-		       ,A.REF_CHR4    AS UNIT_NUM   	/* 수량단위  */
+		 select DISTINCT A.CODE					/* 코드     */
+		       ,A.CODE_NM 						/* 코드명   */
+		       ,A.REF_CHR2    AS AMT_SIGN		/* 화폐단위 */
+		       ,A.REF_CHR3    AS UNIT_DAY  		/* 사용단위 */
+		       ,A.REF_CHR4    AS UNIT_NUM   	/* 수량단위 */
 			   ,A.REF_CHR5    AS SORT			/* 정렬순서 */
 			   ,ABS(TIMESTAMPDIFF(DAY,date_format(#{CHK_IN_DT},'%Y-%m-%d'), date_format(#{CHK_OUT_DT},'%Y-%m-%d'))) as USE_DAY
 		  FROM  BC_COMM_L A, tb_req_booking_d B, TB_PROD_INFO C
 		  WHERE A.HEAD_CD = '500140'  -- 인보이스 항목
 		    and A.CODE =  (case when B.NUM_GBN = '01' then 'PROD01'  	/* 지상비(멤버)  */
 		                        when B.NUM_GBN = '02' then 'PROD02'  	/* 지상비(일반)  */
-		                        else 'PROD03' end)                   	/* 지상비(숙박+식사)	*/
+		                        else 'PROD03' end)                   	/* 지상비(숙박+식사) */
 		    AND B.BAS_YY   = C.BAS_YY
 			AND B.BAS_YY_SEQ = C.BAS_YY_SEQ
 			and B.REQ_DT = #{REQ_DT}
@@ -2388,10 +2388,10 @@ DELETE
 	<select id="selectHdngGbnList_M" parameterType="hashMap" resultType="hashMap">
 	<![CDATA[
 		SELECT CODE, CODE_NM
-		FROM BC_COMM_L
-		WHERE HEAD_CD = '500000'
-		AND REF_CHR1 = '01'
-		AND CODE = '28'
+		  FROM BC_COMM_L
+		 WHERE HEAD_CD  = '500000'
+		   AND REF_CHR1 = '01'
+		   AND CODE     = '28'
 	]]>
 	</select>
 
@@ -2484,7 +2484,7 @@ DELETE
 	</select>
 	
 	<delete id="deleteReserveInfo" parameterType="hashMap">
-	DELETE FROM T1, T2, T3, T4, T5, T6, T7
+DELETE FROM T1, T2, T3, T4, T5, T6, T7, T8
 		  USING TB_REQ_BOOKING_M   AS T1
 	  LEFT JOIN TB_REQ_BOOKING_D   AS T2
 		     ON T2.REQ_DT  = T1.REQ_DT
@@ -2504,10 +2504,13 @@ DELETE
 	  LEFT JOIN TB_REQ_FEE_D       AS T7
 	         ON T7.REQ_DT  = T1.REQ_DT
 	        AND T7.REQ_SEQ = T1.SEQ
+	  LEFT JOIN TB_REQ_ADD_FILE    AS T8
+	         ON T8.REQ_DT  = T1.REQ_DT
+	        AND T8.REQ_SEQ = T1.SEQ
 		  WHERE 1 = 1
-		    AND T1.REQ_DT = #{REQ_DT}
-		    AND T1.SEQ    = #{SEQ}
-	</delete>
+		    AND T1.REQ_DT  = #{REQ_DT}
+		    AND T1.SEQ     = #{SEQ}
+</delete>
 	
 	<select id="selectBalAmt" parameterType="BMap" resultType="int">
 		SELECT NVL(BAL_AMT,0)

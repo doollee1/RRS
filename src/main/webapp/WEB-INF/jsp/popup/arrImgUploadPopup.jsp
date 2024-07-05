@@ -9,7 +9,7 @@
 %>
 <style>
   h1 { margin: 30px 0px; text-align: center; }
-  img { max-width: 100%; display: block; margin: 0px 0px 500px 0px; }
+  img { max-width: 100%; display: block; margin: 0px 0px 0px 0px; }
 </style>
 <div id="p_arrImgPopup">
 	<div id="pop_ct_form_wrap">
@@ -59,7 +59,7 @@ $(function() {
 			
 	function fn_init (receivedData){
 		
-		console.log("===== 초기화 ======");
+		console.log("===== 항공권 업로드 팝업 초기화 ======");
 		
 		req_dt          = receivedData.REQ_DT;
 		seq             = receivedData.SEQ;

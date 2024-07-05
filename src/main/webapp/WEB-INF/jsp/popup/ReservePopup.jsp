@@ -389,9 +389,10 @@
 </div>
 
 <script type="text/javascript">
+var seq;
+var req_dt;
+
 $(function() {
-	var seq;
-	var req_dt;
 	var vflag;
 	var list_seq;
 	var list_req_dt;
@@ -601,7 +602,7 @@ $(function() {
     	$.each(data, function(key , val){
     		if( key == "M_PERSON"     || key == "G_PERSON"      || key == "N_PERSON"    || key == "K_PERSON"  || key == "I_PERSON"  || 
     			key == "TOT_PERSON"   || key == "TWIN_KING_CNT" || key == "TWIN_CNT"    || key == "KING_CNT"  || key == "DEP_AMT"   || 
-    			key == "ROOM_ADD_CNT" || key == "ROOM_ADD_CNT"  || key == "PRIM_ADD_IL" || key == "PRIM_ADD_CNT") {
+    			key == "ROOM_ADD_CNT" || key == "ROOM_ADD_CNT"  || key == "PRIM_ADD_IL" || key == "PRIM_ADD_CNT" || key == "PAY_DEP_AMT") {
     			$('[name='+ key +']').val (fn_comma(val));
     		}else if(key == "REQ_TEL_NO"){ // 예약자전화
 	    		$('[name='+ key +']').val (formatPhoneNumber(val));
@@ -1018,55 +1019,7 @@ $(function() {
 
 		});
 	});	
-	
-	/*******************************************************
-	 *-----------------------------------------------------*
-	 * @Subject : 예약 현황 리스트(그리드) 조회
-	 * @Goal    : 예약 현황 리스트(그리드) 조회
-	 * @Brief   : 예약 현황 리스트(그리드) 조회
-	 * @See     : /reserve/reserveSelectAddList.do
-	 * -----------------------------------------------------*
-	 *******************************************************/
-	function cSearch(currentPage){
-		var url = "/reserve/reserveSelectAddList.do";
-		var formData = formIdAllToMap('frmSearch');
-		var reserve_sum_tot = 0;
-		var param = {"SEQ"     : seq
-				   , "REQ_DT"  : req_dt
-				   };
-		
-		fn_ajax(url, true, param, function(data, xhr){
-			$.each(data.result , function(i , val){
-				val.TOT_AMT = parseInt(val.TOT_AMT).toLocaleString();
-				val.PER_AMT = parseInt(val.PER_AMT).toLocaleString();
-				val.STATUS_V = "R";
-				reserve_sum_tot += val.TOT_AMT;
-			});
-			
-			reloadGrid("reserveGrid", data.result);
-			var colModel = $("#reserveGrid").jqGrid('getGridParam', 'colModel'); 
-		
-			for(var i =0; i < data.result.length; i++){
-				jQuery("#reserveGrid").setCell(i+1);
-				$("#btn_com_add"     ).attr("disabled", true);
-				
-			}
-			
-			btGrid.gridResizing('reserveGrid');
-		   
-			$("#reserveGrid_pager_left").hide();
-	    });
-		
-		$('#POP_EXP_DT').datepicker({
-	        dateFormat : 'yy.mm.dd',
-		    showOn : 'both'
-		 }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
-		     function(e) {
-		 });
-		loadingEnd(); /*$('#wrap-loading').remove();*/
-	}
-	
-	
+
 	/* *******************************************동반자 Grid 함수 시작 ***************************************** */
 	
 	function gridColspan(){
@@ -1127,18 +1080,21 @@ $(function() {
 						, { name: 'FLIGHT_IN_HH' , width : 74 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_HH}'}}
 						, { name: 'FLIGHT_OUT'   , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT}'}}
 						, { name: 'FLIGHT_OUT_HH', width : 74 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
-						, { name: 'ADD_FILE_SEQ' , width : 84 , align: 'center', editable:true, edittype:"button",
-									editoptions:{
-										dataEvents:[{
-											type:"click",
-											fn:function(e){
-												if (parseInt(this.value) > 0) {
-													this.title = "이미지보기";
-													reserveSelectAirlineImg(this.value);
-												}
-											}
-										}]
-									}
+						, { name: 'ADD_FILE_SEQ' , width : 84 , align: 'center', editable:false, edittype:"button",
+							formatter: function (cellval, options, rowObject) {	
+					  			var se = "";
+					  			var dSeq = rowObject.DSEQ;
+								var fileSeq = rowObject.ADD_FILE_SEQ;
+								
+								if (parseInt(fileSeq) > 0) {
+									
+									se = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveSelectAirlineImg('"+fileSeq+"');\">미리보기</button>";	
+								} else {
+									
+									se = "<p class=\"\">이미지없음</p>";
+								}			  			
+								return se;
+							}
 						}
 						, { name: 'HDNG_GBN'      , width : 120, align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn_g}'}}
 						, { name: 'LATE_CHECK_IN' , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_IN}'}}
@@ -1173,45 +1129,68 @@ $(function() {
 			return autoHypenTel(object);
 		}
 	}
-	
-	function reserveSelectAirlineImg(fileseq){
-		var url = "/reserve/arrImg.do";
-	    var pid = "p_arrImgPopup";
-	    var addfileseq = fileseq;
-	    var param = { "REQ_DT"          : req_dt
-			        , "SEQ"             : seq
-			        , "ADD_FILE_SEQ"    : addfileseq
-	                };
-		popupOpen(url, pid, param, function(data) {
-			reserveSelectAirlineImg2(addfileseq);
-		});
-	}
-
-	function reserveSelectAirlineImg2(fileseq){
-		var url = "/reserve/reserveSelectAirlineImg.do";
-	    var addfileseq = fileseq;
-	    var param = { "REQ_DT"          : req_dt
-			        , "SEQ"             : seq
-			        , "ADD_FILE_SEQ"    : addfileseq
-	                };
-	    
-		fn_ajax(url, true, param, function(data, xhr){
-			if(data.MESSAGE != "OK"){
-				alert("이미지 조회에 실패했습니다. 시스템 관리자에게 문의해 주세요.");
-			}else{
-				fn_imageSet(data.image);
-			}
-		});
-	}
-	
-	function fn_imageSet(data){
-		if(!fn_empty(data)){
-			$(".image").show();
-		}else{
-			$(".image").hide();
-		}
-	}
 
 });
 
+//항공권 미리보기 팝업
+function reserveSelectAirlineImg(fileseq){
+	var url = "/reserve/arrImg.do";
+    var pid = "p_arrImgPopup";
+    var addfileseq = fileseq;
+    var param = { "REQ_DT"          : req_dt
+		        , "SEQ"             : seq
+		        , "ADD_FILE_SEQ"    : addfileseq
+                };
+	popupOpen(url, pid, param, function(data) {
+		//reserveSelectAirlineImg2(req_dt, seq, addfileseq);
+		cSearch();
+	});
+}
+
+/*******************************************************
+ *-----------------------------------------------------*
+ * @Subject : 예약 현황 리스트(그리드) 조회
+ * @Goal    : 예약 현황 리스트(그리드) 조회
+ * @Brief   : 예약 현황 리스트(그리드) 조회
+ * @See     : /reserve/reserveSelectAddList.do
+ * -----------------------------------------------------*
+ *******************************************************/
+function cSearch(currentPage){
+	var url = "/reserve/reserveSelectAddList.do";
+	var formData = formIdAllToMap('frmSearch');
+	var reserve_sum_tot = 0;
+	var param = {"SEQ"     : seq
+			   , "REQ_DT"  : req_dt
+			   };
+	
+	fn_ajax(url, true, param, function(data, xhr){
+		$.each(data.result , function(i , val){
+			val.TOT_AMT = parseInt(val.TOT_AMT).toLocaleString();
+			val.PER_AMT = parseInt(val.PER_AMT).toLocaleString();
+			val.STATUS_V = "R";
+			reserve_sum_tot += val.TOT_AMT;
+		});
+		
+		reloadGrid("reserveGrid", data.result);
+		var colModel = $("#reserveGrid").jqGrid('getGridParam', 'colModel'); 
+	
+		for(var i =0; i < data.result.length; i++){
+			jQuery("#reserveGrid").setCell(i+1);
+			$("#btn_com_add"     ).attr("disabled", true);
+			
+		}
+		
+		btGrid.gridResizing('reserveGrid');
+	   
+		$("#reserveGrid_pager_left").hide();
+    });
+	
+	$('#POP_EXP_DT').datepicker({
+        dateFormat : 'yy.mm.dd',
+	    showOn : 'both'
+	 }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
+	     function(e) {
+	 });
+	loadingEnd(); /*$('#wrap-loading').remove();*/
+}
 </script>

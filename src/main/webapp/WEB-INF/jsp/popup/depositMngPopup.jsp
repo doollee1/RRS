@@ -109,6 +109,13 @@ $(function() {
 					returnPopupRslt();  //팝업결과 반환
 				}
 			},			
+			'<s:message code='system.delete'/>' : {
+				text: '<s:message code='system.delete'/>',
+				id : 'delete',
+				click: function() {
+					fnRowDelete();
+				}
+			},	
 			'<s:message code='button.close'/>' : {
 				text: '<s:message code='button.close'/>',
 				click: function() {
@@ -230,6 +237,8 @@ $(function() {
 		if(!fn_empty(recevicedData.PRC_STS)){
 			if(recevicedData.PRC_STS == "08" || recevicedData.PRC_STS == "09" || recevicedData.PRC_STS == "10"){
 				$(".ui-dialog-buttonset > button#save").attr("disabled", true);
+				$(".ui-dialog-buttonset > button#delete").attr("disabled", true);
+				$("#btn_payreg").attr("disabled",true);
 				$("#btn_payreg").attr("disabled",true);
 			}	
 		}
@@ -388,6 +397,51 @@ $(function() {
 		};
 		// 그리드 생성 및 초기화
 		btGrid.createGrid('depositGrid', colName, colModel, gSetting);
+	}
+	
+	function fnRowDelete() {
+		var rowId =$("#depositGrid").jqGrid('getGridParam','selrow');
+		
+		if(rowId == null) {
+			alert("삭제 할 행을 선택해주세요.");
+			return;
+		}
+		
+		if(confirm($("#"+rowId+"_SEQ").val() + "번 행을 삭제하시겠습니까?")){
+			var pqyDctAmt = Number($("#depositGrid").jqGrid("getCell", rowId, "PAY_AMT")) + Number($("#depositGrid").jqGrid("getCell", rowId, "DCT_AMT"));
+			var payType   = $("#"+rowId+"_PAY_TYPE_NM").val();
+			
+			var url   = '/deposit/deleteDepositAjax.do';
+			var param = { "REQ_DT"      : gv_req_dt	
+					  	, "REQ_SEQ"     : gv_seq
+						, "PAY_DT"      : $("#"+rowId+"_PAY_DT").val()
+						, "REQ_DSEQ"    : $("#"+rowId+"_SEQ").val()
+						, "PAY_AMT"     : $("#depositGrid").jqGrid("getCell", rowId, "PAY_AMT")
+						, "PAY_TYPE"    : ''
+						, "PAY_DCT_AMT" : pqyDctAmt.toString()
+						}
+
+			if (payType == "예약") {
+				param.PAY_TYPE = '03';
+			}
+			
+			fn_ajax(url, false, param, function(data, xhr){
+				if (data.result.message != 'success') {
+					alert("입금 삭제 오류, 시스템 관리자에게 문의하세요.");
+					return;
+				}
+				alert("삭제하였습니다.");
+				
+				var payType = $("#PAY_TYPE_SEARCH").val();
+				cSearch(payType); //입금목록 조회
+				
+				// 삭제한 행이 마지막 행일 경우
+				if ($('#depositGrid').getGridParam('reccount') == '1') {
+					$("input[name='BAL_AMT']" ).val($("input[name='INVOICE_AMT']").val());  // 잔여금액 초기화
+					$("input[name='ACCU_AMT']").val('0');  // 총입금금액 초기화
+				}
+			});
+		}
 	}
 });
 

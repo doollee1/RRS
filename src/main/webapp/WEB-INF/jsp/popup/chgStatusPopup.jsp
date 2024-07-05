@@ -35,22 +35,22 @@
 			</tr>
 		</table>
 		<b id="advice_pop" style="opacity:75%;">&nbsp;
-			※   [<b style="color: red; font-weight: bold;">예약요청</b>]에서 상태변경 시 : 예약가능,예약취소
+			※   [<b style="color: red; font-weight: bold;">예약요청</b>]에서 상태변경 시 : 예약가능, 예약취소
 			  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			  [<b style="color: red; font-weight: bold;">예약가능</b>]에서 상태변경 시 : 예약신청,예약취소
+			  [<b style="color: red; font-weight: bold;">예약가능</b>]에서 상태변경 시 : 예약신청, 예약취소
 			  &nbsp;&nbsp;&nbsp;&nbsp;
 			  [<b style="color: red; font-weight: bold;">예약신청</b>]에서 상태변경 시 : 예약입금대기,예약취소<br/>
 			  &nbsp;&nbsp;&nbsp;&nbsp;
-			  [<b style="color: red; font-weight: bold;">예약입금대기</b>]에서 상태변경 시 : 예약신청 ,예약확정,예약취소
+			  [<b style="color: red; font-weight: bold;">예약입금대기</b>]에서 상태변경 시 : 예약신청, 예약확정, 예약취소
 			  &nbsp;&nbsp;&nbsp;&nbsp;
 			  [<b style="color: red; font-weight: bold;">예약확정</b>]에서 상태변경 시 : 예약입금대기, 환불요청, 환불완료, 입금완료, 예약취소<br/>
 			  &nbsp;&nbsp;&nbsp;&nbsp;
 			  [<b style="color: red; font-weight: bold;">환불요청</b>]에서 상태변경 시 : 예약입금대기, 예약확정, 환불완료
-			  &nbsp;&nbsp;&nbsp;
+			  &nbsp;&nbsp;&nbsp;&nbsp;
 			  [<b style="color: red; font-weight: bold;">환불완료</b>]에서 상태변경 시 : 환불요청
 			  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			  [<b style="color: red; font-weight: bold;">예약취소</b>]에서 상태변경 시 : 예약입금대기, 예약확정<br/>
 			  &nbsp;&nbsp;&nbsp;&nbsp;
 			  [<b style="color: red; font-weight: bold;">입금완료</b>]에서 상태변경 시 : 예약확정, 환불요청, 환불완료, 예약취소<br/>

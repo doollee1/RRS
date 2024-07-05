@@ -179,8 +179,12 @@
 	/* Product.xml -> deleteProductInfo */
 		DELETE FROM TB_PROD_INFO
  	  	 WHERE BAS_YY 		= #{BAS_YY}
+ 	  	 <if test='BAS_YY_SEQ != null and BAS_YY_SEQ != ""'>
 		   AND BAS_YY_SEQ 	= #{BAS_YY_SEQ}
+		</if>
+		<if test='PROD_SEQ != null and PROD_SEQ != ""'>
 		   AND PROD_SEQ 	= #{PROD_SEQ}
+		</if>
 	</delete>
 	
 	<select id="selectPeriodInfo" parameterType="BMap" resultType="BMap">

@@ -202,4 +202,40 @@
           AND  REQ_DSEQ = (SELECT NVL(MAX(REQ_DSEQ),0) AS SEQ FROM TB_REQ_FEE_D T1 WHERE REQ_DT = #{REQ_DT} AND REQ_SEQ = #{SEQ})		   
 	</select>
 	
+	<!-- 비용 상세 삭제 -->
+	<delete id="deleteTbReqFeeD" parameterType="BMap">
+		DELETE 
+		  FROM TB_REQ_FEE_D
+		 WHERE 1=1
+		   AND REQ_DT   = #{REQ_DT}
+		   AND PAY_DT   = #{PAY_DT}
+		   AND REQ_SEQ  = #{REQ_SEQ}
+		   AND REQ_DSEQ = #{REQ_DSEQ}
+	</delete>
+	
+	<!-- 비용 상세 삭제시 입금 정보 수정 -->
+	<update id="deleteTbReqFee" parameterType="BMap">
+		UPDATE TB_REQ_FEE
+   		   SET PAY_AMT     = NVL(PAY_AMT,0)     - #{PAY_AMT}
+     		 , BAL_AMT     = NVL(BAL_AMT,0)     + #{PAY_DCT_AMT}
+     		 , DCT_AMT     = 0
+     		 <if test='PAY_TYPE != null and !"".equals(PAY_TYPE)'>	
+     		 , PAY_DEP_AMT = NVL(PAY_DEP_AMT,0) - #{PAY_AMT}
+     		 </if>
+ 		 WHERE 1=1 
+ 		   AND REQ_DT  = #{REQ_DT}
+ 		   AND REQ_SEQ = #{REQ_SEQ}
+	</update>
+	
+	<update id="updateTbReqFeeDBalAmt" parameterType="BMap">
+		UPDATE TB_REQ_FEE_D
+		   SET BAL_AMT  = NVL(BAL_AMT,0)  + #{PAY_DCT_AMT}
+		   	 , ACCU_AMT = NVL(ACCU_AMT,0) - #{PAY_AMT}
+		     , REQ_DSEQ = #{NEW_REQ_DSEQ}
+		 WHERE 1=1
+		   AND REQ_DT   = #{REQ_DT}
+		   AND PAY_DT   = #{PAY_DT}
+		   AND REQ_SEQ  = #{REQ_SEQ}
+		   AND REQ_DSEQ = #{REQ_DSEQ}
+	</update>
 </mapper>

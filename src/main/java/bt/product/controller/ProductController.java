@@ -105,6 +105,12 @@ public class ProductController {
 		return "/popup/ProductSelectPeriodPopUp";
 	}
 	
+	@RequestMapping(value = "/popup/ProductDelPopup.do")
+	public String ProductDelPopup(ModelMap model) throws Exception {
+		model.addAttribute("basyy", productService.selectBasYY(null));
+		return "/popup/ProductDelPopup";
+	}
+	
 	/**
 	 * Product Info 조회
 	 * @param reqData
@@ -156,10 +162,16 @@ public class ProductController {
 	@RequestMapping(value = "/product/deleteProductInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData deleteProductInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
-		BMap param = reqData.getParamDataMap("param");
-		BRespData respData = new BRespData();
+		BMap param = new BMap();
+		param.put("BAS_YY"    , reqData.get("BAS_YY"));
+		param.put("BAS_YY_SEQ", reqData.get("BAS_YY_SEQ"));
+		param.put("PROD_SEQ"  , reqData.get("PROD_SEQ"));
 		
-		productService.deleteProductInfo(param);
+		BRespData respData = new BRespData();
+
+		if(!productService.deleteProductInfo(param)){
+			respData.put("result", "N");
+		}
 		
 		return respData;
 	}	

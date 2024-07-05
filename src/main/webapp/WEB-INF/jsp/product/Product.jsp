@@ -75,7 +75,8 @@
 				</div>	
 				<div class="ct_grid_top_right">
 					<span style="text-align:right; font-size: 10px; font-weight: bold">※ 시즌구분 <font color="red">'전체'</font> 로 조회 후 복사등록이 가능합니다.</span>
-					<button class='cBtnclass cBtnCopy_style' id='cBtnCopy' type='button' style="align:right" onclick='cCopy()' disabled='disabled'>복사등록</button>
+					<button class='btn btn-default ' id='cBtnCopy' type='button' style="align:right" onclick='cCopy()' disabled='disabled'>복사등록</button>
+					<button class='btn btn-default' id='cBtnDel' type='button' style="align:right" onclick='cDel()'>일괄 삭제</button>
 				</div>
 			</div>
 			<table id="grid1"></table>
@@ -339,6 +340,17 @@ function cUser1(){
 function cUser2(param){
 	var url = "/popup/ProductPeriodPopUp.do";
 	var pid = "productPeriodPopUp";	//팝업 페이지의 최상위 div ID
+	
+	popupOpen(url, pid, param, function(data){
+		cSearch();
+	});
+}
+
+//삭제버튼 클릭시 팝업창
+function cDel(){
+	var url = "/popup/ProductDelPopup.do";
+	var pid = "productDelPopup";
+	var param = { };
 	
 	popupOpen(url, pid, param, function(data){
 		cSearch();

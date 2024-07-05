@@ -114,13 +114,13 @@
     a { color:#000000; text-decoration:none; }
     .calendarBtn { cursor:pointer; }
     .ct_grid_top_left {display:block;}
-    .ui-jqgrid .ui-jqgrid-hbox { padding : 0px;}
     #right_wrap { width:45%; float:right; display: grid; justify-content: center; align-items: center; margin-top:28px; }
     #inputRow {float: right; height:25px; margin:10px 62px 0 0;}
     #updateRow {height: 30px; width: 50px; float: right; margin:10px 62px 0 0;}
     #showRoom {margin-left:10px; height:25px;}
-    #roomGrid {width:100%;}
+    #roomGrid {width:640px;}
 </style>
+
 <script type="text/javascript">
 
 <%--
@@ -170,9 +170,9 @@ function createRoomGrid() {
 			];
 	var colModel = [
 	    {name : 'ROWNUM'       , width : 85 , align : 'center'},
-	    {name : 'REQ_NO_DT'    , width : 220 , align : 'center'},
+	    {name : 'REQ_NO_DT'    , width : 220, align : 'center'},
 	    {name : 'ROOM_TYPE'    , align : 'center', hidden:true },
-	    {name : 'ROOM_TYPE_NM' , width : 220 , align : 'center'},
+	    {name : 'ROOM_TYPE_NM' , width : 220, align : 'center'},
 	    {name : 'DELETE'       , width : 95 , align : 'center', formatter:delRow},
 	    {name : 'STATE'        , align : 'center', hidden:true }
 	    ];

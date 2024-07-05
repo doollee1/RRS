@@ -237,4 +237,30 @@ public class DepositController {
 		return respData;
 	}
 	
+	/**
+	 * 입금 내역 삭제 ajax
+	 * 
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/deposit/deleteDepositAjax.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData deleteDeposit(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BRespData respData = new BRespData();
+		BMap paramData = new BMap();
+		
+		paramData.put("REQ_DT"      , (String) reqData.get("REQ_DT"));	
+		paramData.put("REQ_SEQ"     , (String) reqData.get("REQ_SEQ"));	
+		paramData.put("PAY_DT"      , (String) reqData.get("PAY_DT"));	
+		paramData.put("REQ_DSEQ"    , (String) reqData.get("REQ_DSEQ"));	
+		paramData.put("PAY_AMT"     , (String) reqData.get("PAY_AMT"));	
+		paramData.put("PAY_TYPE"    , (String) reqData.get("PAY_TYPE"));
+		paramData.put("PAY_DCT_AMT" , (String) reqData.get("PAY_DCT_AMT"));	
+
+		respData.put("result", depositService.deleteDeposit(paramData));	
+		return respData;
+	}
+	
 }

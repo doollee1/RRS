@@ -230,7 +230,6 @@
 		var newWidth = $("#reserveReportGrid_ROOM_ADD_IL").width() + $("#reserveReportGrid_ROOM_ADD_CNT").outerWidth(true);
 		jQuery("#reserveReportGrid").jqGrid("setLabel", "ROOM_ADD_IL", "룸추가", "", { style: "width: " + newWidth + "px;", colspan: "2" });
 		jQuery("#reserveReportGrid").jqGrid("setLabel", "ROOM_ADD_CNT", "", "", {style: "display: none"});
-		
 		//프리미엄 룸추가 일수 + 프리미엄 룸추가 개수
 		var newWidth2 = $("#reserveReportGrid_PRIM_ADD_IL").width() + $("#reserveReportGrid_PRIM_ADD_CNT").outerWidth(true);
 		jQuery("#reserveReportGrid").jqGrid("setLabel", "PRIM_ADD_IL", "프리미엄 룸추가", "", { style: "width: " + newWidth2 + "px;", colspan: "2" });

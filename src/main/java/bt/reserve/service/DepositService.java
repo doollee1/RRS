@@ -3,6 +3,7 @@
  */
 package bt.reserve.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import bt.btframework.utils.BMap;
+import bt.btframework.utils.BRespData;
 import bt.btframework.utils.LoginInfo;
 import bt.btframework.utils.StringUtils;
 import bt.reserve.dao.DepositDao;
@@ -307,6 +309,48 @@ public class DepositService {
 		logger.info("======= 마지막 비용상세정보조회 서비스 ==========");
 		
 		 return depositDao.selectLastTbReqFeedInfo(param); 
+	}
+	
+	/**
+	 * 입금 내역 삭제
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BRespData deleteDeposit(BMap param) throws Exception {
+		BRespData respData = new BRespData();
+		
+		try {
+			param.put("SEQ" , param.getString("REQ_SEQ"));
+			int dreq = Integer.parseInt(String.valueOf(param.get("REQ_DSEQ"))) + 1;		// 삭제 하는 행 다음 번호
+			int cnt  = Integer.parseInt(depositDao.selectTbReqFeeDCnt(param));		// 삭제하기 전 행 갯수
+
+			depositDao.deleteTbReqFeeD(param);
+			depositDao.deleteTbReqFee(param);
+			
+			// 삭제하는 행이 마지막 행이 아닐 경우에만 실행
+			if (dreq <= cnt) {
+				for (int i=dreq; i <=cnt; i++) {
+					BMap detailMap = new BMap();
+					int newSeq = i-1;
+					detailMap.put("REQ_DT"       , param.getString("REQ_DT"));
+					detailMap.put("REQ_SEQ"      , param.getString("REQ_SEQ"));
+					detailMap.put("PAY_DT"       , param.getString("PAY_DT"));
+					detailMap.put("PAY_AMT"      , param.getString("PAY_AMT"));
+					detailMap.put("PAY_DCT_AMT"  , param.getString("PAY_DCT_AMT"));	
+					detailMap.put("REQ_DSEQ"     , Integer.toString(i));
+					detailMap.put("NEW_REQ_DSEQ" , Integer.toString(newSeq));
+					
+					depositDao.updateTbReqFeeDBalAmt(detailMap);
+				}
+			}
+			
+			respData.put("message", "success");
+		} catch(Exception e) {
+			respData.put("message", e.getMessage());
+		}
+		return respData;
 	}
 	
 }
