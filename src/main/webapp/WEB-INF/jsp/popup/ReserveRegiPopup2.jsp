@@ -2215,7 +2215,7 @@ $(function() {
 						, { name: 'FLIGHT_IN_HH' , width : 74 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_HH}'}}
 						, { name: 'FLIGHT_OUT'   , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT}'}}
 						, { name: 'FLIGHT_OUT_HH', width : 74 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
-						, { name: 'ADD_FILE_SEQ' , width : 84 , align: 'center', editable:true, edittype:"button", 									
+						, { name: 'ADD_FILE_SEQ' , width : 84 , align: 'center', editable:false, edittype:"button", 									
 									formatter: function (cellval, options, rowObject) {	
 							  			var se = "";
 										
@@ -2228,9 +2228,15 @@ $(function() {
 										if (parseInt(fileSeq) > 0) {
 											
 											se = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveSelectAirlineImg('"+fileSeq+"');\">미리보기</button>";	
+										
 										} else {
 											
-											se = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveAirlineImgUpload('"+dSeq+"');\">업로드</button>";
+											//console.log("===== vflag : "+vflag);
+											if(vflag == "new") {  //신규
+												se = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveAirlineImgUpload('"+dSeq+"');\" disabled=\"disabled\">업로드</button>";
+											} else { //상세
+												se = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveAirlineImgUpload('"+dSeq+"');\">업로드</button>";
+											}
 										}			  			
 										return se;
 									}
