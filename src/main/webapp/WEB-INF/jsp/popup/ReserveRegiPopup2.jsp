@@ -966,7 +966,6 @@ $(function() {
 			var data = {  "CHK_IN_DT"  : data.CHK_IN_DT		
 						, "CHK_OUT_DT" : data.CHK_OUT_DT
 					   };
-			'${list_hdng_gbn_g}'
 			fn_ajax(url, false, data, function(data, xhr){
 				if(!fn_empty(data.result)){
 					var retVal = data.result;
@@ -2233,12 +2232,12 @@ $(function() {
 										return retView;
 									}
 						}
-						, { name: 'HDNG_GBN'      , width : 120, align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn_g}'}}
+						, { name: 'HDNG_GBN'      , width : 120, align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn}'}}
 						, { name: 'LATE_CHECK_IN' , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_IN}'}}
 						, { name: 'LATE_CHECK_OUT', width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_OUT}'}}
 						, { name: 'ROOM_TYPE'     , width : 120, align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${ROOM_TYPE}'}}
 						, { name: 'CONFIRM_NO'    , width : 120, align: 'center', editable:true, editoptions:{maxlength:100}}
-						, { name: 'STATUS_V'      , width : 80 , align: 'center', editable:true, editoptions:{readonly: true}}
+						, { name: 'STATUS_V'      , width : 80 , align: 'center', editable:false, editoptions:{readonly: true}}
 					];
 		
 		var gSetting = {
@@ -2297,7 +2296,6 @@ $(function() {
 		var rowId = $('#reserveGrid').jqGrid('getGridParam', 'selrow');
 		var rowData = $("#reserveGrid").getRowData(rowId);
 		var data;
-		
 		var tot_person = parseInt($("#TOT_PERSON").val().replaceAll("," , ""));
 		var j_m = parseInt($("#M_PERSON").val().replaceAll("," , ""));		//멤버
 		var j_g = parseInt($("#G_PERSON").val().replaceAll("," , ""));		//일반
@@ -2343,6 +2341,11 @@ $(function() {
 				g_COM_HAN_NM = $("#REQ_HAN_NM").val();
 				g_COM_ENG_NM = $("#REQ_ENG_NM").val();
 				g_COM_TEL_NO = $("#REQ_TEL_NO").val();
+				
+			}else{
+				g_COM_HAN_NM = "";
+				g_COM_ENG_NM = "";
+				g_COM_TEL_NO = "";
 			}
 			
 			g_DSEQ           = i + 1;
@@ -2380,9 +2383,6 @@ $(function() {
 					, "CONFIRM_NO"     : g_CONFIRM_NO 
 					, "STATUS_V"       : g_STATUS_V
 					};
-			
-			btGrid.gridAddRow("reserveGrid", "last", data);
-			
 			g_DSEQ           = "";
 			g_COM_GBN        = "";
 			g_NUM_GBN        = "";
@@ -2402,7 +2402,7 @@ $(function() {
 			g_ROOM_TYPE      = "";
 			g_CONFIRM_NO     = "";
 			g_STATUS_V       = "";
-			
+			btGrid.gridAddRow("reserveGrid", "last", data);
 			$("#reserveGrid").jqGrid("saveRow",rowId);
 			$("#reserveGrid").change();
 		}
@@ -2538,6 +2538,15 @@ $(function() {
 							});
 							reloadGrid("reserveGrid",data.result);
 							$("#reserveGrid").change();
+							
+							if(data.result.length == 0){
+								$("#btn_com_add").attr("disabled", false);
+								$("#M_PERSON").attr("disabled",false);
+								$("#G_PERSON").attr("disabled",false);
+								$("#N_PERSON").attr("disabled",false);
+								$("#K_PERSON").attr("disabled",false);
+								$("#I_PERSON").attr("disabled",false);
+							}
 						}
 					});
 				}
@@ -2676,7 +2685,6 @@ function reserveAirlineImgUpload(dseq){
  * -----------------------------------------------------*
  *******************************************************/
 function cSearch(currentPage){
-	 	 
 	var url = "/reserve/reserveSelectAddList.do";
 	var formData = formIdAllToMap('frmSearch');
 	var reserve_sum_tot = 0;
@@ -2701,6 +2709,14 @@ function cSearch(currentPage){
 			
 		}
 		
+		if($("#MEM_GBN").val() == '04' && data.result.length <= '0'){
+			$("#btn_com_add").attr("disabled", false);
+			$("#M_PERSON").attr("disabled",false);
+			$("#G_PERSON").attr("disabled",false);
+			$("#N_PERSON").attr("disabled",false);
+			$("#K_PERSON").attr("disabled",false);
+			$("#I_PERSON").attr("disabled",false);
+		}
 		btGrid.gridResizing('reserveGrid');
 	   
 		$("#reserveGrid_pager_left").hide();

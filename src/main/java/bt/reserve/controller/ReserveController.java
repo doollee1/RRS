@@ -126,7 +126,6 @@ public class ReserveController {
 		BMap param15 = new BMap();
 		param15.put("HEAD_CD" , 500000);				//그리드 상품 일반
 		param15.put("REF_CHR1", 01);
-		param15.put("REF_CHR2", "PROD02");
 
 		BMap param16 = new BMap();
 		param16.put("HEAD_CD" , 500000);				//그리드 상품 비라운딩
@@ -147,9 +146,7 @@ public class ReserveController {
 		model.addAttribute("ROOM_TYPE"      , reserveService.selectGetCommonCode2(param3));		//객실타입
 		model.addAttribute("LATE_CHECK_IN"  , reserveService.selectGetCommonCode2(param12));		//LATE_CHECK_IN
 		model.addAttribute("LATE_CHECK_OUT" , reserveService.selectGetCommonCode2(param13));		//LATE_CHECK_OUT
-		model.addAttribute("list_hdng_gbn_m", reserveService.selectGetCommonCode2(param14));		//그리드 상품 멤버
 		model.addAttribute("list_hdng_gbn_g", reserveService.selectGetCommonCode2(param15));		//그리드 상품 일반
-		model.addAttribute("list_hdng_gbn_n", reserveService.selectGetCommonCode2(param16));		//그리드 상품 비라운딩
 		model.addAttribute("mgn_gbn"        , reserveService.selectGetCommonCode(param));
 		model.addAttribute("region"         , reserveService.selectGetCommonCode(param2));
 		model.addAttribute("roomtype"       , reserveService.selectGetCommonCode(param3));
@@ -227,7 +224,6 @@ public class ReserveController {
 		BMap param15 = new BMap();
 		param15.put("HEAD_CD" , 500000);				//그리드 상품 일반
 		param15.put("REF_CHR1", 01);
-		param15.put("REF_CHR2", "PROD02");
 
 		BMap param16 = new BMap();
 		param16.put("HEAD_CD" , 500000);				//그리드 상품 비라운딩
@@ -250,11 +246,7 @@ public class ReserveController {
 		model.addAttribute("ROOM_TYPE"         , reserveService.selectGetCommonCode2(param3));		//객실타입
 		model.addAttribute("LATE_CHECK_IN"     , reserveService.selectGetCommonCode2(param12));		//LATE_CHECK_IN
 		model.addAttribute("LATE_CHECK_OUT"    , reserveService.selectGetCommonCode2(param13));		//LATE_CHECK_OUT
-		model.addAttribute("list_hdng_gbn_m"   , reserveService.selectGetCommonCode2(param14));		//그리드 상품 멤버
-		model.addAttribute("list_hdng_gbn_g"   , reserveService.selectGetCommonCode2(param15));		//그리드 상품 일반
-		model.addAttribute("list_hdng_gbn_n"   , reserveService.selectGetCommonCode2(param16));		//그리드 상품 비라운딩
-		
-		
+		model.addAttribute("list_hdng_gbn"   , reserveService.selectGetCommonCode2(param15));		//그리드 상품 일반
 		
 		model.addAttribute("mgn_gbn"           , reserveService.selectGetCommonCode(param));
 		model.addAttribute("region"            , reserveService.selectGetCommonCode(param2));

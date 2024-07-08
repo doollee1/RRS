@@ -168,11 +168,19 @@
 	</select>
 
 	<select id="selectGetCommonCode2" parameterType="Bmap" resultType="CodeVO">
-        SELECT CODE AS CODE
+          SELECT CODE AS CODE
              , CODE_NM AS VALUE
           FROM BC_COMM_L
          WHERE 1 = 1
+         <if test="HEAD_CD != null and HEAD_CD != ''">
            AND HEAD_CD =  #{HEAD_CD}
+         </if>
+         <if test="REF_CHR1 != null and REF_CHR1 != ''">
+	  	   AND REF_CHR1 = #{REF_CHR1}
+         </if>
+         <if test="REF_CHR2 != null and REF_CHR2 != ''">
+           AND REF_CHR2 = #{REF_CHR2}
+         </if>
 	</select>
 
 	<select id="selectGetCommonCode33" parameterType="Bmap" resultType="CodeVO">

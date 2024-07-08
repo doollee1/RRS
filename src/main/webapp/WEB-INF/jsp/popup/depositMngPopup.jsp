@@ -84,10 +84,11 @@
 		<!-- 그리드 시작 -->
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">		
 		<div class="pop_grid_wrap">
-			<table id="depositGrid"></table>			
+			<table id="depositGrid"></table>
 		</div>
+		<b style="opacity:90%; color: green; font-weight: bold;">※ 환급 시 입금 금액이 있다면, 입금 금액을 선 차감 후 예약금 금액이 차감됩니다. (입금 금액이 없는 경우, 예약금 차감)</b>
 	</div>
-	</form>	
+	</form>
 </div>
 
 <script type="text/javascript">
