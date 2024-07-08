@@ -39,7 +39,7 @@
 					<td>
 						<select id="BAS_YY_PP" name="BAS_YY_PP" class="cmc_combo" style=width:80%;>
 						<c:forEach var="i" items="${basyy}">
-	     					<option value="${i.BAS_YY}">${i.BAS_YY}</option>
+	     					<option value="${i.BAS_YY}" >${i.BAS_YY}</option>
 						</c:forEach>
 			         </select>
 			      </td>
@@ -59,6 +59,9 @@
 
 <script type="text/javascript">
 $(function(){
+	var toYear =  new Date().getFullYear();
+	$("#BAS_YY_PP").val(toYear);
+	
 	$('#productDelPopup').dialog({
 		title: '상품정보 일괄삭제',
 		autoOpen: false,

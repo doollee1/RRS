@@ -98,12 +98,12 @@
 		               '<s:message code='notice.grd.cnt'/>',
 		               '<s:message code='common.status'/>' ];
 		var colModel = [
-			{ name: 'NOTICE_NO', width: 100, align: 'center' },
-			{ name: 'TITLE', width: 1000, align: 'left'},
-			{ name: 'REG_NM', width: 150, align: 'center' },
-			{ name: 'REG_DT', width: 150, align: 'center' },
-			{ name: 'CNT', width: 100, align: 'center' },
-			{ name: 'NEW_YN', width: 100, align: 'center', hidden :true }
+			{ name: 'NOTICE_NO', width: 100 , align: 'center' },
+			{ name: 'TITLE'    , width: 1000, align: 'left'},
+			{ name: 'REG_NM'   , width: 150 , align: 'center' },
+			{ name: 'REG_DT'   , width: 150 , align: 'center' },
+			{ name: 'CNT'      , width: 100 , align: 'center' },
+			{ name: 'NEW_YN'   , width: 100 , align: 'center', hidden :true }
 	  	];
 		
 		var gSetting = {
@@ -124,6 +124,7 @@
 	function cSearch(currentPage){
 		var vCurrentPage = 1;
 		var vRowsPerPage;
+		
 		if(!fn_empty(currentPage)){
 			vCurrentPage = currentPage;
 		} else if(!fn_empty($('#CURRENT_PAGE').val())) {
@@ -131,20 +132,22 @@
 		} else {
 			vCurrentPage = 1;
 		}
+		
 		vRowsPerPage = btGrid.getGridRowSel('grid1_pager');
 		$('#CURRENT_PAGE').val(vCurrentPage);
 		$('#ROWS_PER_PAGE').val(vRowsPerPage);
 		
 		var url = "/common/selectNoticeList.do";
-		
 		var formData = formIdAllToMap('frmSearch');
 		var param = {"param":formData};
 		
 		fn_ajax(url, false, param, function(data, xhr){		
 			reloadGrid("grid1", data.result);
 			btGrid.gridQueryPaging($('#grid1'), 'cSearch', data.result);
+			
 			var colModel = $("#grid1").jqGrid('getGridParam', 'colModel'); 
 			var html = '<img src="/images/board_new_icon.gif"/>';
+			
 			for(var i =0; i < data.result.length; i++){
 				if(data.result[i].NEW_YN == 'Y'){
 					jQuery("#grid1").setCell(i+1, "TITLE", data.result[i].TITLE + '&nbsp;&nbsp;&nbsp;&nbsp;' + html);

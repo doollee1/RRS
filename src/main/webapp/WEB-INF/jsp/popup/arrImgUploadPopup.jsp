@@ -13,7 +13,7 @@
 </style>
 <div id="p_arrImgPopup">
 	<div id="pop_ct_form_wrap">
-		<div><h1>항공권 이미지 업로드</h1></div>
+		<div><h1 style="font-size: 20px; font-weight: bold; margin: 0">항공권 이미지 업로드</h1></div>
 	    <div>
 	        <input id="fligthImage" name="fligthImage" type="file" accept="image/*" class="form-control" style="width:70%;"/>
 	    </div>	   
@@ -55,36 +55,22 @@ $(function() {
 			fn_init($(this).data());			
 		}
 	});
-		
 			
 	function fn_init (receivedData){
-		
-		console.log("===== 항공권 업로드 팝업 초기화 ======");
-		
 		req_dt          = receivedData.REQ_DT;
 		seq             = receivedData.SEQ;
 		dseq    		= receivedData.DSEQ;
-		
-		
-		console.log("===== req_dt : "+req_dt);
-		console.log("===== seq : "+seq);
-		console.log("===== dseq : "+dseq);
-		
 		
 		//항공권이미지 업로드
 		$("#fligthImage").on("change", handleImgInput);
 	}
 	
-	
 	//이미지 업로드
 	function uploadArrImage(){
-		
 		var flightImage = $("#fligthImage").val();
-		console.log("===== flightImage : "+flightImage)
 		
 		if(!flightImage){
-			
-			alert("이미지를 업로드해 주세요.!!");
+			alert("항공권을 등록 해주세요.");
 			return false;
 		}
 		
@@ -104,19 +90,16 @@ $(function() {
 			contentType: false,
 			success : function(data) {				
 				if(data.result == "SUCCESS") {					
-					
-					alert("이미지 등록이 완료되었습니다."); 
+					alert("항공권 등록이 완료되었습니다."); 
 					popupClose($('#p_arrImgPopup').data('pid'));  //팝업닫기
 					
 				} else {
-					
-					alert("이미지 등록이 실패하였습니다. 관리자에게 문의 하세요.");
+					alert("항공권 등록이 실패하였습니다. 관리자에게 문의 하세요.");
 					popupClose($('#p_arrImgPopup').data('pid'));  //팝업닫기
 				}
 		 	}
 		});
 	}
-	
 	
 	<%-- 이미지 변경  --%>
 	function handleImgInput() {

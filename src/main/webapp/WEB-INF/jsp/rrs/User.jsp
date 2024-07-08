@@ -122,7 +122,7 @@
 			'ID',
 			'Email',
 			'개인정보 동의 여부',
-			''
+			'선택'
 		]
 		var colModel = [
 			{ name: 'ROWNUM', width: 50, align: 'center' },

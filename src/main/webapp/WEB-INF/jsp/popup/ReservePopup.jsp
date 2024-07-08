@@ -533,8 +533,7 @@ $(function() {
 		$("#btn_adduser").hide();
 
 	    initSelect(); /* *********** 예약 상세내역 조회 *********** */
-	    vflag = "detail";
-		    
+
 		$('#DEP_IN_DT').datepicker({
 		    dateFormat : 'yy.mm.dd',
 		    showOn : 'both',
@@ -563,8 +562,7 @@ $(function() {
 		
 		createGrid();
   		cSearch();
-
-		
+  		
 		loadingEnd(); /*$('#wrap-loading').remove();*/
 	}
 	
@@ -648,6 +646,7 @@ $(function() {
 	    		$("#insertPickGbn").text("등록");
 	    		$("#PER_NUM_CNT"  ).val("0");
 	    		$("#PER_NUM_CNT"  ).attr("readonly", true);
+	    		$('#insertPickGbn').attr("disabled", true);
 	    	}else{
 	    		$("#PICK_GBN"     ).attr("disabled", true);
 	    		$("#insertPickGbn").text("상세");
@@ -656,10 +655,13 @@ $(function() {
 	    	}
 		}
     	
+    	//인보이스 세팅
     	if(!fn_empty(data.INV_REG_DT)){
-    		$("#btn_create").text("수정");
+    		$("#btn_create").text("상세");
     	} else {
     		$("#btn_create").text("생성");
+    		$('#btn_create').attr("disabled", true);
+    		$('#btn_pay').attr("disabled", true);
     	}
 
     	//상태표시

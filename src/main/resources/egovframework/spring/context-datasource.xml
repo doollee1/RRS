@@ -34,7 +34,8 @@
     <beans profile="prod">	
 		<bean class="bt.btframework.utils.dataSource.CryptoDataSource" id="dataSource" destroy-method="close">
 	        <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"></property>
-	        <property name="url" value="qhURKVhLXLSpaoUhT52JUvGkB29VjHEDh8HQ/O6tizqGyIOHnRhYnOxTWZnFT/n/XF8iwFqtVhIeJug1f+D+01dAKx/0tcVY25DFnXPQnx0=" /> <!--doollee-->	        
+	        <!-- <property name="url" value="qhURKVhLXLSpaoUhT52JUvGkB29VjHEDh8HQ/O6tizqGyIOHnRhYnOxTWZnFT/n/XF8iwFqtVhIeJug1f+D+01dAKx/0tcVY25DFnXPQnx0=" /> --> <!--doollee-->
+	        <property name="url" value="qhURKVhLXLSpaoUhT52JUvGkB29VjHEDh8HQ/O6tizqGyIOHnRhYnOxTWZnFT/n/7hs5JxKKKT4xBAh/qU4kk/HiyBTaOHHUZOQYanuJd0Y=" /> <!--doollee_dev-->	        
 	        <property name="username" value="ZMXn79uIJca0dATB5toaFw=="/> 
 	        <property name="password" value="5kyT79oE55VyMYEaCK4KKg=="/>         
 	        <!-- validationQuery:유효 검사용 쿼리( 1개 이상의 row를 반환하는 쿼리를 넣어주면 된다. ) -->

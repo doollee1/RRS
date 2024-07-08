@@ -13,7 +13,7 @@
 </style>
 <div id="p_arrImgPopup">
 	<div id="pop_ct_form_wrap">
-		<div><h1>항공권 이미지</h1></div>
+		<div><h1 style="font-size: 27px; font-weight: bold; margin: auto;">항공권 이미지</h1></div>
 	    <div>
 	        <img src="" alt="이미지" id="arr_img">
 	    </div>
@@ -57,7 +57,7 @@ $(function() {
 				    };
 		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
-				alert("이미지를 불러오는데 실패했습니다. 시스템 관리자에게 문의해 주세요.");
+				alert("항공권을 불러오는데 실패했습니다. 시스템 관리자에게 문의해 주세요.");
 			}else{
 				if(!fn_empty(data.result)){
 				    $("#arr_img").attr("src", "/upload/" + data.result.ADD_FILE_PATH2 + data.result.ADD_FILE_NM);

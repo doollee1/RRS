@@ -3,7 +3,6 @@
  */
 package bt.reserve.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -220,6 +219,22 @@ public class DepositService {
 				return resultRegist;
 			}
 				
+		} else { //예약상태의 누적금액이 예약금액보다 작을 경우
+			
+			//예약메인
+			param.put("PRC_STS", "05");  //입금대기(05)
+			int updateRslt = depositDao.updatePrcSts(param);			
+			logger.info("==== 입금대기 상태로 변경 결과 : "+updateRslt);
+			
+			
+			if(updateRslt < 1) {
+				
+				logger.info("===== 입금대기 상태로 변경실패 =====");
+				
+				resultRegist.put("RESULT", " FAIL");
+				return resultRegist;
+			}
+			
 		}
 		
 		

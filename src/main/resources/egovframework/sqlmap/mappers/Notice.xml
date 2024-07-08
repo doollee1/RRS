@@ -5,18 +5,18 @@
 	<select id="selectNoticeInfo" parameterType="BMap" resultType="BMap">
 	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
 	/* Notice.xml -> selectNoticeInfo */
-		SELECT ROW_NUMBER() OVER(ORDER BY A.NOTICE_NO DESC) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+		SELECT ROW_NUMBER() OVER(ORDER BY A.NOTICE_NO DESC) AS ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
 			  ,A.NOTICE_NO
 			  ,A.TITLE
 			  ,A.NOTICE_TP
-			  ,GetCodeNm('NOTICE_TP', A.NOTICE_TP, #{LANG}) NOTICE_TP_NM
+			  ,GetCodeNm('NOTICE_TP', A.NOTICE_TP, #{LANG}) AS NOTICE_TP_NM
 			  ,A.REG_ID
-			  ,B.NAME_FULL REG_NM
-			  ,FMTDDATE(A.REG_DT, 'YYYY.MM.DD') REG_DT
+			  ,B.NAME_1ST  AS REG_NM
+			  ,FMTDDATE(A.REG_DT, 'YYYY.MM.DD') AS REG_DT
 			  ,A.CNT
 			  ,A.CONTENTS
-			  ,FMTDDATE(A.FROMDATE, 'YYYY.MM.DD') FROMDATE
-			  ,FMTDDATE(A.TODATE, 'YYYY.MM.DD') TODATE
+			  ,FMTDDATE(A.FROMDATE, 'YYYY.MM.DD') AS FROMDATE
+			  ,FMTDDATE(A.TODATE, 'YYYY.MM.DD')   AS TODATE
 			  ,CASE WHEN DATEDIFF(FMTDDATE(NOW(),'YYYYMMDD'), FMTDDATE(A.FROMDATE,'YYYYMMDD')) <![CDATA[ <= ]]> 0 AND 
 			             DATEDIFF(FMTDDATE(NOW(),'YYYYMMDD'), FMTDDATE(A.FROMDATE,'YYYYMMDD')) <![CDATA[ >= ]]> -7 THEN 'Y'
 					ELSE 'N' END NEW_YN

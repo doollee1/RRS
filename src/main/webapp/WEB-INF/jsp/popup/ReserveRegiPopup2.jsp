@@ -2217,28 +2217,20 @@ $(function() {
 						, { name: 'FLIGHT_OUT_HH', width : 74 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
 						, { name: 'ADD_FILE_SEQ' , width : 84 , align: 'center', editable:false, edittype:"button", 									
 									formatter: function (cellval, options, rowObject) {	
-							  			var se = "";
-										
+							  			var retView = "";
 							  			var dSeq = rowObject.DSEQ;
 										var fileSeq = rowObject.ADD_FILE_SEQ;
-																				
-										//console.log("===== dSeq : "+dSeq);
-										//console.log("===== fileSeq : "+fileSeq);										
 										
 										if (parseInt(fileSeq) > 0) {
-											
-											se = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveSelectAirlineImg('"+fileSeq+"');\">미리보기</button>";	
-										
+											retView = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveSelectAirlineImg('"+fileSeq+"');\">미리보기</button>";	
 										} else {
-											
-											//console.log("===== vflag : "+vflag);
 											if(vflag == "new") {  //신규
-												se = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveAirlineImgUpload('"+dSeq+"');\" disabled=\"disabled\">업로드</button>";
+												retView = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveAirlineImgUpload('"+dSeq+"');\" disabled=\"disabled\">업로드</button>";
 											} else { //상세
-												se = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveAirlineImgUpload('"+dSeq+"');\">업로드</button>";
+												retView = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveAirlineImgUpload('"+dSeq+"');\">업로드</button>";
 											}
 										}			  			
-										return se;
+										return retView;
 									}
 						}
 						, { name: 'HDNG_GBN'      , width : 120, align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn_g}'}}
@@ -2265,7 +2257,6 @@ $(function() {
 		// 그리드 생성 및 초기화
 		btGrid.createGrid('reserveGrid', colName, colModel, gSetting);
 	}
-	
 	
 	function telFormat(object){
 		//var format1 = /^(\d{2,3})(\d{3,4})(\d{4})$/;

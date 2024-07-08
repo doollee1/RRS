@@ -78,11 +78,27 @@
 	<!-- 예약누적(총입금)금액조회 -->
 	<select id="selectPayAccuAmt" parameterType="BMap" resultType="string">
 		
-		SELECT NVL(SUM(PAY_AMT), 0) AS ACCU_AMT
-		FROM TB_REQ_FEE_D
-	    WHERE REQ_DT  = #{REQ_DT}
-	      AND REQ_SEQ = #{SEQ}			    
-	      AND PAY_TYPE = "03"   /* 예약  */	    
+	   SELECT 
+	   	CASE WHEN C.ACCU_AMT >= B.ACCU_AMT THEN  A.ACCU_AMT										 /* 입금금액의 합이 환불금액의 합보다 크거나 같을시  */
+	   	     WHEN C.ACCU_AMT <![CDATA[<]]> B.ACCU_AMT THEN  A.ACCU_AMT + C.ACCU_AMT - B.ACCU_AMT /* 입금금액의 합이 환불금액의 합보다 작을시  */
+	    END  AS ACCU_AMT 
+	   FROM	
+		   (SELECT NVL(SUM(PAY_AMT), 0) AS ACCU_AMT
+			  FROM TB_REQ_FEE_D
+		     WHERE REQ_DT  = #{REQ_DT}
+		       AND REQ_SEQ = #{SEQ}			    
+		       AND PAY_TYPE = "03") A,  /* 예약  */	      
+		   (SELECT NVL(SUM(PAY_AMT), 0) AS ACCU_AMT
+			  FROM TB_REQ_FEE_D
+		     WHERE REQ_DT  = #{REQ_DT}
+		       AND REQ_SEQ = #{SEQ}			    
+		       AND PAY_TYPE = "02") B,   /* 환급  */       
+		   (SELECT NVL(SUM(PAY_AMT), 0) AS ACCU_AMT
+			  FROM TB_REQ_FEE_D
+		     WHERE REQ_DT  = #{REQ_DT}
+		       AND REQ_SEQ = #{SEQ}			    
+		       AND PAY_TYPE = "01") C   /* 입금  */     
+	      	    
 	</select>
 	
 	

@@ -95,7 +95,7 @@ function grid_MemberUser_Load() {
 		'배우자성별',
 		'배우자전화번호',
 		'탈퇴여부',
-		''
+		'선택'
 	];
 	
 	var colModel = [
