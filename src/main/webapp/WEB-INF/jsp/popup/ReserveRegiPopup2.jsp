@@ -966,7 +966,7 @@ $(function() {
 			var data = {  "CHK_IN_DT"  : data.CHK_IN_DT		
 						, "CHK_OUT_DT" : data.CHK_OUT_DT
 					   };
-			
+			'${list_hdng_gbn_g}'
 			fn_ajax(url, false, data, function(data, xhr){
 				if(!fn_empty(data.result)){
 					var retVal = data.result;
@@ -1537,8 +1537,8 @@ $(function() {
 				    , "PRIM_ADD_CNT"    : parseInt($("#PRIM_ADD_CNT").val().replaceAll("," , ""))
 				    , "PICK_IN"         : $("#PICK_IN").val()
 				    , "PICK_OUT"        : $("#PICK_OUT").val()
-				    , "LATE_CHECK_IN"   : $("[name='LATE_CHECK_IN']:checked").val()
-				    , "LATE_CHECK_OUT"  : $("[name='LATE_CHECK_OUT']:checked").val()
+				    , "LATE_CHECK_IN"   : $("#LATE_CHECK_IN").val()
+				    , "LATE_CHECK_OUT"  : $("#LATE_CHECK_OUT").val()
 				    , "REMARK"          : $("#REMARK").val()
 				    , "INV_REG_DT"      : $("#INV_REG_DT").val().replaceAll(".", "")
 				    , "RND_CHG_YN1"     : $("#RND_CHG_YN1").is(":checked") == true ? "Y" : "N"

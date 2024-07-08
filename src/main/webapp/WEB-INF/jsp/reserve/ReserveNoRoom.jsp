@@ -15,7 +15,7 @@
 <!-- dummy -->
 <div class="top_button_h_margin"></div>
 <div id="right_wrap">
-    <div class="tab_top_search" id="calendar_noroom">
+    <div class="tab_top_search" id="calendar_noroom" style="border: double 4px; border-color: darkgray">
 		<table class="scriptCalendar" id="reserve_noroom_Calendar">
 		    <thead>
 		        <tr>
