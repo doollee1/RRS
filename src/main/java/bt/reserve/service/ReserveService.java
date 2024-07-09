@@ -248,26 +248,17 @@ public class ReserveService {
 	 * @throws Exception
 	 */
 	public List<BMap> invoiceSelectList(BMap param) throws Exception {
-		
-		logger.info("======= 인보이스 현황 리스트 조회 ==========");
 		List<BMap> result = null; 
 		int detailCnt = reserveDao.selectInvoiceListCnt(param);		
 		logger.info("===== 인보이스 건수 : "+detailCnt);
 		
 		if(detailCnt == 0){
-			
-			//기존로직
-		    //reserveDao.firstInvoiceSelectList(param);
-			//result = reserveDao.invoiceSelectList(param);
-			
-			/* 신규로직 : 20240612 */
 			BMap resultDeptDetail = reserveDao.reserveSelectDetail(param); 
 			
 			String reqDt  = resultDeptDetail.getString("REQ_DT");
 			String seq    = resultDeptDetail.getString("SEQ");
 			String memGbn = resultDeptDetail.getString("MEM_GBN");			
 			String agnGb  = "";		
-						
 			
 			if("04".equals(memGbn)) { //에이전시회원
 				agnGb  = resultDeptDetail.get("AGN_GB") ==  null? "" : resultDeptDetail.getString("AGN_GB");
@@ -277,17 +268,15 @@ public class ReserveService {
 			logger.info(" === 기본 일련번호        : "+seq);
 			logger.info(" === 기본 회원구분       : "+memGbn);						
 			logger.info(" === 기본 에이전시구분   : "+agnGb);
-						
 			
 			//예약상세조회
 			List<BMap> resultAddList = reserveDao.reserveSelectAddList(param);
 			
-			
-			String prev_itemCd = "";    //이전 아이템코드
-			long prev_perAmt = 0;      //이전 금액
-			long prev_useDay = 0;      //이전 사용횟수
-			long use_num = 1;          //이용수량
-			int invoiceDSeq = 0;			   //표시순서
+			String prev_itemCd = "";    // 이전 아이템코드
+			long prev_perAmt = 0;       // 이전 금액
+			long prev_useDay = 0;       // 이전 사용횟수
+			long use_num = 1;           // 이용수량
+			int invoiceDSeq = 0;		// 표시순서
 			
 			List<BMap> invoiceParamList = new ArrayList<BMap>();  //인보이스 파리미터
 			
@@ -388,9 +377,6 @@ public class ReserveService {
 				
 											 
 				if((!prev_itemCd.equals(itemCd))  || (prev_perAmt != perAmt)  || (prev_useDay != useDay)) {  //이전레코드와 항목코드, 금액, 이용횟수가 다른 경우
-					
-					logger.info("===== 이전레코드와 항목코드, 금액, 이용횟수가 다른 경우 =====");
-					
 					use_num = 1;   //수량
 					
 					BMap invoiceParamMap = new BMap();
@@ -412,18 +398,11 @@ public class ReserveService {
 					invoiceParamList.add(invoiceParamMap);
 					
 				} else if((prev_itemCd.equals(itemCd)) && (prev_perAmt == perAmt)  && (prev_useDay == useDay)) {  //이전레코드와 항목코드, 금액, 이용횟수가 같은 경우
-					
-					logger.info("===== 이전레코드와 항목코드, 금액, 이용횟수가 같은 경우 =====");
-					
 					use_num++;		//이용수량 증가
-					
 					int prev_index = invoiceParamList.size() -1;   //이전레코드 순번
-					logger.info(" === 이전레코드 순번     	: "+prev_index);
-					
 					invoiceParamList.get(prev_index).put("USE_NUM", use_num);  //이전항목 이용수량 증가
 					invoiceParamList.get(prev_index).put("TOT_AMT", perAmt * useDay * use_num);  //이전항목 총금액 수정(금액 * 이용횟수 * 이용수량)
 				}
-				
 				
 				//신규 항목코드, 금액, 이용횟수를 이전항목코드, 금액, 이용횟수로 복사
 				prev_itemCd = itemCd;
@@ -431,12 +410,11 @@ public class ReserveService {
 				prev_useDay = useDay;
 				
 			}
-			
+			/* ********************Detail for문 끝********************* */
 			
 			//지상비  인보이스 일괄등록
 			logger.info("===== 지상비 인보이스 일괄등록 =====");
 			for(BMap paramBMap : invoiceParamList) {
-				
 				reserveDao.insertInvoiceDetailInfo(paramBMap);
 			}
 			
@@ -446,9 +424,9 @@ public class ReserveService {
 			logger.info("======= 싱글룸, 프리미엄룸, Early 체크인, Late 체크아웃, 미팅샌딩, 야간미팅샌딩 리스트 조회 ==========");
 			
 			int roomPerson = Integer.parseInt(String.valueOf(resultDeptDetail.get("M_PERSON"))) 
-					   + Integer.parseInt(String.valueOf(resultDeptDetail.get("G_PERSON")))
-					   + Integer.parseInt(String.valueOf(resultDeptDetail.get("N_PERSON")))
-					   + Integer.parseInt(String.valueOf(resultDeptDetail.get("K_PERSON"))); 
+						   + Integer.parseInt(String.valueOf(resultDeptDetail.get("G_PERSON")))
+						   + Integer.parseInt(String.valueOf(resultDeptDetail.get("N_PERSON")))
+						   + Integer.parseInt(String.valueOf(resultDeptDetail.get("K_PERSON"))); 
 			
 			invoiceHeaderMap.put("ROOM_PERSON", roomPerson); // 숙박이용자(멤버/일반/비라운딩/소아)
 			invoiceHeaderMap.put("REQ_DT" , resultDeptDetail.get("REQ_DT"));   // 체크인 일자
@@ -457,16 +435,39 @@ public class ReserveService {
 			invoiceHeaderMap.put("CHK_OUT_DT", resultDeptDetail.get("CHK_OUT_DT"));  // 체크아웃 일자
 			invoiceHeaderMap.put("LOGIN_USER", LoginInfo.getUserId());
 			
+			System.out.println("RND_CHG_YN1 ::::::::" + String.valueOf(resultDeptDetail.get("RND_CHG_YN1")));
+			System.out.println("RND_CHG_YN2 ::::::::" + String.valueOf(resultDeptDetail.get("RND_CHG_YN2")));
+			
+			if("Y".equals(String.valueOf(resultDeptDetail.get("RND_CHG_YN1"))) || "Y".equals(String.valueOf(resultDeptDetail.get("RND_CHG_YN2")))) {
+				logger.info(" ===== 오전라운딩 변경 계산  =====");
+				BMap roundChgCalc =  reserveDao.roundChgCalc(invoiceHeaderMap);
+				System.out.println(" ===== 오전라운딩 변경 계산  =====");
+				
+				if(roundChgCalc != null) {
+					System.out.println(" ===== 오전라운딩 1111  =====");
+					invoiceDSeq++;
+					invoiceHeaderMap.put("ORDER", invoiceDSeq);
+					invoiceHeaderMap.put("ITEM_CD",  roundChgCalc.get("ITEM_CD"));
+					invoiceHeaderMap.put("ITEM_NM",  roundChgCalc.get("ITEM_NM"));
+					invoiceHeaderMap.put("AMT_SIGN", roundChgCalc.get("AMT_SIGN"));
+					invoiceHeaderMap.put("PER_AMT",  roundChgCalc.get("PER_AMT"));
+					invoiceHeaderMap.put("USE_DAY",  roundChgCalc.get("USE_DAY"));
+					invoiceHeaderMap.put("UNIT_DAY", roundChgCalc.get("UNIT_DAY"));
+					invoiceHeaderMap.put("USE_NUM",  roundChgCalc.get("USE_NUM"));
+					invoiceHeaderMap.put("UNIT_NUM", roundChgCalc.get("UNIT_NUM"));
+					invoiceHeaderMap.put("TOT_AMT",  roundChgCalc.get("TOT_AMT"));
+					reserveDao.insertInvoiceDetailInfo(invoiceHeaderMap);
+				} else {
+					logger.info("===== 오전라운딩 변경 금액이 없음 =====");
+				}
+			}
 			
 			// 싱글 룸 추가가 있는경우
 			if(!"0".equals(String.valueOf(resultDeptDetail.get("ROOM_ADD_CNT")))) {
-				
 				logger.info(" ===== 싱글룸 추가  =====");
-												
 				BMap roomupCalc =  reserveDao.roomupCalc(invoiceHeaderMap);
 				
 				if(roomupCalc != null) {
-				
 					invoiceDSeq++;
 					invoiceHeaderMap.put("ORDER", invoiceDSeq);
 					invoiceHeaderMap.put("ITEM_CD",  roomupCalc.get("ITEM_CD"));
@@ -479,13 +480,10 @@ public class ReserveService {
 					invoiceHeaderMap.put("UNIT_NUM", roomupCalc.get("UNIT_NUM"));
 					invoiceHeaderMap.put("TOT_AMT",  roomupCalc.get("TOT_AMT"));
 					reserveDao.insertInvoiceDetailInfo(invoiceHeaderMap);
-					
 				} else {
-					
 					logger.info("===== 싱글룸 금액이 없음 =====");
 				}
 			}
-			
 			
 			// 프리미엄 추가가 있는경우
 			if(!"0".equals(String.valueOf(resultDeptDetail.get("PRIM_ADD_CNT")))) {

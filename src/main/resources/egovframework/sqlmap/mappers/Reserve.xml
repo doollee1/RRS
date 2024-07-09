@@ -2147,6 +2147,36 @@ DELETE
 		]]>
 	</select>
 
+	<!-- 오전 라운딩 변경 계산 -->
+	<select id="roundChgCalc" parameterType="BMap" resultType="BMap">
+		<![CDATA[
+			SELECT DISTINCT  
+			       A.CODE						        AS ITEM_CD			/* 항목코드 */
+			  	  ,'주말 오후 라운딩 -> 오전 라운딩 변경'        	AS ITEM_NM			/* 항목명  */
+		       	  , A.REF_CHR2   					    AS AMT_SIGN			/* 통화기호 */
+		    	  , C.COM_AMT   					    AS PER_AMT		    /* 이용금액 */
+			  	  , '1'            						AS USE_DAY          /* 이용기간 */
+               	  , A.REF_CHR3      					AS UNIT_DAY  		/* 사용단위 */
+             	  , IFNULL(B.M_PERSON, 0) + IFNULL(B.G_PERSON, 0)  AS USE_NUM         /* 이용인원 */
+               	  , A.REF_CHR4       AS UNIT_NUM   									  /* 수량단위 */
+			   	  , IFNULL(C.COM_AMT * (IFNULL(B.M_PERSON, 0) + IFNULL(B.G_PERSON, 0)) , 0) AS TOT_AMT /* 총괄금액 */
+          	FROM BC_COMM_L A,
+		    	 TB_REQ_BOOKING_M B,
+		       	 TB_PROD_INFO C,
+		       	 TB_BAS_YY_INFO D
+           WHERE A.HEAD_CD    = '500140'  -- 인보이스 항목
+		     AND A.CODE       = 'ROUNDG01'
+		     AND B.REQ_DT     = #{REQ_DT}
+		     AND B.SEQ        = #{SEQ}
+		     AND C.HDNG_GBN   = '12'
+		     AND C.BAS_YY   = D.BAS_YY
+		     AND C.BAS_YY_SEQ = D.BAS_YY_SEQ
+		     AND (B.CHK_IN_DT BETWEEN D.ST_DT1 AND D.ED_DT1
+                  OR B.CHK_IN_DT BETWEEN D.ST_DT2 AND D.ED_DT2
+                  OR B.CHK_IN_DT BETWEEN D.ST_DT3 AND D.ED_DT3
+                 )
+		]]>
+	</select>
 
 	<!-- 싱글 룸  추가 계산 -->
 	<select id="roomupCalc" parameterType="BMap" resultType="BMap">

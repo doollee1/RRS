@@ -653,6 +653,18 @@ public class ReserveDao extends DBAbstractMapper {
 	
 	
 	/**
+	 * 오전라운딩 변경 계산
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public BMap roundChgCalc(BMap param) throws Exception {
+		return (BMap) selectByPk("ReserveMapper.roundChgCalc", param);
+	}
+	
+	
+	/**
 	 * 싱글룸 추가 계산
 	 * 
 	 * @param param

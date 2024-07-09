@@ -186,13 +186,7 @@ public class ReserveRestController {
 		BRespData respData = new BRespData();
 		respData.put("result", resultDeptDetail);
 		respData.put("fileResult", fileList);
-		
-	/*	BMap param = new BMap();
-		param.put("HEAD_CD"   , 500140);
-		param.put("REF_CHR1"  , (String)reqData.get("MEM_GBN"));
-		param.put("ORDER_GBN" , 1);
-		
-		respData.put("selectList"   , reserveService.selectGetCommonCode(param));*/
+
 		return respData;
 	}
 	

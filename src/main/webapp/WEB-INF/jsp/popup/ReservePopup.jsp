@@ -1073,7 +1073,7 @@ $(function() {
 						, { name: 'DSEQ'         , width : 24 , align: 'center', editable:false, editoptions:{readonly: true}}
 						, { name: 'COM_GBN'      , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${COM_GBN}'}}
 						, { name: 'NUM_GBN'      , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${NUM_GBN}'}}
-						, { name: 'HDNG_GBN'      , width : 120, align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn_g}'}}
+						, { name: 'HDNG_GBN'     , width : 120, align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn}'}}
 						, { name: 'ADD_FILE_SEQ' , width : 84 , align: 'center', editable:false, edittype:"button",
 							formatter: function (cellval, options, rowObject) {	
 					  			var se = "";
