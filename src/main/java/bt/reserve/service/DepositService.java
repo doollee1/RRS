@@ -295,18 +295,22 @@ public class DepositService {
 		BMap depositHdrInfo = this.selectDepositHdrInfo(param);
 		String depInDt = depositHdrInfo.get("DEP_IN_DT") == null? "" : depositHdrInfo.getString("DEP_IN_DT");		
 		String payAccutAmt  =  depositDao.selectPayAccuAmt(param);					
-		String prcStsNm = depositDao.selectPrcStsNm(param); //예약상태명 조회
 		
+		BMap prcStsInfo = depositDao.selectPrcStsInfo(param); //예약상태명 조회
+		String prcStsNm = prcStsInfo.get("PRC_STS_NM") == null? "" :prcStsInfo.getString("PRC_STS_NM"); //예약상태명
+		String prcSts  = prcStsInfo.get("PRC_STS") == null? "" :prcStsInfo.getString("PRC_STS"); //예약상태명
 		
 		logger.info("==== 예약금입금일자 : "+depInDt);
-		logger.info("==== 입금예약금액 : "+payAccutAmt);		
+		logger.info("==== 입금예약금액 : "+payAccutAmt);
+		logger.info("==== 예약상태 : "+prcSts);
 		logger.info("==== 예약상태명 : "+prcStsNm);
 		
 		
 		BMap resultBMap = new BMap();
 		resultBMap.put("pay_dep_amt", payAccutAmt);
 		resultBMap.put("dep_in_dt", depInDt);
-		resultBMap.put("prc_sts_nm", prcStsNm);		
+		resultBMap.put("prc_sts_nm", prcStsNm);	
+		resultBMap.put("prc_sts", prcSts);		
 		
 		return resultBMap;
 	}

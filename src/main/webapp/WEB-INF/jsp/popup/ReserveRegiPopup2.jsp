@@ -1948,6 +1948,7 @@ $(function() {
 				$("input[name='PAY_DEP_AMT']").val(data.PAY_DEP_AMT); //입금예약금 세팅
 				$("input[name='DEP_IN_DT']").val(data.DEP_IN_DT);     //예약금입금일자 세팅
 				$("input[name='PRC_STS_NM']").val(data.PRC_STS_NM);   //상태명 세팅
+				$("#PRC_STS"     ).val(data.PRC_STS);				  //상태 세팅	
 			} else {
 				initSelect();    //예약상세 다시조회				
 			}
@@ -2181,6 +2182,8 @@ $(function() {
 						, '순번'
 						, '동반자구분'
 						, '인원구분'
+						, '패키지상품'
+						, '항공이미지'
 						, '한글명'
 						, '영문명'
 						, '전화번호'
@@ -2190,8 +2193,6 @@ $(function() {
 						, '도착시간'
 						, '출발항기편'
 						, '출발시간'
-						, '항공이미지'
-						, '패키지상품'
 						, 'early체크인'
 						, 'Late체크아웃'
 						, '객실타입'
@@ -2205,6 +2206,25 @@ $(function() {
 						, { name: 'DSEQ'         , width : 24 , align: 'center', editable:false, editoptions:{readonly: true}}
 						, { name: 'COM_GBN'      , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${COM_GBN}'}}
 						, { name: 'NUM_GBN'      , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${NUM_GBN}'}}
+						, { name: 'HDNG_GBN'      , width : 120, align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn}'}}
+						, { name: 'ADD_FILE_SEQ' , width : 84 , align: 'center', editable:false, edittype:"button", 									
+							formatter: function (cellval, options, rowObject) {	
+					  			var retView = "";
+					  			var dSeq = rowObject.DSEQ;
+								var fileSeq = rowObject.ADD_FILE_SEQ;
+								
+								if (parseInt(fileSeq) > 0) {
+									retView = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveSelectAirlineImg('"+fileSeq+"');\">미리보기</button>";	
+								} else {
+									if(vflag == "new") {  //신규
+										retView = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveAirlineImgUpload('"+dSeq+"');\" disabled=\"disabled\">업로드</button>";
+									} else { //상세
+										retView = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveAirlineImgUpload('"+dSeq+"');\">업로드</button>";
+									}
+								}			  			
+								return retView;
+							}
+						}
 						, { name: 'COM_HAN_NM'   , width : 120, align: 'center', editable:true, editoptions:{maxlength:100}}
 						, { name: 'COM_ENG_NM'   , width : 120, align: 'center', editable:true, editoptions:{maxlength:100}}
 						, { name: 'COM_TEL_NO'   , width : 120, align: 'center', editable:true, formatter:telFormat, unformat: unTelFormat, editoptions:{maxlength:100}}
@@ -2214,25 +2234,6 @@ $(function() {
 						, { name: 'FLIGHT_IN_HH' , width : 74 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_HH}'}}
 						, { name: 'FLIGHT_OUT'   , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT}'}}
 						, { name: 'FLIGHT_OUT_HH', width : 74 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
-						, { name: 'ADD_FILE_SEQ' , width : 84 , align: 'center', editable:false, edittype:"button", 									
-									formatter: function (cellval, options, rowObject) {	
-							  			var retView = "";
-							  			var dSeq = rowObject.DSEQ;
-										var fileSeq = rowObject.ADD_FILE_SEQ;
-										
-										if (parseInt(fileSeq) > 0) {
-											retView = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveSelectAirlineImg('"+fileSeq+"');\">미리보기</button>";	
-										} else {
-											if(vflag == "new") {  //신규
-												retView = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveAirlineImgUpload('"+dSeq+"');\" disabled=\"disabled\">업로드</button>";
-											} else { //상세
-												retView = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveAirlineImgUpload('"+dSeq+"');\">업로드</button>";
-											}
-										}			  			
-										return retView;
-									}
-						}
-						, { name: 'HDNG_GBN'      , width : 120, align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn}'}}
 						, { name: 'LATE_CHECK_IN' , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_IN}'}}
 						, { name: 'LATE_CHECK_OUT', width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_OUT}'}}
 						, { name: 'ROOM_TYPE'     , width : 120, align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${ROOM_TYPE}'}}
@@ -2302,6 +2303,10 @@ $(function() {
 		var j_n = parseInt($("#N_PERSON").val().replaceAll("," , ""));		//비라운딩
 		var j_k = parseInt($("#K_PERSON").val().replaceAll("," , ""));		//소아
 		var j_i = parseInt($("#I_PERSON").val().replaceAll("," , ""));		//영유아
+		
+		if(tot_person == 0){
+			alert("인원내역을 입력해주세요.");
+		}
 		
 		for(var i = 0 ; i < tot_person ; i ++ ){
 			

@@ -179,13 +179,14 @@
 	</update>
 	
 	
-	<!-- 예상상태명 가져오기 -->
-	<select id ="selectPrcStsNm" parameterType="BMap" resultType="string">
+	<!-- 예상상태정보 가져오기 -->
+	<select id ="selectPrcStsInfo" parameterType="BMap" resultType="BMap">
 		SELECT (SELECT CODE_NM
 	              FROM BC_COMM_L
 	             WHERE 1 = 1
 	               AND HEAD_CD = '500020'
-	               AND CODE = T1.PRC_STS)             AS PRC_STS_NM        /* 상태구분                 */
+	               AND CODE = T1.PRC_STS)   AS PRC_STS_NM   /* 상태구분명    */
+	           ,T1.PRC_STS					AS PRC_STS  	/* 상태구분  	*/    
 	    FROM TB_REQ_BOOKING_M T1  
 	    WHERE REQ_DT  = #{REQ_DT}
            AND SEQ  = #{SEQ}         

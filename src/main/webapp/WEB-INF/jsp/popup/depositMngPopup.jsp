@@ -9,6 +9,7 @@
 %>
 <style>
 .pbtn_default {margin: 0 3px -1px 5px;padding: 3px 10px 3px 10px;border: 1px solid #a9cbeb !important;background: #bdd6ee !important;color: #2269b1;}
+#p_pickUpGbnPopup {overflow:visible;}
 </style>
 <div id="p_pickUpGbnPopup">
 	<form id="frmPickupFrm" action="#">
@@ -86,9 +87,12 @@
 		<div class="pop_grid_wrap">
 			<table id="depositGrid"></table>
 		</div>
-		<b style="opacity:90%; color: green; font-weight: bold;">※ 환급 시 입금 금액이 있다면, 입금 금액을 선 차감 후 예약금 금액이 차감됩니다. (입금 금액이 없는 경우, 예약금 차감)</b>
 	</div>
 	</form>
+	
+	<p style="position: absolute; top: 440px; left: 15px; color:red; font-weight:bold;">
+		※ 환급 시 입금 금액이 있다면, 입금 금액을 선 차감 후 예약금 금액이 차감됩니다. (입금 금액이 없는 경우, 예약금 차감)
+	</p>
 </div>
 
 <script type="text/javascript">
@@ -229,18 +233,35 @@ $(function() {
 		});	        
 	});
 	
+	
+	//입금구분 변경
+	$("#PAY_TYPE").change(function(){
+		
+		var payType = $(this).val();
+		
+		if(payType == '02') { //환급
+			$(".ui-dialog-buttonset > button#save").attr("disabled", false);  //저장
+			$("#btn_payreg").attr("disabled",false);	//입금등록
+		}
+	});
+	
+	
 	//최소 수행
 	function fn_init(recevicedData) {
 		gv_req_dt     = recevicedData.REQ_DT;
 		gv_seq        = recevicedData.SEQ;
 		
+		
 		//예약상태가 입금완료(10) 일 경우 입금등록버튼 비활성화
 		if(!fn_empty(recevicedData.PRC_STS)){
-			if(recevicedData.PRC_STS == "08" || recevicedData.PRC_STS == "09" || recevicedData.PRC_STS == "10"){
+			if(recevicedData.PRC_STS == "08" || recevicedData.PRC_STS == "09" || recevicedData.PRC_STS == "10"){ //환불요청(08), 예약취소(09), 입금완료(10)
 				$(".ui-dialog-buttonset > button#save").attr("disabled", true);
 				$(".ui-dialog-buttonset > button#delete").attr("disabled", true);
-				$("#btn_payreg").attr("disabled",true);
-				$("#btn_payreg").attr("disabled",true);
+				$("#btn_payreg").attr("disabled",true);				
+			} else {
+				$(".ui-dialog-buttonset > button#save").attr("disabled", false);
+				$(".ui-dialog-buttonset > button#delete").attr("disabled", false);
+				$("#btn_payreg").attr("disabled",false);
 			}	
 		}
 		
@@ -349,7 +370,8 @@ $(function() {
 					if(!fn_empty(data.result)){
 						p_rtnData = {"PAY_DEP_AMT": data.result.pay_dep_amt   //입금예약금
 								   , "DEP_IN_DT"  : data.result.dep_in_dt     //예약금입금일자
-								   , "PRC_STS_NM" : data.result.prc_sts_nm};  //예약상태명
+								   , "PRC_STS_NM" : data.result.prc_sts_nm	  //예약상태명
+								   , "PRC_STS" : data.result.prc_sts};  	  //예약상태
 						popupClose($('#p_pickUpGbnPopup').data('pid'));
 					} else {
 						alert("입금 저장 오류, 시스템 관리자에게 문의하세요.");

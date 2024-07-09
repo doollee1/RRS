@@ -90,11 +90,18 @@
 		ON T1.REQ_DT = T2.REQ_DT AND T1.SEQ = T2.REQ_SEQ
 		LEFT JOIN tb_prod_info T3
 		ON T1.BAS_YY = T3.BAS_YY AND T1.PROD_SEQ = T3.PROD_SEQ
+	 WHERE 1=1
 		<if test='S_DATE_GBN == "S_REQ"'>
-		WHERE T1.REQ_DT BETWEEN #{FROM_DT} AND #{TO_DT}
+		AND T1.REQ_DT BETWEEN #{FROM_DT} AND #{TO_DT}
 		</if>
 		<if test='S_DATE_GBN == "S_CHK_IN"'>
-		WHERE T1.CHK_IN_DT BETWEEN #{FROM_DT} AND #{TO_DT}
+		AND T1.CHK_IN_DT BETWEEN #{FROM_DT} AND #{TO_DT}
+		</if>
+		<if test='S_MEM_GBN != null and S_MEM_GBN != ""'>
+		AND T1.MEM_GBN = #{S_MEM_GBN}
+		</if>
+		<if test='S_USER_NM != null and S_USER_NM != ""'>
+		AND T1.REQ_HAN_NM LIKE CONCAT('%',#{S_USER_NM},'%')
 		</if>
 		ORDER BY T1.REQ_DT DESC, T1.SEQ DESC
     <include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->

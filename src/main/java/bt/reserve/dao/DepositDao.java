@@ -118,14 +118,14 @@ public class DepositDao extends DBAbstractMapper {
 	
 	
 	/**
-	 * 예약상태명 조회
+	 * 예약상태정보 조회
 	 * 
 	 * @param param
 	 * @return
 	 * @throws Exception
 	 */
-	public String selectPrcStsNm(BMap param) throws Exception {
-		return (String) selectByPk("DepositMapper.selectPrcStsNm", param);
+	public BMap selectPrcStsInfo(BMap param) throws Exception {
+		return (BMap)  selectByPk("DepositMapper.selectPrcStsInfo", param);
 	}
 	
 	

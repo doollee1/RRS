@@ -1049,6 +1049,8 @@ $(function() {
 						, '순번'
 						, '동반자구분'
 						, '인원구분'
+						, '패키지상품'
+						, '항공이미지'
 						, '한글명'
 						, '영문명'
 						, '전화번호'
@@ -1058,8 +1060,6 @@ $(function() {
 						, '도착시간'
 						, '출발항기편'
 						, '출발시간'
-						, '항공이미지'
-						, '패키지상품'
 						, 'early체크인'
 						, 'Late체크아웃'
 						, '객실타입'
@@ -1073,15 +1073,7 @@ $(function() {
 						, { name: 'DSEQ'         , width : 24 , align: 'center', editable:false, editoptions:{readonly: true}}
 						, { name: 'COM_GBN'      , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${COM_GBN}'}}
 						, { name: 'NUM_GBN'      , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${NUM_GBN}'}}
-						, { name: 'COM_HAN_NM'   , width : 120, align: 'center', editable:false, editoptions:{maxlength:100}}
-						, { name: 'COM_ENG_NM'   , width : 120, align: 'center', editable:false, editoptions:{maxlength:100}}
-						, { name: 'COM_TEL_NO'   , width : 120, align: 'center', editable:false, formatter:telFormat, editoptions:{maxlength:100}}
-						, { name: 'CHK_IN_DT'    , width : 84 , align: 'center', editable:false, editoptions:{maxlength:100}}
-						, { name: 'CHK_OUT_DT'   , width : 84 , align: 'center', editable:false, editoptions:{maxlength:100}}
-						, { name: 'FLIGHT_IN'    , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN}'}}
-						, { name: 'FLIGHT_IN_HH' , width : 74 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_HH}'}}
-						, { name: 'FLIGHT_OUT'   , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT}'}}
-						, { name: 'FLIGHT_OUT_HH', width : 74 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
+						, { name: 'HDNG_GBN'      , width : 120, align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn_g}'}}
 						, { name: 'ADD_FILE_SEQ' , width : 84 , align: 'center', editable:false, edittype:"button",
 							formatter: function (cellval, options, rowObject) {	
 					  			var se = "";
@@ -1098,7 +1090,15 @@ $(function() {
 								return se;
 							}
 						}
-						, { name: 'HDNG_GBN'      , width : 120, align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn_g}'}}
+						, { name: 'COM_HAN_NM'   , width : 120, align: 'center', editable:false, editoptions:{maxlength:100}}
+						, { name: 'COM_ENG_NM'   , width : 120, align: 'center', editable:false, editoptions:{maxlength:100}}
+						, { name: 'COM_TEL_NO'   , width : 120, align: 'center', editable:false, formatter:telFormat, editoptions:{maxlength:100}}
+						, { name: 'CHK_IN_DT'    , width : 84 , align: 'center', editable:false, editoptions:{maxlength:100}}
+						, { name: 'CHK_OUT_DT'   , width : 84 , align: 'center', editable:false, editoptions:{maxlength:100}}
+						, { name: 'FLIGHT_IN'    , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN}'}}
+						, { name: 'FLIGHT_IN_HH' , width : 74 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_HH}'}}
+						, { name: 'FLIGHT_OUT'   , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT}'}}
+						, { name: 'FLIGHT_OUT_HH', width : 74 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
 						, { name: 'LATE_CHECK_IN' , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_IN}'}}
 						, { name: 'LATE_CHECK_OUT', width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_OUT}'}}
 						, { name: 'ROOM_TYPE'     , width : 120, align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${ROOM_TYPE}'}}

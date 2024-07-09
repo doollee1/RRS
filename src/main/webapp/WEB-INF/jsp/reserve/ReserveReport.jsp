@@ -35,6 +35,17 @@
 						    <div style="margin:0 10px 0 10px;">-</div>
 						    <input type="text" name="TO_DT" id="TO_DT" data-type="date" style="text-align:center; width:90px; float:left;"/>
 					    </td>
+					    <td class="small_td"><p style="margin:0 0 4px 18px">구분</p></td>
+					    <td class="small_td" style="text-align:center;">
+					    	<select id="S_MEM_GBN" name="S_MEM_GBN" class="cmc_combo" style="width:100px;">
+					    		<option value="">전체</option>
+								<c:forEach var="i" items="${mem_gbn}">
+							    	<option value="${i.CODE}">${i.CODE_NM}</option>
+						    	</c:forEach>
+					    	</select>
+					    </td>
+					    <td class="small_td"><p style="margin:0 0 4px 18px">사용자명</p></td>
+					    <td class="medium_td"><input type="text" id="S_USER_NM" name="S_USER_NM" class="cmc_txt" maxlength="30" noSpecial /></td>
 					</tr>
 				</tbody>
 			</table>
@@ -102,6 +113,12 @@
 	$(function() {
 		setCommBtn("Save", false);
 		fn_Init(); //초기 로드
+		
+		$('#S_USER_NM').on('keypress', function (e) {
+			if(e.which == 13){
+				cSearch(null)
+			}
+		});
 	});
 	
 	function fn_Init(){
@@ -254,9 +271,10 @@
 			
 			colModel[cnt] = {
 					name: 'day'+i,
-					width: 90,
+					width: 180,
 					align: 'center',
 					editable: true,
+					sortable: false
 			};
 			var dayWeekName = getDayOfWeek(year + "." + mon + "." + day);
 			colName[cnt] = i + " (" + dayWeekName + ")";
@@ -284,7 +302,7 @@
 			shrinkToFit: false,
 			autowidth: true,
 			queryPagingGrid : false, // 쿼리 페이징 처리 여부
-			height : 100, 
+			height : 60, 
 		};
 		
 		// 그리드 생성 및 초기화

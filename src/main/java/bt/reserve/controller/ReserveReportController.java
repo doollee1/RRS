@@ -14,12 +14,16 @@ import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
 import bt.reserve.service.ReserveReportService;
+import bt.rrs.service.RrsUserService;
 
 @Controller
 public class ReserveReportController {
 
 	@Resource	
 	private ReserveReportService reserveReportService;
+	
+	@Resource(name = "RrsUserService")
+	private RrsUserService rrsUserService;
 	
 	/**
 	 * 예약 현황 화면 호출
@@ -30,6 +34,11 @@ public class ReserveReportController {
 	 */
 	@RequestMapping(value = "/reserve/reserveReport.do")
 	public String reserveList(ModelMap model,HttpServletRequest request) throws Exception {
+		BMap param = new BMap();
+		param.put( "HEAD_CD", 500030);
+		
+		model.addAttribute("mem_gbn" , rrsUserService.selectGetCommonCode(param));
+
 		return "/reserve/ReserveReport"; 
 	}
 	
