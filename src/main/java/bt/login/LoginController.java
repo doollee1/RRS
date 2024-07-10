@@ -86,12 +86,64 @@ public class LoginController {
 		
 		logger.info("======== 로그인화면 =======");
 		logger.info("======== 프로파일 : "+activeProfile);
-		
-		initRsa(request);
-						
+								
 		return "/login/login";
 	}
 	
+	
+	/**
+	 * RSA 초기화
+	 * 
+	 * @param reqData
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/login/initRsaAjax.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData initRsaAjax(@RequestBody BReqData reqData, HttpServletRequest request) throws Exception{
+		
+		logger.info("======== RSA 초기화  =======");
+		
+		BRespData respData = new BRespData();
+		HttpSession session = request.getSession();
+		 
+        KeyPairGenerator generator;
+        try {
+            generator = KeyPairGenerator.getInstance(LoginController.RSA_INSTANCE);
+            generator.initialize(1024);
+ 
+            KeyPair keyPair = generator.genKeyPair();
+            KeyFactory keyFactory = KeyFactory.getInstance(LoginController.RSA_INSTANCE);
+            PublicKey publicKey = keyPair.getPublic();
+            PrivateKey privateKey = keyPair.getPrivate();
+ 
+            session.setAttribute(LoginController.RSA_WEB_KEY, privateKey); // session에 RSA 개인키를 세션에 저장
+ 
+            RSAPublicKeySpec publicSpec = (RSAPublicKeySpec) keyFactory.getKeySpec(publicKey, RSAPublicKeySpec.class);
+            String publicKeyModulus = publicSpec.getModulus().toString(16);
+            String publicKeyExponent = publicSpec.getPublicExponent().toString(16);
+ 
+            respData.put("RSAModulus", publicKeyModulus); 	//rsa modulus 
+            respData.put("RSAExponent", publicKeyExponent); //rsa exponent
+                        
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+		
+        return respData;        
+	}
+	
+	
+	/**
+	 * 로그인 처리
+	 * 
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/login/actionLogin.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData userOverlapCheck(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{

@@ -35,7 +35,8 @@ public class ServiceInterceptor extends HandlerInterceptorAdapter {
 		if ( requestURI.indexOf("/login/login.do") < 0 && 
 			 requestURI.indexOf("/index.do") < 0 &&
 			 requestURI.indexOf("/login/actionLogin.do") < 0 &&
-			 requestURI.indexOf("/login/sessionout.do") < 0) {
+			 requestURI.indexOf("/login/sessionout.do") < 0 && 
+			 requestURI.indexOf("/login/initRsaAjax.do") < 0) {
 			
 			// 정상적인 세션정보가 없으면 로그인페이지로 이동
 			logger.info("======= userInfo : "+userInfo);			

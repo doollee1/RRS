@@ -24,13 +24,17 @@
 
 <script type="text/javascript">
 $(function() {
+	
 	getid();
-	getLanguage();
+	getLanguage();	
+	
 	$("#USER_ID").focus();
 	
 	$("#btnLogin").click(function(){
-		login();
-		//test();
+		
+		initRsa();  //RSA 초기화
+		//login();
+		
 	});
 	
 	$("#Language").change(function(){
@@ -44,7 +48,31 @@ function test() {
 	location.href = '/home/home.do';
 }
 
+
+//RSA 초기화
+function initRsa(){
+		
+	var url = "/login/initRsaAjax.do";
+	var param = {};
+	
+	fn_ajax(url, false, param, function(data, xhr){
+		
+		//console.log("data : "+JSON.stringify(data));
+		
+		if(!fn_empty(data)){
+			
+			$("#RSAModulus").val(data.RSAModulus);
+			$("#RSAExponent").val(data.RSAExponent);
+			
+			login();  //로그인
+		}
+	});
+} 
+
+
+//로그인 처리
 function login() {
+		
 	if(!$("#USER_ID").val()){
 		alert('Input ID');
 		$("#USER_ID").focus();
