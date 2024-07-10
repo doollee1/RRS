@@ -47,8 +47,10 @@
          , T1.ROOM_TYPE                            /* 객실타입        */
          , T1.FLIGHT_IN                            /* 도착항공기편    */
          , T1.FLIGHT_IN_HH                         /* 도착항공기시간  */
+         , T1.FLIGHT_IN_MM                         /* 도착항공기시간  */
          , T1.FLIGHT_OUT                           /* 출발항공기편    */
          , T1.FLIGHT_OUT_HH                        /* 출발항공기시간  */
+         , T1.FLIGHT_OUT_MM                        /* 출발항공기시간  */
          , T1.TOT_PERSON                           /* 총인원          */
          , T1.BAS_YY                               /* 기준년도        */
          , T1.BAS_YY_SEQ                           /* 기준년도SEQ     */
@@ -287,9 +289,10 @@
 	               AND CODE = T1.ROOM_TYPE)           AS ROOM_NM           /* 객실구분코드           */
 	         , T1.FLIGHT_IN                           AS FLIGHT_IN         /* 도착항공기편           */
 	         , T1.FLIGHT_IN_HH                        AS FLIGHT_IN_HH      /* 도착항공기시간        */
+	         , T1.FLIGHT_IN_MM                        AS FLIGHT_IN_MM      /* 도착항공기 분        */
 	         , T1.FLIGHT_OUT                          AS FLIGHT_OUT        /* 출발항공기편           */
 	         , T1.FLIGHT_OUT_HH                       AS FLIGHT_OUT_HH     /* 출발항공기시간        */
-
+			 , T1.FLIGHT_OUT_MM                       AS FLIGHT_OUT_MM     /* 출발항공기 분        */
 	         , T1.BAS_YY                              AS BAS_YY            /* 기준년도                 */
 	         , T1.BAS_YY_SEQ                          AS BAS_YY_SEQ        /* 기준년도SEQ    */
 	         , T1.PROD_SEQ                            AS PROD_SEQ          /* 상품순번               */
@@ -354,20 +357,16 @@
 	                AND TT2.PROD_SEQ   = T1.PROD_SEQ
 	                AND TT1.CODE       = TT2.HDNG_GBN
 	                AND HEAD_CD = '500000'
-	           )                                      AS ADD_HDNG_GBN2           /* ADD_상품코드               */
+	           )                                      AS ADD_HDNG_GBN2     /* ADD_상품코드               */
 	         , T1.UPD_ID                              AS UPD_ID            /* 수정자ID               */
-	         , (SELECT SUM(TT1.PER_NUM)
-                  FROM TB_REQ_PICKUP TT1
-				 WHERE 1 = 1
-                   AND TT1.REQ_DT  = T1.REQ_DT
-                   AND TT1.REQ_SEQ = T1.SEQ)          AS PER_NUM           /* 미팅샌딩 인원합계      */
+	         , T1.PER_NUM                             AS PER_NUM           /* 미팅샌딩 인원합계      */
 	         , NVL(T3.DEP_IN_DT,'')                   AS DEP_IN_DT         /* 예약금입금일자         */
 	         , NVL(T3.PAY_DEP_AMT,0)				  AS PAY_DEP_AMT	   /* 입금예약금 (20240625 추가) */
 	         , NVL(T3.EXP_DT,'')                      AS EXP_DT            /* 예약 기한              */
 	         , NVL(T3.DEP_AMT,0)                      AS DEP_AMT           /* 예약금액               */
 	         , CASE WHEN NVL(T3.PAY_AMT,0) = '0'
 	           THEN NVL(T3.TOT_AMT,0) - NVL(T3.DCT_AMT,0)
-	           ELSE NVL(T3.BAL_AMT,0) END               AS BAL_AMT           /* 잔금                   */
+	           ELSE NVL(T3.BAL_AMT,0) END             AS BAL_AMT           /* 잔금                   */
 	         , NVL(T3.DCT_AMT,0)                      AS DCT_AMT           /* 할인금액               */
 	         , NVL(T3.PAY_AMT,0)                      AS PAY_AMT           /* 입금금액               */
 	         , NVL(T3.TOT_AMT,0)                      AS TOT_AMT           /* 총액                   */
@@ -411,8 +410,10 @@
 	         , T1.CHK_OUT_DT                           AS CHK_OUT_DT        /* 체크아웃일자           */
 	         , T1.FLIGHT_IN                            AS FLIGHT_IN         /* 도착항공기편           */
 	         , T1.FLIGHT_IN_HH                         AS FLIGHT_IN_HH      /* 도착항공기시간        */
+	         , T1.FLIGHT_IN_MM                         AS FLIGHT_IN_MM      /* 도착항공기분        */
 	         , T1.FLIGHT_OUT                           AS FLIGHT_OUT        /* 출발항공기편           */
 	         , T1.FLIGHT_OUT_HH                        AS FLIGHT_OUT_HH     /* 출발항공기시간        */
+	         , T1.FLIGHT_OUT_MM                        AS FLIGHT_OUT_MM     /* 출발항공기분        */
 	         , T1.ADD_FILE_SEQ                         AS ADD_FILE_SEQ      /* 첨부파일일련번호      */
 	         , T1.HDNG_GBN                             AS HDNG_GBN          /* 항목구분                */
 	         , T1.LATE_CHECK_IN                        AS LATE_CHECK_IN     /* Late체크인여부      */
@@ -693,9 +694,11 @@
 		                     , B.CHK_OUT_DT                          /* 체크아웃일자          */
 		                     , B.ROOM_TYPE                           /* 객실타입              */
 		                     , B.FLIGHT_IN                           /* 도착항공기편          */
-		                     , B.FLIGHT_IN_HH                        /* 도착항공기시간       */
+		                     , B.FLIGHT_IN_HH                        /* 도착항공기 분       */
+		                     , B.FLIGHT_IN_MM                        /* 도착항공기시간       */
 		                     , B.FLIGHT_OUT                          /* 출발항공기편          */
 		                     , B.FLIGHT_OUT_HH                       /* 출발항공기시간       */
+		                     , B.FLIGHT_OUT_MM                       /* 출발항공기 분       */
 		                     , B.PICK_GBN                            /* 미팅샌딩구분          */
 		                     , B.TOT_PERSON                                               /* 총인원                 */
 		                     , NVL(B.M_PERSON,0)                     AS M_PERSON          /* 멤버인원              */
@@ -1194,8 +1197,10 @@
 		          , ROOM_TYPE
 		          , FLIGHT_IN
 		          , FLIGHT_IN_HH
+		          , FLIGHT_IN_MM
 		          , FLIGHT_OUT
 		          , FLIGHT_OUT_HH
+		          , FLIGHT_OUT_MM
 		          , TOT_PERSON
 		          , M_PERSON
 		          , G_PERSON
@@ -1259,8 +1264,10 @@
 		          , #{ROOM_TYPE       }
 		          , #{FLIGHT_IN       }
 		          , #{FLIGHT_IN_HH    }
+		          , #{FLIGHT_IN_MM    }
 		          , #{FLIGHT_OUT      }
 		          , #{FLIGHT_OUT_HH   }
+		          , #{FLIGHT_OUT_MM   }
 		          , #{TOT_PERSON      }
 		          , #{M_PERSON        }
 		          , #{G_PERSON        }
@@ -1421,8 +1428,10 @@
 		     , ROOM_TYPE      = #{ROOM_TYPE       }
 		     , FLIGHT_IN      = #{FLIGHT_IN       }
 		     , FLIGHT_IN_HH   = #{FLIGHT_IN_HH    }
+		     , FLIGHT_IN_MM   = #{FLIGHT_IN_MM    }
 		     , FLIGHT_OUT     = #{FLIGHT_OUT      }
 		     , FLIGHT_OUT_HH  = #{FLIGHT_OUT_HH   }
+		     , FLIGHT_OUT_MM  = #{FLIGHT_OUT_MM   }
 		     , TOT_PERSON     = #{TOT_PERSON      }
 		     , M_PERSON       = #{M_PERSON        }
 		     , G_PERSON       = #{G_PERSON        }
@@ -1829,8 +1838,10 @@ DELETE
                     , CHK_OUT_DT
                     , FLIGHT_IN
                     , FLIGHT_IN_HH
+                    , FLIGHT_IN_MM
                     , FLIGHT_OUT
                     , FLIGHT_OUT_HH
+                    , FLIGHT_OUT_MM
                     , BAS_YY
                     , BAS_YY_SEQ
                     , PROD_SEQ
@@ -1863,8 +1874,10 @@ DELETE
 			          , #{CHK_OUT_DT      }
 			          , #{FLIGHT_IN       }
 			          , #{FLIGHT_IN_HH    }
+			          , #{FLIGHT_IN_MM    }
 			          , #{FLIGHT_OUT      }
 			          , #{FLIGHT_OUT_HH   }
+			          , #{FLIGHT_OUT_MM   }
 			          , ( LEFT(#{CHK_IN_DT},4))
 				      , ( (SELECT A.BAS_YY_SEQ
 										FROM
@@ -1960,8 +1973,10 @@ DELETE
 		     , CHK_OUT_DT     = #{CHK_OUT_DT      }
 		     , FLIGHT_IN      = #{FLIGHT_IN       }
 		     , FLIGHT_IN_HH   = #{FLIGHT_IN_HH    }
+		     , FLIGHT_IN_MM   = #{FLIGHT_IN_MM    }
 		     , FLIGHT_OUT     = #{FLIGHT_OUT      }
 		     , FLIGHT_OUT_HH  = #{FLIGHT_OUT_HH   }
+		     , FLIGHT_OUT_MM  = #{FLIGHT_OUT_MM   }
 		     , BAS_YY         = LEFT(#{CHK_IN_DT},4)
 		     , BAS_YY_SEQ     = (SELECT A.BAS_YY_SEQ
 										FROM
@@ -2317,15 +2332,15 @@ DELETE
 	<select id="sendingCalc" parameterType="BMap" resultType="BMap">
 		<![CDATA[
 			SELECT DISTINCT
-			        B.CODE           AS ITEM_CD			/* 항목코드 */
-				  , B.CODE_NM        AS ITEM_NM			/* 항목명  */
-				  , B.REF_CHR2       AS AMT_SIGN		/* 통화기호 */
-				  , A.USE_AMT        AS PER_AMT		    /* 이용금액 */
-				  , A.CAR_NUM        AS USE_DAY         /* 이용 */
-			      , B.REF_CHR3       AS UNIT_DAY  		/* 사용단위 */
-			      , IFNULL(A.PER_NUM, 0) AS USE_NUM     /* 수량 */
-			      , B.REF_CHR4       AS UNIT_NUM   	    /* 수량단위 */
-			      , IFNULL(A.USE_AMT * A.CAR_NUM * A.PER_NUM, 0) AS TOT_AMT /* 총괄금액 */
+			        B.CODE           			   AS ITEM_CD			/* 항목코드 */
+				  , B.CODE_NM       			   AS ITEM_NM			/* 항목명  */
+				  , B.REF_CHR2    				   AS AMT_SIGN		/* 통화기호 */
+				  , (A.USE_AMT + A.ADD_AMT)        AS PER_AMT		    /* 이용금액 */
+				  , A.CAR_NUM        			   AS USE_DAY         /* 이용 */
+			      , B.REF_CHR3       			   AS UNIT_DAY  		/* 사용단위 */
+			      , IFNULL(A.PER_NUM, 0) 		   AS USE_NUM     /* 수량 */
+			      , B.REF_CHR4       			   AS UNIT_NUM   	    /* 수량단위 */
+			      , IFNULL((A.USE_AMT + A.ADD_AMT) * A.CAR_NUM * A.PER_NUM, 0) AS TOT_AMT /* 총괄금액 */
 				  , ( SELECT COUNT(*)
 			            FROM bc_comm_l AA
 			           WHERE HEAD_CD = '500160' 		/* 야간할증항공편 */

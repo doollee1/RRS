@@ -137,13 +137,18 @@ public class ReserveController {
 		param17.put("REF_CHR1", 01);
 		param17.put("REF_CHR2", "PROD02");
 		
-		model.addAttribute("COM_GBN"        , reserveService.selectGetCommonCodeCom_Gbn(param));			//회원구분
-		model.addAttribute("NUM_GBN"        , reserveService.selectGetCommonCode2(param11));			//인원구분
-		model.addAttribute("FLIGHT_IN"      , reserveService.selectGetCommonCode2(param7));		//출발항공편
-		model.addAttribute("FLIGHT_IN_HH"   , reserveService.selectGetCommonCodeHH(param7));	//출발항공시간
-		model.addAttribute("FLIGHT_OUT"     , reserveService.selectGetCommonCode2(param8));		//도착항공편
-		model.addAttribute("FLIGHT_OUT_HH"  , reserveService.selectGetCommonCodeHH(param7));	//도착항공시간
-		model.addAttribute("ROOM_TYPE"      , reserveService.selectGetCommonCode2(param3));		//객실타입
+		model.addAttribute("COM_GBN"        , reserveService.selectGetCommonCodeCom_Gbn(param));	//회원구분
+		model.addAttribute("NUM_GBN"        , reserveService.selectGetCommonCode2(param11));		//인원구분
+		
+		model.addAttribute("FLIGHT_IN"      , reserveService.selectGetCommonCode2(param7));			//출발항공편
+		model.addAttribute("FLIGHT_IN_HH"   , reserveService.selectGetCommonCodeHH(param7));		//출발항공시간
+		model.addAttribute("FLIGHT_IN_MM"   , reserveService.selectGetCommonCodeMM(param7));		//출발항공시간
+		
+		model.addAttribute("FLIGHT_OUT"     , reserveService.selectGetCommonCode2(param8));			//도착항공편
+		model.addAttribute("FLIGHT_OUT_HH"  , reserveService.selectGetCommonCodeHH(param8));		//도착항공시간
+		model.addAttribute("FLIGHT_OUT_MM"  , reserveService.selectGetCommonCodeMM(param8));		//도착항공시간
+		
+		model.addAttribute("ROOM_TYPE"      , reserveService.selectGetCommonCode2(param3));			//객실타입
 		model.addAttribute("LATE_CHECK_IN"  , reserveService.selectGetCommonCode2(param12));		//LATE_CHECK_IN
 		model.addAttribute("LATE_CHECK_OUT" , reserveService.selectGetCommonCode2(param13));		//LATE_CHECK_OUT
 		model.addAttribute("list_hdng_gbn_g", reserveService.selectGetCommonCode2(param15));		//그리드 상품 일반
@@ -240,8 +245,11 @@ public class ReserveController {
 		
 		model.addAttribute("FLIGHT_IN"         , reserveService.selectGetCommonCode2(param7));		//출발항공편
 		model.addAttribute("FLIGHT_IN_HH"      , reserveService.selectGetCommonCodeHH(param7));	    //출발항공시간
+		model.addAttribute("FLIGHT_IN_MM"      , reserveService.selectGetCommonCodeMM(param7));	    //출발항공시간
+		
 		model.addAttribute("FLIGHT_OUT"        , reserveService.selectGetCommonCode2(param8));		//도착항공편
-		model.addAttribute("FLIGHT_OUT_HH"     , reserveService.selectGetCommonCodeHH(param7));	    //도착항공시간
+		model.addAttribute("FLIGHT_OUT_HH"     , reserveService.selectGetCommonCodeHH(param8));	    //도착항공시간
+		model.addAttribute("FLIGHT_OUT_MM"     , reserveService.selectGetCommonCodeMM(param8));	    //도착항공시간
 		
 		model.addAttribute("ROOM_TYPE"         , reserveService.selectGetCommonCode2(param3));		//객실타입
 		model.addAttribute("LATE_CHECK_IN"     , reserveService.selectGetCommonCode2(param12));		//LATE_CHECK_IN
@@ -327,8 +335,11 @@ public class ReserveController {
 		
 		model.addAttribute("FLIGHT_IN"         , reserveService.selectGetCommonCode2(param7));		//출발항공편
 		model.addAttribute("FLIGHT_IN_HH"      , reserveService.selectGetCommonCodeHH(param7));	    //출발항공시간
+		model.addAttribute("FLIGHT_IN_MM"      , reserveService.selectGetCommonCodeMM(param7));	    //출발항공시간
+		
 		model.addAttribute("FLIGHT_OUT"        , reserveService.selectGetCommonCode2(param8));		//도착항공편
-		model.addAttribute("FLIGHT_OUT_HH"     , reserveService.selectGetCommonCodeHH(param7));	    //도착항공시간
+		model.addAttribute("FLIGHT_OUT_HH"     , reserveService.selectGetCommonCodeHH(param8));	    //도착항공시간
+		model.addAttribute("FLIGHT_OUT_MM"     , reserveService.selectGetCommonCodeMM(param8));	    //도착항공시간
 		
 		model.addAttribute("ROOM_TYPE"         , reserveService.selectGetCommonCode2(param3));		//객실타입
 		model.addAttribute("LATE_CHECK_IN"     , reserveService.selectGetCommonCode2(param12));		//LATE_CHECK_IN

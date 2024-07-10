@@ -10,7 +10,7 @@
 <style>
 .pbtn_default {margin: 0 3px -1px 5px;padding: 3px 10px 3px 10px;border: 1px solid #a9cbeb !important;background: #bdd6ee !important;color: #2269b1;}
 .cmc_txt {text-align:right;}
-.pickUpTable tr:nth-child(3n+1) {border-bottom: 4px double #C1D0DC;}
+.pickUpTable tr:nth-child(3n-1) {border-bottom: 4px double #C1D0DC;}
 .pickUpTable tr:first-child {border: solid 2px #59a5cd;}
 
 </style>
@@ -385,7 +385,7 @@ $(function() {
 	function fn_init(recevicedData) {
 		gv_req_dt     = recevicedData.REQ_DT;
 		gv_seq        = recevicedData.SEQ;
-		gv_tot_person = recevicedData.TOT_PERSON;
+		gv_tot_person = recevicedData.PICK_PERSON;
 		gv_pick_gbn = recevicedData.PICK_GBN;
 		
 		selec_init("01");
@@ -481,6 +481,7 @@ $(function() {
 	function savePickInfo(){
 		var formData = formIdAllToMap('frmPickupFrm');
 		var array = new Array();
+		
 		for (var i = 1; i < parseInt(formData.PRD_CNT) + 1	; i++) {
 			var obj = new Object();
 			obj.ADD_AMT     = parseInt($("#ADD_AMT"+i).val().replaceAll(",", ""));
@@ -494,11 +495,12 @@ $(function() {
 		}
 		
 		if(!validation(array)) return;
+		
 		var param = {"detail"   : array
 				   , "REQ_SEQ"  : parseInt(gv_seq)
 				   , "REQ_DT"   : gv_req_dt
 				   , "PICK_GBN" : $("#PICK_GBN_1").val()
-				   , "PER_NUM"   : parseInt($("#PER_NUM1").val()) + parseInt($("#PER_NUM2").val()) + parseInt($("#PER_NUM3").val()) + parseInt($("#PER_NUM4").val())
+				   , "PER_NUM"  : gv_tot_person 
 				   };
 		if(confirm("<s:message code='confirm.save'/>")){
 			var url = '/reserve/pickupManager.do';
@@ -507,8 +509,9 @@ $(function() {
 					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
 				}else{
 					alert("<s:message code='info.save'/>");
-					p_rtnData = {"PER_NUM"  : parseInt($("#PER_NUM1").val()) + parseInt($("#PER_NUM2").val()) + parseInt($("#PER_NUM3").val()) + parseInt($("#PER_NUM4").val())
+					p_rtnData = {"PER_NUM"  : gv_tot_person
 							   , "PICK_GBN" : param.PICK_GBN};
+					
 					popupClose($('#p_pickUpGbnPopup').data('pid'));
 				}
 			});
@@ -530,17 +533,17 @@ $(function() {
 				    	return false;
 				    }
 		    	}else if(prd_cnt == 2){
-		    		if(parseInt($("#PER_NUM1").val()) + parseInt($("#PER_NUM2").val()) > parseInt(gv_tot_person)){
+		    		if(parseInt($("#PER_NUM2").val()) > parseInt(gv_tot_person)){
 				    	alert("입력하신 인원수가 총인원보다 많습니다.");
 				    	return false;
 				    }
 		    	}else if(prd_cnt == 3){
-		    		if(parseInt($("#PER_NUM1").val()) + parseInt($("#PER_NUM2").val()) + parseInt($("#PER_NUM3").val()) > parseInt(gv_tot_person)){
+		    		if(parseInt($("#PER_NUM3").val()) > parseInt(gv_tot_person)){
 				    	alert("입력하신 인원수가 총인원보다 많습니다.");
 				    	return false;
 				    }
 		    	}else if(prd_cnt == 4){
-		    		if(parseInt($("#PER_NUM1").val()) + parseInt($("#PER_NUM2").val()) + parseInt($("#PER_NUM3").val()) + parseInt($("#PER_NUM4").val()) > parseInt(gv_tot_person)){
+		    		if(parseInt($("#PER_NUM4").val()) > parseInt(gv_tot_person)){
 				    	alert("입력하신 인원수가 총인원보다 많습니다.");
 				    	return false;
 				    }

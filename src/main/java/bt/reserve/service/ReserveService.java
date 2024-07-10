@@ -172,7 +172,6 @@ public class ReserveService {
 	}
 
 	public String selectGetCommonCodeHH(BMap param) throws Exception {
-		
 		String resultValue = "";
 		for (int i=0; i<24; i++) {
 			if (i == 0) {
@@ -189,6 +188,23 @@ public class ReserveService {
 		return resultValue;
 	}
 
+	public String selectGetCommonCodeMM(BMap param) throws Exception {
+		String resultValue = "";
+		for (int i=0; i<60; i++) {
+			if (i == 0) {
+				resultValue += "" + ":" + "-선택-";
+				resultValue += ";00" + ":" + "00";
+			} else {
+				if (i < 10) {
+					resultValue += ";0" + i + ":0" + i;
+				}else{
+					resultValue += ";" + i + ":" + i;
+				}
+			}
+		}
+		return resultValue;
+	}
+	
 	public String selectGetCommonCodeCom_Gbn(BMap param) throws Exception {
 		
 		String resultValue = "";
@@ -250,7 +266,6 @@ public class ReserveService {
 	public List<BMap> invoiceSelectList(BMap param) throws Exception {
 		List<BMap> result = null; 
 		int detailCnt = reserveDao.selectInvoiceListCnt(param);		
-		logger.info("===== 인보이스 건수 : "+detailCnt);
 		
 		if(detailCnt == 0){
 			BMap resultDeptDetail = reserveDao.reserveSelectDetail(param); 
@@ -263,11 +278,6 @@ public class ReserveService {
 			if("04".equals(memGbn)) { //에이전시회원
 				agnGb  = resultDeptDetail.get("AGN_GB") ==  null? "" : resultDeptDetail.getString("AGN_GB");
 			}
-			
-			logger.info(" === 기본 예약일자        : "+reqDt);
-			logger.info(" === 기본 일련번호        : "+seq);
-			logger.info(" === 기본 회원구분       : "+memGbn);						
-			logger.info(" === 기본 에이전시구분   : "+agnGb);
 			
 			//예약상세조회
 			List<BMap> resultAddList = reserveDao.reserveSelectAddList(param);
@@ -574,7 +584,6 @@ public class ReserveService {
 					reserveDao.insertInvoiceDetailInfo(invoiceHeaderMap);
 				
 				} else {
-					
 					logger.info("===== LATE 체크아웃 금액이 없음 =====");
 				}
 			}
@@ -593,7 +602,6 @@ public class ReserveService {
 				
 				//미팅샌딩 계산 리스트
 				List<BMap> sendingCalcList =  reserveDao.sendingCalc(invoiceHeaderMap);
-				
 				int cnt=0;
 				for (BMap sendingCalc : sendingCalcList) {
 																
@@ -610,22 +618,16 @@ public class ReserveService {
 					invoiceHeaderMap.put("UNIT_NUM", sendingCalc.get("UNIT_NUM"));
 					invoiceHeaderMap.put("TOT_AMT",  sendingCalc.get("TOT_AMT"));
 					reserveDao.insertInvoiceDetailInfo(invoiceHeaderMap);
-						
 					
 					//마지막 레코드
 					if(cnt == sendingCalcList.size() -1) { 
-					
 						if(Integer.parseInt(String.valueOf(sendingCalc.get("SURCHARGE_CNT"))) > 0 && "19".equals(invoiceHeaderMap.get("SEND_GBN"))) {  //싱가폴
-							
 							logger.info("===== 야간 미팅샌딩 계산 =====");
-														
 							invoiceHeaderMap.put("SEND_GBN", "19");
-							
 							//야간 미팅샌딩 계산 리스트
 							List<BMap> sendingSubCalcList =  reserveDao.sendingSubCalc(invoiceHeaderMap);
 							
 							for(BMap sendingSubCalc : sendingSubCalcList) {
-																
 								invoiceDSeq++;
 								invoiceHeaderMap.put("ORDER", invoiceDSeq);
 								invoiceHeaderMap.put("ITEM_CD",  sendingSubCalc.get("ITEM_CD"));
@@ -638,16 +640,11 @@ public class ReserveService {
 								invoiceHeaderMap.put("UNIT_NUM", sendingSubCalc.get("UNIT_NUM"));
 								invoiceHeaderMap.put("TOT_AMT",  sendingSubCalc.get("TOT_AMT"));
 								reserveDao.insertInvoiceDetailInfo(invoiceHeaderMap);
-							
 							}
-							
 						}
-					
 					}
-				
 					cnt++;
 				}
-												
 			}
 			
 			// 총 금액 계산 후 삽입
@@ -932,23 +929,13 @@ public class ReserveService {
 	 */
 	public Boolean ReserveManager(BMap reserveInfo, List<BMap> detail) throws Exception{
 		Boolean isValid = true;
-		int feeCnt = 0;
-		int sum_tot = 0;
-		int feeCntList  = 0;
-		
-		
-		DateFormat df2 = new SimpleDateFormat("yyyyMMdd");
-		
         try {
-        	
-// master start //
         	if(reserveInfo.getString("V_FLAG").equals("new")){ //insert
         		reserveDao.insertReserveInfo(reserveInfo);
         	}else if(reserveInfo.getString("V_FLAG").equals("detail")){ //update
         		reserveDao.updateReserveInfo(reserveInfo);
         	}
-// master end //  	    	
-// detail start //
+        	int feeCntList  = 0;
 			for(int i = 0; i < detail.size(); i++){
 				BMap detailMap = new BMap(detail.get(i));
 				detailMap.put("REQ_DT", (String) reserveInfo.get("REQ_DT"));
@@ -970,8 +957,6 @@ public class ReserveService {
 					reserveDao.updateReserveDetailInfo(detailMap);
 				}
 			}
-// detail end //	
-        	
 		} catch (Exception e) {
 		    // TODO: handle exception
 			e.printStackTrace();
@@ -1007,9 +992,6 @@ public class ReserveService {
         	//두날짜사이의 데이터 array 
         	ArrayList<String> data = calcDate(param.getString("CHK_IN_DT") , param.getString("CHK_OUT_DT"));
         	
-        	int firstIndex = 0; 
-        	int lastIndex = data.size() -1;
-        	
         	for (int i = 0; i < data.size(); i++) {
         		BMap paramMap = new BMap();
         		paramMap.put("REQ_DT"  , param.get("REQ_DT"));
@@ -1018,14 +1000,6 @@ public class ReserveService {
         		paramMap.put("DD"      , data.get(i).substring(6));
         		paramMap.put("REG_ID"  , param.get("LOGIN_USER"));
         		paramMap.put("UPD_ID"  , param.get("LOGIN_USER"));
-        		
-//        		if(i == firstIndex){
-//        			paramMap.put("PER_STR" , param.getString("booleanIn"));
-//        		}else if( i == lastIndex){
-//        			paramMap.put("PER_STR" , param.getString("booleanOut"));
-//        		}else{
-//        			paramMap.put("PER_STR" , param.get("R_PERSON"));
-//        		}
         		paramMap.put("PER_STR" , param.get("R_PERSON"));
         		
         		reserveDao.insertRplan(paramMap);
@@ -1173,11 +1147,8 @@ public class ReserveService {
 	 * @throws Exception
 	 */
 	public List<BMap> uploadPdf(HttpServletRequest req) throws Exception{
-		
 		logger.info("========= PDF 첨부파일 업로드 =========");
 		
-		String seq    = req.getParameter("seq");
-		String req_dt = req.getParameter("req_dt");
 		String fuid = "";
 		
 		if (!StringUtils.isNotEmpty(fuid)) {

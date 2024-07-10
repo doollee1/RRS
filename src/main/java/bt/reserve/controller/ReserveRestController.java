@@ -336,6 +336,27 @@ public class ReserveRestController {
 	}
 	
 	/**
+	 * 예약 잔금 조회
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/selectBalAmt.do", method = RequestMethod.POST)
+	public BRespData selectBalAmt(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		BMap paramAmt = new BMap();
+		paramAmt.put("SEQ"   , reqData.get("SEQ"));
+		paramAmt.put("REQ_DT", reqData.get("REQ_DT"));
+		
+		int balAmt = reserveService.selectBalAmt(paramAmt); 
+		
+		BRespData respData = new BRespData();
+		respData.put("bal_amt", balAmt);
+		
+		return respData;
+	}
+	
+	/**
 	 * 예약 현황 상태 조회
 	 * @param reqData
 	 * @param req
@@ -346,18 +367,13 @@ public class ReserveRestController {
 	public BRespData selectReserveStatus(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
 		BMap paramData = new BMap();
 		paramData.put("HEAD_CD", 500020);
-		
-		BMap paramAmt = new BMap();
-		paramAmt.put("SEQ"   , reqData.get("SEQ"));
-		paramAmt.put("REQ_DT", reqData.get("REQ_DT"));
+
 		//paramData.put("CODE"   , Integer.parseInt(String.valueOf(reqData.get("CODE"))));
 		
 		List<BMap> resultStateList = reserveService.selectGetCommonCode(paramData);
-		int balAmt = reserveService.selectBalAmt(paramAmt); 
 		
 		BRespData respData = new BRespData();
 		respData.put("result", resultStateList);
-		respData.put("bal_amt", balAmt);
 		
 		return respData;
 	}

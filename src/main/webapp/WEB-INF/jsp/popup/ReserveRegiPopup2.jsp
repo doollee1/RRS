@@ -110,38 +110,54 @@
 				<tr>
 				    <th><s:message code='reservation.arrFlight'/></th>
 					<td>
-						<select id="FLIGHT_IN" name="FLIGHT_IN" class="cmc_combo text-center" style="width:90px; margin: 0 5px">
-						    <option value="">-<s:message code='system.select'/>-</option>
+						<select id="FLIGHT_IN" name="FLIGHT_IN" class="cmc_combo text-center" style="width:60px; margin: 0 5px">
+						    <option value=""><s:message code='system.select'/></option>
 						    <c:forEach var="i" items="${flight_in}">
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
-						<select id="FLIGHT_IN_HH" name="FLIGHT_IN_HH" class="cmc_combo text-center" style="width:70px;">
-							<option value="">-<s:message code='system.select'/>-</option>
+						<select id="FLIGHT_IN_HH" name="FLIGHT_IN_HH" class="cmc_combo text-center" style="width:60px;">
+							<option value=""><s:message code='system.select'/></option>
 							<c:forEach var="i" begin="0" end="23" step="1">
 								<option value="<fmt:formatNumber value="${i}" minIntegerDigits="2" />">
 									<fmt:formatNumber value="${i}" minIntegerDigits="2" />시
+								</option>
+							</c:forEach>
+						</select>
+						<select id="FLIGHT_IN_MM" name="FLIGHT_IN_MM" class="cmc_combo text-center" style="width:60px;">
+							<option value=""><s:message code='system.select'/></option>
+							<c:forEach var="i" begin="0" end="59" step="1">
+								<option value="<fmt:formatNumber value="${i}" minIntegerDigits="2" />">
+									<fmt:formatNumber value="${i}" minIntegerDigits="2" />분
 								</option>
 							</c:forEach>
 						</select>
 					</td>
 				    <th><s:message code='reservation.depFlight'/></th>
 					<td colspan="3">
-					    <select id="FLIGHT_OUT" name="FLIGHT_OUT" class="cmc_combo text-center" style="width:90px; margin: 0 5px">
-						    <option value="">-<s:message code='system.select'/>-</option>
+					    <select id="FLIGHT_OUT" name="FLIGHT_OUT" class="cmc_combo text-center" style="width:60px; margin: 0 5px">
+						    <option value=""><s:message code='system.select'/></option>
 						    <c:forEach var="i" items="${flight_out}">
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
-						<select id="FLIGHT_OUT_HH" name="FLIGHT_OUT_HH" class="cmc_combo text-center" style="width:70px;">
-							<option value="">-<s:message code='system.select'/>-</option>
+						<select id="FLIGHT_OUT_HH" name="FLIGHT_OUT_HH" class="cmc_combo text-center" style="width:60px;">
+							<option value=""><s:message code='system.select'/></option>
 							<c:forEach var="i" begin="0" end="23" step="1">
 								<option value="<fmt:formatNumber value="${i}" minIntegerDigits="2" />">
 									<fmt:formatNumber value="${i}" minIntegerDigits="2" />시
 								</option>
 							</c:forEach>
 						</select>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<select id="FLIGHT_OUT_MM" name="FLIGHT_OUT_MM" class="cmc_combo text-center" style="width:60px;">
+							<option value=""><s:message code='system.select'/></option>
+							<c:forEach var="i" begin="0" end="59" step="1">
+								<option value="<fmt:formatNumber value="${i}" minIntegerDigits="2" />">
+									<fmt:formatNumber value="${i}" minIntegerDigits="2" />분
+								</option>
+							</c:forEach>
+						</select>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<b style="opacity:70%; color: red; font-weight: bold;">※ 항공기편 시간 정보는 필수가 아닙니다.</b>
 					</td>
 				</tr>
@@ -1517,8 +1533,10 @@ $(function() {
 				    , "ROOM_TYPE"       : $("#ROOM_TYPE").val()
 				    , "FLIGHT_IN"       : $("#FLIGHT_IN").val()
 				    , "FLIGHT_IN_HH"    : $("#FLIGHT_IN_HH").val()
+				    , "FLIGHT_IN_MM"    : $("#FLIGHT_IN_MM").val()
 				    , "FLIGHT_OUT"      : $("#FLIGHT_OUT").val()
 				    , "FLIGHT_OUT_HH"   : $("#FLIGHT_OUT_HH").val()
+				    , "FLIGHT_OUT_MM"   : $("#FLIGHT_OUT_MM").val()
 				    , "TOT_PERSON"      : parseInt($("#TOT_PERSON").val().replaceAll("," , ""))
 				    , "M_PERSON"        : parseInt($("#M_PERSON").val().replaceAll("," , ""))
 				    , "G_PERSON"        : parseInt($("#G_PERSON").val().replaceAll("," , ""))
@@ -1894,7 +1912,10 @@ $(function() {
 			        , "REQ_DT"       : req_dt
 			        , "PCK_PROD_SEQ" : $("#PCK_PROD_SEQ").val()
 			        , "PRC_STS"      : $("#PRC_STS"     ).val()
-			        , "TOT_PERSON"   : $("#TOT_PERSON"  ).val().replaceAll("," , "")
+			        , "PICK_PERSON"  :   parseInt($("#M_PERSON").val())
+			        				   + parseInt($("#G_PERSON").val())
+			        				   + parseInt($("#N_PERSON").val())
+			        				   + parseInt($("#K_PERSON").val())
 			        , "CHK_IN_DT"    : $("#CHK_IN_DT"   ).val().replaceAll(".","")
 			        , "CHK_OUT_DT"   : $("#CHK_OUT_DT"   ).val().replaceAll(".","")
 	                };
@@ -2190,9 +2211,11 @@ $(function() {
 						, '체크인일자'
 						, '체크아웃일자'
 						, '도착항기편'
-						, '도착시간'
+						, '도착HH'
+						, '도착MM'
 						, '출발항기편'
-						, '출발시간'
+						, '출발HH'
+						, '출발MM'
 						, 'early체크인'
 						, 'Late체크아웃'
 						, '객실타입'
@@ -2232,8 +2255,10 @@ $(function() {
 						, { name: 'CHK_OUT_DT'   , width : 84 , align: 'center', editable:true, editoptions:{maxlength:100}}
 						, { name: 'FLIGHT_IN'    , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN}'}}
 						, { name: 'FLIGHT_IN_HH' , width : 74 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_HH}'}}
+						, { name: 'FLIGHT_IN_MM' , width : 74 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_MM}'}}
 						, { name: 'FLIGHT_OUT'   , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT}'}}
 						, { name: 'FLIGHT_OUT_HH', width : 74 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
+						, { name: 'FLIGHT_OUT_MM', width : 74 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_MM}'}}
 						, { name: 'LATE_CHECK_IN' , width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_IN}'}}
 						, { name: 'LATE_CHECK_OUT', width : 80 , align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_OUT}'}}
 						, { name: 'ROOM_TYPE'     , width : 120, align: 'center', editable:true, edittype:"select" , formatter : "select" , editoptions:{value:'${ROOM_TYPE}'}}
@@ -2358,8 +2383,10 @@ $(function() {
 			g_CHK_OUT_DT     = $("#CHK_OUT_DT").val().replaceAll("." , "");
 			g_FLIGHT_IN      = $("#FLIGHT_IN").val();
 			g_FLIGHT_IN_HH   = $("#FLIGHT_IN_HH").val();
+			g_FLIGHT_IN_MM   = $("#FLIGHT_IN_MM").val();
 			g_FLIGHT_OUT     = $("#FLIGHT_OUT").val();
 			g_FLIGHT_OUT_HH  = $("#FLIGHT_OUT_HH").val();
+			g_FLIGHT_OUT_MM  = $("#FLIGHT_OUT_MM").val();
 			g_ADD_FILE_SEQ   = $("#ADD_FILE_SEQ").val();
 			g_LATE_CHECK_IN  = $("#LATE_CHECK_IN").val();	//early 체크인
 			g_LATE_CHECK_OUT = $("#LATE_CHECK_OUT").val();	//late 체크아웃
@@ -2378,8 +2405,10 @@ $(function() {
 					, "CHK_OUT_DT"     : g_CHK_OUT_DT 
 					, "FLIGHT_IN"      : g_FLIGHT_IN 
 					, "FLIGHT_IN_HH"   : g_FLIGHT_IN_HH 
+					, "FLIGHT_IN_MM"   : g_FLIGHT_IN_MM 
 					, "FLIGHT_OUT"     : g_FLIGHT_OUT 
 					, "FLIGHT_OUT_HH"  : g_FLIGHT_OUT_HH 
+					, "FLIGHT_OUT_MM"  : g_FLIGHT_OUT_MM 
 					, "ADD_FILE_SEQ"   : g_ADD_FILE_SEQ 
 					, "HDNG_GBN"       : g_HDNG_GBN 
 					, "LATE_CHECK_IN"  : g_LATE_CHECK_IN 
@@ -2427,8 +2456,10 @@ $(function() {
 		g_CHK_OUT_DT     = $("#CHK_OUT_DT").val().replaceAll("." , "");		//체크아웃일자
 		g_FLIGHT_IN      = $("#FLIGHT_IN").val();		//도착항공기
 		g_FLIGHT_IN_HH   = $("#FLIGHT_IN_HH").val();	//도착시간
+		g_FLIGHT_IN_MM   = $("#FLIGHT_IN_MM").val();	//도착분
 		g_FLIGHT_OUT     = $("#FLIGHT_OUT").val();		//출발항공기
 		g_FLIGHT_OUT_HH  = $("#FLIGHT_OUT_HH").val();	//출발시간
+		g_FLIGHT_OUT_MM  = $("#FLIGHT_OUT_MM").val();	//출발분
 		g_ADD_FILE_SEQ   = $("#ADD_FILE_SEQ").val();	//항공이미지
 		g_HDNG_GBN       = $("#ADD_HDNG_GBN").val();	//패키지상품
 		g_LATE_CHECK_IN  = $("#LATE_CHECK_IN").val();	//early 체크인
@@ -2447,8 +2478,10 @@ $(function() {
 					"CHK_OUT_DT"     : g_CHK_OUT_DT , 
 					"FLIGHT_IN"      : g_FLIGHT_IN , 
 					"FLIGHT_IN_HH"   : g_FLIGHT_IN_HH , 
+					"FLIGHT_IN_MM"   : g_FLIGHT_IN_MM , 
 					"FLIGHT_OUT"     : g_FLIGHT_OUT , 
 					"FLIGHT_OUT_HH"  : g_FLIGHT_OUT_HH , 
+					"FLIGHT_OUT_MM"  : g_FLIGHT_OUT_MM , 
 					"ADD_FILE_SEQ"   : g_ADD_FILE_SEQ , 
 					"HDNG_GBN"       : g_HDNG_GBN , 
 					"LATE_CHECK_IN"  : g_LATE_CHECK_IN , 

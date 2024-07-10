@@ -108,10 +108,10 @@ $(function() {
 		
 		//02(예약요청-멤버), 04(예약신청), 05(입금대기), 06(예약확정)
 		if(prc_sts == "02" || prc_sts == "04" || prc_sts == "05" || prc_sts == "06"){  
-			$("#btn_send, #btn_preview").attr("disabled",true);
+			$("#btn_send").attr("disabled",true);
 		//01(예약요청-일반), 03(예약가능), 07(환불요청)
 		}else if(prc_sts == "01" || prc_sts == "03" || prc_sts == "07"){ 
-			$("#POP_EXP_DT, #POP_INV_REG_DT, #btn_send, #btn_preview , #btn_del ").attr("disabled",true);
+			$("#POP_EXP_DT, #POP_INV_REG_DT, #btn_send, #btn_del ").attr("disabled",true);
 		}
 		//08(환불완료), 09(예약취소), 10(입금완료)
 		else if(prc_sts == "08" || prc_sts == "09" || prc_sts == "10"){ 
