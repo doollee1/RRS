@@ -322,12 +322,12 @@
 				<tr>
 				    <th><s:message code='reservation.expdt'/></th><!-- 예약기한 -->
 				    <td>
-				    <input type="text" class="cmc_txt"  id="EXP_DT" name="EXP_DT" class="text-center" data-type="date" style="width:120px; margin:0 5px" readonly="readonly"/>
+				    <input type="text" class="cmc_txt text-center"  id="EXP_DT" name="EXP_DT" data-type="date" style="width:120px; margin:0 5px" readonly="readonly"/>
 				    </td>
 				   
 				    <th><s:message code='reservation.depositDate'/></th><!-- 예약금일금일자 -->
 				    <td>
-				        <input type="text" class="cmc_txt"  id="DEP_IN_DT" name="DEP_IN_DT" data-type="date" class="text-center" style="width:145px; margin:0 5px" readonly="readonly"/>
+				        <input type="text" class="cmc_txt text-center"  id="DEP_IN_DT" name="DEP_IN_DT" data-type="date" style="width:145px; margin:0 5px" readonly="readonly"/>
 				    </td>
 				    
 					
@@ -351,7 +351,7 @@
 				    
 				    <th>입금예약상태</th>
 				    <td>
-						<input type="text" id="PRC_STS_NM" name="PRC_STS_NM" style="width:100px; margin: 0 5px" readonly/>
+						<input type="text" class="text-center" id="PRC_STS_NM" name="PRC_STS_NM" style="width:100px; margin: 0 5px" readonly/>
 					    <button type="button" class="btn btn-primary openPop" id="changeStatus" style="opacity:80%; width:70px;">상태변경</button>
 				    </td>
 				</tr>

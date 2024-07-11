@@ -19,6 +19,7 @@ public class GlobalExceptionHandlerAdvice {
 	@ResponseBody
 	public BRespData handleRuntimeException(Exception e) {
 		logger.error(e.getLocalizedMessage());
+		e.printStackTrace();
 		
 		ResponseStatus status = ResponseStatus.Internal_Server_Error;
 		status.setDescription(e.getLocalizedMessage());

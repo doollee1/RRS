@@ -38,9 +38,6 @@
 		   	     	<th>예약자한글명</th>
 					<td class="medium_td" colspan="5">
 						<input type="text" id="REQ_HAN_NM" name="REQ_HAN_NM" class="cmc_txt text-center" style="width:160px; margin: 0 5px"/>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<button type="button" class="btn btn-warning" id="btn_search" style="opacity:80%; width:115px; height:25px">회원찾기</button>
-						<button type="button" class="btn btn-danger" id="btn_adduser" style="opacity:80%; width:115px; height:25px">회원가입</button>	
 					</td>
 				</tr>
 				
@@ -110,38 +107,54 @@
 				<tr>
 				    <th><s:message code='reservation.arrFlight'/></th>
 					<td>
-						<select id="FLIGHT_IN" name="FLIGHT_IN" class="cmc_combo text-center" style="width:90px; margin: 0 5px">
-						    <option value="">-<s:message code='system.select'/>-</option>
+						<select id="FLIGHT_IN" name="FLIGHT_IN" class="cmc_combo text-center" style="width:60px; margin: 0 5px">
+						    <option value=""><s:message code='system.select'/></option>
 						    <c:forEach var="i" items="${flight_in}">
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
-						<select id="FLIGHT_IN_HH" name="FLIGHT_IN_HH" class="cmc_combo text-center" style="width:70px;">
-							<option value="">-<s:message code='system.select'/>-</option>
+						<select id="FLIGHT_IN_HH" name="FLIGHT_IN_HH" class="cmc_combo text-center" style="width:60px;">
+							<option value=""><s:message code='system.select'/></option>
 							<c:forEach var="i" begin="0" end="23" step="1">
 								<option value="<fmt:formatNumber value="${i}" minIntegerDigits="2" />">
 									<fmt:formatNumber value="${i}" minIntegerDigits="2" />시
+								</option>
+							</c:forEach>
+						</select>
+						<select id="FLIGHT_IN_MM" name="FLIGHT_IN_MM" class="cmc_combo text-center" style="width:60px;">
+							<option value=""><s:message code='system.select'/></option>
+							<c:forEach var="i" begin="0" end="59" step="1">
+								<option value="<fmt:formatNumber value="${i}" minIntegerDigits="2" />">
+									<fmt:formatNumber value="${i}" minIntegerDigits="2" />분
 								</option>
 							</c:forEach>
 						</select>
 					</td>
 				    <th><s:message code='reservation.depFlight'/></th>
 					<td colspan="3">
-					    <select id="FLIGHT_OUT" name="FLIGHT_OUT" class="cmc_combo text-center" style="width:90px; margin: 0 5px">
-						    <option value="">-<s:message code='system.select'/>-</option>
+					    <select id="FLIGHT_OUT" name="FLIGHT_OUT" class="cmc_combo text-center" style="width:60px; margin: 0 5px">
+						    <option value=""><s:message code='system.select'/></option>
 						    <c:forEach var="i" items="${flight_out}">
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
-						<select id="FLIGHT_OUT_HH" name="FLIGHT_OUT_HH" class="cmc_combo text-center" style="width:70px;">
-							<option value="">-<s:message code='system.select'/>-</option>
+						<select id="FLIGHT_OUT_HH" name="FLIGHT_OUT_HH" class="cmc_combo text-center" style="width:60px;">
+							<option value=""><s:message code='system.select'/></option>
 							<c:forEach var="i" begin="0" end="23" step="1">
 								<option value="<fmt:formatNumber value="${i}" minIntegerDigits="2" />">
 									<fmt:formatNumber value="${i}" minIntegerDigits="2" />시
 								</option>
 							</c:forEach>
 						</select>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<select id="FLIGHT_OUT_MM" name="FLIGHT_OUT_MM" class="cmc_combo text-center" style="width:60px;">
+							<option value=""><s:message code='system.select'/></option>
+							<c:forEach var="i" begin="0" end="59" step="1">
+								<option value="<fmt:formatNumber value="${i}" minIntegerDigits="2" />">
+									<fmt:formatNumber value="${i}" minIntegerDigits="2" />분
+								</option>
+							</c:forEach>
+						</select>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<b style="opacity:70%; color: red; font-weight: bold;">※ 항공기편 시간 정보는 필수가 아닙니다.</b>
 					</td>
 				</tr>
@@ -199,11 +212,9 @@
 							
 							<p style="background-color: ;font-size: 12px; font-weight: bold; opacity:80%; margin:0 5px"><mark>멤버</mark></p>
 						    <input type="text" id="M_PERSON" name="M_PERSON" style="width:30px; text-align: right; margin:0 -5px" value="0" maxlength="3" class="withComma"/>&nbsp;명 &nbsp;
-						    <input type="hidden" id="M_PERSON_HIDDEN" name="M_PERSON_HIDDEN">
 							
 							<p style="font-size: 12px; font-weight: bold; opacity:80%;"><mark>&nbsp;일반</mark></p>
 						    <input type="text" id="G_PERSON" name="G_PERSON" style="width:30px; text-align: right;" value="0" maxlength="3" class="withComma"/>명 &nbsp;
-						    <input type="hidden" id="G_PERSON_HIDDEN" name="G_PERSON_HIDDEN">
 						</div>
 					</td>
 					<th><s:message code='reservation.personalNoRound'/></th>
@@ -211,15 +222,12 @@
 						<div style="display:inline-flex;">
 							<p style="font-size: 12px; font-weight: bold; opacity:80%;"><mark>&nbsp;성인</mark></p>
 						    <input type="text" id="N_PERSON" name="N_PERSON" style="width:15px; text-align: right;" value="0" maxlength="3" class="withComma"/>명 &nbsp;
-						    <input type="hidden" id="N_PERSON_HIDDEN" name="N_PERSON_HIDDEN">
 						    
 						    <p style="font-size: 12px; font-weight: bold; opacity:80%;"><mark>소아</mark></p>
 						    <input type="text" id="K_PERSON" name="K_PERSON" style="width:15px; text-align: right;" value="0" maxlength="3" class="withComma"/>명 &nbsp;
-						    <input type="hidden" id="K_PERSON_HIDDEN" name="K_PERSON_HIDDEN">
 						    
 						    <p style="font-size: 12px; font-weight: bold; opacity:80%;"><mark>영유아</mark></p>
 						    <input type="text" id="I_PERSON" name="I_PERSON" style="width:15px; text-align: right;" value="0" maxlength="3" class="withComma"/>명
-						    <input type="hidden" id="I_PERSON_HIDDEN" name="I_PERSON_HIDDEN">
 						</div>
 					</td>
 				    <th>총 인 원</th>
@@ -306,12 +314,12 @@
 				<tr>
 				    <th><s:message code='reservation.expdt'/></th><!-- 예약기한 -->
 				    <td>
-				    <input type="text" class="cmc_txt"  id="EXP_DT" name="EXP_DT" class="text-center" data-type="date" style="width:120px; margin:0 5px" readonly="readonly"/>
+				    <input type="text" class="cmc_txt text-center"  id="EXP_DT" name="EXP_DT" data-type="date" style="width:120px; margin:0 5px" readonly="readonly"/>
 				    </td>
 				   
 				    <th><s:message code='reservation.depositDate'/></th><!-- 예약금일금일자 -->
 				    <td>
-				        <input type="text" class="cmc_txt"  id="DEP_IN_DT" name="DEP_IN_DT" data-type="date" class="text-center" style="width:145px; margin:0 5px" readonly="readonly"/>
+				        <input type="text" class="cmc_txt text-center"  id="DEP_IN_DT" name="DEP_IN_DT" data-type="date" style="width:145px; margin:0 5px" readonly="readonly"/>
 				    </td>
 				    
 					
@@ -335,7 +343,7 @@
 				    
 				    <th>입금예약상태</th>
 				    <td>
-						<input type="text" id="PRC_STS_NM" name="PRC_STS_NM" style="width:100px; margin: 0 5px" readonly/>
+						<input type="text" class="text-center" id="PRC_STS_NM" name="PRC_STS_NM" style="width:100px; margin: 0 5px" readonly/>
 					    <button type="button" class="btn btn-primary openPop" id="changeStatus" style="opacity:80%; width:70px;">상태변경</button>
 				    </td>
 				</tr>
@@ -352,18 +360,6 @@
 						</c:forEach>
 					</td>
 				</tr>
-				<tr>
-					<td style="height:20px;" colspan="5">
-						<b id="advice1" style="opacity:90%; color: green; font-weight: bold;">&nbsp;※ [예약등록]에서 미팅샌딩 [<b style="color: red; font-weight: bold;">등록</b>], 
-						인보이스 [<b style="color: red; font-weight: bold;">생성</b>], [<b style="color: red; font-weight: bold;">상태변경</b>], 
-						[<b style="color: red; font-weight: bold;">입금관리</b>]는 <b style="color: red; font-weight: bold;">저장</b> 후 예약상세에서 진행해주세요.</b>
-						
-						<b id="advice2" style="opacity:90%; color: green; font-weight: bold;">&nbsp;※ [예약상세]에서  <b style="color: red; font-weight: bold;">인원내역</b> 수정 시 
-						<b style="color: red; font-weight: bold;">동반자정보</b>에서 
-						[<b style="color: red; font-weight: bold;">행추가</b>], 
-						[<b style="color: red; font-weight: bold;">행삭제</b>]를 통하여 진행해주세요.</b>
-					</td>
-				</tr>
 			</table>
 			
 			<!-- 그리드 시작 -->
@@ -372,11 +368,6 @@
 					<div class="ct_grid_top_left" style="align:left; width:10%; float:left; margin-bottom:-6px; padding-top:1px; padding-bottom:-6px; ">
 						<b style="color: #e2703a; font-weight: bold;">동반자정보</b>
 					</div>
-					<div class="ct_grid_top_right" style="right; width:87%; float:left; margin-bottom:-6px; padding-top:1px; padding-bottom:-6px; ">
-						<button type="button" class="btn btn-default" id="btn_com_add"     style="align:right">동반자 자동생성</button>
-						<button type="button" class="btn btn-default" id="btn_List_addRow" style="align:right"><s:message code='button.addRow'/></button>
-		            	<button type="button" class="btn btn-default" id="btn_List_delRow" style="align:right"><s:message code='button.delRow'/></button>
-		            </div>
 				</div>
 				<div class="pop_grid_wrap">
 					<table id="reserveGrid"  ></table>
@@ -439,18 +430,6 @@ $(function() {
 		width: 1020,
 		modal : true,
 		buttons : {
-			'<s:message code='system.save'/>' : {
-				text: '<s:message code='system.save'/>',
-				id : 'save',
-				click: function() {
-				}
-			},
-			'<s:message code='button.delete'/>' :{
-				text: '<s:message code='button.delete'/>',
-				id : 'delete',
-				click:function(){
-				}
-			},
 			'<s:message code='button.close'/>' : {
 				text: '<s:message code='button.close'/>',
 				click: function() {
@@ -491,8 +470,8 @@ $(function() {
 		//체크인 일자 / 체크아웃 일자
 		$("#PICK_IN, #PICK_OUT").attr("disabled",true);
 		//도착항공기편 / 출발항공기편
-		$("#FLIGHT_IN, #FLIGHT_IN_HH").attr("disabled",true);
-		$("#FLIGHT_OUT, #FLIGHT_OUT_HH").attr("disabled",true);
+		$("#FLIGHT_IN, #FLIGHT_IN_HH, #FLIGHT_IN_MM").attr("disabled",true);
+		$("#FLIGHT_OUT, #FLIGHT_OUT_HH, #FLIGHT_OUT_MM").attr("disabled",true);
 		//early체크인 / late체크아웃
 		$("#LATE_CHECK_IN, #LATE_CHECK_OUT").attr("disabled",true);
 		//픽업차량 도착 / 픽업차량 출발
@@ -515,22 +494,15 @@ $(function() {
 		$("#REMARK").attr("disabled",true);
 		//동반자정보 / 자동생성 / 행추가 / 행삭제
 		$("#btn_com_add, #btn_List_addRow, #btn_List_delRow").attr("disabled",true);
-		//동반자정보 그리드
 		//저장 / 삭제
 		$("#save, #delete").attr("disabled",true);
 
 		$('#REQ_DT').val($.datepicker.formatDate('yy.mm.dd', new Date())).attr("readonly" , true); // 예약일자 오늘 값으로 셋팅 (변경불가)
 		$("#TWIN_CNT").val("0");
 		$("#KING_CNT").val("0");
-		$("#btn_adduser").hide();
-		
-		$("#btn_search").attr("disabled",true);
 		$("#changeStatus").attr("disabled",true);
-	    $(".ui-dialog-title").text('<s:message code='reservation.detail'/>'); // [예약상세] 타이틀 삽입
-	    $("#btn_search").hide(); // 아이디 찾기 버튼 숨김
-	    $("#advice1").hide();
-		$("#advice2").hide();
-		$("#btn_adduser").hide();
+		$("#changeStatus").hide();
+	    $(".ui-dialog-title").text('예약상세보기'); // [예약상세] 타이틀 삽입
 
 	    initSelect(); /* *********** 예약 상세내역 조회 *********** */
 
@@ -1057,9 +1029,11 @@ $(function() {
 						, '체크인일자'
 						, '체크아웃일자'
 						, '도착항기편'
-						, '도착시간'
+						, '도착HH'
+						, '도착MM'
 						, '출발항기편'
-						, '출발시간'
+						, '출발HH'
+						, '출발MM'
 						, 'early체크인'
 						, 'Late체크아웃'
 						, '객실타입'
@@ -1068,9 +1042,9 @@ $(function() {
 					];
 
 		var colModel = [
-						  { name: 'REQ_DT'       , width : 24 , align: 'center', hidden:true, editoptions:{readonly: true}}
-						, { name: 'SEQ'          , width : 24 , align: 'center', hidden:true, editoptions:{readonly: true}}
-						, { name: 'DSEQ'         , width : 24 , align: 'center', editable:false, editoptions:{readonly: true}}
+						  { name: 'REQ_DT'       , width : 24 , align: 'center', hidden:true}
+						, { name: 'SEQ'          , width : 24 , align: 'center', hidden:true}
+						, { name: 'DSEQ'         , width : 24 , align: 'center', editable:false}
 						, { name: 'COM_GBN'      , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${COM_GBN}'}}
 						, { name: 'NUM_GBN'      , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${NUM_GBN}'}}
 						, { name: 'HDNG_GBN'     , width : 120, align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${list_hdng_gbn}'}}
@@ -1081,29 +1055,29 @@ $(function() {
 								var fileSeq = rowObject.ADD_FILE_SEQ;
 								
 								if (parseInt(fileSeq) > 0) {
-									
 									se = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveSelectAirlineImg('"+fileSeq+"');\">미리보기</button>";	
 								} else {
-									
 									se = "<p class=\"\">이미지없음</p>";
 								}			  			
 								return se;
 							}
 						}
-						, { name: 'COM_HAN_NM'   , width : 120, align: 'center', editable:false, editoptions:{maxlength:100}}
-						, { name: 'COM_ENG_NM'   , width : 120, align: 'center', editable:false, editoptions:{maxlength:100}}
-						, { name: 'COM_TEL_NO'   , width : 120, align: 'center', editable:false, formatter:telFormat, editoptions:{maxlength:100}}
-						, { name: 'CHK_IN_DT'    , width : 84 , align: 'center', editable:false, editoptions:{maxlength:100}}
-						, { name: 'CHK_OUT_DT'   , width : 84 , align: 'center', editable:false, editoptions:{maxlength:100}}
-						, { name: 'FLIGHT_IN'    , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN}'}}
-						, { name: 'FLIGHT_IN_HH' , width : 74 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_HH}'}}
-						, { name: 'FLIGHT_OUT'   , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT}'}}
-						, { name: 'FLIGHT_OUT_HH', width : 74 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
+						, { name: 'COM_HAN_NM'    , width : 120, align: 'center', editable:false}
+						, { name: 'COM_ENG_NM'    , width : 120, align: 'center', editable:false}
+						, { name: 'COM_TEL_NO'    , width : 120, align: 'center', editable:false, formatter:telFormat}
+						, { name: 'CHK_IN_DT'     , width : 84 , align: 'center', editable:false}
+						, { name: 'CHK_OUT_DT'    , width : 84 , align: 'center', editable:false}
+						, { name: 'FLIGHT_IN'     , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN}'}}
+						, { name: 'FLIGHT_IN_HH'  , width : 74 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_HH}'}}
+						, { name: 'FLIGHT_IN_MM'  , width : 74 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_IN_MM}'}}
+						, { name: 'FLIGHT_OUT'    , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT}'}}
+						, { name: 'FLIGHT_OUT_HH' , width : 74 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_HH}'}}
+						, { name: 'FLIGHT_OUT_MM' , width : 74 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${FLIGHT_OUT_MM}'}}
 						, { name: 'LATE_CHECK_IN' , width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_IN}'}}
 						, { name: 'LATE_CHECK_OUT', width : 80 , align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${LATE_CHECK_OUT}'}}
 						, { name: 'ROOM_TYPE'     , width : 120, align: 'center', editable:false, edittype:"select" , formatter : "select" , editoptions:{value:'${ROOM_TYPE}'}}
-						, { name: 'CONFIRM_NO'    , width : 120, align: 'center', editable:false, editoptions:{maxlength:100}}
-						, { name: 'STATUS_V'      , width : 80 , align: 'center', editable:false, editoptions:{readonly: true}}
+						, { name: 'CONFIRM_NO'    , width : 120, align: 'center', editable:false}
+						, { name: 'STATUS_V'      , width : 80 , align: 'center', editable:false}
 					];
 		
 		var gSetting = {
@@ -1116,7 +1090,7 @@ $(function() {
 				shrinkToFit : false,
 				autowidth : true,
 				queryPagingGrid : false, // 쿼리 페이징 처리 여부
-				height : 90
+				height : 125
 		};
 		
 		// 그리드 생성 및 초기화
