@@ -379,7 +379,7 @@ public class ReserveRestController {
 	}
 	
 	/**
-	 * 미팅샌딩 데이터 저장 및 업데이트 
+	 * 상태변경 업데이트
 	 * @param reqData
 	 * @param req
 	 * @return
@@ -387,36 +387,13 @@ public class ReserveRestController {
 	 */
 	@RequestMapping(value = "/updateReserveStatus.do", method = RequestMethod.POST)
 	@ResponseBody
-	public BRespData updateInvRegDt(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
-		BRespData respData = new BRespData();
-		
-		BMap paramData = new BMap();
-		paramData.put("SEQ"          , reqData.get("SEQ"));
-		paramData.put("REQ_DT"       , (String)reqData.get("REQ_DT"));
-		paramData.put("CHG_PRC_STS"  , reqData.get("CHG_PRC_STS"));
-		paramData.put("LOGIN_USER"   , LoginInfo.getUserId());
-		
-		if(!reserveService.updateInvRegDt(paramData)){
-			respData.put("dup", "Y");
-		};
-		return respData;
-	}
-	
-	/**
-	 * 미팅샌딩 데이터 저장 및 업데이트 
-	 * @param reqData
-	 * @param req
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/updateInvRegDt.do", method = RequestMethod.POST)
-	@ResponseBody
 	public BRespData updateReserveStatus(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BRespData respData = new BRespData();
 		
 		BMap paramData = new BMap();
 		paramData.put("SEQ"          , reqData.get("SEQ"));
 		paramData.put("REQ_DT"       , (String)reqData.get("REQ_DT"));
+		paramData.put("CHG_PRC_STS"  , reqData.get("CHG_PRC_STS"));
 		paramData.put("LOGIN_USER"   , LoginInfo.getUserId());
 		
 		if(!reserveService.updateReserveStatus(paramData)){

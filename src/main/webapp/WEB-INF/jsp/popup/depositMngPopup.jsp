@@ -14,7 +14,6 @@
 <div id="p_pickUpGbnPopup">
 	<form id="frmPickupFrm" action="#">
 		<div id="pop_ct_form_wrap">
-												
 			<table class="pop_tblForm">
 				<colgroup>
 					<col width="10%" />
@@ -99,6 +98,7 @@
 $(function() {
 	var gv_req_dt;  //요청일자
 	var gv_seq;		//일련번호
+	var gv_prc_sts; //입금예약상태
 	
 	$('#p_pickUpGbnPopup').dialog({
 		title :'<s:message code='deposit.mng'/>',   //입금관리
@@ -206,7 +206,6 @@ $(function() {
 			return false;
 	    }
 	    
-	    
 		var url = "/deposit/registDepositAjax.do";
 	    var param = { "SEQ"         : gv_seq
 			        , "REQ_DT"      : gv_req_dt
@@ -214,6 +213,7 @@ $(function() {
 			        , "PAY_DT" 		: pay_dt
 			        , "PAY_AMT"     : pay_amt
 			        , "DCT_AMT"     : dct_amt
+			        , "PRC_STS"     : gv_prc_sts
 	    }; 
 			        
 	    fn_ajax(url, true, param, function(data, xhr){
@@ -250,11 +250,11 @@ $(function() {
 	function fn_init(recevicedData) {
 		gv_req_dt     = recevicedData.REQ_DT;
 		gv_seq        = recevicedData.SEQ;
-		
+		gv_prc_sts    = recevicedData.PRC_STS;
 		
 		//예약상태가 입금완료(10) 일 경우 입금등록버튼 비활성화
-		if(!fn_empty(recevicedData.PRC_STS)){
-			if(recevicedData.PRC_STS == "08" || recevicedData.PRC_STS == "09" || recevicedData.PRC_STS == "10"){ //환불요청(08), 예약취소(09), 입금완료(10)
+		if(!fn_empty(gv_prc_sts)){
+			if(gv_prc_sts == "08" || gv_prc_sts == "09" || gv_prc_sts == "10"){ //환불요청(08), 예약취소(09), 입금완료(10)
 				$(".ui-dialog-buttonset > button#save").attr("disabled", true);
 				$(".ui-dialog-buttonset > button#delete").attr("disabled", true);
 				$("#btn_payreg").attr("disabled",true);				

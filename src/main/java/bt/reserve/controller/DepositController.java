@@ -159,14 +159,14 @@ public class DepositController {
 		logger.info("======== param : "+reqData);
 		
 		BMap paramData = new BMap();
-		paramData.put("REQ_DT"     , (String) reqData.get("REQ_DT"));
-		paramData.put("SEQ"  	   , (String) reqData.get("SEQ"));		
-		paramData.put("PAY_TYPE"   , (String) reqData.get("PAY_TYPE"));
-		paramData.put("PAY_DT"   , (String) reqData.get("PAY_DT"));
+		paramData.put("REQ_DT"    , (String) reqData.get("REQ_DT"));
+		paramData.put("SEQ"  	  , (String) reqData.get("SEQ"));		
+		paramData.put("PAY_TYPE"  , (String) reqData.get("PAY_TYPE"));
+		paramData.put("PAY_DT"    , (String) reqData.get("PAY_DT"));
 		paramData.put("PAY_AMT"   , (String) reqData.get("PAY_AMT"));
 		paramData.put("DCT_AMT"   , (String) reqData.get("DCT_AMT"));
-		paramData.put("LOGIN_USER" , LoginInfo.getUserId());
-		
+		paramData.put("LOGIN_USER", LoginInfo.getUserId());
+		paramData.put("PRC_STS"   , (String) reqData.get("PRC_STS"));
 		//입금등록
 		BMap resultRegist = depositService.registDeposit(paramData);
 		

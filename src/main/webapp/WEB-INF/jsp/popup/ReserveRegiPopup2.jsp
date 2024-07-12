@@ -440,7 +440,7 @@ $(function() {
 	var g_ROOM_TYPE;
 	var g_CONFIRM_NO;
 	var g_STATUS_V;
-	
+
 	/*******************************************************
 	 *-----------------------------------------------------*
 	 * @Subject : 팝업 창 기본 설정
@@ -1961,7 +1961,7 @@ $(function() {
 	    var pid = "p_pickUpGbnPopup";
 	    var param = { "SEQ"          : seq
 			        , "REQ_DT"       : req_dt
-			        , "PRC_STS"      : $("#PRC_STS"     ).val()
+			        , "PRC_STS"      : $("#PRC_STS").val()
 			        };
 	    
 		popupOpen(url, pid, param, function(data) {

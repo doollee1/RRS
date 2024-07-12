@@ -82,12 +82,12 @@ public class DepositService {
 		
 		//비용헤더정보 조회
 		BMap depositHdrInfo = this.selectDepositHdrInfo(param);
-		long depAmt = depositHdrInfo.get("DEP_AMT") == null? 0 : Long.parseLong(depositHdrInfo.getString("DEP_AMT"));		
-		long dctAmt = param.get("DCT_AMT") == null? 0 : Long.parseLong(param.getString("DCT_AMT"));				
-		String payDt   =  param.get("PAY_DT") == null? "" : param.getString("PAY_DT");
-		String payType =  param.get("PAY_TYPE") == null? "" : param.getString("PAY_TYPE"); 
-		long payAmt = (param.get("PAY_AMT") == null? 0 : Long.parseLong(param. getString("PAY_AMT")));
-		
+		long depAmt    = depositHdrInfo.get("DEP_AMT") == null? 0 : Long.parseLong(depositHdrInfo.getString("DEP_AMT"));		
+		long dctAmt    = param.get("DCT_AMT") == null? 0 : Long.parseLong(param.getString("DCT_AMT"));				
+		String payDt   = param.get("PAY_DT") == null? "" : param.getString("PAY_DT");
+		String payType = param.get("PAY_TYPE") == null? "" : param.getString("PAY_TYPE"); 
+		long payAmt    = (param.get("PAY_AMT") == null? 0 : Long.parseLong(param. getString("PAY_AMT")));
+		String prc_sts = (String) param.get("PRC_STS");
 		
 		logger.info("===== 입금일자 : "+payDt);
 		logger.info("===== 입금유형 : "+ ("01".equals(payType)?"입금" : ("02".equals(payType)?"환급" : "예약")));	
@@ -220,19 +220,35 @@ public class DepositService {
 			}
 				
 		} else { //예약상태의 누적금액이 예약금액보다 작을 경우
+			//예약상태가 환불요청(07)인 경우
 			
-			//예약메인
-			param.put("PRC_STS", "05");  //입금대기(05)
-			int updateRslt = depositDao.updatePrcSts(param);			
-			logger.info("==== 입금대기 상태로 변경 결과 : "+updateRslt);
-			
-			
-			if(updateRslt < 1) {
+			if(prc_sts.equals("07")) {
+				param.put("PRC_STS", "08");
+				int updateRslt = depositDao.updatePrcSts(param);
+				logger.info("==== 환불완료 상태로 변경 결과 : "+updateRslt);
 				
-				logger.info("===== 입금대기 상태로 변경실패 =====");
+				if(updateRslt < 1) {
+					
+					logger.info("===== 환불완료 상태로 변경실패 =====");
+					
+					resultRegist.put("RESULT", " FAIL");
+					return resultRegist;
+				}
+			}
+			else {
+				//예약메인
+				param.put("PRC_STS", "05");  //입금대기(05)
+				int updateRslt = depositDao.updatePrcSts(param);			
+				logger.info("==== 입금대기 상태로 변경 결과 : "+updateRslt);
 				
-				resultRegist.put("RESULT", " FAIL");
-				return resultRegist;
+				
+				if(updateRslt < 1) {
+					
+					logger.info("===== 입금대기 상태로 변경실패 =====");
+					
+					resultRegist.put("RESULT", " FAIL");
+					return resultRegist;
+				}
 			}
 			
 		}

@@ -1696,7 +1696,7 @@
 
 	<update id="updateInvoiceDetailItem" parameterType="BMap">
 		UPDATE TB_REQ_FEE
-		   SET EXP_DT   = #{EXP_DT}
+		   SET EXP_DT  = #{EXP_DT}
 		     , DEP_AMT = #{DEP_AMT}
 		     , UPD_DTM = NOW()
 		     , UPD_ID  = #{LOGIN_USER}
