@@ -919,7 +919,7 @@ $(function() {
 		var today = String(day.getFullYear()) + String(("0" + (1 + day.getMonth())).slice(-2)) + String(("0" + day.getDate()).slice(-2)); 
 
 		if (fn_empty($("#INV_REG_DT").val())) {
-			var url4 = "/reserve/updateReserveStatus.do";
+			var url4 = "/reserve/updateInvRegDt.do";
 			var param4 = {
 				"SEQ" : seq, 	
 				"REQ_DT" : req_dt,
