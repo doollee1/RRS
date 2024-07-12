@@ -114,7 +114,6 @@
 			  ,TEL_NO    = #{TEL_NO}
 			  ,MEMBER_ID = #{MEMBER_ID}
 			  ,EMAIL     = #{EMAIL}
-			  ,PASSWD    = #{PASSWD}
 			  ,PERINFO_AGREE_YN = #{PERINFO_AGREE_YN}
 			  ,RET_YN    = #{RET_YN}
 			  ,UPD_ID    = #{LOGIN_USER}
@@ -323,4 +322,19 @@
  		   AND MEMBER_ID = #{MEMBER_ID}
  		   </if>
 	</select>
+	
+	<update id="updateUserInfoChgMemGbn" parameterType="BMap">
+		UPDATE TB_MEMBER
+		   SET MEM_GBN   = '01' 
+		      ,USER_ID   = #{MEMBER_ID}
+		   	  ,HAN_NAME  = #{HAN_NAME}
+			  ,ENG_NAME  = #{ENG_NAME}
+			  ,TEL_NO    = #{TEL_NO}
+			  ,MEMBER_ID = #{MEMBER_ID}
+			  ,EMAIL     = #{EMAIL}
+			  ,RET_YN    = #{RET_YN}
+			  ,UPD_ID    = #{LOGIN_USER}
+			  ,UPD_DTM   = NOW()
+		WHERE USER_ID    = #{Ex_USER_ID_POP}
+	</update>
 </mapper>

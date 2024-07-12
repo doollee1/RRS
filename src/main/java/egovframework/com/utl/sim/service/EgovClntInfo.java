@@ -18,8 +18,13 @@ package egovframework.com.utl.sim.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class EgovClntInfo {
 	
+	private static final Logger logger = LoggerFactory.getLogger(EgovClntInfo.class);
+			
 	/**
 	 * 클라이언트(Client)의 IP주소를 조회하는 기능
 	 * @param HttpServletRequest request Request객체
@@ -28,9 +33,36 @@ public class EgovClntInfo {
 	*/
 	public static String getClntIP(HttpServletRequest request) throws Exception {
 		
-		// IP주소
-		String ipAddr = request.getRemoteAddr();
-		return ipAddr;
+		logger.info("===== 클라이언트IP 확인 =====");
+		
+	    String ip = request.getHeader("X-Forwarded-For");
+	    logger.info("> X-FORWARDED-FOR : " + ip);
+
+	    if (ip == null) {
+	        ip = request.getHeader("Proxy-Client-IP");
+	        logger.info("> Proxy-Client-IP : " + ip);
+	    }
+	    if (ip == null) {
+	        ip = request.getHeader("WL-Proxy-Client-IP");
+	        logger.info(">  WL-Proxy-Client-IP : " + ip);
+	    }
+	    if (ip == null) {
+	        ip = request.getHeader("HTTP_CLIENT_IP");
+	        logger.info("> HTTP_CLIENT_IP : " + ip);
+	    }
+	    if (ip == null) {
+	        ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+	        logger.info("> HTTP_X_FORWARDED_FOR : " + ip);
+	    }
+	    if (ip == null) {
+	        ip = request.getRemoteAddr();
+	        logger.info("> getRemoteAddr : "+ip);
+	    }
+	    logger.info("> Result : IP Address : "+ip);
+		
+	    // IP주소
+		//String ipAddr = request.getRemoteAddr();
+		return ip;
 	}
 	
 	/**

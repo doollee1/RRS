@@ -134,14 +134,13 @@ public class RrsUserService {
 		// 등록, 수정 유저 정보
 		param.put("LOGIN_USER", LoginInfo.getUserId());
 
-		// 중복되는 멤버ID 있는지 체크
+		// MEMBER_ID와 중복되는 ID가 있고, MEMBER_ID와 Ex_MEMBER_ID가 다른 경우 return
 		int memberIDCnt = rrsUserDao.selectMemberIDCnt(param);
 		if(memberIDCnt > 0) {
-			if(param.get("MEMBER_ID") == param.get("Ex_MEMBER_ID")) {
+			if(!(((String) param.get("MEMBER_ID")).equals((String) param.get("Ex_MEMBER_ID")))) {
 				bMap.put("result", "isExistMemberID");
 				return bMap;
 			}
-			
 		}
 				
 		int cnt = rrsUserDao.selectMemberUserInfoCnt(param); //현 ID가 등록된 ID인지 카운트 (Ex_HAN_NAME, Ex_ENG_NAME, Ex_TEL_NO)
@@ -163,6 +162,12 @@ public class RrsUserService {
 			int memberCnt = rrsUserDao.selectMemberUserInfoCntAfterMemberUpdate(param);
 			// 있으면 회원테이블에도 멤버 정보 수정
 			if(memberCnt > 0) rrsUserDao.updateUserInfoAfterMemberUpdate(param);
+		}
+		
+		// 일반회원 -> 멤버회원 전환일때
+		if (((String) param.get("MEM_FLAG")).equals("Y")) {
+			// 회원 테이블 정보 수정
+			rrsUserDao.updateUserInfoChgMemGbn(param);
 		}
 		bMap.put("result", "success");
 		return bMap;

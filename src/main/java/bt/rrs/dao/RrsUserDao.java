@@ -170,4 +170,13 @@ public class RrsUserDao extends DBAbstractMapper {
 	public List<BMap> selectSearchUserInfo(BMap param )throws Exception{
 		return list("RrsUserMapper.selectSearchUserInfo", param);
 	}
+	
+	/**
+	 * 일반회원 멤버회원으로 변경
+	 * @param param
+	 * @throws Exception
+	 */
+	public void updateUserInfoChgMemGbn(BMap param) throws Exception{
+		update("RrsUserMapper.updateUserInfoChgMemGbn", param);
+	}
 }

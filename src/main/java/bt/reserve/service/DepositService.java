@@ -349,20 +349,18 @@ public class DepositService {
 			depositDao.deleteTbReqFee(param);
 			
 			// 삭제하는 행이 마지막 행이 아닐 경우에만 실행
-			if (dreq <= cnt) {
-				for (int i=dreq; i <=cnt; i++) {
-					BMap detailMap = new BMap();
-					int newSeq = i-1;
-					detailMap.put("REQ_DT"       , param.getString("REQ_DT"));
-					detailMap.put("REQ_SEQ"      , param.getString("REQ_SEQ"));
-					detailMap.put("PAY_DT"       , param.getString("PAY_DT"));
-					detailMap.put("PAY_AMT"      , param.getString("PAY_AMT"));
-					detailMap.put("PAY_DCT_AMT"  , param.getString("PAY_DCT_AMT"));	
-					detailMap.put("REQ_DSEQ"     , Integer.toString(i));
-					detailMap.put("NEW_REQ_DSEQ" , Integer.toString(newSeq));
+			for (int i=dreq; i <=cnt; i++) {
+				BMap detailMap = new BMap();
+				int newSeq = i-1;
+				detailMap.put("REQ_DT"       , param.getString("REQ_DT"));
+				detailMap.put("REQ_SEQ"      , param.getString("REQ_SEQ"));
+				detailMap.put("PAY_DT"       , param.getString("PAY_DT"));
+				detailMap.put("PAY_AMT"      , param.getString("PAY_AMT"));
+				detailMap.put("PAY_DCT_AMT"  , param.getString("PAY_DCT_AMT"));	
+				detailMap.put("REQ_DSEQ"     , Integer.toString(i));
+				detailMap.put("NEW_REQ_DSEQ" , Integer.toString(newSeq));
 					
-					depositDao.updateTbReqFeeDBalAmt(detailMap);
-				}
+				depositDao.updateTbReqFeeDBalAmt(detailMap);
 			}
 			
 			respData.put("message", "success");

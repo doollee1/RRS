@@ -72,6 +72,8 @@
 			<input type="hidden" id="Ex_HAN_NAME" name="Ex_HAN_NAME" />
 	      	<input type="hidden" id="Ex_ENG_NAME" name="Ex_ENG_NAME" />
 	      	<input type="hidden" id="Ex_TEL_NO" name="Ex_TEL_NO" />
+	      	<input type="hidden" id="Ex_USER_ID_POP" name="Ex_USER_ID_POP" />
+	      	<input type="hidden" id="MEM_FLAG" name="MEM_FLAG" />
 		</form>
 	</div>
 </div>
@@ -133,6 +135,7 @@ $(function() {
 			$('#HAN_NAME').val($(this).data('HAN_NAME'));
 			$('#ENG_NAME').val($(this).data('ENG_NAME'));
 			$('#TEL_NO').val($(this).data('TEL_NO'));
+			$('#EMAIL').val($(this).data('EMAIL'));
 			$('#PARTNER_HAN_NAME').val($(this).data('PARTNER_HAN_NAME'));
 			$('#PARTNER_ENG_NAME').val($(this).data('PARTNER_ENG_NAME'));
 			$('#PARTNER_GENDER').val($(this).data('PARTNER_GENDER'));
@@ -142,6 +145,8 @@ $(function() {
 			$('#Ex_HAN_NAME').val($(this).data('HAN_NAME'));
 			$('#Ex_ENG_NAME').val($(this).data('ENG_NAME'));
 			$('#Ex_TEL_NO').val($(this).data('TEL_NO'));
+			$('#MEM_FLAG').val($(this).data('MEM_FLAG'));
+			$('#Ex_USER_ID_POP').val($(this).data('USER_ID'));
 			
 			var gender = $(this).data('PARTNER_GENDER');
 			var url = '/rrs/selectMemCodeInfo.do';
@@ -158,7 +163,7 @@ $(function() {
 				});
 				
 			});
-			
+
 			// 연락처 하이픈 처리
 			/*var tel_no = $("#TEL_NO").val();
 			var convert_tel_no = tel_no.replace(/[^0-9]/gi,"").replace(/^(\d{2,3})(\d{3,4})(\d{4})$/g, "$1-$2-$3").replace(/\-{1,2}$/g,"");
@@ -212,17 +217,20 @@ function saveMemberUserInfo(){
 
 	var param = {"param" : formData};
 	var url = "/rrs/saveMemberUserInfo.do"
-	
-		
 
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
 			if(data.isExistMember == 'Y'){
 				alert("이미 등록된 멤버회원이 존재합니다."); 
-			} else if((data.isExistMemberID == 'Y') && !(formData.MEMBER_ID == formData.Ex_MEMBER_ID)){
+			} else if((data.isExistMemberID == 'Y')){
 				alert("중복되는 멤버ID입니다."); 
 			} else {
 				alert("<s:message code='info.save'/>");
+				if($('#MEM_FLAG').val() == 'Y') {
+					p_rtnData = { "USER_ID" : $('#MEMBER_ID').val()
+								, "CHG_YN"  : "Y"
+								}
+				}
 				popupClose($('#MemberUserAddPopup').data('pid'));			
 			}
 		});

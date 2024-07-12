@@ -32,6 +32,7 @@
 						    </c:forEach>
 						</select>
 						<button type="button" class="btn btn-success" id="btn_userSearchPopup">멤버찾기</button>	
+						<button type="button" class="btn btn-success" id="btn_userChgMemPopup">멤버변경</button>	
 					</td>
 					<th>이름</th>
 					<td>
@@ -54,13 +55,13 @@
 					</td>
 					<th>멤버 ID</th>
 					<td>
-						<input type="text" id="MEMBER_ID" name="MEMBER_ID" class="cmc_txt" style="width:125px;" maxlength="20" readonly/>
+						<input type="text" id="MEMBER_ID_POP" name="MEMBER_ID_POP" class="cmc_txt" style="width:125px;" maxlength="20" readonly/>
 					</td>
 				</tr>
 				<tr>
 					<th>Email</th>
 					<td>
-						<input type="text" id="EMAIL" name="EMAIL" class="cmc_txt" style="width:150px;" maxlength="50" EMAIL/>
+						<input type="text" id="EMAIL_POP" name="EMAIL_POP" class="cmc_txt" style="width:150px;" maxlength="50" EMAIL/>
 					</td>
 					<th>개인정보 동의</th>
 					<td>
@@ -100,9 +101,9 @@
 					</td>
 					<th></th>
 				</tr>
-				<p id="mem_gbn_announce" style="color:red; margin-top:4px; font-weight: bold;"></p>
+				<p id="mem_gbn_announce" style="color:red; margin-top:4px; font-weight: bold; height:11px"></p>
 			</table>
-			<input type="hidden" id="Ex_MEMBER_ID" name="Ex_MEMBER_ID" />
+			<input type="hidden" id="Ex_MEMBER_ID_POP" name="Ex_MEMBER_ID_POP" />
 		</div>
 	</form>	
 </div>
@@ -151,7 +152,7 @@
 		$("#HAN_NAME_POP").val("");
 		$("#ENG_NAME_POP").val("");
 		$("#TEL_NO_POP").val("");
-		$("#EMAIL").val("");
+		$("#EMAIL_POP").val("");
 		$("#PERINFO_AGREE_YN").val("N");
 		$("#RET_YN").val("N");
 		if($("#MEM_GBN_POP").val() == '01') {
@@ -165,7 +166,7 @@
 			$("#btn_userSearchPopup").hide();
 			$("#HAN_NAME_POP").removeClass("onlyKor");
 		}
-		$("#MEMBER_ID").val("");
+		$("#MEMBER_ID_POP").val("");
 		$("#REG_ID"   ).val("");
 		$("#REG_DTM"  ).val("");
 		$("#UPD_ID"   ).val("");
@@ -200,6 +201,7 @@
 			},
 			open : function() {
 				$("#mem_gbn_announce").text("");
+				$("#btn_userChgMemPopup").hide();
 				if(!fn_empty($(this).data("USER_ID"))) {
 					$(".ui-dialog-title").text("회원 정보 수정");
 					// 회원 수정 팝업인 경우
@@ -216,8 +218,12 @@
 						$("#HAN_NAME_POP").attr("readonly", true);
 						$("#ENG_NAME_POP").attr("readonly", true);
 						$("#TEL_NO_POP").attr("readonly", true);
-						$("#EMAIL").attr("readonly", true);
+						$("#EMAIL_POP").attr("readonly", true);
 						$("#mem_gbn_announce").text("※ 멤버의 이름, 전화번호, 이메일 변경은 멤버정보등록 팝업에서 가능합니다.");
+					}
+					// 회원 타입 일반일 경우 멤버 변경 버튼 활성화
+					if (MEM_GUBUN == "02") {
+						$("#btn_userChgMemPopup").show();
 					}
 					
 					typeChage();
@@ -244,14 +250,15 @@
 		
 		fn_ajax(url, false, param, function(data, xhr){
 			fn_dataBind('frmUserInfo', data.result[0]);
-			$('#USER_ID_POP' ).val(data.result[0].USER_ID);
-			$('#HAN_NAME_POP').val(data.result[0].HAN_NAME);
-			$('#ENG_NAME_POP').val(data.result[0].ENG_NAME);
-			$('#TEL_NO_POP'  ).val(data.result[0].TEL_NO);
-			$('#MEM_GBN_POP' ).val(data.result[0].MEM_GBN);
+			$('#MEMBER_ID_POP'   ).val(data.result[0].MEMBER_ID);
+			$('#EMAIL_POP'       ).val(data.result[0].EMAIL);
+			$('#USER_ID_POP'     ).val(data.result[0].USER_ID);
+			$('#HAN_NAME_POP'    ).val(data.result[0].HAN_NAME);
+			$('#ENG_NAME_POP'    ).val(data.result[0].ENG_NAME);
+			$('#TEL_NO_POP'      ).val(data.result[0].TEL_NO);
+			$('#MEM_GBN_POP'     ).val(data.result[0].MEM_GBN);
+			$('#Ex_MEMBER_ID_POP').val(data.result[0].MEMBER_ID);
 		});
-		
-		$('#Ex_MEMBER_ID').val($(this).data('USER_ID'));
 	}
 
 	function saveUserInfo(){
@@ -274,7 +281,7 @@
 			alert("아이디 중복확인을 완료해주세요.");
 			return;
 		}
-		if(!validChk_email(formData.EMAIL)) {
+		if(!validChk_email(formData.EMAIL_POP)) {
 			alert("이메일 형식이 올바르지 않습니다.");
 			return;
 		}
@@ -283,9 +290,9 @@
 						, "HAN_NAME" 		 : formData.HAN_NAME_POP
 						, "ENG_NAME" 		 : formData.ENG_NAME_POP
 						, "TEL_NO"  		 : formData.TEL_NO_POP
-						, "EMAIL" 			 : formData.EMAIL
+						, "EMAIL" 			 : formData.EMAIL_POP
 						, "MEM_GBN"			 : formData.MEM_GBN_POP
-						, "MEMBER_ID" 		 : formData.MEMBER_ID
+						, "MEMBER_ID" 		 : formData.MEMBER_ID_POP
 						, "PERINFO_AGREE_YN" : formData.PERINFO_AGREE_YN
 						, "RET_YN" 			 : formData.RET_YN
 						, "REG_ID" 			 : formData.REG_ID
@@ -301,7 +308,7 @@
 		
 		if(confirm("<s:message code='confirm.save'/>")){
 				fn_ajax(url, false, param, function(data, xhr){
-					if((data.isExistMemberID == 'Y') && !(formData.MEMBER_ID == formData.Ex_MEMBER_ID)){
+					if((data.isExistMemberID == 'Y') && !(formData.MEMBER_ID_POP == formData.Ex_MEMBER_ID_POP)){
 						alert("중복되는 멤버ID입니다."); 
 					} else {
 						alert("<s:message code='info.save'/>");
@@ -341,8 +348,8 @@
 				$("#ENG_NAME_POP").val(data.ENG_NAME);
 				$("#TEL_NO_POP").val(data.TEL_NO);
 				$("#USER_ID_POP").val(data.MEMBER_ID);
-				$("#MEMBER_ID").val(data.MEMBER_ID);
-				$("#EMAIL").val(data.EMAIL);
+				$("#MEMBER_ID_POP").val(data.MEMBER_ID);
+				$("#EMAIL_POP").val(data.EMAIL);
 				$("#REG_ID").val(data.REG_ID);
 				$("#REG_DTM").val(data.REG_DTM);
 				$("#UPD_ID").val(data.UPD_ID);
@@ -353,6 +360,37 @@
 				idChkYN   = false;
 			}
 		});
+		
+		p_rtnData = {};
+	});
+	
+	// 멤버 변경 클릭
+	$('#btn_userChgMemPopup').on('click', function(e) {
+		var url = "/rrs/MemberUserAddPopup.do";
+		var pid = "p_MemberUserAdd";
+		var param = { "HAN_NAME" : $("#HAN_NAME_POP").val()
+					, "ENG_NAME" : $("#ENG_NAME_POP").val()
+					, "TEL_NO"   : $("#TEL_NO_POP").val()
+					, "EMAIL"    : $("#EMAIL_POP").val()
+					, "MEM_FLAG" : "Y"
+					, "USER_ID"  : $("#USER_ID_POP").val()
+					};
+		popupOpen(url, pid, param, function(data) {
+			// 저장했는지 체크
+			if (data.CHG_YN == "Y") {
+				selectUserInfo(data.USER_ID);		// 변경 내용으로 Search
+				
+				$("#HAN_NAME_POP").attr("readonly", true);
+				$("#ENG_NAME_POP").attr("readonly", true);
+				$("#TEL_NO_POP").attr("readonly", true);
+				$("#EMAIL_POP").attr("readonly", true);
+				$("#mem_gbn_announce").text("※ 멤버의 이름, 전화번호, 이메일 변경은 멤버정보등록 팝업에서 가능합니다.");
+				$("#btn_userChgMemPopup").hide();	// 멤버 변경 버튼 숨김
+				typeChage();						// 타입변경
+			}
+		});
+		
+		p_rtnData = {};
 	});
 
 	//아이디 중복체크

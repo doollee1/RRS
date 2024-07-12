@@ -252,6 +252,7 @@ function grid1_ondblClickRow(rowid, iRow, iCol, e){
 		"HAN_NAME"  : gridData["HAN_NAME"],
 		"ENG_NAME"  : gridData["ENG_NAME"],
 		"TEL_NO"    : gridData["TEL_NO"],
+		"EMAIL"     : gridData["EMAIL"],
 		"PARTNER_HAN_NAME" : gridData["PARTNER_HAN_NAME"],
 		"PARTNER_ENG_NAME" : gridData["PARTNER_ENG_NAME"],
 		"PARTNER_GENDER"   : gridData["PARTNER_GENDER"],
