@@ -1003,6 +1003,14 @@ $(function() {
 			$("#ADD_HDNG_GBN").attr("disabled",true);
 		}
      	
+     	//예약요청(일반), 예약가능(일반) 에서는 인보이스 생성을 막는다
+     	if($("#PRC_STS_NM").val().trim() == "예약요청(일반)" || $("#PRC_STS_NM").val().trim() == "예약가능(일반)"){
+     		$("#btn_create").attr("disabled",true);
+     	}
+     	else{
+     		$("#btn_create").attr("disabled",false);
+     	}
+     	
      	if($("#PRC_STS_NM").val().trim() == "입금완료" || $("#PRC_STS_NM").val().trim() == "환불완료" || $("#PRC_STS_NM").val().trim() == "예약취소"){
      		$("#ADD_HDNG_GBN").attr("disabled",true);
      		$("#btn_List_addRow").attr("disabled",true);

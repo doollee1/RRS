@@ -3,8 +3,6 @@ package egovframework.com.utl.slm;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**

@@ -1414,7 +1414,7 @@ public class ReserveService {
 	}
 
 	/**
-	 * 예약상세 삭제
+	 * 잔금확인
 	 * @param param
 	 * @return 
 	 * @throws Exception

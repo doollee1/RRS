@@ -197,8 +197,7 @@ public class DepositService {
 			resultRegist.put("RESULT", " FAIL");
 			return resultRegist;
 		}
-		
-		
+				
 		//입금예약금 조회
 		String payAccutAmt  =  depositDao.selectPayAccuAmt(param);	
 		

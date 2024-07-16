@@ -18,7 +18,6 @@ import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
 import bt.btframework.utils.LoginInfo;
 import bt.common.service.DeptService;
-import bt.login.dao.LoginDao;
 
 @Controller
 public class DeptController {

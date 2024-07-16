@@ -280,8 +280,8 @@ function chk_initialpw(){
                                 </tr> --%>
                                  <tr>
                                     <td>
-	                                    <input type="hidden" id="RSAModulus" value="${RSAModulus}"/>
-	        							<input type="hidden" id="RSAExponent" value="${RSAExponent}"/>
+	                                    <input type="hidden" id="RSAModulus" />
+	        							<input type="hidden" id="RSAExponent" />
                                     	<select id="Language" name="Language">
                                     		<option value="KO">KOREAN</option>
                                     		<option value="EN">ENGLISH</option>

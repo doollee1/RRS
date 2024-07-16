@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
-import bt.btframework.utils.LoginInfo;
 import bt.common.service.QnaService;
-import bt.reserve.controller.ReserveRestController;
 
 @RestController
 public class QnaRestController {
