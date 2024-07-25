@@ -594,7 +594,7 @@ $(function() {
 	$("#invoiceGrid").bind("change , keyup" , function(){
 		var changeRowId  = $('#invoiceGrid').jqGrid('getGridParam', 'selrow');
 		var rowCnt       = $('#invoiceGrid').getGridParam('reccount');
-		var ids          = $('#invoiceGrid').jqGrid('getDataIDs');
+		var ids          = $('#invoiceGrid').jqGrid('getDataIDs');
 		var full_tot_amt = 0;
 		
 		if($('#invoiceGrid').jqGrid('getRowData', changeRowId).STATUS_V != "I"){
@@ -737,12 +737,18 @@ $(function() {
 					$("#POP_EXP_DT, #POP_DEP_AMT , #btn_send, #btn_preview").attr("disabled",false);
 					cSearch();
 					//popupClose($('#p_invoicePopup').data('pid'));
-					
 				}
 			});
 		}
 	}
 	
+/******************************************** 
+	 * @Subject : 첨부파일 업로드
+	 * @Content : 
+	 * @See     :
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+ ********************************************/	
 	function ajaxUpload(){
 		$('#multiform_PDF').ajaxForm({
 			cache   : false,

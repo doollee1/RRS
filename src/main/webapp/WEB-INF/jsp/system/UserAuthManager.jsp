@@ -4,7 +4,7 @@
 <%
 	/**
 	 * @Name : UserAuthManager
-	 * @Description : User Auth Manager
+	 * @Description : User Auth Manager (유저 권한 관리 화면)
 	 */
 %>
 <c:import url="../import/frameTop.jsp">
@@ -24,7 +24,7 @@
 	<form id="frmSearch" action="#">
 		<input type="hidden"  name="CURRENT_PAGE"  id="CURRENT_PAGE" />
 		<input type="hidden"  name="ROWS_PER_PAGE"  id="ROWS_PER_PAGE" />
-		
+
 		<div class="tab_top_search">
 			<table>
 				<tbody>
@@ -37,47 +37,46 @@
 				</tbody>
 			</table>
 		</div>
-	</form>	
+	</form>
 	<!-- 검색조건 영역 끝 -->
-	
+
 	<!-- 그리드 시작 -->
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
 		<div class="ct_grid_top_wrap">
 			<div class="ct_grid_top_left">
 				<h4><s:message code='title.authorizationlist'/></h4>
-			</div>	
-			<div class="ct_grid_top_right"> 
+			</div>
+			<div class="ct_grid_top_right">
 				<input type="hidden" name="CURRENT_PAGE"  id="CURRENT_PAGE" />
 				<input type="hidden" name="ROWS_PER_PAGE"  id="ROWS_PER_PAGE" />
-			</div>	
+			</div>
 		</div>
 		<table id="grid1"></table>
-	    <div id="grid1_pager"></div>
+		<div id="grid1_pager"></div>
 	</div>
 	<!-- 그리드 끝 -->
-	
+
 	<!-- 그리드 시작 -->
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:2px;">
 		<div class="ct_grid_top_wrap">
 			<div class="ct_grid_top_left">
 				<h4><s:message code='title.userlist'/></h4>
-			</div>	
-			<div class="ct_grid_top_right"> 
+			</div>
+			<div class="ct_grid_top_right">
 				<button type='button' class='btn btn-default' id='btnAdd'><i class='fa fa-plus-square-o'></i><s:message code='button.add'/></button>
 				<button type='button' class='btn btn-default' id='btnSave'><i class='fa fa-save'></i><s:message code='button.save'/></button>
 				<input type="hidden" name="CURRENT_PAGE2"  id="CURRENT_PAGE2" />
 				<input type="hidden" name="ROWS_PER_PAGE2"  id="ROWS_PER_PAGE2" />
-			</div>	
+			</div>
 		</div>
 		<table id="grid2"></table>
-	    <div id="grid2_pager"></div>
+		<div id="grid2_pager"></div>
 	</div>
 	<!-- 그리드 끝 -->
-
 </div>
 
 <script type="text/javascript">
-<%-- 
+<%--
   * ========= 공통버튼 클릭함수 =========
   * 검색 : cSearch()
   * 추가 : cAdd()
@@ -94,61 +93,73 @@
   * 버튼 표시/숨김 : setCommBtn('ret', true) : Search,Add,Del,Save,Print,Upload,Excel,Pdf,Cancel,User1,2,3,4,5
   * ===============================
 --%>
-	//초기 로드
+	/********************************************
+	 * @Subject : 화면 OPEN 시 최초 실행 함수
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	$(function() {
 		initLayout();
 		createGrid1();
 		creategrid2();
 		setCommBtn('Add', false);
 		setCommBtn('Save', false);
-		
+
 		$("#S_POLICY_CD").focus();
 		$('#grid1').bind('jqGridSelectRow', function(e, rowid, status) {
 			grid1_onCilckRow(e, rowid, status);
 		});
-		
+
 		//onchange event
 		$("#grid2").bind("change", function() {
 			$('#grid2_' + $('#grid2').jqGrid('getGridParam', 'selrow') + '_CHK').prop('checked', true);
 		});
-		
+
 		$("#btnAdd").click(function(e){
 			addUserAuth();
 		});
-		
+
 		$("#btnSave").click(function(e){
 			saveUserAuth();
 		});
-		
+
 		if(auth.substring(1,2) =='N'){
 			$("#btnAdd").hide();
 		}
-		
+
 		if(auth.substring(3,4) =='N'){
 			$("#btnSave").hide();
 		}
 		cSearch();
 		progAuthSearch(null, null);
 	});
-	
+
+	/********************************************
+	 * @Subject : 권한 목록 그리드 설정 및 초기화
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function createGrid1(){
 		var colName = ['회사코드',
-		               '<s:message code='search.authorizationcode'/>',
-		               '<s:message code='system.authorizationname'/>',
-		               '<s:message code='system.authorizationdescription'/>',
-		               '<s:message code='system.usedornot'/>'];
+					   '<s:message code='search.authorizationcode'/>',
+					   '<s:message code='system.authorizationname'/>',
+					   '<s:message code='system.authorizationdescription'/>',
+					   '<s:message code='system.usedornot'/>'
+					  ];
 		var colModel = [
-			{ name: 'COMP_CD', width: 100, align: 'center', hidden: true },
-			{ name: 'POLICY_CD', width: 120, align: 'left' },
-			{ name: 'POLICY_NM', width: 180 },
+			{ name: 'COMP_CD',    width: 100, align: 'center', hidden: true },
+			{ name: 'POLICY_CD',  width: 120, align: 'left'  },
+			{ name: 'POLICY_NM',  width: 180 },
 			{ name: 'POLICY_DSC', width: 180 },
-			{ name: 'STATUS_NM', width: 70, align: 'center'},
-	  	];
-		
+			{ name: 'STATUS_NM',  width: 70,  align: 'center'},
+		];
+
 		var gSetting = {
-		        pgflg:true,
-		        exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
-		        colsetting : true,
+				pgflg:true,
+				exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
+				colsetting : true,
 				searchInit : false,
 				resizeing : true,
 				rownumbers:false,
@@ -157,10 +168,16 @@
 				queryPagingGrid:true, // 쿼리 페이징 처리 여부
 				height:271
 		};
-		
+
 		btGrid.createGrid('grid1', colName, colModel, gSetting);
 	}
 
+	/********************************************
+	 * @Subject : 사용자 목록 그리드 설정 및 초기화
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function creategrid2(){
 		var colName = ['<input type="checkbox" style="margin-top:1px;margin-left:8px" onclick="hdCheckboxAll(event, \'grid2\')" /> ',
 						'회사코드',
@@ -173,22 +190,22 @@
 						'<s:message code='system.departmentname'/>',
 						'<s:message code='system.usedornot'/>'];
 		var colModel = [
-			{name : 'CHK',index : 'CHK',width : 20,align : 'center',formatter : gridCboxFormat, hidden: true, sortable: false},
-			{ name: 'COMP_CD', width: 100, align: 'center', hidden: true },
-			{ name: 'POLICY_CD', width: 120, align: 'left' },
-			{ name: 'USER_ID', width: 120, align: 'left' },
-			{ name: 'NAME_FULL', width: 120, align: 'left' },
-			{ name: 'USER_TP_NM', width: 120, align: 'center' },
-			{ name: 'USER_GD', width: 80, align: 'center' },
-			{ name: 'DEPT_CD', width: 120, align: 'left',  hidden: true},
-			{ name: 'DEPT_NM', width: 120, align: 'left'},
-			{ name: 'STATUS', width: 70, align: 'center', editable:true, edittype:"select", formatter : "select", editoptions:{value:'${griduseyn}'}}
-	  	];
-		
+			{ name: 'CHK',        index: 'CHK', width : 20, align : 'center', formatter : gridCboxFormat, hidden: true, sortable: false},
+			{ name: 'COMP_CD',    width: 100,   align: 'center', hidden: true },
+			{ name: 'POLICY_CD',  width: 120,   align: 'left'  },
+			{ name: 'USER_ID',    width: 120,   align: 'left'  },
+			{ name: 'NAME_FULL',  width: 120,   align: 'left'  },
+			{ name: 'USER_TP_NM', width: 120,   align: 'center'},
+			{ name: 'USER_GD',    width: 80,    align: 'center'},
+			{ name: 'DEPT_CD',    width: 120,   align: 'left', hidden: true},
+			{ name: 'DEPT_NM',    width: 120,   align: 'left'  },
+			{ name: 'STATUS',     width: 70,    align: 'center', editable:true, edittype:"select", formatter : "select", editoptions:{value:'${griduseyn}'}}
+		];
+
 		var gSetting = {
-		        pgflg:true,
-		        exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
-		        colsetting : true,
+				pgflg:true,
+				exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
+				colsetting : true,
 				searchInit : false,
 				resizeing : true,
 				rownumbers:false,
@@ -197,31 +214,42 @@
 				queryPagingGrid:true, // 쿼리 페이징 처리 여부
 				height:271
 		};
-		
+
 		btGrid.createGrid('grid2', colName, colModel, gSetting);
 	}
-	
+
+	/********************************************
+	 * @Subject : 권한목록 그리드 행 클릭 시
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function grid1_onCilckRow(e, rowid, status){
 		progAuthSearch(null, rowid);
 	}
-	//사용자 추가 팝업
+
+	/********************************************
+	 * @Subject : 사용자목록 그리드 추가 버튼 클릭
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function addUserAuth(){
 		var url = '/popup/UserPopup.do';
 		var pid = 'UserPopup';
-		
+
 		popupOpen(url, pid, null, function(data) {
 			var ids = $("#grid2").jqGrid("getDataIDs");
 			var rowid = $('#grid1').jqGrid('getGridParam', 'selrow');
-
 			var rowData1 = $("#grid1").getRowData(rowid);
-			
+
 			for(var i = 0; i < data.length; i++){
 				var flag = true;
 				for(var j = 0; j < ids.length; j++){
 					var rowData2 = $("#grid2").getRowData(ids[j]);
 					if(rowData2["COMP_CD"] == data[i]["COMP_CD"] && rowData2["USER_ID"] == data[i]["USER_ID"]){
 						flag = false;
-						alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
+						alert("<s:message code='errors.dup' javaScriptEscape='false'/>");
 					}
 				}
 				if(flag){
@@ -232,7 +260,13 @@
 			}
 		});
 	}
-	//권한조회
+
+	/********************************************
+	 * @Subject : 검색 버튼 클릭
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function cSearch(currentPage){
 		var vCurrentPage = 1;
 		var vRowsPerPage;
@@ -246,21 +280,24 @@
 		vRowsPerPage = btGrid.getGridRowSel('grid1_pager');
 		$('#CURRENT_PAGE').val(vCurrentPage);
 		$('#ROWS_PER_PAGE').val(vRowsPerPage);
-		
 		var url = "/system/selectAuthInfo.do";
-		
 		var formData = formIdAllToMap('frmSearch');
 		formData["S_PROG_LV"] = "0";
 		var param = {"param":formData};
-		
+
 		fn_ajax(url, false, param, function(data, xhr){
 			reloadGrid("grid1", data.result);
 			btGrid.gridQueryPaging($('#grid1'), 'cSearch', data.result);
 			$('#grid1').jqGrid('setSelection', $('#grid1').jqGrid('getDataIDs')[0]);
 		});
 	}
-	
-	
+
+	/********************************************
+	 * @Subject : 사용자목록 그리드 저장 버튼 클릭
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function saveUserAuth(){
 		var ids = $("#grid2").jqGrid("getDataIDs");
 		var gridData = [];
@@ -280,14 +317,13 @@
 				gridData.push(data);
 			}
 		}
-		
+
 		if(cnt < 1){
 			args = '<s:message code="button.user"/>';
 			alert("<s:message code='errors.saveNull' arguments='" + args + "' javaScriptEscape='false'/>");
-
 			return;
 		}
-		
+
 		if(confirm("<s:message code='confirm.save'/>")){
 			var url = '/system/saveUserAuthInfo.do';
 			var param = {"gridData" : gridData};
@@ -297,7 +333,13 @@
 			});
 		}
 	}
-	
+
+	/********************************************
+	 * @Subject : 사용자목록 그리드 조회
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function progAuthSearch(currentPage, rowid){
 		var vCurrentPage = 1;
 		var vRowsPerPage;
@@ -311,21 +353,19 @@
 		vRowsPerPage = btGrid.getGridRowSel('grid2_pager');
 		$('#CURRENT_PAGE2').val(vCurrentPage);
 		$('#ROWS_PER_PAGE2').val(vRowsPerPage);
-		
+
 		if(fn_empty(rowid)){
 			rowid = $('#grid1').jqGrid('getGridParam', 'selrow');
 		}
 
 		var rowData = $("#grid1").getRowData(rowid);
 		var url = "/system/selectUserAuthInfo.do";
-		
 		var formData = formIdAllToMap('frmSearch');
 		formData["POLICY_CD"] = rowData["POLICY_CD"];
 		formData["CURRENT_PAGE"] = $('#CURRENT_PAGE2').val();
 		formData["ROWS_PER_PAGE"] = $('#ROWS_PER_PAGE2').val();
-		
 		var param = {"param":formData};
-		
+
 		fn_ajax(url, false, param, function(data, xhr){
 			reloadGrid("grid2", data.result);
 			btGrid.gridQueryPaging($('#grid2'), 'progAuthSearch', data.result);
@@ -334,8 +374,13 @@
 			}
 		});
 	}
-	
-	/* 그리드 헤더 체크박스 선택 */
+
+	/********************************************
+	 * @Subject : 그리드 헤더 체크박스 선택
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function hdCheckboxAll(e, gid) {
 		e = e || event;
 		e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
@@ -350,9 +395,14 @@
 		}
 	}
 
-	//그리드 체크박스 이벤트
+	/********************************************
+	 * @Subject : 그리드 헤더 체크박스 이벤트
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function grid_cbox_onclick(gid, rowid, colkey) {
-		
+
 	}
 </script>
 

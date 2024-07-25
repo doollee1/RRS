@@ -3,21 +3,22 @@
 
 <mapper namespace="UserMapper">
 	<select id="selectUserInfo" parameterType="BMap" resultType="BMap">
-	<include refid="page.pagingPre"/> 
+	<include refid="page.pagingPre"/>
 	/* User.xml -> selectUserInfo */
-		SELECT ROW_NUMBER() OVER(ORDER BY A.USER_ID) ROWNUM 
+		SELECT ROW_NUMBER() OVER(ORDER BY A.USER_ID) ROWNUM
 			  ,A.COMP_CD
 			  ,A.USER_ID
 			  ,A.NAME_1ST
 			  ,A.NAME_2ND
 			  ,A.NAME_FULL
 			  ,A.USER_TP
-			  ,B.CODE_NM USER_TP_NM
+			  ,B.CODE_NM    AS USER_TP_NM
 			  ,A.USER_GD
 			  ,A.DEPT_CD
 			  ,CASE WHEN #{LANG} = 'FR' THEN D.DEPT_FR
-			        WHEN #{LANG} = 'EN' THEN D.DEPT_EN
-			    	ELSE D.DEPT_NM END AS DEPT_NM
+					WHEN #{LANG} = 'EN' THEN D.DEPT_EN
+					ELSE D.DEPT_NM 
+				END         AS DEPT_NM
 			  ,A.CUST_CD
 			  ,A.WEB_ID
 			  ,A.TEL_NO
@@ -40,26 +41,26 @@
 			  ,A.AUTH_GR
 			  ,A.LANG_CD
 			  ,A.CRE_TP
-			  ,A.START_DT START_DT
-			  ,A.STOP_DT STOP_DT
+			  ,A.START_DT   AS START_DT
+			  ,A.STOP_DT    AS STOP_DT
 			  ,A.STATUS
-			  ,C.CODE_NM STATUS_NM
+			  ,C.CODE_NM    AS STATUS_NM
 			  ,A.REG_DT
 			  ,A.REG_ID
 			  ,A.UPT_DT
 			  ,A.UPT_ID
 			  ,A.CHAT_ID
 			  ,A.TELEGRAM_TOKEN
-		  FROM BC_USER A 
-	INNER JOIN BC_COMM_L B 
+		  FROM BC_USER    AS A
+	INNER JOIN BC_COMM_L  AS B
 			ON A.USER_TP = B.CODE
 		   AND B.HEAD_CD = '100200'
-	INNER JOIN BC_COMM_L C 
-			ON A.STATUS = C.CODE
+	INNER JOIN BC_COMM_L  AS C
+			ON A.STATUS  = C.CODE
 		   AND C.HEAD_CD = '100300'
-     LEFT JOIN BC_DEPT D 
-            ON A.COMP_CD = D.COMP_CD 
-           AND A.DEPT_cD = D.DEPT_CD
+	 LEFT JOIN BC_DEPT    AS D
+			ON A.COMP_CD = D.COMP_CD
+		   AND A.DEPT_cD = D.DEPT_CD
 		 WHERE 1 = 1
 		 AND USER_TP != '03'
 		<if test='G_COMP_CD != null and G_COMP_CD != ""'>
@@ -83,23 +84,24 @@
 	<include refid="page.pagingPost"/>
 	</select>
 
-	<!-- 
+	<!--
 	<select id="selectUserInfo" parameterType="BMap" resultType="BMap">
-	<include refid="page.pagingPre"/> 
+	<include refid="page.pagingPre"/>
 	/* User.xml -> selectUserInfo */
-		SELECT ROW_NUMBER() OVER(ORDER BY A.USER_ID) ROWNUM 
+		SELECT ROW_NUMBER() OVER(ORDER BY A.USER_ID) ROWNUM
 			  ,A.COMP_CD
 			  ,A.USER_ID
 			  ,A.NAME_1ST
 			  ,A.NAME_2ND
 			  ,A.NAME_FULL
 			  ,A.USER_TP
-			  ,B.CODE_NM USER_TP_NM
+			  ,B.CODE_NM    AS USER_TP_NM
 			  ,A.USER_GD
 			  ,A.DEPT_CD
 			  ,CASE WHEN #{LANG} = 'FR' THEN D.DEPT_FR
-			        WHEN #{LANG} = 'EN' THEN D.DEPT_EN
-			    	ELSE D.DEPT_NM END AS DEPT_NM
+					WHEN #{LANG} = 'EN' THEN D.DEPT_EN
+					ELSE D.DEPT_NM 
+				END         AS DEPT_NM
 			  ,A.CUST_CD
 			  ,A.WEB_ID
 			  ,A.TEL_NO
@@ -122,27 +124,27 @@
 			  ,A.AUTH_GR
 			  ,A.LANG_CD
 			  ,A.CRE_TP
-			  ,A.START_DT START_DT
-			  ,A.STOP_DT STOP_DT
+			  ,A.START_DT   AS START_DT
+			  ,A.STOP_DT    AS STOP_DT
 			  ,A.STATUS
-			  ,C.CODE_NM STATUS_NM
+			  ,C.CODE_NM    AS STATUS_NM
 			  ,A.REG_DT
 			  ,A.REG_ID
 			  ,A.UPT_DT
 			  ,A.UPT_ID
 			  ,A.CHAT_ID
-		  FROM BC_USER A 
-	INNER JOIN BC_COMM_L B 
+		  FROM BC_USER    AS A
+	INNER JOIN BC_COMM_L  AS B
 			ON A.USER_TP = B.CODE
 		   AND B.HEAD_CD = '100200'
-	INNER JOIN BC_COMM_L C 
+	INNER JOIN BC_COMM_L  AS C
 			ON A.STATUS = C.CODE
 		   AND C.HEAD_CD = '100300'
-     LEFT JOIN BC_DEPT D 
-            ON A.COMP_CD = D.COMP_CD 
-           AND A.DEPT_cD = D.DEPT_CD
+	 LEFT JOIN BC_DEPT    AS D
+			ON A.COMP_CD = D.COMP_CD
+		   AND A.DEPT_cD = D.DEPT_CD
 		 WHERE 1 = 1
-		 AND USER_TP != '03'
+		   AND USER_TP != '03'
 		<if test='G_COMP_CD != null and G_COMP_CD != ""'>
 		   AND A.COMP_CD = #{G_COMP_CD}
 		</if>
@@ -164,7 +166,7 @@
 	<include refid="page.pagingPost"/>
 	</select>
 	-->
-	
+
 	<insert id="insertUserInfo" parameterType="BMap">
 		INSERT INTO BC_USER
 					(COMP_CD
@@ -244,8 +246,8 @@
 					,#{TELEGRAM_TOKEN}
 					)
 	</insert>
-	
-	<!-- 
+
+	<!--
 	<insert id="insertUserInfo" parameterType="BMap">
 		INSERT INTO BC_USER
 					(COMP_CD
@@ -322,80 +324,80 @@
 					)
 	</insert>
 	 -->
-	 
+
 	<update id="updateUserInfo" parameterType="BMap">
 		UPDATE BC_USER
-		   SET NAME_1ST = #{NAME_1ST}
-			  ,NAME_2ND = #{NAME_2ND}
+		   SET NAME_1ST  = #{NAME_1ST}
+			  ,NAME_2ND  = #{NAME_2ND}
 			  ,NAME_FULL = CONCAT(#{NAME_1ST}, #{NAME_2ND})
-			  ,USER_TP = #{USER_TP}
-			  ,USER_GD = #{USER_GD}
-			  ,DEPT_CD = #{DEPT_CD}
-			  ,CUST_CD = #{CUST_CD}
-			  ,WEB_ID = #{WEB_ID}
-			  ,STR_NM = #{STR_NM}
-			  ,HAUS_NO = #{HAUS_NO}
-			  ,ZIP_NO = #{ZIP_NO}
-			  ,ORT_NM = #{ORT_NM}
+			  ,USER_TP   = #{USER_TP}
+			  ,USER_GD   = #{USER_GD}
+			  ,DEPT_CD   = #{DEPT_CD}
+			  ,CUST_CD   = #{CUST_CD}
+			  ,WEB_ID    = #{WEB_ID}
+			  ,STR_NM    = #{STR_NM}
+			  ,HAUS_NO   = #{HAUS_NO}
+			  ,ZIP_NO    = #{ZIP_NO}
+			  ,ORT_NM    = #{ORT_NM}
 			  ,REGION_CD = #{REGION_CD}
-			  ,LAND_CD = #{LAND_CD}
-			  ,TEL_NO = #{TEL_NO}
-			  ,E_MAIL = #{E_MAIL}
-			  ,AREA_CD = #{AREA_CD}
-			  ,LANG_CD = #{LANG_CD}
-			  ,CRE_TP = #{CRE_TP}
+			  ,LAND_CD   = #{LAND_CD}
+			  ,TEL_NO    = #{TEL_NO}
+			  ,E_MAIL    = #{E_MAIL}
+			  ,AREA_CD   = #{AREA_CD}
+			  ,LANG_CD   = #{LANG_CD}
+			  ,CRE_TP    = #{CRE_TP}
 			  <!-- ,START_DT = DATE_FORMAT(#{START_DT}, '%Y-%m-%d')
-			  ,STOP_DT = DATE_FORMAT(#{STOP_DT}, '%Y-%m-%d') -->
-			  ,STATUS = #{STATUS}
-			  ,UPT_DT = NOW()
-			  ,UPT_ID = #{LOGIN_USER}
-			  ,CHAT_ID = #{CHAT_ID}
+			  ,STOP_DT   = DATE_FORMAT(#{STOP_DT}, '%Y-%m-%d') -->
+			  ,STATUS    = #{STATUS}
+			  ,UPT_DT    = NOW()
+			  ,UPT_ID    = #{LOGIN_USER}
+			  ,CHAT_ID   = #{CHAT_ID}
 			  ,TELEGRAM_TOKEN = #{TELEGRAM_TOKEN}
 		 WHERE COMP_CD = #{COMP_CD}
 		   AND USER_ID = #{USER_ID}
 	</update>
-	
+
 	<delete id="deleteUserInfo" parameterType="BMap">
 		DELETE BC_USER
 		 WHERE COMP_CD = #{COMP_CD}
 		   AND USER_ID = #{USER_ID}
 	</delete>
-	
+
 	<select id="selectUserInfoCnt" parameterType="BMap" resultType="int">
 		SELECT COUNT(1)
-		  FROM BC_USER 
+		  FROM BC_USER
 		 WHERE COMP_CD = #{COMP_CD}
 		   AND USER_ID = #{USER_ID}
 	</select>
-	
+
 	<update id="updatePassword" parameterType="BMap">
 		UPDATE BC_USER
-		   SET PW_CURR = #{NEW_PASSWORD}
+		   SET PW_CURR  = #{NEW_PASSWORD}
 			  ,PW_PAST1 = PW_CURR
 			  ,PW_PAST2 = PW_PAST1
 			  ,PW_PAST3 = PW_PAST2
 			  <if test='INIT = "Y"'>
-		 	  ,LOGIN_DT = NOW()
+			  ,LOGIN_DT = NOW()
 			  </if>
-		 WHERE COMP_CD = #{COMP_CD}
-		   AND USER_ID = #{USER_ID}
+		 WHERE COMP_CD  = #{COMP_CD}
+		   AND USER_ID  = #{USER_ID}
 	</update>
-	
+
 	<select id="selectPastPassword" parameterType="BMap" resultType="int">
 		SELECT COUNT(1)
-		  FROM BC_USER 
-		 WHERE COMP_CD = #{COMP_CD}
-		   AND USER_ID = #{USER_ID}
+		  FROM BC_USER
+		 WHERE COMP_CD  = #{COMP_CD}
+		   AND USER_ID  = #{USER_ID}
 		   AND (PW_CURR = #{NEW_PASSWORD}
-		    OR PW_PAST1 = #{NEW_PASSWORD}
+			OR PW_PAST1 = #{NEW_PASSWORD}
 			OR PW_PAST2 = #{NEW_PASSWORD}
 			OR PW_PAST3 = #{NEW_PASSWORD})
 	</select>
-	
+
 	<select id="updateLockyn" parameterType="BMap" resultType="int">
-		UPDATE BC_USER 
+		UPDATE BC_USER
 		   SET LOCK_YN = 'N',
-		       WRONG_CNT = 0
+			   WRONG_CNT = 0
 		 WHERE COMP_CD = #{COMP_CD}
 		   AND USER_ID = #{USER_ID}
 	</select>

@@ -66,7 +66,7 @@ $(function() {
 		modal : true,
 		buttons : {
 			'Close' : {
-				text: 'Close',
+				text : 'Close',
 				click: function() {
 					$(this).dialog("close");
 				}
@@ -81,15 +81,15 @@ $(function() {
 	});
 });
 
-	/******************************************** 
-	 * @Subject : 조회 함수
-	 * @Content : 
-	 * @Since   : 2024.07.11
-	 * @Author  : 
-	 ********************************************/
+/******************************************** 
+ * @Subject : 조회 함수
+ * @Content : 
+ * @Since   : 2024.07.11
+ * @Author  : 
+ ********************************************/
 function retrieveNoticeP(noticecd) {
 	var url = '/common/selectNoticeInfo.do';
-	var sendData = {'param': {'S_NOTICE_NO' : noticecd}}
+	var sendData = {'param': {'S_NOTICE_NO' : noticecd}};
 
 	fn_ajax(url, false, sendData, function(data, xhr) {
 		var noticeInfo = data.result;
@@ -110,12 +110,15 @@ function retrieveNoticeP(noticecd) {
 	});
 }
 
+/******************************************** 
+ * @Subject : 공지사항 조회수 +1
+ * @Content : 
+ * @Since   : 2024.07.11
+ * @Author  : 
+ ********************************************/
 function updateNoticeCnt(noticecd){
 	var url = "/common/updateNoticeCnt.do";
-	var param = { "param" : {
-			"NOTICE_NO" : noticecd
-		}
-	};
+	var param = { "param" : {"NOTICE_NO" : noticecd}};
 
 	fn_ajax(url, false, param, function(data, xhr) {
 	});

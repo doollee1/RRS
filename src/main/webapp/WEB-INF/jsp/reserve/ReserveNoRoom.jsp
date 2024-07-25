@@ -140,13 +140,12 @@
 * ===============================
 --%>
 
-/******************************************** 
- * @Subject : 객실풀관리 화면
- * @Content : 
+/********************************************
+ * @Subject : 화면 OPEN 시 최초 실행 함수
+ * @Content :
  * @Since   : 2024.07.11
  * @Author  : 이주형
  ********************************************/
-
 $(function() {
 	var args;
 	var datagrid;
@@ -154,11 +153,11 @@ $(function() {
 	fn_Init();
 });
 
-/******************************************** 
- * @Subject : 화면 OPEN 시 최초 실행 함수
- * @Content : 기본 설정 값 셋팅
+/********************************************
+ * @Subject : 기본 설정 값 셋팅 함수
+ * @Content :
  * @Since   : 2024.07.11
- * @Author  : 
+ * @Author  : 이주형
  ********************************************/
 function fn_Init(){
 	var toDay     = preMonth();        //이전달 첫날
@@ -171,11 +170,11 @@ function fn_Init(){
 	cSearch();
 }
 
-/******************************************** 
+/********************************************
  * @Subject : 그리드 세팅 및 생성
  * @Content : 객실풀관리 조회 그리드 세팅 및 생성
  * @Since   : 2024.07.11
- * @Author  : 
+ * @Author  : 이주형
  ********************************************/
 function createRoomGrid() {
 	var colName = [
@@ -206,11 +205,16 @@ function createRoomGrid() {
 			queryPagingGrid: false,    // 쿼리 페이징 처리 여부
 			height : 500
 	};
-	
+
 	btGrid.createGrid('roomGrid', colName, colModel, gSetting);
 }
 
-/* 그리드내 삭제버튼 생성 */
+/********************************************
+ * @Subject : 그리드내 삭제버튼 생성
+ * @Content :
+ * @Since   : 2024.07.11
+ * @Author  : 이주형
+ ********************************************/
 function delRow(cellvalue, options, rowObject){
 	var str = "";
 	var rowid = options.rowId;
@@ -222,7 +226,7 @@ function delRow(cellvalue, options, rowObject){
 	return str;
 }
 
-/******************************************** 
+/********************************************
  * @Subject : 객실풀관리 화면 조회
  * @Content : 조회조건에 입력된 날짜로 DB에 저장된 값 조회 후 그리드에 추가
  * @Since   : 2024.07.11
@@ -249,7 +253,7 @@ function cSearch(currentPage) {
 	});
 }
 
-/******************************************** 
+/********************************************
  * @Subject : 추가버튼 클릭 시
  * @Content : 선택한 날짜와 객실을 그리드에 추가
  * @Since   : 2024.07.11
@@ -294,7 +298,7 @@ $("#inputRow").click(function(){
 	$("#roomGrid").jqGrid("resetSelection");
 });
 
-/******************************************** 
+/********************************************
  * @Subject : 저장 버튼 클릭 시
  * @Content : 그리드에 있는 값을 DB에 저장
  * @Since   : 2024.07.11
@@ -338,11 +342,16 @@ function cSave() {
 	}
 }
 
-/* 저장전 날짜값이 올바른지 체크 */
+/********************************************
+ * @Subject : 저장전 날짜값이 올바른지 체크
+ * @Content :
+ * @Since   : 2024.07.11
+ * @Author  : 이주형
+ ********************************************/
 function validation(){
 	var from_date = $("#fromDate").val().replaceAll(/\./gi, '');
 	var to_date   = $("#toDate").val().replaceAll(/\./gi, '');
-	
+
 	if(from_date > to_date){
 		alert("시작일자가 종료일자보다 큽니다. 날짜를 확인해주세요.");
 		return false;
@@ -350,7 +359,12 @@ function validation(){
 	return true;
 }
 
-/* DB에서 가져온 날짜와 객실을 화면에 보여주기 전에 표시를 변경함 */
+/********************************************
+ * @Subject : DB에서 가져온 날짜와 객실을 화면에 보여주기 전에 표시를 변경함
+ * @Content :
+ * @Since   : 2024.07.11
+ * @Author  : 이주형
+ ********************************************/
 function formDate(){
 	var rowDataList = $("#roomGrid").getRowData();
 	for(var i = 0; i < rowDataList.length; i++) {
@@ -365,7 +379,12 @@ function formDate(){
 	}
 }
 
-/* 객실 타입(ROOM_TYPE)에 따른 객실 이름(ROOM_TYPE_NM) 변경 */
+/********************************************
+ * @Subject : 객실 타입(ROOM_TYPE)에 따른 객실 이름(ROOM_TYPE_NM) 변경
+ * @Content :
+ * @Since   : 2024.07.11
+ * @Author  : 이주형
+ ********************************************/
 function findType(room){
 	switch(room){
 	case "00" :
@@ -380,7 +399,12 @@ function findType(room){
 	}
 }
 
-/* 각 데이터에 알맞는 FORMAT 부여 */
+/********************************************
+ * @Subject : 각 데이터에 알맞는 FORMAT 부여
+ * @Content :
+ * @Since   : 2024.07.11
+ * @Author  : 이주형
+ ********************************************/
 function fn_dataSet(data){
 	var array = [];
 	for (var i = 0; i < data.length; i++) {
@@ -399,7 +423,7 @@ function fn_dataSet(data){
 	return array;
 }
 
-/******************************************** 
+/********************************************
  * @Subject : 그리드 내 삭제버튼 클릭 시
  * @Content : 해당 그리드 행을 삭제
  * @Since   : 2024.07.11
@@ -437,7 +461,12 @@ function fn_delete(rowid,idx){
 	}
 }
 
-/* 날짜 입력시 올바른 입력인지 확인 */
+/********************************************
+ * @Subject : 날짜 입력시 올바른 입력인지 확인
+ * @Content : 2024-02-02 또는 20240202
+ * @Since   : 2024.07.11
+ * @Author  : 이주형
+ ********************************************/
 function validChk_date(date){
 	/* YYYY-MM-DD 일때 */
 	var format = /^(19|20|21)\d{2}-(0[0-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
@@ -450,11 +479,11 @@ function validChk_date(date){
 	return false;
 }
 
-/******************************************** 
+/********************************************
  * @Subject : 달력 만드는 스크립트
  * @Content : 달력과 그에 쓰이는 함수 선언
  * @Since   : 2024.07.11
- * @Author  : 
+ * @Author  :
  ********************************************/
 document.addEventListener("DOMContentLoaded", function() {
 	buildCalendar();
@@ -471,20 +500,34 @@ document.addEventListener("DOMContentLoaded", function() {
 var toDay   = new Date();    // 오늘 날짜 / 내 컴퓨터 로컬을 기준으로 toDay에 Date 객체를 넣어줌
 var nowDate = new Date();    // 실제 오늘날짜 고정값
 
-/* 이전달 버튼 클릭시 */
+/********************************************
+ * @Subject : 이전달 버튼 클릭시
+ * @Content :
+ * @Since   : 2024.07.11
+ * @Author  :
+ ********************************************/
 function prevCalendar() {
 	this.toDay = new Date(toDay.getFullYear(), toDay.getMonth() - 1, toDay.getDate());
 	buildCalendar();
 }
 
-/* 다음달 버튼 클릭시 */
+/********************************************
+ * @Subject : 다음달 버튼 클릭시
+ * @Content :
+ * @Since   : 2024.07.11
+ * @Author  :
+ ********************************************/
 function nextCalendar() {
 	this.toDay = new Date(toDay.getFullYear(), toDay.getMonth() + 1, toDay.getDate());
 	buildCalendar();
 }
 
-/* 캘린더 오픈 */
-/* 날짜 값을 받아 캘린더 폼을 생성하고, 날짜값을 채워넣는다. */
+/********************************************
+ * @Subject : 캘린더 오픈
+ * @Content : 날짜 값을 받아 캘린더 폼을 생성하고, 날짜값을 채워넣는다
+ * @Since   : 2024.07.11
+ * @Author  :
+ ********************************************/
 function buildCalendar() {
 	let doMonth = new Date(toDay.getFullYear(), toDay.getMonth(), 1);
 	let lastDate = new Date(toDay.getFullYear(), toDay.getMonth() + 1, 0);
@@ -596,9 +639,13 @@ function buildCalendar() {
 	}
 }
 
-/* 날짜 선택시 */
+/********************************************
+ * @Subject : 날짜 선택시
+ * @Content : 기존 선택일이 존재하는 경우 기존 선택일의 표시형식을 초기화 한다.
+ * @Since   : 2024.07.11
+ * @Author  :
+ ********************************************/
 function calendarChoiceDay(column) {
-	//   기존 선택일이 존재하는 경우 기존 선택일의 표시형식을 초기화 한다.
 	if(document.getElementsByClassName("choiceDay")[0]) {
 		if(document.getElementById("calMonth").innerText == autoLeftPad((nowDate.getMonth() + 1), 2)
 			&& document.getElementsByClassName("choiceDay")[0].innerText == autoLeftPad(toDay.getDate(), 2)) {
@@ -624,7 +671,12 @@ function calendarChoiceDay(column) {
 	$("#noRoomDate").val(choiceday);
 }
 
-/* 숫자 두자릿수( 00 ) 변경 */
+/********************************************
+ * @Subject : 숫자 두자릿수( 00 ) 변경하는 함수
+ * @Content : 
+ * @Since   : 2024.07.11
+ * @Author  :
+ ********************************************/
 function autoLeftPad(num, digit) {
 	if(String(num).length < digit) {
 		num = new Array(digit - String(num).length + 1).join("0") + num;

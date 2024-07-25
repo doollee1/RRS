@@ -356,5 +356,80 @@
 		   AND A.BAS_YY_SEQ = #{BAS_YY_SEQ}
 		   AND A.PROD_SEQ = #{PROD_SEQ}
 		   AND B.PRC_STS != 09
-	</select>	     
+	</select>	  
+	<select id="selectMSendingInfoList" parameterType="hashMap" resultType="hashMap">
+	/* Product.xml -> selectMSendingInfoList */
+        SELECT 
+              ROW_NUMBER() OVER(ORDER BY A.HDNG_GBN , A.PROD_COND  ,A.PROD_SEQ ) AS ROWNUM
+	      	 , A.HDNG_GBN
+	      	 , A.PROD_COND
+        	 , A.PROD_SEQ
+	      	 , A.PROD_COND
+      	     , A.PROD_SEQ
+	         , B.CODE_NM 
+		     , A.COM_CNTN
+			 , A.COM_AMT    		
+	    FROM TB_PROD_INFO A
+	      JOIN BC_COMM_L  B ON B.REF_CHR1 = A.HDNG_GBN  
+	             		   AND B.REF_CHR2 = A.PROD_COND
+	         			   AND B.HEAD_CD = 500050
+	    WHERE 1=1 
+	    	AND	A.PROD_SEQ IN ('82','83','84','85','86')
+	    	AND A.BAS_YY = #{BAS_YY}
+	    	<if test='HDNG_GBN != 9'>
+	    	AND A.HDNG_GBN = #{HDNG_GBN}
+	    	</if>
+	    ORDER BY A.HDNG_GBN  
+    		   , A.PROD_COND
+    		   , A.PROD_SEQ
+    </select>
+	
+    <select id="selectExtraChargeInfoList" parameterType="hashMap" resultType="hashMap">
+    /* Product.xml -> selectExtraChargeInfoList */
+        SELECT 
+	 		  B.PROD_SEQ 
+	 		, (SELECT D.CODE_NM FROM BC_COMM_L D 
+	 		           WHERE D.HEAD_CD = 500090 AND A.SSN_GBN = D.CODE) AS SSN_NM
+	 		 , date_format(A.ST_DT1, '%Y-%m-%d') AS ST_DT1		<!-- 시작일1 -->
+		     , date_format(A.ED_DT1, '%Y-%m-%d') AS ED_DT1		<!-- 종료일1 -->
+			 , date_format(A.ST_DT2, '%Y-%m-%d') AS ST_DT2		<!-- 시작일2 -->
+		     , date_format(A.ED_DT2, '%Y-%m-%d') AS ED_DT2		<!-- 종료일2 -->
+	 		, B.COM_CNTN 
+	 		, C.CODE_NM 
+	 		, B.COM_AMT 
+	 	FROM TB_BAS_YY_INFO A
+	 		JOIN TB_PROD_INFO B ON B.BAS_YY = A.BAS_YY 
+	 		                    AND B.BAS_YY_SEQ = A.BAS_YY_SEQ
+	 		                    AND B.SSN_GBN = A.SSN_GBN 
+	 		JOIN BC_COMM_L C ON	C.CODE  = B.PROD_COND
+	         					AND C.HEAD_CD = 500220 		
+	 	WHERE 1=1
+	 		AND A.BAS_YY = #{BAS_YY}
+	 		<if test='SSN_GBN != 9'>
+  		    AND A.SSN_GBN = #{SSN_GBN}
+  		    </if>	 		
+	 		AND B.HDNG_GBN IN ('19') 
+	 		AND B.PROD_COND IN ('PD4','PU4')	 		
+	 		ORDER BY A.ST_DT1, A.ST_DT2
+    </select>   
+	<select id="selectRefCode" parameterType="Bmap" resultType="Bmap">
+	/* Product.xml -> selectRefCode */
+         SELECT A.REF_CHR1 
+          ,A.REF_CHR2 
+          , A.CODE_NM
+          FROM BC_COMM_L A
+          JOIN BC_COMM_H B ON B.HEAD_CD = /**/ A.HEAD_CD
+         WHERE 1 = 1
+           AND A.HEAD_CD =  #{HEAD_CD}
+           and A.REF_CHR1 != ''
+         ORDER BY A.CODE 
+    </select>
+    <update id="updateMSendingCost" parameterType="BMap">    
+       UPDATE TB_PROD_INFO
+            SET COM_AMT = #{COM_AMT}
+            ,UPD_DTM = NOW()
+            ,UPD_ID = #{LOGIN_USER}
+       WHERE BAS_YY = #{BAS_YY}
+            AND PROD_SEQ = #{PROD_SEQ}
+    </update>
 </mapper>

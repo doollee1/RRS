@@ -6,24 +6,23 @@
 <div class="top_button_h_margin"></div>
 <div id="ctu_no_resize">
 	<form id="frmSearch" action="#">
-		<input type="hidden" name="BAS_YY" id="BAS_YY" />
+		<input type="hidden" name="BAS_YY"     id="BAS_YY" />
 		<input type="hidden" name="BAS_YY_SEQ" id="BAS_YY_SEQ" />
-		<input type="hidden" name="PROD_SEQ" id="PROD_SEQ" />
+		<input type="hidden" name="PROD_SEQ"   id="PROD_SEQ" />
 	</form>
 </div>
 
 <div id="productPeriodPopUp">
-	<!--- 검색버튼 ---->
+	<!--- 버튼 ---->
 	<div id="divBtns">
 		<div id="divBtn">
 			<button class='btn btn-default ' id='cBtnSearch' type='button' onclick=''>조회</button>
-			<button class="btn btn-default" id="btn_save"><s:message code='button.save'/></button>
-			<button class="btn btn-default" id="btn_del"><s:message code='button.delete'/></button>
+			<button class="btn btn-default"  id="btn_save"><s:message code='button.save'/></button>
+			<button class="btn btn-default"  id="btn_del"><s:message code='button.delete'/></button>
 <!--          <button class='btn btn-default ' id='cBtnAdd' type='button' onclick='cAdd()'>등록</button> -->
 			<button class='btn btn-default ' id='cBtnCancel' type='button' onclick=''>닫기</button>
 		</div>
 	</div>
-   
 	<!---------->
 	<div class="ct_grid_top_left">
 		<h4>조회조건</h4>
@@ -34,22 +33,22 @@
 				<col width="100px" />
 				<col width="200px" />
 			</colgroup>
-			 
 			<tbody>
+				<!-- 조회조건 start -->
 				<tr>
 					<td class="small_td"><p><s:message code="product.baseyear"/></p></td>
 					<td>
 						<select id="BAS_YY_PP" name="BAS_YY_PP" class="cmc_combo" style=width:80%;>
-						<c:forEach var="i" items="${basyy}">
-	     					<option value="${i.BAS_YY}">${i.BAS_YY}</option>
-						</c:forEach>
-			         </select>
-			      </td>
-			   </tr>
+							<c:forEach var="i" items="${basyy}">
+								<option value="${i.BAS_YY}">${i.BAS_YY}</option>
+							</c:forEach>
+						</select>
+					</td>
+				</tr>
+				<!-- 조회조건 end -->
 			</tbody>
 		</table>
 	</div> 
-   
 	<!-- grid start -->
 	<div id="ctm_mg_wrap">
 		<div class="ct_grid_top_wrap">
@@ -70,17 +69,24 @@
 
 <script type="text/javascript">
 $(function(){
+	/******************************************** 
+	 * @Subject : 팝업 창 기본 설정
+	 * @Content : 화면 비율 및 버튼 이벤트
+	 * @See     : createGrid() / cSearch()
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$('#productPeriodPopUp').dialog({
-		title: '<s:message code="product.pop_period"/>',
+		title   : '<s:message code="product.pop_period"/>',
 		autoOpen: false,
-		height: 'auto',
-		width: 750,
-		modal: true,
+		height  : 'auto',
+		width   : 750,
+		modal   : true,
 		close: function() {
 			/* 필수로 들어가야함 */
 			popupClose($(this).attr('id'));
 		},
-		open: function() {
+		open : function() {
 			createGrid();
 			cSearch();
 			
@@ -100,12 +106,16 @@ $(function(){
 		},
 	});
 	
-	//조회
+	/******************************************** 
+	 * @Subject : 조회 함수
+	 * @Content : 조회 내역 값 화면 셋팅
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function cSearch(currentPage){
-		var url = "/product/selectPeriodInfo.do";
-		
+		var url      = "/product/selectPeriodInfo.do";
 		var formData = formIdAllToMap('frmProductPeriod');
-		var param = {"BAS_YY" : $("#BAS_YY_PP").val()};
+		var param    = {"BAS_YY" : $("#BAS_YY_PP").val()};
 		
 		fn_ajax(url, false, param, function(data, xhr){
 			$.each(data.result , function(i , val){
@@ -130,9 +140,9 @@ $(function(){
 			btGrid.gridResizing('periodGrid');
 		});
 		
-		//조회결과 없을 시 비활성화 및 alert
+		/* 조회결과 없을 시 비활성화 및 alert */
 		if($("#BAS_YY_PP").val() == ""){
-			$("#BAS_YY_PP").attr("disabled", true);
+			$("#BAS_YY_PP" ).attr("disabled", true);
 			$("#cBtnSearch").attr("disabled", true);
 			alert("년도별 기간관리를 마저 등록해 주세요.");
 		};
@@ -142,11 +152,16 @@ $(function(){
 		$("#cBtnSearch").attr("disabled", false);
 	});
 	
-	//그리드 그리기
+	/******************************************** 
+	 * @Subject : 그리드 생성 함수
+	 * @Content : 조회 내역 그리드 생성 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function createGrid(){
-		var url = "/product/productSeasonList.do";
+		var url   = "/product/productSeasonList.do";
 		var param = {};
-		var obj = new Object();
+		var obj   = new Object();
 		fn_ajax(url, true, param, function(data, xhr){
 			$.each(data.selectList , function(i , v){
 				if (v.CODE == "9"){
@@ -170,55 +185,13 @@ $(function(){
 						];
 		
 		var colModel = [
-			{ name: 'SSN_GBN',  width : 5, align: 'center', editable:true , edittype:"select"},
-			{ name: 'ST_DT1', width: 7, align: 'center', editable:true, 
+			{ name: 'SSN_GBN', width : 5, align: 'center', editable:true, edittype:"select"},
+			{ name: 'ST_DT1' , width : 7, align: 'center', editable:true, 
 				editoptions:{
 					dataInit: function(element){
 						$(element).keyup(function(){
 							var val1 = element.value;
-							var num = new Number(val1);
-							if(isNaN(num)){
-								alert("숫자만 입력 가능합니다.");
-								element.value = ''; 
-							}
-						})
-					}, maxlength:8
-			   }
-			},
-			{ name: 'ED_DT1', width: 7, align: 'center', editable:true,
-				editoptions:{
-					dataInit: function(element){
-						$(element).keyup(function(){
-						   var val1 = element.value;
-						   var num = new Number(val1);
-						   if(isNaN(num)){
-							   alert("숫자만 입력 가능합니다.");
-							   element.value = ''; 
-						   }
-						})
-				   }, maxlength:8
-			   }
-			},
-			{ name: 'ST_DT2', width: 7, align: 'center', editable:true,
-		      editoptions:{
-		         dataInit: function(element){
-		            $(element).keyup(function(){
-		               var val1 = element.value;
-		               var num = new Number(val1);
-		               if(isNaN(num)){
-		                  alert("숫자만 입력 가능합니다.");
-		                  element.value = ''; 
-		               }
-		                })
-		         }, maxlength:8
-		      }
-			},
-			{ name: 'ED_DT2', width: 7, align: 'center', editable:true,
-				editoptions:{
-					dataInit: function(element){
-						$(element).keyup(function(){
-							var val1 = element.value;
-							var num = new Number(val1);
+							var num  = new Number(val1);
 							if(isNaN(num)){
 								alert("숫자만 입력 가능합니다.");
 								element.value = ''; 
@@ -227,66 +200,117 @@ $(function(){
 					}, maxlength:8
 				}
 			},
-			{ name: 'BAS_YY', width : 100, align: 'center', hidden:true, editoptions:{readonly: true}},
+			{ name: 'ED_DT1', width: 7, align: 'center', editable:true,
+				editoptions:{
+					dataInit: function(element){
+						$(element).keyup(function(){
+							var val1 = element.value;
+							var num  = new Number(val1);
+							if(isNaN(num)){
+								alert("숫자만 입력 가능합니다.");
+								element.value = ''; 
+							}
+						})
+					}, maxlength:8
+				}
+			},
+			{ name: 'ST_DT2', width: 7, align: 'center', editable:true,
+				editoptions:{
+					dataInit: function(element){
+						$(element).keyup(function(){
+							var val1 = element.value;
+							var num  = new Number(val1);
+							if(isNaN(num)){
+								alert("숫자만 입력 가능합니다.");
+								element.value = ''; 
+							}
+						})
+					}, maxlength:8
+				}
+			},
+			{ name: 'ED_DT2', width: 7, align: 'center', editable:true,
+				editoptions:{
+					dataInit: function(element){
+						$(element).keyup(function(){
+							var val1 = element.value;
+							var num  = new Number(val1);
+							if(isNaN(num)){
+								alert("숫자만 입력 가능합니다.");
+								element.value = ''; 
+							}
+						})
+					}, maxlength:8
+				}
+			},
+			{ name: 'BAS_YY'    , width : 100, align: 'center', hidden:true, editoptions:{readonly: true}},
 			{ name: 'BAS_YY_SEQ', width : 100, align: 'center', hidden:true, editoptions:{readonly: true}},
-			{ name: 'STATUS_P', width : 100, align: 'center', hidden:true, editoptions:{readonly: true}}
+			{ name: 'STATUS_P'  , width : 100, align: 'center', hidden:true, editoptions:{readonly: true}}
 			];
 		
 		var gSetting = {
-			height:200,
-			pgflg:false,
-			exportflg : false,  //엑셀, pdf 출력 버튼 노출여부
-			colsetting : false,  // 컬럼 설정 버튼 노출여부
-			searchInit : false,  // 데이터 검색 버튼 노출여부
-			resizeing : true,
-			rownumbers:false,
-			shrinkToFit: true,
-			autowidth: true,
-			queryPagingGrid:false // 쿼리 페이징 처리 여부     
+			height         : 200,
+			pgflg          : false,
+			exportflg      : false,    //엑셀, pdf 출력 버튼 노출여부
+			colsetting     : false,    // 컬럼 설정 버튼 노출여부
+			searchInit     : false,    // 데이터 검색 버튼 노출여부
+			resizeing      : true,
+			rownumbers     : false,
+			shrinkToFit    : true,
+			autowidth      : true,
+			queryPagingGrid: false     // 쿼리 페이징 처리 여부     
 
 		};
 		btGrid.createGrid('periodGrid', colName, colModel, gSetting);
-			  
 	}
 	
 	$(".withComma").on("keyup" , function(){
 		var tmpValue = $(this).val().replace(/[^0-9,]/g,'');
-		tmpValue = tmpValue.replace(/[,]/g,'');
-		// 천단위 콤마 처리 후 값 강제변경
-	    $(this).val(numberWithCommas(tmpValue));
+		tmpValue     = tmpValue.replace(/[,]/g,'');
+		/* 천단위 콤마 처리 후 값 강제변경 */
+		$(this).val(numberWithCommas(tmpValue));
 	});
 	
-	//조회 버튼
+	/* 조회 버튼 */
 	$("#cBtnSearch").on("click", function(){
 		cSearch();
 	});
 	
-	//닫기 버튼
+	/*닫기 버튼 */
 	$("#cBtnCancel").on("click", function(){
 		$('#productPeriodPopUp').dialog('close');
 	});
 	
-	//행추가
+	/******************************************** 
+	 * @Subject : 행추가 버튼 클릭
+	 * @Content : 내용 작성이 가능한 행 추가
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$("#btn_addRow").on("click" , function(){
 		btGrid.gridSaveRow('periodGrid');
-		var rowId = $('#periodGrid').jqGrid('getGridParam', 'selrow');
+		var rowId   = $('#periodGrid').jqGrid('getGridParam', 'selrow');
 		var rowData = $("#periodGrid").getRowData(rowId);
 		var data = {
-				"BAS_YY" : $("#BAS_YY_PP").val(),
+				"BAS_YY"     : $("#BAS_YY_PP").val(),
 				"BAS_YY_SEQ" : rowData["BAS_YY_SEQ"],
-				"STATUS_P" : "I"
+				"STATUS_P"   : "I"
 			};
 		btGrid.gridAddRow("periodGrid", "last", data);
 	});
-   
-	//행삭제
+
+	/******************************************** 
+	 * @Subject : 행삭제 버튼 클릭
+	 * @Content : 행추가 버튼으로 추가한 행 삭제 (이미 저장된 데이터는 행삭제 버튼으로 삭제 불가능)
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$("#btn_delRow").on("click" , function(){
 		var rowId =$("#periodGrid").jqGrid('getGridParam','selrow');
-		var args = "";
+		var args  = "";
 		if (rowId == null) {
 			args = '<s:message code='title.row'/>';
-				alert("<s:message code='errors.selectdel' arguments='" + args + "' javaScriptEscape='false'/>");
-				return;
+			alert("<s:message code='errors.selectdel' arguments='" + args + "' javaScriptEscape='false'/>");
+			return;
 		}else{
 			var grdData = $("#periodGrid").jqGrid("getCell", rowId, "STATUS_P");
 			if(grdData != 'I'){
@@ -297,14 +321,20 @@ $(function(){
 			}
 		}
 	});
-   
-	//저장버튼
+
+	/******************************************** 
+	 * @Subject : 저장 버튼 클릭
+	 * @Content : 수정 내용 저장
+	 * @See     : cSearch()
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$("#btn_save").on("click" , function(){
 		btGrid.gridSaveRow('periodGrid');
-		var gridData  = $("#periodGrid").getRowData();
-		var ids = $("#periodGrid").jqGrid("getDataIDs");
+		var gridData    = $("#periodGrid").getRowData();
+		var ids         = $("#periodGrid").jqGrid("getDataIDs");
 		var gridDataChk = [];
-		var cnt = 0;
+		var cnt         = 0;
 		
 		for(var i = 0; i < ids.length; i++){
 			var saveSsn = $("#periodGrid").jqGrid('getCell', ids[i] ,'SSN_GBN');
@@ -324,12 +354,10 @@ $(function(){
 		var args = '';
 		$.each(gridData , function(i , json){
 			$.each(json, function(k , value){
-
 				if(k == "STATUS_P" && json[k] != 'R'){
 					cnt++;
 					return;
 				}
-				
 			});
 		});
 		
@@ -389,7 +417,7 @@ $(function(){
 			}
 		}
 		
-		var url = '/product/savePeriodInfo.do';
+		var url   = '/product/savePeriodInfo.do';
 		var param = {"detail"      : gridDataChk
 					,"BAS_YY"      : $("#BAS_YY_PP").val()
 					};
@@ -406,7 +434,13 @@ $(function(){
 		}
 	});
    
-	//삭제 버튼
+	/******************************************** 
+	 * @Subject : 삭제 버튼 클릭
+	 * @Content : 저장되있는 행 삭제
+	 * @See     : cSearch()
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$("#btn_del").on("click" , function(){
 		var rowId =$("#periodGrid").jqGrid('getGridParam','selrow');
 		var args    = "";
@@ -415,8 +449,8 @@ $(function(){
 			return;
 		}
 		var grdData = $("#periodGrid").jqGrid("getCell", rowId, "STATUS_P");
-		var selBas = $("#periodGrid").jqGrid("getCell", rowId, "BAS_YY");
-		var selSeq = $("#periodGrid").jqGrid("getCell", rowId, "BAS_YY_SEQ");
+		var selBas  = $("#periodGrid").jqGrid("getCell", rowId, "BAS_YY");
+		var selSeq  = $("#periodGrid").jqGrid("getCell", rowId, "BAS_YY_SEQ");
 		
 		if(grdData == 'I'){
 			alert("<s:message code='errors.statusI' javaScriptEscape='false'/>"); 
@@ -427,7 +461,7 @@ $(function(){
 					 "BAS_YY"       : selBas
 					,"BAS_YY_SEQ"    : selSeq
 					}
-		var url = "/product/deletePeriodInfo.do"
+		var url   = "/product/deletePeriodInfo.do"
 		
 		if(confirm("<s:message code='confirm.delete'/>")){
 			fn_ajax(url, false, param, function(data, xhr){
@@ -496,13 +530,18 @@ function productPeriodDetailPopUp(param){
 }
 */
 
-//복사등록 팝업
+/******************************************** 
+ * @Subject : 복사등록 버튼 클릭
+ * @Content : 기준년도 복사등록 팝업 Open
+ * @Since   : 2024.07.11
+ * @Author  : 
+ ********************************************/
 function cCopy(param){
-	var url = "/popup/ProductCopyPopUp.do";
-	var pid = "productCopyPopUp";   //팝업 페이지의 최상위 div ID
+	var url      = "/popup/ProductCopyPopUp.do";
+	var pid      = "productCopyPopUp";   //팝업 페이지의 최상위 div ID
 	var formData = formIdAllToMap('frmProductPeriod');
 	var param = { 
-		"branch" : "period",
+		"branch"   : "period",
 		"P_BAS_YY" : $("#BAS_YY_PP option:eq(0)").val()
 	};
 	
@@ -510,8 +549,8 @@ function cCopy(param){
 		if(data.BAS_YY != ""){
 			$('#productPeriodPopUp').dialog('close');
 			
-			var url = "/popup/ProductPeriodPopUp.do";
-			var pid = "productPeriodPopUp";   //팝업 페이지의 최상위 div ID
+			var url   = "/popup/ProductPeriodPopUp.do";
+			var pid   = "productPeriodPopUp";    //팝업 페이지의 최상위 div ID
 			var param = {"BAS_YY_PP" : data.BAS_YY};
 			
 			popupOpen(url, pid, param, function(data){

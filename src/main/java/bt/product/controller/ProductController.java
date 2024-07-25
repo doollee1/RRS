@@ -1,6 +1,7 @@
 package bt.product.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -8,10 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import bt.btframework.utils.BMap;
@@ -320,4 +323,90 @@ public class ProductController {
 		respData.put("selectList"   , productService.selectGetCommonCode(param));
 		return respData;
 	}
+	/**
+	 * 미팅샌딩 관리화면
+	 * @param param
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/product/PickupManager.do")
+	public String pickupManager(ModelMap model) throws Exception{
+	
+		model.addAttribute("basyy", productService.selectBasYY(null));
+		
+		BMap param = new BMap();
+		param.put("HEAD_CD", 500210);     // 미팅샌딩
+		model.addAttribute("mSending"  , productService.selectRefCode(param));
+		
+		BMap param2 = new BMap();
+		param2.put("HEAD_CD", 500090);    // 시즌구분
+		param2.put("Season", true);		
+		model.addAttribute("ssn_gbn"   , productService.selectGetCommonCode(param2));
+	
+		return "/product/PickupManager";
+	}
+	/**
+	 * 미팅샌딩정보  호출
+	 * @param param
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/product/selectMSendingInfoList.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData selectMSendingInfoList(@RequestParam Map<String, Object> param, Model model) throws Exception {
+		BRespData respData = new BRespData();
+
+		try {
+			respData.put("result"   , productService.selectMSendingInfoList(param));
+		} catch (Exception e) {
+			respData.put("dup", "N");
+			respData.put("message", e.getMessage());
+		}
+		
+		return respData;
+	}
+	/**
+	 * 야간할증정보  호출
+	 * @param param
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/product/selectExtraChargeInfoList.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData selectExtraChargeInfoList(@RequestParam Map<String, Object> param, Model model) throws Exception {
+		BRespData respData = new BRespData();
+
+		try {
+			respData.put("result"   , productService.selectExtraChargeInfoList(param));
+		} catch (Exception e) {
+			respData.put("dup", "N");
+			respData.put("message", e.getMessage());
+		}
+		
+		return respData;
+	}
+	/**
+	 * 미팅샌딩이용금액 수정 
+	 * @param param
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/product/updateMSendingCost.do", method = RequestMethod.POST)
+	@ResponseBody
+	public BRespData updateMSendingCost(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
+		BMap param = reqData.getParamDataMap("param");				
+		List<BMap> paramList = reqData.getParamDataList("gridData");
+		
+		BRespData respData = new BRespData();
+
+		if(!productService.updateMSendingCost(param, paramList)){
+			respData.put("dup", "Y");
+		}
+		
+		return respData;
+	}	
 }

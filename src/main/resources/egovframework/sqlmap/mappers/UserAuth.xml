@@ -11,18 +11,18 @@
 			  ,A.STATUS
 			  ,B.NAME_FULL
 			  ,B.USER_TP
-			  ,C.CODE_NM USER_TP_NM
+			  ,C.CODE_NM   AS USER_TP_NM
 			  ,B.USER_GD
 			  ,B.DEPT_CD
-			  ,'' DEPT_NM
-		  FROM SY_POLICY_U A  
-	INNER JOIN BC_USER B  
-			ON A.COMP_CD = B.COMP_CD
-		   AND A.USER_ID = B.USER_ID
-	INNER JOIN BC_COMM_L C  
-			ON B.USER_TP = C.CODE
-		   AND C.HEAD_CD = '100200'
-		 WHERE A.COMP_CD = #{G_COMP_CD}
+			  ,''          AS DEPT_NM
+		  FROM SY_POLICY_U AS A  
+	INNER JOIN BC_USER     AS B  
+			ON A.COMP_CD   = B.COMP_CD
+		   AND A.USER_ID   = B.USER_ID
+	INNER JOIN BC_COMM_L   AS C  
+			ON B.USER_TP   = C.CODE
+		   AND C.HEAD_CD   = '100200'
+		 WHERE A.COMP_CD   = #{G_COMP_CD}
 		   AND A.POLICY_CD = #{POLICY_CD}
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
@@ -51,26 +51,26 @@
 	
 	<update id="updateUserAuthInfo" parameterType="BMap">
 		UPDATE SY_POLICY_U
-		   SET STATUS = #{STATUS}
-			  ,UPT_DT = NOW()
-			  ,UPT_ID = #{LOGIN_USER}
-		 WHERE COMP_CD = #{COMP_CD}
+		   SET STATUS    = #{STATUS}
+			  ,UPT_DT    = NOW()
+			  ,UPT_ID    = #{LOGIN_USER}
+		 WHERE COMP_CD   = #{COMP_CD}
 		   AND POLICY_CD = #{POLICY_CD}
-		   AND USER_ID = #{USER_ID}
+		   AND USER_ID   = #{USER_ID}
 	</update>
 	
 	<delete id="deleteUserAuthInfo" parameterType="BMap">
 		DELETE SY_POLICY_U
-		 WHERE COMP_CD = #{COMP_CD}
+		 WHERE COMP_CD   = #{COMP_CD}
 		   AND POLICY_CD = #{POLICY_CD}
-		   AND USER_ID = #{USER_ID}
+		   AND USER_ID   = #{USER_ID}
 	</delete>
 	
 	<select id="selectUserAuthCnt" parameterType="BMap" resultType="int">
 		SELECT COUNT(1)
 		  FROM SY_POLICY_U  
-		 WHERE COMP_CD = #{COMP_CD}
+		 WHERE COMP_CD   = #{COMP_CD}
 		   AND POLICY_CD = #{POLICY_CD}
-		   AND USER_ID = #{USER_ID}
+		   AND USER_ID   = #{USER_ID}
 	</select>
 </mapper>

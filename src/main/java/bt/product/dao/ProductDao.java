@@ -1,6 +1,7 @@
 package bt.product.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -182,6 +183,44 @@ public class ProductDao extends DBAbstractMapper {
 	@SuppressWarnings("unchecked")
 	public List<BMap> selectReserveStatus(BMap param )throws Exception{
 		return list("ProductMapper.selectReserveStatus", param);
+	}
+	/**
+	 * 미팅샌딩 정보 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> selectMSendingInfoList(Map<String, Object> param)throws Exception{
+		return list("ProductMapper.selectMSendingInfoList", param);
+	}
+	/**
+	 * 야간할증비용 정보 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> selectExtraChargeInfoList(Map<String, Object> param)throws Exception{
+		return list("ProductMapper.selectExtraChargeInfoList", param);
+	}
+	/**
+	 * 공통코드 참조 리스트 가져오기
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BMap> selectRefCode(BMap param) throws Exception{
+		return list("ProductMapper.selectRefCode", param);
+	}
+	/**
+	 * 미팅샌딩 이용금액 수정
+	 * @param param
+	 * @throws Exception
+	 */
+	public void updateMSendingCost(BMap param )throws Exception{
+		update("ProductMapper.updateMSendingCost", param);
 	}
 	
 }

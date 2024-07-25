@@ -22,37 +22,34 @@
 </div>
 
 <div id="productDelPopup">
-	<!---------->
 	<div class="ct_grid_top_left">
 		<h4>일괄 삭제조건</h4>
-	</div>   
+	</div>
 	<div class="tab_top_search">
 		<table>
 			<colgroup>
 				<col width="100px" />
 				<col width="200px" />
 			</colgroup>
-			 
 			<tbody>
 				<tr>
 					<td class="small_td"><p><s:message code="product.baseyear"/></p></td>
 					<td>
 						<select id="BAS_YY_PP" name="BAS_YY_PP" class="cmc_combo" style=width:80%;>
-						<c:forEach var="i" items="${basyy}">
-	     					<option value="${i.BAS_YY}" >${i.BAS_YY}</option>
-						</c:forEach>
-			         </select>
-			      </td>
-			      <td>
-			      	<button class="btn btn-default" id="btn_del"><s:message code='button.delete'/></button>
-			      </td>
-			      <td>
-			      	<button class='btn btn-default ' id='cBtnCancel' type='button'>닫기</button>
-			      </td>
-			   </tr>
+							<c:forEach var="i" items="${basyy}">
+								<option value="${i.BAS_YY}" >${i.BAS_YY}</option>
+							</c:forEach>
+						</select>                 
+					</td>
+					<td>
+						<button class="btn btn-default" id="btn_del"><s:message code='button.delete'/></button>
+					</td>
+					<td>
+						<button class='btn btn-default ' id='cBtnCancel' type='button'>닫기</button>
+					</td>
+				</tr>
 			</tbody>
 		</table>
-		
 	</div> 
 	<br>
 </div>
@@ -61,13 +58,18 @@
 $(function(){
 	var toYear =  new Date().getFullYear();
 	$("#BAS_YY_PP").val(toYear);
-	
+	/******************************************** 
+	 * @Subject : 팝업 창 기본 설정
+	 * @Content : 화면 비율 및 버튼 이벤트
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$('#productDelPopup').dialog({
-		title: '상품정보 일괄삭제',
+		title   : '상품정보 일괄삭제',
 		autoOpen: false,
-		height: 120,
-		width: 400,
-		modal: true,
+		height  : 120,
+		width   : 400,
+		modal   : true,
 		close: function() {
 			/* 필수로 들어가야함 */
 			popupClose($(this).attr('id'));
@@ -76,7 +78,12 @@ $(function(){
 		},
 	});
    
-	//삭제 버튼
+	/******************************************** 
+	 * @Subject : 삭제 버튼 클릭
+	 * @Content : 선택 년도 상품 정보 일괄 삭제 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$("#btn_del").on("click" , function(){
 		if(confirm($("#BAS_YY_PP").val()+"년도의 상품정보를 일괄 삭제하시겠습니까?") == true){
 			var url = "/product/deleteProductInfo.do";
@@ -95,7 +102,7 @@ $(function(){
 		}
 	});
 	
-	//닫기 버튼
+	/* 닫기 버튼 */
 	$("#cBtnCancel").on("click", function(){
 		$('#productDelPopup').dialog('close');
 	});

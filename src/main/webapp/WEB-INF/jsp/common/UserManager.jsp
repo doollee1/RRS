@@ -12,7 +12,7 @@
 
 <!-- dummy -->
 <div class="top_button_h_margin"></div>
-	
+
 <div id="ctm_wrap">
 	<!-- Search condition start -->
 	<form id="frmSearch" action="#">
@@ -35,16 +35,16 @@
 				</tbody>
 			</table>
 		</div>
-		<!-------------->	
+		<!-------------->
 	</form>
 	<!-- Search condition end -->
-	
+
 	<!-- grid start -->
 	<div id="ctm_mg_wrap">
 		<div class="ct_grid_top_wrap">
 			<div class="ct_grid_top_left">
 				<h4><s:message code='title.userlist'/></h4>
-			</div>	
+			</div>
 			<div class="ct_grid_top_right"></div>
 		</div>
 		<table id="grid1"></table>
@@ -54,7 +54,7 @@
 </div>
 
 <script type="text/javascript">
-<%-- 
+<%--
   * ========= 공통버튼 클릭함수 =========
   * 검색 : cSearch()
   * 추가 : cAdd()
@@ -71,29 +71,34 @@
   * 버튼 표시/숨김 : setCommBtn('ret', true) : Search,Add,Del,Save,Print,Upload,Excel,Pdf,Cancel,User1,2,3,4,5
   * ===============================
 --%>
-	//init
+	/******************************************** 
+	* @Subject : 화면 OPEN 시 최초 실행 함수
+	* @Content : 
+	* @Since   : 2024.07.11
+	* @Author  : 
+	********************************************/
 	$(function() {
 		$('#cBtnAdd').text("<s:message code='notice.btn.new'/>");
 		$('#cBtnAdd').addClass("cls");
 		$('#cBtnAdd').addClass("cBtnWrite_style");
-		
+
 		initLayout();
 		createGrid1();
 		cSearch();
-		
+
 		/* grid1 Event */
 		$('#grid1').jqGrid('setGridParam', {
 			ondblClickRow: function(rowid, iRow, iCol, e) {
 				grid1_ondblClickRow(rowid, iRow, iCol, e);
 			}
 		});
-		
+
 		$('#S_USER_ID').on('keypress', function (e) {
 			if(e.which == 13){
 				cSearch(null)
 			}
 		});
-		
+
 		$('#S_USER_NM').on('keypress', function (e) {
 			if(e.which == 13){
 				cSearch(null)
@@ -112,7 +117,7 @@
 			var url = "/common/DeptPopup.do";
 			var pid = "deptPopup"
 			var param = {"S_DEPT_CD" : $("#DEPT_CD").val()};
-			
+
 			popupOpen(url, pid, param, function(data){
 				if(!fn_empty(data)){
 					$("#DEPT_CD").val(data[0].DEPT_CD);
@@ -123,9 +128,15 @@
 		*/
 	});
 
+	/******************************************** 
+	 * @Subject : 그리드 생성 및 초기화
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function createGrid1(){
 		var colName = ['<s:message code='system.compcd'/>',
-				    '<s:message code='system.UserID'/>',
+					'<s:message code='system.UserID'/>',
 					'<s:message code='system.name'/>',
 					'<s:message code='system.secondname'/>',
 					'<s:message code='system.fullname'/>',
@@ -138,25 +149,26 @@
 					'<s:message code='system.email'/>',
 					'<s:message code='system.lockyn'/>',
 					'<s:message code='common.language'/>',
-					'<s:message code='common.status'/>']
+					'<s:message code='common.status'/>'
+					];
 		var colModel = [
-			{ name: 'COMP_CD', width: 100, align: 'center', hidden: true },
-			{ name: 'USER_ID', width: 150, align: 'left' },
-			{ name: 'NAME_1ST', width: 150, align: 'left' },
-			{ name: 'NAME_2ND', width: 150, align: 'left' },
-			{ name: 'NAME_FULL', width: 200, align: 'left' },
-			{ name: 'USER_TP', width: 70, align: 'center', hidden:true },
-			{ name: 'CRE_TP', width: 70, align: 'center', hidden:true },
-			{ name: 'USER_TP_NM', width: 100, align: 'center' },
-			{ name: 'USER_GD', width: 100, align: 'center' , hidden:true},
-			{ name: 'DEPT_NM', width: 150, align: 'left' },
-			{ name: 'LAND_CD', width: 100, align: 'left', hidden:true },
-			{ name: 'E_MAIL', width: 200, align: 'left' },
-			{ name: 'LOCK_YN', width: 75, align: 'center' },
-			{ name: 'LAMG_NM', width: 75, align: 'center' },
-			{ name: 'STATUS_NM', width: 75, align: 'center'}
-	  	];
-		
+			{ name: 'COMP_CD',    width: 100, align: 'center', hidden:true },
+			{ name: 'USER_ID',    width: 150, align: 'left'  },
+			{ name: 'NAME_1ST',   width: 150, align: 'left'  },
+			{ name: 'NAME_2ND',   width: 150, align: 'left'  },
+			{ name: 'NAME_FULL',  width: 200, align: 'left'  },
+			{ name: 'USER_TP',    width: 70,  align: 'center', hidden:true },
+			{ name: 'CRE_TP',     width: 70,  align: 'center', hidden:true },
+			{ name: 'USER_TP_NM', width: 100, align: 'center'},
+			{ name: 'USER_GD',    width: 100, align: 'center', hidden:true },
+			{ name: 'DEPT_NM',    width: 150, align: 'left'  },
+			{ name: 'LAND_CD',    width: 100, align: 'left',   hidden:true },
+			{ name: 'E_MAIL',     width: 200, align: 'left'  },
+			{ name: 'LOCK_YN',    width: 75,  align: 'center'},
+			{ name: 'LAMG_NM',    width: 75,  align: 'center'},
+			{ name: 'STATUS_NM',  width: 75,  align: 'center'}
+		];
+
 		var gSetting = {
 				height:632,
 				pgflg:true,
@@ -167,13 +179,19 @@
 				rownumbers:false,
 				shrinkToFit: true,
 				autowidth: true,
-				queryPagingGrid:true // 쿼리 페이징 처리 여부				
+				queryPagingGrid:true // 쿼리 페이징 처리 여부
 		};
-		
+
 		btGrid.createGrid('grid1', colName, colModel, gSetting);
 		btGrid.gridResizing('grid1');
 	}
-	
+
+	/******************************************** 
+	 * @Subject : 검색 버튼 클릭
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function cSearch(currentPage){
 		var vCurrentPage = 1;
 		var vRowsPerPage;
@@ -187,34 +205,51 @@
 		vRowsPerPage = btGrid.getGridRowSel('grid1_pager');
 		$('#CURRENT_PAGE').val(vCurrentPage);
 		$('#ROWS_PER_PAGE').val(vRowsPerPage);
-		
+
 		var url = "/common/selectUserInfo.do";
-		
 		var formData = formIdAllToMap('frmSearch');
 		var param = {"param":formData};
-		
+
 		fn_ajax(url, false, param, function(data, xhr){
 			reloadGrid("grid1", data.result);
 			btGrid.gridQueryPaging($('#grid1'), 'cSearch', data.result);
 		});
 	}
-	
+
+	/******************************************** 
+	 * @Subject : 그리드 더블 클릭 이벤트 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function grid1_ondblClickRow(rowid, iRow, iCol, e){
 		var gridData = $("#grid1").getRowData(rowid);
 		var param = {
 			"COMP_CD" : gridData["COMP_CD"],
 			"USER_ID" : gridData["USER_ID"],
 			"USER_TP" : gridData["USER_TP"],
-			"CRE_TP" : gridData["CRE_TP"],
-			"AUTH" :auth
+			"CRE_TP"  : gridData["CRE_TP"],
+			"AUTH"    : auth
 		};
 		userPopup(param);
 	}
-	
+
+	/******************************************** 
+	 * @Subject : 추가 버튼 클릭
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function cAdd(){
 		userPopup();
 	}
-	
+
+	/******************************************** 
+	 * @Subject : 팝업창 호출 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function userPopup(param){
 		var url = "/common/UserInfoPopup.do";
 		var pid = "p_UserInfo";  //팝업 페이지의 취상위 div ID

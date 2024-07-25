@@ -12,9 +12,9 @@
 			  ,A.POLICY_DSC
 			  ,A.STATUS
 			  ,GETCODENM('USED_OR_NOT', A.STATUS, #{LANG}) AS STATUS_NM
-		  FROM SY_POLICY_H A 
-	INNER JOIN BC_COMM_L B 
-			ON A.STATUS = B.CODE
+		  FROM SY_POLICY_H A
+	INNER JOIN BC_COMM_L   B
+			ON A.STATUS  = B.CODE
 		   AND B.HEAD_CD = '100000'
 		 WHERE A.COMP_CD = #{G_COMP_CD}
 		<if test='USED_OR_NOT != null and USED_OR_NOT != ""'>
@@ -28,7 +28,7 @@
 		</if>
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
-	
+
 	<insert id="insertAuthInfo" parameterType="BMap">
 	/* Auth.xml -> insertAuthInfo */
 		INSERT INTO SY_POLICY_H
@@ -53,27 +53,26 @@
 					,#{LOGIN_USER}
 					)
 	</insert>
-	
+
 	<update id="updateAuthInfo" parameterType="BMap">
 		/* Auth.xml -> updateAuthInfo */
 		UPDATE SY_POLICY_H
-		   SET POLICY_NM = #{POLICY_NM}
-		      ,POLICY_DSC = #{POLICY_DSC}
-			  ,STATUS = #{STATUS}
-			  ,UPT_DT = NOW()
-			  ,UPT_ID = #{LOGIN_USER}
-		 WHERE COMP_CD = #{COMP_CD}
-		   AND POLICY_CD = #{POLICY_CD}
+		   SET POLICY_NM  = #{POLICY_NM}
+			  ,POLICY_DSC = #{POLICY_DSC}
+			  ,STATUS     = #{STATUS}
+			  ,UPT_DT     = NOW()
+			  ,UPT_ID     = #{LOGIN_USER}
+		 WHERE COMP_CD    = #{COMP_CD}
 	</update>
-		
+
 	<select id="selectAuthCnt" parameterType="BMap" resultType="int">
 	/* Auth.xml -> selectAuthCnt */
 		SELECT COUNT(1)
-		  FROM SY_POLICY_H 
-		 WHERE COMP_CD = #{G_COMP_CD}
+		  FROM SY_POLICY_H
+		 WHERE COMP_CD   = #{G_COMP_CD}
 		   AND POLICY_CD = #{POLICY_CD}
 	</select>
-	
+
 	<delete id="deleteAuthInfo" parameterType="BMap">
 		/* Auth.xml -> deleteAuthInfo */
 		DELETE FROM SY_POLICY_H

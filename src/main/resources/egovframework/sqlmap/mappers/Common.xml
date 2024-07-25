@@ -40,23 +40,23 @@
 	<delete id="deleteGridColInfo" parameterType="BMap">
 	/* Common.xml -> deleteGridColInfo */
 		DELETE FROM BC_GRIDINFO
-		 WHERE USER_ID = #{USER_ID}
+		 WHERE USER_ID     = #{USER_ID}
 		   AND WINDOW_NAME = #{WINDOWNAME}
-		   AND GRID_ID = #{GRIDID}
+		   AND GRID_ID     = #{GRIDID}
 	</delete>
 
 	<!-- 로그인 사용자의 그리드 정보 가져오기 -->
 	<select id="selectGridColInfoAll" parameterType="BMap" resultType="BMap">
 	/* Common.xml -> selectGridColInfoAll */
-		SELECT COMP_CD COMPCD
-			  ,USER_ID USERID
+		SELECT COMP_CD     COMPCD
+			  ,USER_ID     USERID
 			  ,WINDOW_NAME WINDOWNAME
-			  ,GRID_ID GRIDID
-			  ,COL_KEY COLKEY
-			  ,COL_NAME COLNAME
-			  ,COL_HIDDEN COLHIDDEN
-			  ,COL_WIDTH COLWIDTH
-			  ,COL_INX COLINX
+			  ,GRID_ID     GRIDID
+			  ,COL_KEY     COLKEY
+			  ,COL_NAME    COLNAME
+			  ,COL_HIDDEN  COLHIDDEN
+			  ,COL_WIDTH   COLWIDTH
+			  ,COL_INX     COLINX
 		  FROM BC_GRIDINFO
 		 WHERE COMP_CD = #{COMP_CD}
 		   AND USER_ID = #{USER_ID}
@@ -73,7 +73,7 @@
 		  FROM BC_COMM_H HEAD
 		  JOIN BC_COMM_L TAIL ON HEAD.HEAD_CD = TAIL.HEAD_CD AND TAIL.STATUS = 'Y'
 		 WHERE HEAD.HEAD_ID = #{HEAD_CD}
-		   AND HEAD.STATUS = 'Y'
+		   AND HEAD.STATUS  = 'Y'
 		 ORDER BY TAIL.PRIORITY
 	</select>
 
@@ -87,8 +87,8 @@
 			  ,REF_CHR4
 			  ,REF_CHR5
 		  FROM BC_COMM_L
-		 WHERE HEAD_CD = #{HEAD_CD}
-		   AND STATUS = 'Y'
+		 WHERE HEAD_CD  = #{HEAD_CD}
+		   AND STATUS   = 'Y'
 		<if test="REF_CHR1 != null and REF_CHR1 != ''">
 		   AND REF_CHR1 = #{REF_CHR1}
 		</if>

@@ -80,7 +80,7 @@
 var args;
 
 /******************************************** 
- * @Subject : 공통코드 관리 화면
+ * @Subject : 화면 OPEN 시 최초 실행 함수
  * @Content : 
  * @Since   : 2024.07.11
  * @Author  : 
@@ -148,7 +148,7 @@ $(function() {
 });
 
 /******************************************** 
- * @Subject : 공통코드 마스터 그리드 설정
+ * @Subject : 공통코드 마스터 그리드 설정 및 초기화
  * @Content : 
  * @Since   : 2024.07.11
  * @Author  : 
@@ -216,7 +216,7 @@ function createGrid1(){
 }
 
 /******************************************** 
- * @Subject : 공통코드 디테일 그리드 설정
+ * @Subject : 공통코드 디테일 그리드 설정 및 초기화
  * @Content : 
  * @Since   : 2024.07.11
  * @Author  : 
@@ -323,7 +323,7 @@ function cSearch(currentPage){
 }
 
 /******************************************** 
- * @Subject : [저장] 버튼 클릭
+ * @Subject : 저장 버튼 클릭
  * @Content : 
  * @Since   : 2024.07.11
  * @Author  : 
@@ -376,7 +376,12 @@ function cSave(){
 	}
 }
 
-/* 공통코드마스터 그리드 클릭시 */
+/******************************************** 
+ * @Subject : 공통코드마스터 그리드 행 클릭시
+ * @Content : 
+ * @Since   : 2024.07.11
+ * @Author  : 
+ ********************************************/
 function grid1_onCilckRow(e, rowid, status){
 	var ids = $('#grid1').jqGrid('getDataIDs');
 	for (var i = 1, len = ids.length; i < len; i++) {
@@ -390,7 +395,12 @@ function grid1_onCilckRow(e, rowid, status){
 	commonDetailSearch(null, rowid);
 }
 
-/* 공통코드디테일 조회함수 */
+/******************************************** 
+ * @Subject : 공통코드디테일 조회 함수
+ * @Content : 
+ * @Since   : 2024.07.11
+ * @Author  : 
+ ********************************************/
 function commonDetailSearch(currentPage, rowid){
 	var vCurrentPage = 1;
 	var vRowsPerPage;
@@ -446,7 +456,7 @@ function addCommonCodeDetail(){
 }
 
 /******************************************** 
- * @Subject : 공통코드 관리 삭제 버튼 클릭
+ * @Subject : 삭제 버튼 클릭
  * @Content : 디테일 그리드에서 선택한 내용을 삭제
  * @Since   : 2024.07.11
  * @Author  : 

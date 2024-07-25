@@ -89,7 +89,6 @@ $(function() {
 	 * @Author  : 
 	 ********************************************/
 function fn_Init(){
-	//var fromDay   = getOneWeekBefore();
 	var toDay     = preMonth();     //이전달 첫날
 	var lastMonth = getlastMonth(); //이번달 마지막날
 
@@ -100,6 +99,7 @@ function fn_Init(){
 
 	createQuotationGrid();
 
+	/* QnA 그리드 행 더블클릭 이벤트 */
 	$('#quotationGrid').jqGrid('setGridParam', {
 		ondblClickRow: function(rowid) {
 			var selRowData = $("#quotationGrid").jqGrid("getRowData",rowid);
@@ -113,7 +113,7 @@ function fn_Init(){
 }
 
 	/******************************************** 
-	 * @Subject : 그리드 설정
+	 * @Subject : 그리드 설정 및 초기화
 	 * @Content : 
 	 * @Since   : 2024.07.11
 	 * @Author  : 
@@ -149,7 +149,7 @@ function createQuotationGrid() {
 }
 
 	/******************************************** 
-	 * @Subject : [검색] 버튼 클릭
+	 * @Subject : 검색 버튼 클릭
 	 * @Content : 
 	 * @Since   : 2024.07.11
 	 * @Author  : 
@@ -172,43 +172,36 @@ function cSearch(currentPage) {
 	});
 }
 
-function getOneWeekBefore(){
-	var today = new Date();
-	var dd = today.getDate()-6;
-	var mm = today.getMonth()+1;
-	var yyyy = today.getFullYear();
-
-	if(dd < 10) {
-		dd='0'+dd
-	}
-
-	if(mm < 10) {
-		mm='0'+mm
-	}
-
-	return dd + '.' + mm + '.'+yyyy;
-}
-
-/* 미리 설정한 포멧으로 변경 */
+	/******************************************** 
+	 * @Subject : 각 데이터에 알맞는 FORMAT 부여
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 function fn_dataSet(data){
 	var array = [];
 	for (var i = 0; i < data.length; i++) {
-	   var obj = new Object;
-	   $.each(data[i] , function(key , value){
-		  if(key == "REG_DT" || key == "CHK_IN_DT" || key == "CHK_OUT_DT"){
-			 value = Util.converter.dateFormat1(value);
-		  }else if(key == "TOT_PERSON" || key == "DEP_AMT" || key == "TOT_AMT"){
-			 value = fn_comma(value);
-		  }
-		  obj[key] = value;
-		  delete obj;
-	   });
-		 array.push(obj);
+		var obj = new Object;
+		$.each(data[i] , function(key , value){
+			if(key == "REG_DT" || key == "CHK_IN_DT" || key == "CHK_OUT_DT"){
+				value = Util.converter.dateFormat1(value);
+			}else if(key == "TOT_PERSON" || key == "DEP_AMT" || key == "TOT_AMT"){
+				value = fn_comma(value);
+			}
+			obj[key] = value;
+			delete obj;
+		});
+		array.push(obj);
 	}
 	return array;
- }
+}
 
-/* 행 더블클릭 시 팝업창 호출 */
+	/******************************************** 
+	 * @Subject : 그리드 행 더블클릭시 호출 되는 함수
+	 * @Content : 해당 Qna 상세정보를 팝업창으로 보여준다
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 function reservePopup(param) {
 	var url = "/common/QnaView.do";
 	var pid = "qnaPopup"; //팝업 페이지의 취상위 div ID

@@ -1,6 +1,7 @@
 package bt.product.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -200,4 +201,60 @@ public class ProductService {
 	public List<BMap> selectReserveStatus(BMap param) throws Exception{
 		return productDao.selectReserveStatus(param);
 	}
+	/**
+	 * 미팅샌딩 정보 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> selectMSendingInfoList(Map<String, Object> param) throws Exception{
+		return productDao.selectMSendingInfoList(param);
+	}
+	/**
+	 * 야간할증비용 정보 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BMap> selectExtraChargeInfoList(Map<String, Object> param) throws Exception{
+		return productDao.selectExtraChargeInfoList(param);
+	}
+
+	/**
+	 * 공통코드 참조 리스트 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	
+	public List<BMap> selectRefCode(BMap param) throws Exception {
+		return productDao.selectRefCode(param);
+	}
+
+	/**
+	 * 미팅샌딩 이용금액 수정
+	 * @param param
+	 * @return 
+	 * @return 
+	 * @throws Exception
+	 */
+	public Boolean updateMSendingCost(BMap param, List<BMap> paramList) throws Exception{
+		Boolean isValid = true;
+		try {
+			
+			for(int i = 0; i < paramList.size(); i++){
+				BMap map = new BMap(paramList.get(i));				
+				map.put("LOGIN_USER", LoginInfo.getUserId());
+				map.put("BAS_YY", param.getString("BAS_YY"));
+				productDao.updateMSendingCost(map);  // 이용금액 수정 
+			}
+		}
+		catch (Exception e) {
+			e.getStackTrace();
+			isValid = false;
+		}
+		return isValid;
+	}
+	
 }
+	

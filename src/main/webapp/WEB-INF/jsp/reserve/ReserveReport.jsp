@@ -115,7 +115,7 @@
 	 * @Subject : 화면 OPEN 시 최초 실행 함수
 	 * @Content : 
 	 * @Since   : 2024.07.11
-	 * @Author  : 이주형
+	 * @Author  : 
 	 ********************************************/
 	$(function() {
 		setCommBtn("Save", false);
@@ -128,6 +128,12 @@
 		});
 	});
 
+	/******************************************** 
+	 * @Subject : 기본 설정 값 셋팅 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function fn_Init(){
 		var fromDay = preMonth();   //이전달 첫날
 		var toDay   = getlastMonth();   //이번달 마지막날
@@ -140,6 +146,12 @@
 		viewGrid(); // 초기 grid 생성
 	}
 
+	/******************************************** 
+	 * @Subject : 기본 설정 값 셋팅 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function viewGrid(vFROM_DT, vTO_DT) {
 		let FROM_DT = '';
 		let TO_DT = '';
@@ -159,6 +171,12 @@
 		setGroupHeadersGrid(FROM_DT, TO_DT);
 	}
 
+	/******************************************** 
+	 * @Subject : 조회 내역 그리드 설정 및 초기화
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function createreserveReportGrid(FROM_DT, TO_DT) {
 		var defaultColName = [
 			'예약 라운딩',
@@ -260,7 +278,12 @@
 		jQuery("#reserveReportGrid").jqGrid("setLabel", "PRIM_ADD_CNT", "", "", {style: "display: none"});
 	}
 
-	// 월별 그리드
+	/******************************************** 
+	 * @Subject : 예약 라운딩 그리드 설정 및 초기화
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function createreserveDayReportGrid(FROM_DT, TO_DT) {
 		const sFromDt = FROM_DT.replaceAll(".","");
 		const sToDt   = TO_DT.replaceAll(".","");
@@ -317,7 +340,12 @@
 
 	}
 
-	// 그리드 헤더 세팅
+	/******************************************** 
+	 * @Subject : 조회 내역 그리드 헤더 설정
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 이주형
+	 ********************************************/
 	function setGroupHeadersGrid(FROM_DT, TO_DT) {
 		const defaultGroupHeader = [
 			{startColumnName: 'REQ_DT'    , numberOfColumns: 2, titleText: '예약일자'},
@@ -337,7 +365,12 @@
 		});
 	}
 
-	//상세정보보기 버튼
+	/******************************************** 
+	 * @Subject : 상세정보보기 버튼 생성
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 이주형
+	 ********************************************/
 	function showDetail(cellvalue, options, rowObject){
 		var str = "";
 		var rowid = options.rowId;
@@ -349,7 +382,12 @@
 		return str;
 	}
 
-	//상세정보보기 버튼 클릭시 팝업창
+	/******************************************** 
+	 * @Subject : 상세정보보기 버튼 클릭 시
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 이주형
+	 ********************************************/
 	function fn_detail(rowid){
 		var selRowData = $("#reserveReportGrid").jqGrid("getRowData",rowid);
 
@@ -364,7 +402,12 @@
 		});
 	}
 
-	// 조회
+	/******************************************** 
+	 * @Subject : 조회 버튼 클릭 
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function cSearch(currentPage) {
 		// paging
 		var vCurrentPage = 1;
@@ -423,7 +466,12 @@
 		});
 	}
 
-	// 조회내역 그리드 클릭 이벤트
+	/******************************************** 
+	 * @Subject : 조회내역 그리드 클릭 이벤트
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function grid1_onCilckRow(e, rowid, status){
 		selectNum = rowid;  // 선택 그리드 순번
 		origin_CHK_IN_DT  = $('#reserveReportGrid').jqGrid('getRowData',rowid).CHK_IN_DT;
@@ -450,7 +498,12 @@
 		}
 	}
 
-	// 예약 라운딩 그리드 row 초기화, 세팅
+	/******************************************** 
+	 * @Subject : 예약 라운딩 그리드 row 초기화, 세팅
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function DayGridSet() {
 		var FROM_DT = $("#FROM_DT").val();
 		var TO_DT   = $("#TO_DT").val();
@@ -465,6 +518,12 @@
 		}
 	}
 
+	/******************************************** 
+	 * @Subject : 저장 버튼 클릭
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function cSave() {
 		btGrid.gridSaveRow('reserveDayReportGrid');
 
@@ -486,7 +545,12 @@
 		});
 	}
 
-	//데이터 포멧 변경
+	/******************************************** 
+	 * @Subject : 데이터 포멧 변경 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function fn_dataSet(data){
 		var array = [];
 		for (var i = 0; i < data.length; i++) {
@@ -514,15 +578,24 @@
 		return array;
 	}
 
-	// 무슨 요일인지 체크
-	//ex) getDayOfWeek('2022-06-13')
+	/******************************************** 
+	 * @Subject : 요일 체크 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function getDayOfWeek(yyyyMMdd) {
 		const week = ['일', '월', '화', '수', '목', '금', '토'];
 		const dayOfWeek = week[new Date(yyyyMMdd).getDay()];
 		return dayOfWeek;
 	}
 
-	// 주말인 날짜 리턴
+	/******************************************** 
+	 * @Subject : 날짜가 주말인지 체크 하는 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function getWeekendOfMonth(FROM_DT, TO_DT) {
 		const from_dt = FROM_DT.replaceAll(/\./gi, '');
 		const to_dt   = TO_DT.replaceAll(/\./gi, '');
@@ -542,7 +615,12 @@
 		return weekendOfMonth;
 	}
 
-	//전화번호 변환
+	/******************************************** 
+	 * @Subject : 전화번호 설정한 포멧으로 변경하는 함수
+	 * @Content : ex.010-1111-1111 / 02-111-1111
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function formatPhoneNumber (input) {
 		var cleanInput = input.replaceAll(/[^0-9]/g, "");
 		var result = "";

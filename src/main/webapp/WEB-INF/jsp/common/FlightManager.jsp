@@ -54,7 +54,7 @@
 			<button class='cBtn cBtnAdd_style' id='cBtnAdd' type='button' onclick='cAdd();'>추가</button>
 			<button class='cBtn cBtnDel_style' id='cBtnDel' type='button' onclick='cDel();'>삭제</button>
 		</div>
-	</div>		
+	</div>
 	<!-- 그리드 시작 -->
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
 		<table id="flightgrid"></table>
@@ -72,7 +72,7 @@
 </style>
 
 <script type="text/javascript">
-<%-- 
+<%--
   * ========= 공통버튼 클릭함수 =========
   * 검색 : cSearch()
   * 추가 : cAdd()
@@ -101,21 +101,21 @@
 	$(function() {
 		initLayout();
 		createGrid();
-		
+
 		/* 그리드의 값이 바뀌면 해당 행의 상태값을 'U'로 변경 */
 		$("#flightgrid").on("change",function(){
 			var changeRowId  = $("#flightgrid").jqGrid("getGridParam", "selrow");
-			
+
 			if($("#flightgrid").jqGrid("getRowData", changeRowId).STATE != "I"){
-				$("#flightgrid").jqGrid("setCell",changeRowId , "STATE", "U"); 
+				$("#flightgrid").jqGrid("setCell",changeRowId , "STATE", "U");
 			}
-			
+
 			$("#flightgrid").jqGrid("saveRow",changeRowId);
 		});
-		
+
 		cSearch();
 	});
-	
+
 	/********************************************
 	 * @Subject : 그리드 설정 및 생성
 	 * @Content : 항공편 관리 그리드 설정 및 생성
@@ -145,11 +145,11 @@
 			{ name : 'STATUS'  , width: 40 , align : 'center', editable:true, edittype:"select", formatter : "select", editoptions:{value:{"Y":"Y","N":"N"}}},
 			{ name : 'CHK'     , index : 'CHK', width : 40, align : 'center', formatter : gridCboxFormat, sortable: false},
 			{ name : 'STATE'   , hidden:true}
-	  	];
+		];
 		var gSetting = {
-		        pgflg          : true,
-		        exportflg      : false, //엑셀, pdf 출력 버튼 노출여부
-		        colsetting     : false,
+				pgflg          : true,
+				exportflg      : false, //엑셀, pdf 출력 버튼 노출여부
+				colsetting     : false,
 				searchInit     : false,
 				resizeing      : true,
 				rownumbers     : false,
@@ -158,11 +158,16 @@
 				queryPagingGrid: false, // 쿼리 페이징 처리 여부
 				height:630
 		};
-		
+
 		btGrid.createGrid('flightgrid', colName, colModel, gSetting);
 	}
-	
-	/* 정규식을 통해 입력된 항공편 값이 올바른지 체크*/
+
+	/********************************************
+	 * @Subject : 정규식을 통해 입력된 항공편 값이 올바른지 체크
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  : 이주형
+	 ********************************************/
 	function codeFormat(object){
 		var format2 = /^[a-zA-Z0-9](?=.*[a-zA-Z])(?=.*[0-9]).{3,12}$/g;
 		var code;
@@ -171,32 +176,42 @@
 		}
 		else
 			code = object.toUpperCase();
-		
+
 		return code;
 	}
-	
-	/* 정규식을 통해 입력된 시간 값이 조건에 맞는지 체크 */
+
+	/********************************************
+	 * @Subject : 정규식을 통해 입력된 시간 값이 조건에 맞는지 체크
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  : 이주형
+	 ********************************************/
 	function timeFormat(object){
 		var time;
 		var format = /^\d{4}$/;
-		
+
 		if(object == " " || object == "" || !format.test(object)){
 			time = "";
 		}
 		else{
 			time = object.substr(0,2)+":"+object.substr(2,4);
 		}
-		
+
 		return time;
 	}
-	
-	/* getRowData함수로 원래의 값을 가져올때 */
+
+	/********************************************
+	 * @Subject : getRowData함수로 원래의 값을 가져올때
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  : 이주형
+	 ********************************************/
 	function unTimeFormat(object){
 		var time = object.replace(":","");
-		
+
 		return time;
 	}
-	
+
 	/********************************************
 	 * @Subject : 조회 버튼 클릭
 	 * @Content : DB에서 값을 가져와 그리드에 추가
@@ -208,9 +223,9 @@
 		flight_time = $('select#FLIGHT_TIME').val();    //조회조건(ex.출발 항공편)
 		var url = "/common/selectFlightInfo.do";
 		var param = {"TIME":flight_time,
-				     "NAME":flight_name
-				     };
-		
+					 "NAME":flight_name
+					 };
+
 		fn_ajax(url, false, param, function(data, xhr){
 			reloadGrid("flightgrid",data.result);
 		});
@@ -224,12 +239,12 @@
 	 ********************************************/
 	function cAdd(){
 		var addData = { "HEAD_CD": flight_time,
-					    "STATUS" : "Y",
-				        "STATE"  : "I"
-				      };
+						"STATUS" : "Y",
+						"STATE"  : "I"
+					  };
 		btGrid.gridAddRow("flightgrid", "last", addData);
 	}
-	
+
 	/********************************************
 	 * @Subject : 저장 버튼 클릭
 	 * @Content : 신규와 업데이트할 행을 나누어 각각의 배열을 만들고 DB에 저장한다
@@ -241,7 +256,7 @@
 			var gridData = $("#flightgrid").getRowData();
 			var insertData=[];
 			var updateData=[];
-			
+
 			/* 항공편이 입력된 값만 추가한다 */
 			for(var i=0;i<gridData.length;i++){
 				if(gridData[i].CODE_NM != ""){
@@ -253,30 +268,30 @@
 					}
 				}
 			}
-			
+
 			/* 아무런 변경 사항이 없을 때 */
 			if(insertData.length == 0 && updateData.length == 0){
 				alert("저장할 항목이 없습니다.");
 				return;
 			}
-			
+
 			var url = '/common/saveFlightInfo.do';
 			var param = {"IData" : insertData    //STATE가 I 인 데이터(insert)
-					    ,"UData" : updateData    //STATE가 U 인 데이터(update)
-					    };
-			
+						,"UData" : updateData    //STATE가 U 인 데이터(update)
+						};
+
 			fn_ajax(url, true, param, function(data, xhr){
 				if(data.success){
 					alert("<s:message code='info.save'/>");
 				}else{
 					alert("저장에 실패했습니다.");
 				}
-				
+
 				cSearch();
 			});
 		}
 	}
-	
+
 	/********************************************
 	 * @Subject : 삭제 버튼 클릭
 	 * @Content : 그리드 안의 삭제 [체크박스]에 체크된 행만 삭제
@@ -284,10 +299,10 @@
 	 * @Author  : 이주형
 	 ********************************************/
 	function cDel(){
+		var cnt = 0;
 		var ids = $("#flightgrid").jqGrid("getDataIDs");
 		var gridData = [];
-		var cnt = 0;
-		
+
 		btGrid.gridSaveRow('flightgrid');
 		for(var i = 0; i < ids.length; i++){
 			if($('#flightgrid_' + ids[i] + '_CHK').prop('checked')){
@@ -295,29 +310,34 @@
 				gridData.push($("#flightgrid").getRowData(ids[i]));
 			}
 		}
-		
+
 		if(cnt < 1){
 			alert("삭제할 데이타를 선택하십시오.");
 			return;
 		}
-		
+
 		if(confirm("삭제하시겠습니까?")){
-			var url = '/common/deleteFlightInfo.do';
+			var url   = '/common/deleteFlightInfo.do';
 			var param = {"gridData" : gridData};
-			
+
 			fn_ajax(url, false, param, function(data, xhr){
 				if(data.success){
 					alert("삭제하였습니다.");
 				}else{
 					alert("삭제에 실패했습니다.");
 				}
-				
+
 				cSearch();
 			});
 		}
 	}
-	
-	/* 조회조건 항공편 변경시 검색어 초기화 */
+
+	/********************************************
+	 * @Subject : 조회조건 항공편 변경시 검색어 초기화
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  : 이주형
+	 ********************************************/
 	function chageLangSelect(){
 		$("#FLIGHT_NAME").val("");
 		cSearch();

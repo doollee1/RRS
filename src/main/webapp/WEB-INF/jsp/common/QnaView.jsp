@@ -76,7 +76,7 @@
  * @Subject : 화면 OPEN 시 최초 실행 함수
  * @Content : 팝업창 설정
  * @Since   : 2024.07.11
- * @Author  : 
+ * @Author  :
  ********************************************/
 $(function() {
 	var gv_seq;
@@ -108,7 +108,7 @@ $(function() {
 		open : function(a) {
 			QNA_SEQ    = $(this).data("QNA_SEQ");
 			gv_seq      = $(this).data("QNA_SEQ");
-			
+
 			var url="/common/QnaViewDetail.do";
 			var param={"QNA_SEQ":QNA_SEQ};
 
@@ -131,7 +131,12 @@ $(function() {
 		}
 	});
 
-	/* 저장 버튼을 누르면 실행되는 함수 */
+	/********************************************
+	 * @Subject : 저장 버튼 클릭
+	 * @Content : 답변창에 적은 내용을 DB에 저장
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function savePickInfo(){
 		var str = document.getElementById("ANSWER").value;
 		str = str.replace(/(?:\r\n|\r|\n)/g, '<br/>');

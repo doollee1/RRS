@@ -4,28 +4,28 @@
 <mapper namespace="ReportMapper">
 	<select id="selectCustomerList" parameterType="HashMap" resultType="BMap">
 	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
-	
+
 		SELECT ROW_NUMBER() OVER(ORDER BY A.CUST_CD) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
-		     , A.CUST_CD
-			 , A.ACCOUNT_GR 
+			 , A.CUST_CD
+			 , A.ACCOUNT_GR
 			 , A.ACCOUNT_GR + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-			                                      WHEN #{LANG} = 'DE' THEN CL.CODE_NM
-						                          WHEN #{LANG} = 'FR' THEN CL.CODE_FR
-						                          END AS CODE_NM
-			                                 FROM BC_COMM_L CL with (nolock)
-			                                WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-												                   FROM BC_COMM_H with (nolock)
-															      WHERE HEAD_ID = 'ACCOUNT_GR' )
+												  WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+												  WHEN #{LANG} = 'FR' THEN CL.CODE_FR
+											  END AS CODE_NM
+											 FROM BC_COMM_L CL with (nolock)
+											WHERE CL.HEAD_CD = ( SELECT HEAD_CD
+																   FROM BC_COMM_H with (nolock)
+																  WHERE HEAD_ID = 'ACCOUNT_GR' )
 											   AND CL.READ_CD = A.ACCOUNT_GR ) AS ACCOUNT_GR_NM
 			, A.GRADE
 			, A.GRADE + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-						            		WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+											WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 											WHEN #{LANG} = 'FR' THEN CL.CODE_FR
-											END AS CODE_NM
+										END AS CODE_NM
 								  FROM BC_COMM_L CL with (nolock)
 								 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-									                   FROM BC_COMM_H with (nolock)
-												      WHERE HEAD_ID = 'GRADE' )
+													   FROM BC_COMM_H with (nolock)
+													  WHERE HEAD_ID = 'GRADE' )
 								   AND CL.READ_CD = A.GRADE ) AS GRADE_NM
 			, A.CUST_NM
 			, A.CUST_ABNM
@@ -33,35 +33,35 @@
 			, A.HAUS_NO
 			, A.POST_CD
 			, A.CITY_NM
-			, A.COUNTRY_CD 
+			, A.COUNTRY_CD
 			, A.COUNTRY_CD + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-									            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
-												WHEN #{LANG} = 'FR' THEN CL.CODE_FR
-												END AS CODE_NM
-									  FROM BC_COMM_L CL with (nolock)
-									 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-										                   FROM BC_COMM_H with (nolock)
-													      WHERE HEAD_ID = 'COUNTRY_CD' )
+												 WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+												 WHEN #{LANG} = 'FR' THEN CL.CODE_FR
+											 END AS CODE_NM
+									   FROM BC_COMM_L CL with (nolock)
+									  WHERE CL.HEAD_CD = ( SELECT HEAD_CD
+															 FROM BC_COMM_H with (nolock)
+															WHERE HEAD_ID = 'COUNTRY_CD' )
 									   AND CL.READ_CD = A.COUNTRY_CD )  AS COUNTRY_NM
 			, A.TRANSP_ZONE
 			, A.TRANSP_ZONE + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-										            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+													WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 													WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 													END AS CODE_NM
 										  FROM BC_COMM_L CL with (nolock)
 										 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-											                   FROM BC_COMM_H with (nolock)
-														      WHERE HEAD_ID = 'TRANSP_ZONE' )
+															   FROM BC_COMM_H with (nolock)
+															  WHERE HEAD_ID = 'TRANSP_ZONE' )
 										   AND CL.CODE = A.COUNTRY_CD + A.TRANSP_ZONE ) AS TRANSP_ZONE_NM
 			, A.REGION_CD
 			, A.REGION_CD + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-									            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+												WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 												WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 												END AS CODE_NM
 									  FROM BC_COMM_L CL with (nolock)
 									 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-										                   FROM BC_COMM_H with (nolock)
-													      WHERE HEAD_ID = 'REGION_CD' )
+														   FROM BC_COMM_H with (nolock)
+														  WHERE HEAD_ID = 'REGION_CD' )
 									   AND CL.CODE = A.COUNTRY_CD + A.REGION_CD ) AS REGION_CD_NM
 			, A.LANG_CD
 			, A.TEL_NO + ' ' + A.TEL_NO_EXT AS TEL_NO
@@ -70,143 +70,143 @@
 			, A.E_MAIL
 			, B.SALES_ORG_CD
 			, B.SALES_ORG_CD + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-										            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+													WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 													WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 													END AS CODE_NM
 										  FROM BC_COMM_L CL with (nolock)
 										 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-											                   FROM BC_COMM_H with (nolock)
-														      WHERE HEAD_ID = 'SALES_ORG_CD' )
+															   FROM BC_COMM_H with (nolock)
+															  WHERE HEAD_ID = 'SALES_ORG_CD' )
 										   AND CL.READ_CD = B.SALES_ORG_CD )  AS SALES_ORG_NM
 			, B.DISTRB_CH
 			, B.DISTRB_CH + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-									            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+												WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 												WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 												END AS CODE_NM
 									  FROM BC_COMM_L CL with (nolock)
 									 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-										                   FROM BC_COMM_H with (nolock)
-													      WHERE HEAD_ID = 'DISTRB_CH' )
+														   FROM BC_COMM_H with (nolock)
+														  WHERE HEAD_ID = 'DISTRB_CH' )
 									   AND CL.READ_CD = B.DISTRB_CH ) AS DISTRB_CH_NM
 			, B.DIV_CD
 			, B.DIV_CD + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-								            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+											WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 											WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 											END AS CODE_NM
 								  FROM BC_COMM_L CL with (nolock)
 								 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-									                   FROM BC_COMM_H with (nolock)
-												      WHERE HEAD_ID = 'DIV_CD' )
+													   FROM BC_COMM_H with (nolock)
+													  WHERE HEAD_ID = 'DIV_CD' )
 								   AND CL.READ_CD = B.DIV_CD ) AS DIV_NM
 			, B.SALES_OFFICE_CD
 			, B.SALES_OFFICE_CD + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-											            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+														WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 														WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 														END AS CODE_NM
 											  FROM BC_COMM_L CL with (nolock)
 											 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-												                   FROM BC_COMM_H with (nolock)
-															      WHERE HEAD_ID = 'SALES_OFFICE_CD' )
-											   AND CL.CODE = B.SALES_ORG_CD	+ B.DISTRB_CH + B.DIV_CD + B.SALES_OFFICE_CD ) AS SALES_OFFICE_NM
+																   FROM BC_COMM_H with (nolock)
+																  WHERE HEAD_ID = 'SALES_OFFICE_CD' )
+											   AND CL.CODE = B.SALES_ORG_CD + B.DISTRB_CH + B.DIV_CD + B.SALES_OFFICE_CD ) AS SALES_OFFICE_NM
 			, B.SALES_GR
 			, B.SALES_GR + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-									            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+												WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 												WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 												END AS CODE_NM
 									  FROM BC_COMM_L CL with (nolock)
 									 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-										                   FROM BC_COMM_H with (nolock)
-													      WHERE HEAD_ID = 'SALES_GR' )
-									   AND CL.CODE = B.SALES_OFFICE_CD	+ B.SALES_GR ) AS SALES_GR_NM
+														   FROM BC_COMM_H with (nolock)
+														  WHERE HEAD_ID = 'SALES_GR' )
+									   AND CL.CODE = B.SALES_OFFICE_CD  + B.SALES_GR ) AS SALES_GR_NM
 			, B.CUST_GR
 			, B.CUST_GR + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-									            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+												WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 												WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 												END AS CODE_NM
 									  FROM BC_COMM_L CL with (nolock)
 									 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-										                   FROM BC_COMM_H with (nolock)
-													      WHERE HEAD_ID = 'CUST_GR' )
+														   FROM BC_COMM_H with (nolock)
+														  WHERE HEAD_ID = 'CUST_GR' )
 									   AND CL.READ_CD = B.CUST_GR ) AS CUST_GR_NM
 			, B.CURR_CD
 			, B.CURR_CD + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-								            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+											WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 											WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 											END AS CODE_NM
 								  FROM BC_COMM_L CL with (nolock)
 								 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-									                   FROM BC_COMM_H with (nolock)
-												      WHERE HEAD_ID = 'CURR_CD' )
+													   FROM BC_COMM_H with (nolock)
+													  WHERE HEAD_ID = 'CURR_CD' )
 								   AND CL.READ_CD = B.CURR_CD ) AS CURR_NM
 			, B.CUST_PRICE_PROC_CD
 			, B.CUST_PRICE_PROC_CD + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-											            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+														WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 														WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 														END AS CODE_NM
 											  FROM BC_COMM_L CL with (nolock)
 											 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-												                   FROM BC_COMM_H with (nolock)
-															      WHERE HEAD_ID = 'CUST_PRICE_PROC_CD' )
+																   FROM BC_COMM_H with (nolock)
+																  WHERE HEAD_ID = 'CUST_PRICE_PROC_CD' )
 											   AND CL.READ_CD = B.CUST_PRICE_PROC_CD ) AS CUST_PRICE_PROC_NM
 			, B.ACCT_ASSMT_GR
 			, B.ACCT_ASSMT_GR + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-										            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+													WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 													WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 													END AS CODE_NM
 										  FROM BC_COMM_L CL with (nolock)
 										 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-											                   FROM BC_COMM_H with (nolock)
-														      WHERE HEAD_ID = 'ACCT_ASSMT_GR' )
+															   FROM BC_COMM_H with (nolock)
+															  WHERE HEAD_ID = 'ACCT_ASSMT_GR' )
 										   AND CL.READ_CD = B.ACCT_ASSMT_GR ) AS ACCT_ASSMT_GR_NM
 			, B.TERM_PAY_CD
 			, B.TERM_PAY_CD + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-										            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+													WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 													WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 													END AS CODE_NM
 										  FROM BC_COMM_L CL with (nolock)
 										 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-											                   FROM BC_COMM_H with (nolock)
-														      WHERE HEAD_ID = 'TERM_PAY_CD' )
+															   FROM BC_COMM_H with (nolock)
+															  WHERE HEAD_ID = 'TERM_PAY_CD' )
 										   AND CL.READ_CD = B.TERM_PAY_CD ) AS TERM_PAY_NM
 			, B.INCOTERMS_CD
 			, B.INCOTERMS_NM
 			, B.SHIP_CONDI_CD
 			, B.SHIP_CONDI_CD + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-										            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+													WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 													WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 													END AS CODE_NM
 										  FROM BC_COMM_L CL with (nolock)
 										 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-											                   FROM BC_COMM_H with (nolock)
-														      WHERE HEAD_ID = 'SHIP_CONDI_CD' )
+															   FROM BC_COMM_H with (nolock)
+															  WHERE HEAD_ID = 'SHIP_CONDI_CD' )
 										   AND CL.READ_CD = B.SHIP_CONDI_CD ) AS SHIP_CONDI_NM
 			, B.DELI_PLANT_CD
 			, B.DELI_PLANT_CD + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-										            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+													WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 													WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 													END AS CODE_NM
 										  FROM BC_COMM_L CL with (nolock)
 										 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-											                   FROM BC_COMM_H with (nolock)
-														      WHERE HEAD_ID = 'DELI_PLANT_CD' )
-										  AND CL.CODE = B.SALES_ORG_CD	+ B.DISTRB_CH + B.DELI_PLANT_CD ) AS DELI_PLANT_NM
+															   FROM BC_COMM_H with (nolock)
+															  WHERE HEAD_ID = 'DELI_PLANT_CD' )
+										  AND CL.CODE = B.SALES_ORG_CD  + B.DISTRB_CH + B.DELI_PLANT_CD ) AS DELI_PLANT_NM
 			, C.PF_TP
 			, C.PF_TP + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-								            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+											WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 											WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 											END AS CODE_NM
 								  FROM BC_COMM_L CL with (nolock)
 								 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-									                   FROM BC_COMM_H with (nolock)
-												      WHERE HEAD_ID = 'PF_TP' )
+													   FROM BC_COMM_H with (nolock)
+													  WHERE HEAD_ID = 'PF_TP' )
 								   AND CL.READ_CD = C.PF_TP ) AS PF_TP_NM
 			, C.PF_PS_NO
 
 		FROM MS_CUST_H A with (nolock)
-				LEFT OUTER JOIN MS_CUST_SALES B	with (nolock)
-				ON A.COMP_CD = B.COMP_CD AND A.CUST_CD	= B.CUST_CD
-				LEFT OUTER JOIN MS_CUST_PART C		with (nolock)
-				ON B.COMP_CD = C.COMP_CD AND B.CUST_CD	= C.CUST_CD AND B.SALES_ORG_CD = C.SALES_ORG_CD AND B.DISTRB_CH = C.DISTRB_CH AND B.DIV_CD = C.DIV_CD
+				LEFT OUTER JOIN MS_CUST_SALES B with (nolock)
+				ON A.COMP_CD = B.COMP_CD AND A.CUST_CD  = B.CUST_CD
+				LEFT OUTER JOIN MS_CUST_PART C      with (nolock)
+				ON B.COMP_CD = C.COMP_CD AND B.CUST_CD  = C.CUST_CD AND B.SALES_ORG_CD = C.SALES_ORG_CD AND B.DISTRB_CH = C.DISTRB_CH AND B.DIV_CD = C.DIV_CD
 		 WHERE
 			  A.COMP_CD = '1000'
 			  <if test="SALES_ORG_CD != null and SALES_ORG_CD != ''">
@@ -241,57 +241,53 @@
 			  </if>
 			  <if test="ACCOUNT_GR != null and ACCOUNT_GR != ''">
 			  AND A.ACCOUNT_GR = #{ACCOUNT_GR}
-			  </if>  
+			  </if>
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
-	</select>	
-	
-<!-- 
+	</select>
 
+<!--
 			, D.NAME_1ST + ' ' + D.NAME_2ND AS CP_NAME
-			, D.TEL_NO1 + ' ' + D.TEL_NO1_EXT AS CP_TEL_NO
-			, D.FAX_NO + ' ' + D.FAX_NO_EXT AS CP_FAX_NO
+			, D.TEL_NO1  + ' ' + D.TEL_NO1_EXT AS CP_TEL_NO
+			, D.FAX_NO   + ' ' + D.FAX_NO_EXT AS CP_FAX_NO
 			, D.FUNC_CD
-			, D.FUNC_CD + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-								            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+			, D.FUNC_CD  + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
+											WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 											WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 											END AS CODE_NM
 								  FROM BC_COMM_L CL with (nolock)
 								 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-									                   FROM BC_COMM_H with (nolock)
-												      WHERE HEAD_ID = 'FUNC_CD' )
+													   FROM BC_COMM_H with (nolock)
+													  WHERE HEAD_ID = 'FUNC_CD' )
 								   AND CL.READ_CD = D.FUNC_CD ) AS FUNC_NM
 			, D.DEPT_CD
-			, D.DEPT_CD + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
-									            WHEN #{LANG} = 'DE' THEN CL.CODE_NM
+			, D.DEPT_CD  + ' ' + ( SELECT CASE WHEN #{LANG} = 'EN' THEN CL.CODE_EN
+												WHEN #{LANG} = 'DE' THEN CL.CODE_NM
 												WHEN #{LANG} = 'FR' THEN CL.CODE_FR
 												END AS CODE_NM
 									  FROM BC_COMM_L CL with (nolock)
 									 WHERE CL.HEAD_CD = ( SELECT HEAD_CD
-										                   FROM BC_COMM_H with (nolock)
-													      WHERE HEAD_ID = 'DEPT_CD' )
+														   FROM BC_COMM_H with (nolock)
+														  WHERE HEAD_ID = 'DEPT_CD' )
 									   AND CL.READ_CD = D.DEPT_CD ) AS DEPT_NM
 			, D.E_MAIL AS CP_EMAIL
-			
-			
 				LEFT OUTER JOIN MS_PARTNER D  with (nolock)
 				ON A.COMP_CD = D.COMP_CD AND A.CUST_CD = D.CUST_CD
+ -->
 
- -->	
-	
 	<select id="selectProductList" parameterType="HashMap" resultType="BMap">
 	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
 		SELECT ROW_NUMBER() OVER(ORDER BY VM.MATERIAL) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
 			  ,VM.MATERIAL
-		      ,VM.DESCRIPTION
-		      ,VM.BASIC_DATA_TXT
-		      ,DBO.GETCODENM('PLANT_CD',VM.PLANT, #{LANG})			AS PLANT
-		      ,VM.SALES_ORG + ' ' + DBO.GETCODENM('SALES_ORG_CD',VM.SALES_ORG, #{LANG}) 	AS SALES_ORG
-		      ,VM.DISTR_CHL + ' ' + DBO.GETCODENM('DISTRB_CH',VM.DISTR_CHL, #{LANG}) 	AS DISTR_CHL
-		      ,VM.DIVISION + ' ' + DBO.GETCODENM('DIV_CD',VM.DIVISION, #{LANG}) 		AS DIVISION
-		      ,DBO.GETCODENM('X_P_STS',VM.X_PLANT_STATUS, #{LANG}) 	AS X_PLANT_STATUS
-		      ,dbo.GetCodeNm('BASIC_UNIT',VM.BUM,#{LANG}) AS BUM
-		      ,VM.OUTPUT
-		      ,DBO.GETCODENM('MATL_GR',VM.MATERIAL_GRP, #{LANG}) 		AS MATERIAL_GRP
+			  ,VM.DESCRIPTION
+			  ,VM.BASIC_DATA_TXT
+			  ,DBO.GETCODENM('PLANT_CD',VM.PLANT, #{LANG})          AS PLANT
+			  ,VM.SALES_ORG + ' ' + DBO.GETCODENM('SALES_ORG_CD',VM.SALES_ORG, #{LANG})     AS SALES_ORG
+			  ,VM.DISTR_CHL + ' ' + DBO.GETCODENM('DISTRB_CH',VM.DISTR_CHL, #{LANG})    AS DISTR_CHL
+			  ,VM.DIVISION  + ' ' + DBO.GETCODENM('DIV_CD',VM.DIVISION, #{LANG})         AS DIVISION
+			  ,DBO.GETCODENM('X_P_STS',VM.X_PLANT_STATUS, #{LANG})  AS X_PLANT_STATUS
+			  ,dbo.GetCodeNm('BASIC_UNIT',VM.BUM,#{LANG}) AS BUM
+			  ,VM.OUTPUT
+			  ,DBO.GETCODENM('MATL_GR',VM.MATERIAL_GRP, #{LANG})        AS MATERIAL_GRP
 		  FROM (
 				SELECT A.MATL_CD AS MATERIAL
 					 , D.MATL_DESC AS DESCRIPTION
@@ -305,19 +301,19 @@
 					 , A.WP_OUT AS OUTPUT
 					 , A.MATL_GR AS MATERIAL_GRP
 				  FROM MS_ITEM A WITH (NOLOCK)
-				       LEFT OUTER JOIN MS_ITEM_ORG B WITH (NOLOCK)
-				       ON A.COMP_CD = B.COMP_CD AND A.MATL_CD = B.MATL_CD
-				       LEFT OUTER JOIN MS_ITEM_PLANT C WITH (NOLOCK)
-				       ON A.COMP_CD = C.COMP_CD AND A.MATL_CD = C.MATL_CD
-				       LEFT OUTER JOIN MS_ITEM_DESC D WITH (NOLOCK)
-				       ON A.COMP_CD = D.COMP_CD AND A.MATL_CD = D.MATL_CD 
-				       LEFT OUTER JOIN MS_ITEM_LONGTEXT E WITH (NOLOCK)
-				       ON B.COMP_CD = E.COMP_CD AND B.MATL_CD = E.MATL_CD AND B.SALES_ORG_CD = E.SALES_ORG_CD AND B.DISTRB_CH = E.DISTRB_CH AND E.OBJECT = 'MVKE'
-				       LEFT OUTER JOIN MS_ITEM_UNIT F WITH (NOLOCK)
-				       ON A.COMP_CD = F.COMP_CD AND A.MATL_CD = F.MATL_CD AND A.BASIC_UNIT = F.ALT_UNIT_CD
+					   LEFT OUTER JOIN MS_ITEM_ORG B WITH (NOLOCK)
+					   ON A.COMP_CD = B.COMP_CD AND A.MATL_CD = B.MATL_CD
+					   LEFT OUTER JOIN MS_ITEM_PLANT C WITH (NOLOCK)
+					   ON A.COMP_CD = C.COMP_CD AND A.MATL_CD = C.MATL_CD
+					   LEFT OUTER JOIN MS_ITEM_DESC D WITH (NOLOCK)
+					   ON A.COMP_CD = D.COMP_CD AND A.MATL_CD = D.MATL_CD
+					   LEFT OUTER JOIN MS_ITEM_LONGTEXT E WITH (NOLOCK)
+					   ON B.COMP_CD = E.COMP_CD AND B.MATL_CD = E.MATL_CD AND B.SALES_ORG_CD = E.SALES_ORG_CD AND B.DISTRB_CH = E.DISTRB_CH AND E.OBJECT = 'MVKE'
+					   LEFT OUTER JOIN MS_ITEM_UNIT F WITH (NOLOCK)
+					   ON A.COMP_CD = F.COMP_CD AND A.MATL_CD = F.MATL_CD AND A.BASIC_UNIT = F.ALT_UNIT_CD
 				WHERE D.LANG_CD = #{LANG}
-				  AND E.LANG_CD = #{LANG}   
-		       ) VM 
+				  AND E.LANG_CD = #{LANG}
+			   ) VM
 		 WHERE
 			  1 = 1
 		 <if test="MATL_CD != null and MATL_CD != ''">
@@ -366,43 +362,43 @@
 			  , VM.REG_ID
 			  , VM.UPT_DT
 			  , VM.UPT_ID
-		      <if test="LANG == 'EN'">
-				, VM.COMP_EN 		AS COMP_NM
-				, VM.MATL_EN 		AS MATL_NM
-				, VM.PLANT_EN 		AS PLANT_NM
-				, VM.BOM_USAGE_EN 	AS BOM_USAGE_NM
-				, VM.BOM_CTG_EN 	AS BOM_CTG_NM
-		      </if>
-		      <if test="LANG != 'EN'">
-		        , VM.COMP_NM
-		        , VM.MATL_NM
-		        , VM.PLANT_NM
-		        , VM.BOM_USAGE_NM
-		        , VM.BOM_CTG_NM
-		      </if>
+			  <if test="LANG == 'EN'">
+				, VM.COMP_EN        AS COMP_NM
+				, VM.MATL_EN        AS MATL_NM
+				, VM.PLANT_EN       AS PLANT_NM
+				, VM.BOM_USAGE_EN   AS BOM_USAGE_NM
+				, VM.BOM_CTG_EN     AS BOM_CTG_NM
+			  </if>
+			  <if test="LANG != 'EN'">
+				, VM.COMP_NM
+				, VM.MATL_NM
+				, VM.PLANT_NM
+				, VM.BOM_USAGE_NM
+				, VM.BOM_CTG_NM
+			  </if>
 		  FROM
 			  MS_ITEM_BOM_LIST_VW VM WITH (NOLOCK)
 		 WHERE
 			  1 = 1
-	 	<if test='MATL_CD_ST != null and MATL_CD_ST'>
-	 		  AND VM.MATL_CD like dbo.SetParam(#{MATL_CD_ST}) <!-- MATL_CD_ST만 있는경우 LIKE -->
+		<if test='MATL_CD_ST != null and MATL_CD_ST'>
+			  AND VM.MATL_CD like dbo.SetParam(#{MATL_CD_ST}) <!-- MATL_CD_ST만 있는경우 LIKE -->
 		</if>
 		<if test='MATL_NM_ST != null and MATL_NM_ST'>
 			<if test='LANG == "DE"'>
-	 		   AND VM.MATL_NM LIKE dbo.setParam(#{MATL_NM_ST})
-	 		</if>
+			   AND VM.MATL_NM LIKE dbo.setParam(#{MATL_NM_ST})
+			</if>
 			<if test='LANG == "EN"'>
-	 		   AND VM.MATL_EN LIKE dbo.setParam(#{MATL_NM_ST})
-	 		</if>
-	 		<if test='LANG == "FR"'>
-	 		   AND VM.MATL_FR LIKE dbo.setParam(#{MATL_NM_ST})
-	 		</if>
-	 		 </if>
+			   AND VM.MATL_EN LIKE dbo.setParam(#{MATL_NM_ST})
+			</if>
+			<if test='LANG == "FR"'>
+			   AND VM.MATL_FR LIKE dbo.setParam(#{MATL_NM_ST})
+			</if>
+			 </if>
 		<if test='PLANT_CD != null and PLANT_CD != ""'>
-		      AND VM.PLANT_CD = #{PLANT_CD}
+			  AND VM.PLANT_CD = #{PLANT_CD}
 		</if>
 		<if test='BOM_USAGE != null and BOM_USAGE != ""'>
-		      AND VM.BOM_USAGE = #{BOM_USAGE}
+			  AND VM.BOM_USAGE = #{BOM_USAGE}
 		</if>
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
@@ -482,34 +478,34 @@
 			, VM.ATTR_ORD
 			, VM.APPR_DT
 			, VM.REG_DT
- 		 <if test="LANG == 'EN'">
-		 		, VM.COMP_EN			AS COMP_NM
-				, VM.SALES_ORG_EN		AS SALES_ORG_NM
-				, VM.SALES_GR_EN		AS SALES_GR_NM
-				, VM.SALES_OFFICE_EN	AS SALES_OFFICE_NM
-				, VM.DISTRB_CH_EN		AS DISTRB_CH_NM
-				, VM.DIV_EN				AS DIV_NM
-				, VM.DOC_TP_EN			AS DOC_TP_NM
-				, VM.PO_DT_TP_EN		AS PO_DT_TP_NM
-				, VM.DELI_PLANT_EN		AS DELI_PLANT_NM
-				, VM.DELI_BLOCK_EN		AS DELI_BLOCK_NM
-				, VM.DUN_BLOCK_EN		AS DUN_BLOCK_NM
-				, VM.OVL_DVL_STS_EN		AS OVL_DVL_STS_NM
-				, VM.OVL_STS_EN			AS OVL_STS_NM
-				, VM.CURR_EN			AS CURR_NM
-				, VM.PAY_TERM_EN		AS PAY_TERM_NM
-				, VM.INCOTERMS_EN		AS INCOTERMS_NM
-				, VM.ORD_RESN_EN		AS ORD_RESN_NM
-				, VM.SHP_CON_EN			AS SHP_CON_NM
-				, VM.REF_DOC_H_STS_EN	AS REF_DOC_H_STS_NM
-				, VM.T_REF_STS_EN		AS T_REF_STS_NM
-				, VM.RJT_STS_EN			AS RJT_STS_NM
-				, VM.BLK_RSN_EN			AS BLK_RSN_NM
-				, VM.CUST_STS_EN		AS CUST_STS_NM
-				, VM.STATUS_EN			AS STATUS_NM
-				, VM.ATTR_ORD_EN		AS ATTR_ORD_NM
- 		 </if>
- 		 <if test="LANG != 'EN'">
+		 <if test="LANG == 'EN'">
+				, VM.COMP_EN            AS COMP_NM
+				, VM.SALES_ORG_EN       AS SALES_ORG_NM
+				, VM.SALES_GR_EN        AS SALES_GR_NM
+				, VM.SALES_OFFICE_EN    AS SALES_OFFICE_NM
+				, VM.DISTRB_CH_EN       AS DISTRB_CH_NM
+				, VM.DIV_EN             AS DIV_NM
+				, VM.DOC_TP_EN          AS DOC_TP_NM
+				, VM.PO_DT_TP_EN        AS PO_DT_TP_NM
+				, VM.DELI_PLANT_EN      AS DELI_PLANT_NM
+				, VM.DELI_BLOCK_EN      AS DELI_BLOCK_NM
+				, VM.DUN_BLOCK_EN       AS DUN_BLOCK_NM
+				, VM.OVL_DVL_STS_EN     AS OVL_DVL_STS_NM
+				, VM.OVL_STS_EN         AS OVL_STS_NM
+				, VM.CURR_EN            AS CURR_NM
+				, VM.PAY_TERM_EN        AS PAY_TERM_NM
+				, VM.INCOTERMS_EN       AS INCOTERMS_NM
+				, VM.ORD_RESN_EN        AS ORD_RESN_NM
+				, VM.SHP_CON_EN         AS SHP_CON_NM
+				, VM.REF_DOC_H_STS_EN   AS REF_DOC_H_STS_NM
+				, VM.T_REF_STS_EN       AS T_REF_STS_NM
+				, VM.RJT_STS_EN         AS RJT_STS_NM
+				, VM.BLK_RSN_EN         AS BLK_RSN_NM
+				, VM.CUST_STS_EN        AS CUST_STS_NM
+				, VM.STATUS_EN          AS STATUS_NM
+				, VM.ATTR_ORD_EN        AS ATTR_ORD_NM
+		 </if>
+		 <if test="LANG != 'EN'">
 				, VM.COMP_NM
 				, VM.SALES_ORG_NM
 				, VM.SALES_GR_NM
@@ -535,7 +531,7 @@
 				, VM.CUST_STS_NM
 				, VM.STATUS_NM
 				, VM.ATTR_ORD_NM
- 		 </if>
+		 </if>
 		  FROM
 			  SD_ORDER_H_LIST_VW VM WITH (NOLOCK)
 		 WHERE
@@ -569,11 +565,11 @@
 		</if>
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
-	
+
 	<select id="selectLeadList" parameterType="HashMap" resultType="BMap">
 	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
-		SELECT ROW_NUMBER() OVER(ORDER BY VM.LEAD_NO) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
-		 	,VM.COMP_CD
+	  SELECT ROW_NUMBER() OVER(ORDER BY VM.LEAD_NO) ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
+			,VM.COMP_CD
 			,VM.LEAD_NO
 			,VM.SALES_ORG_CD
 			,VM.DISTRB_CH
@@ -628,75 +624,74 @@
 			,VM.IMPT_CL
 			,VM.ACT_STS
 			,VM.COMP_EN
-			<if test="LANG == 'EN'">
-				,VM.COMP_EN 			AS COMP_NM
-				,VM.SALES_ORG_EN 		AS SALES_ORG_NM
-				,VM.DISTRB_CH_EN 		AS DISTRB_CH_NM
-				,VM.DIV_EN 				AS DIV_NM
-				,VM.SALES_DOC_TP_EN 	AS SALES_DOC_TP_NM
-				,VM.STATUS_EN 			AS STATUS_NM
-				,VM.MATL_EN 			AS MATL_NM
-				,VM.PF_TP_EN 			AS PF_TP_NM
-				,VM.TEXT_TP_EN 			AS TEXT_TP_NM
-				,VM.LANG_EN 			AS LANG_NM
-				,VM.ACT_CTG_EN 			AS ACT_CTG_NM
-				,VM.SALES_ORG_EN_INTACT AS SALES_ORG_NM_INTACT
-				,VM.STS_EN				AS STS_NM
-			</if>
-			<if test="LANG != 'EN'">	
-				,VM.COMP_NM
-				,VM.SALES_ORG_NM
-				,VM.DISTRB_CH_NM
-				,VM.DIV_NM
-				,VM.SALES_DOC_TP_NM
-				,VM.STATUS_NM
-				,VM.MATL_NM
-				,VM.PF_TP_NM
-				,VM.TEXT_TP_NM
-				,VM.LANG_NM
-				,VM.ACT_CTG_NM
-				,VM.SALES_ORG_NM_INTACT
-				,VM.STS_NM
-			</if>				
-		  FROM
-			  SD_LEAD_ALL_LIST_VW VM WITH (NOLOCK)
-		 WHERE
-			  1 = 1
+		<if test="LANG == 'EN'">
+			,VM.COMP_EN             AS COMP_NM
+			,VM.SALES_ORG_EN        AS SALES_ORG_NM
+			,VM.DISTRB_CH_EN        AS DISTRB_CH_NM
+			,VM.DIV_EN              AS DIV_NM
+			,VM.SALES_DOC_TP_EN     AS SALES_DOC_TP_NM
+			,VM.STATUS_EN           AS STATUS_NM
+			,VM.MATL_EN             AS MATL_NM
+			,VM.PF_TP_EN            AS PF_TP_NM
+			,VM.TEXT_TP_EN          AS TEXT_TP_NM
+			,VM.LANG_EN             AS LANG_NM
+			,VM.ACT_CTG_EN          AS ACT_CTG_NM
+			,VM.SALES_ORG_EN_INTACT AS SALES_ORG_NM_INTACT
+			,VM.STS_EN              AS STS_NM
+		</if>
+		<if test="LANG != 'EN'">
+			,VM.COMP_NM
+			,VM.SALES_ORG_NM
+			,VM.DISTRB_CH_NM
+			,VM.DIV_NM
+			,VM.SALES_DOC_TP_NM
+			,VM.STATUS_NM
+			,VM.MATL_NM
+			,VM.PF_TP_NM
+			,VM.TEXT_TP_NM
+			,VM.LANG_NM
+			,VM.ACT_CTG_NM
+			,VM.SALES_ORG_NM_INTACT
+			,VM.STS_NM
+		</if>
+		FROM
+			 SD_LEAD_ALL_LIST_VW VM WITH (NOLOCK)
+	   WHERE 1 = 1
 		<if test='PROSPECT != null and PROSPECT != ""'>
-		   AND VM.CUST_CD LIKE '%' + dbo.SetParam(#{PROSPECT}) + '%'
+		 AND VM.CUST_CD LIKE '%' + dbo.SetParam(#{PROSPECT}) + '%'
 		</if>
 		<if test='ADDRESS_NM != null and ADDRESS_NM != ""'>
-		   AND VM.ADDR LIKE '%' + dbo.SetParam(#{ADDRESS_NM}) + '%'
+		 AND VM.ADDR LIKE '%' + dbo.SetParam(#{ADDRESS_NM}) + '%'
 		</if>
 		<if test='LEAD_ID != null and LEAD_ID != ""'>
-		   AND VM.LEAD_NO LIKE '%' + dbo.SetParam(#{LEAD_ID}) + '%'
+		 AND VM.LEAD_NO LIKE '%' + dbo.SetParam(#{LEAD_ID}) + '%'
 		</if>
 		<if test='START_DT != null and START_DT != ""'>
-		   AND PARSE(VM.START_DT AS DATE USING 'de-DE') <![CDATA[ >= ]]> PARSE(#{START_DT} AS DATE USING 'de-DE')
+		 AND PARSE(VM.START_DT AS DATE USING 'de-DE') <![CDATA[ >= ]]> PARSE(#{START_DT} AS DATE USING 'de-DE')
 		</if>
 		<if test='MAIN_CONTACT != null and MAIN_CONTACT != ""'>
-		   AND VM.M_PS_NO = #{MAIN_CONTACT}
+		 AND VM.M_PS_NO = #{MAIN_CONTACT}
 		</if>
 		<if test='EMP_RESP != null and EMP_RESP != ""'>
-		   AND VM.EMP_NO = #{EMP_RESP}
-		</if> 
+		 AND VM.EMP_NO = #{EMP_RESP}
+		</if>
 		<if test='END_DT != null and END_DT != ""'>
-		   AND PARSE(VM.END_DT AS DATE USING 'de-DE') <![CDATA[ <= ]]> PARSE(#{END_DT} AS DATE USING 'de-DE')
+		 AND PARSE(VM.END_DT AS DATE USING 'de-DE') <![CDATA[ <= ]]> PARSE(#{END_DT} AS DATE USING 'de-DE')
 		</if>
 		<if test='LEAD_STS != null and LEAD_STS != ""'>
-		   AND VM.STS_CD = #{LEAD_STS}
+		 AND VM.STS_CD = #{LEAD_STS}
 		</if>
 		<if test='QUAL_LVL != null and QUAL_LVL != ""'>
-		   AND VM.QUAL_LVL = #{QUAL_LVL}
+		 AND VM.QUAL_LVL = #{QUAL_LVL}
 		</if>
 		<if test='SALES_ORG_CD != null and SALES_ORG_CD != ""'>
-		   AND VM.SALES_ORG_CD = #{SALES_ORG_CD}
+		 AND VM.SALES_ORG_CD = #{SALES_ORG_CD}
 		</if>
 		<if test='DISTRB_CH != null and DISTRB_CH != ""'>
-		   AND VM.DISTRB_CH = #{DISTRB_CH}
+		 AND VM.DISTRB_CH = #{DISTRB_CH}
 		</if>
 		<if test='DIV_CD != null and DIV_CD != ""'>
-		   AND VM.DIV_CD = #{DIV_CD}
+		 AND VM.DIV_CD = #{DIV_CD}
 		</if>
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
