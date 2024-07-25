@@ -3,19 +3,19 @@
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
 <%
 /**
- * @Name : NoticePopup
- * @Description : 메인 공지사항 팝업
+ * @Name : QnaView
+ * @Description : Qna 팝업
  */
 %>
-<div id="noticePopup" style="overflow-y:auto;">
+<div id="qnaPopup" style="overflow-y:auto;">
 	<form id="frmNoticeP" action="#">
 	<div id="pop_ct_form_wrap">
 		<table class="pop_tblForm">
 			<caption></caption>
 			<colgroup>
 				<col width="130px" />
-		        <col />
-		    </colgroup>
+				<col />
+			</colgroup>
 			<tr>
 				<th><s:message code='notice.title'/></th>
 				<td colspan="3">
@@ -28,61 +28,59 @@
 					<input type="text" name="REG_DT" class="cmc_txt disabled" style="width:250px;" disabled=""  readonly="readonly" />
 				</td>
 			</tr>
-						<tr>
+			<tr>
 				<th>등록자</th>
 				<td colspan="3">
 					<input type="text" name="REG_ID" class="cmc_txt disabled" style="width:250px;" disabled=""  readonly="readonly" />
 				</td>
 			</tr>
-			<tbody></tbody>
 		</table>
 	</div>
-	</form>	
+	</form>
+
 	<div class="emptyH10"></div>
-	
 	<div id="CONTENTS" style="padding:5px;"></div>
-	
-	
-	
 	<form id="frmNoticeA" action="#">
 	<div id="pop_ct_form_wrap">
 		<table class="pop_tblForm">
 			<caption></caption>
 			<colgroup>
 				<col width="130px" />
-		        <col />
-		    </colgroup>
-		    <tr>
+				<col />
+			</colgroup>
+			<tr>
 				<th>답변일</th>
 				<td colspan="3">
 					<input type="text" name="REG_DT" class="cmc_txt disabled" style="width:250px;" disabled=""  readonly="readonly" />
 				</td>
 			</tr>
-						<tr>
+			<tr>
 				<th>등록자</th>
 				<td colspan="3">
 					<input type="text" name="REG_ID" class="cmc_txt disabled" style="width:250px;" disabled=""  readonly="readonly" />
 				</td>
 			</tr>
-			<tbody></tbody>
 		</table>
 	</div>
-	</form>	
+	</form>
+
 	<div id="CONTENTS2" style="padding:5px;"></div>
 	<form id="answerInsert">
-
-				    <h5 style="color:#ff7f00;">※ 답변하기</h5>
-			
-				        <textarea id="ANSWER" name="REMARK" rows="5" style="width: 100%" maxlength="2000"></textarea>
-
+		<h5 style="color:#ff7f00; margin: 0px">※ 답변하기</h5>
+		<textarea id="ANSWER" name="REMARK" rows="5" style="width: 100%" maxlength="2000"></textarea>
 	</form>
 </div>
 
-
 <script type="text/javascript">
+/********************************************
+ * @Subject : 화면 OPEN 시 최초 실행 함수
+ * @Content : 팝업창 설정
+ * @Since   : 2024.07.11
+ * @Author  : 
+ ********************************************/
 $(function() {
 	var gv_seq;
-	$('#noticePopup').dialog({
+	$('#qnaPopup').dialog({
 		title :'QNA',
 		autoOpen : false,
 		//height: 400,
@@ -102,7 +100,6 @@ $(function() {
 					$(this).dialog("close");
 				}
 			},
-
 		},
 		close : function() {
 			p_rtnData = [];
@@ -110,59 +107,31 @@ $(function() {
 		},
 		open : function(a) {
 			QNA_SEQ    = $(this).data("QNA_SEQ");
-			gv_seq		= $(this).data("QNA_SEQ");
-
-			fn_init();
+			gv_seq      = $(this).data("QNA_SEQ");
 			
 			var url="/common/QnaViewDetail.do";
 			var param={"QNA_SEQ":QNA_SEQ};
-			
+
 			fn_ajax(url, true, param, function(data, xhr){
-				var qnaInfo=data.result;
-				
+				var qnaInfo = data.result;
+
 				if(!fn_empty(data.answer)){
-					var answerInfo=data.answer;
+					var answerInfo = data.answer;
 					fn_dataBind('frmNoticeA', answerInfo[0]);
 					$('#CONTENTS2').html(answerInfo[0].CONTENT);
 					$('#answerInsert').hide();
+					$('#save').hide();
 				}else{
 					$('#frmNoticeA').hide();
 				}
 
 				fn_dataBind('frmNoticeP', qnaInfo[0]);
-				
 				$('#CONTENTS').html(qnaInfo[0].CONTENT);
 			});
 		}
 	});
 
-	function fn_dataSet(data){
-    	$.each(data, function(key , val){
-    		$('[name='+ key +']').val (val);
-	    });
-    	
-    	//미팅샌딩 셋팅
-    	if(!fn_empty(data.PICK_GBN)){
-	    	if(data.PICK_GBN == "01"){
-	    		$("#PICK_GBN"     ).attr("disabled", false);
-	    		$("#insertPickGbn").text("등록");
-	    		$("#PER_NUM_CNT"  ).val("0");
-	    		$("#PER_NUM_CNT"  ).attr("readonly", false);
-	    	}else{
-	    		$("#PICK_GBN"     ).attr("disabled", true);
-	    		$("#insertPickGbn").text("상세");
-	       		$("#PER_NUM_CNT"  ).val(data.PER_NUM);
-	    		$("#PER_NUM_CNT"  ).attr("readonly", true);
-	    	}
-		}
-    	
-        //LATE 체크아웃 셋팅
-    	if(!fn_empty(data.LATE_CHECK_OUT)){
-    		$('[name=LATE_CHECK_OUT][value='+data.LATE_CHECK_OUT+']').prop("checked", true);
-    	}
-    
-	}
-	
+	/* 저장 버튼을 누르면 실행되는 함수 */
 	function savePickInfo(){
 		var str = document.getElementById("ANSWER").value;
 		str = str.replace(/(?:\r\n|\r|\n)/g, '<br/>');
@@ -170,7 +139,7 @@ $(function() {
 
 		var formData = formIdAllToMap('answerInsert');
 		var param = {};
-		
+
 		param.QNA_SEQ=gv_seq;
 		param.CONTENT=formData.REMARK;
 
@@ -178,13 +147,14 @@ $(function() {
 			var url = '/common/qnaAnswerInsert.do';
 			fn_ajax(url, false, param, function(data, xhr){
 				if(data.dup == 'Y'){
-					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
+					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>");
 				}else{
 					alert("<s:message code='info.save'/>");
-					popupClose($('#noticePopup').data('pid'));
+					popupClose($('#qnaPopup').data('pid'));
 				}
 			});
 		}
 	}
 })
+
 </script>

@@ -17,34 +17,34 @@
 			<table class="pop_tblForm">
 				<colgroup>
 					<col width="10%" />
-			        <col width="15%" />
-			        <col width="10%" />
-			        <col width="15%" />
-			        <col width="10%" />
-			        <col width="15%" />
-			        <col width="10%" />
-			        <col width="15%" />
-			    </colgroup>
-			    <tr>
-			    	<th>검색</th>
+					<col width="15%" />
+					<col width="10%" />
+					<col width="15%" />
+					<col width="10%" />
+					<col width="15%" />
+					<col width="10%" />
+					<col width="15%" />
+				</colgroup>
+				<tr>
+					<th>검색</th>
 					<td class="medium_td" colspan="7">
 						<select id="PAY_TYPE_SEARCH" name="PAY_TYPE_SEARCH" class="cmc_combo" style="width:15%;">
-						    <c:forEach var="i" items="${searchType}">
+							<c:forEach var="i" items="${searchType}">
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
-						<button type="button" class="btn btn-success" id="btn_deposit" style="width:160px; height:25px; opacity:70%; margin: 0 20px">조회</button>							
-					</td>			
-			    </tr>
-		   		<tr>		   			
-		   	     	<th><s:message code='deposit.paydt'/></th>
-					<td>						
+						<button type="button" class="btn btn-success" id="btn_deposit" style="width:160px; height:25px; opacity:70%; margin: 0 20px">조회</button>
+					</td>
+				</tr>
+				<tr>
+					<th><s:message code='deposit.paydt'/></th>
+					<td>
 						<input type="text" id="PAY_DT" name="PAY_DT" data-type="date" readonly="readonly" style="width:60%;"/>					
 					</td>
 					<th><s:message code='deposit.paytype'/></th>
 					<td>
-					    <select id="PAY_TYPE" name="PAY_TYPE" class="cmc_combo" style="width:80%;">
-						    <c:forEach var="i" items="${depositType}">
+						<select id="PAY_TYPE" name="PAY_TYPE" class="cmc_combo" style="width:80%;">
+							<c:forEach var="i" items="${depositType}">
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>	
@@ -60,7 +60,7 @@
 					</td>
 				</tr>
 				<tr>
-				    <th><s:message code='deposit.dctamt'/></th>
+					<th><s:message code='deposit.dctamt'/></th>
 					<td>
 						<input type="text" class="cmc_txt fee withComma" id="DCT_AMT" value="0" name="DCT_AMT" style="text-align:right;width:70%;" maxlength="9"/>원
 					</td>
@@ -76,17 +76,18 @@
 					<td>
 						<input type="text" class="cmc_txt fee" id="BAL_AMT" value="0" name="BAL_AMT" style="text-align:right;width:70%;" readonly/>원
 					</td>
-				</tr>				
+				</tr>
 			</table>
 			
 		</div>
 		
-		<!-- 그리드 시작 -->
-	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">		
+	<!-- 그리드 시작 -->
+	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
 		<div class="pop_grid_wrap">
 			<table id="depositGrid"></table>
 		</div>
 	</div>
+	<!-- 그리드 끝 -->
 	</form>
 	
 	<p style="position: absolute; top: 440px; left: 15px; color:red; font-weight:bold;">
@@ -96,33 +97,40 @@
 
 <script type="text/javascript">
 $(function() {
-	var gv_req_dt;  //요청일자
-	var gv_seq;		//일련번호
-	var gv_prc_sts; //입금예약상태
+	var gv_req_dt;     //요청일자
+	var gv_seq;        //일련번호
+	var gv_prc_sts;    //입금예약상태
 	
+	/******************************************** 
+	 * @Subject : 팝업 창 기본 설정
+	 * @Content : 화면 비율 및 버튼 이벤트
+	 * @See     : fn_init()
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$('#p_pickUpGbnPopup').dialog({
-		title :'<s:message code='deposit.mng'/>',   //입금관리
+		title    :'<s:message code='deposit.mng'/>',    //입금관리
 		autoOpen : false,
 		//height: 400,
-		width: 940,
-		modal : false,
-		buttons : {
+		width    : 940,
+		modal    : false,
+		buttons  : {
 			'<s:message code='system.save'/>' : {
-				text: '<s:message code='system.save'/>',
-				id : 'save',
+				text : '<s:message code='system.save'/>',
+				id   : 'save',
 				click: function() {
-					returnPopupRslt();  //팝업결과 반환
+					returnPopupRslt();    //팝업결과 반환
 				}
-			},			
+			},
 			'<s:message code='system.delete'/>' : {
-				text: '<s:message code='system.delete'/>',
-				id : 'delete',
+				text : '<s:message code='system.delete'/>',
+				id   : 'delete',
 				click: function() {
 					fnRowDelete();
 				}
 			},	
 			'<s:message code='button.close'/>' : {
-				text: '<s:message code='button.close'/>',
+				text : '<s:message code='button.close'/>',
 				click: function() {
 					$(this).dialog("close");
 				}
@@ -131,170 +139,187 @@ $(function() {
 		},
 		close : function() {
 			p_rtnData = [];
-			popupClose($(this).attr('id')); /* 필수로 들어가야함 */
+			popupClose($(this).attr('id'));    /* 필수로 들어가야함 */
 		},
 		open : function() {
-			fn_init($(this).data());  //최초수행
+			fn_init($(this).data());    //최초수행
 		}
 	});
-	
-	
-	//금액입력시
+
+	/******************************************** 
+	 * @Subject : 금액 입력
+	 * @Content : 금액 입력 시 숫자 콤마 처리
+	 * @See     : numberWithCommas()
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$(".withComma").on("keyup" , function(){
 		var tmpValue = $(this).val().replace(/[^0-9,]/g,'');
 		tmpValue = tmpValue.replace(/[,]/g,'');
-		// 천단위 콤마 처리 후 값 강제변경
-	    $(this).val(numberWithCommas(tmpValue));
+		/* 천단위 콤마 처리 후 값 강제변경 */
+		$(this).val(numberWithCommas(tmpValue));
 	});
-	
-	
-	// 천단위 콤마 (소수점포함)
+
+	/* 천단위 콤마 (소수점포함) */
 	function numberWithCommas(num) {
-	    var parts = num.toString().split(".");	
-	    return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? "." + parts[1] : "");
+		var parts = num.toString().split(".");	
+		return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? "." + parts[1] : "");
 	}
 	
 	
-	//입금금액, 할인금액 키입력시 공백 체크 
+	/******************************************** 
+	 * @Subject : 입금금액, 할인금액 입력
+	 * @Content : 금액 입력 시 공백 체크 후 공백이면 0 처리
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$('#PAY_AMT, #DCT_AMT').on("keyup" , function(){
 				
-		if($('#PAY_AMT').val() == ""){		//입금금액	
+		if($('#PAY_AMT').val() == ""){    //입금금액	
 			$('#PAY_AMT').val("0");
 		}
 		
-		if($('#DCT_AMT').val() == ""){		//할인금액	
+		if($('#DCT_AMT').val() == ""){    //할인금액	
 			$('#DCT_AMT').val("0");
 		}
-		
 	});
 	
-	//조회 클릭
+	/* 조회 버튼 클릭 */
 	$("#btn_deposit").click(function() {
 		var payType = $("#PAY_TYPE_SEARCH").val();
-		cSearch(payType); //입금목록 조회
+		cSearch(payType);    //입금목록 조회
 	});
 	
-	
-	//입금등록 클릭
-	$("#btn_payreg").click(function() {
+	/******************************************** 
+	 * @Subject : 입금등록 클릭
+	 * @Content : 입금 일자, 입금 금액 확인 후 등록 진행하고 성공할 경우 재조회
+	 * @See     : cSearch()
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
+	$("#btn_payreg").click(function() {	
+		var pay_dt   = $("#PAY_DT"  ).val().replaceAll(".","");
+		var pay_type = $("#PAY_TYPE").val();
+		var pay_amt  = $("#PAY_AMT" ).val().replaceAll(",","");
+		var dct_amt  = $("#DCT_AMT" ).val().replaceAll(",","");
+		var dep_amt  = $("#DEP_AMT" ).val().replaceAll(",","");
+
+		/* 입금일자 확인 */
+		if(fn_empty(pay_dt)){
+			alert("입금일자를 확인해주세요.");
+			return false;
+		}
+
+		/* 입금금액 확인 */
+		if(parseInt(pay_amt) == 0){
 		
-		var pay_dt   = $("#PAY_DT").val().replaceAll(".","");
-	    var pay_type = $("#PAY_TYPE").val();
-		var pay_amt  = $("#PAY_AMT").val().replaceAll(",","");
-	    var dct_amt  = $("#DCT_AMT").val().replaceAll(",","");
-	    var dep_amt  = $("#DEP_AMT").val().replaceAll(",","");
-	    
-	    //입금일자 확인
-	    if(fn_empty(pay_dt)){
-	    	
-	    	alert("입금일자를 확인해주세요.");
+			alert("입금금액을 확인해주세요.");
 			return false;
-	    }
-	    
-	    //입금금액 확인
-	    if(parseInt(pay_amt) == 0){
-	    	
-	    	alert("입금금액을 확인해주세요.");
-			return false;
-	    }
-	    
-	    
-	    //입금구분이 예약(03)이고 예약금액이 없을 경우
+		}
+
+		/* 입금구분이 예약(03)이고 예약금액이 없을 경우 */
 		if((pay_type == '03') && (parseInt(dep_amt) == 0)){
-	    	
-	    	alert("예약금액이 없어 입금이 불가합니다.");
+			alert("예약금액이 없어 입금이 불가합니다.");
 			return false;
-	    }
-	    
+		}
+
 		var url = "/deposit/registDepositAjax.do";
-	    var param = { "SEQ"         : gv_seq
-			        , "REQ_DT"      : gv_req_dt
-			        , "PAY_TYPE" 	: pay_type
-			        , "PAY_DT" 		: pay_dt
-			        , "PAY_AMT"     : pay_amt
-			        , "DCT_AMT"     : dct_amt
-			        , "PRC_STS"     : gv_prc_sts
-	    }; 
-			        
-	    fn_ajax(url, true, param, function(data, xhr){
+		var param = { "SEQ"      : gv_seq
+					, "REQ_DT"   : gv_req_dt
+					, "PAY_TYPE" : pay_type
+					, "PAY_DT"   : pay_dt
+					, "PAY_AMT"  : pay_amt
+					, "DCT_AMT"  : dct_amt
+					, "PRC_STS"  : gv_prc_sts
+		};
+
+		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
 				alert("입금등록 통신오류발생, 시스템관리자에게 문의해주세요.");
 			} else{
 				if(!fn_empty(data.result)){
-					//성공(SUCCESS)일 경우
+					/* 성공(SUCCESS)일 경우 */
 					if(data.result.RESULT == "SUCCESS") {
-						//임금목록조회
-						cSearch('00');   //전체 
+						/* 임금목록조회 */
+						cSearch('00');    //전체 
 					}										
 				}else{
 					alert("입금 등록이 실패하였습니다, 시스템관리자에게 문의해주세요.")
 				}
 			}
-		});	        
+		});
 	});
 	
-	
-	//입금구분 변경
+	/******************************************** 
+	 * @Subject : 입금구분 변경
+	 * @Content : 입금 구분이 환급이면 저장과 입금등록 활성화
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$("#PAY_TYPE").change(function(){
-		
 		var payType = $(this).val();
 		
-		if(payType == '02') { //환급
-			$(".ui-dialog-buttonset > button#save").attr("disabled", false);  //저장
-			$("#btn_payreg").attr("disabled",false);	//입금등록
+		if(payType == '02') {    //환급
+			$(".ui-dialog-buttonset > button#save").attr("disabled", false);    //저장
+			$("#btn_payreg").attr("disabled",false);                            //입금등록
 		}
 	});
-	
-	
-	//최소 수행
+
+	/******************************************** 
+	 * @Subject : 화면 셋팅
+	 * @Content : 필요한 기능 설정, 상황에 따른 버튼 비활성화 설정
+	 * @See     : createGrid() / cSearch()
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function fn_init(recevicedData) {
 		gv_req_dt     = recevicedData.REQ_DT;
 		gv_seq        = recevicedData.SEQ;
 		gv_prc_sts    = recevicedData.PRC_STS;
 		
-		//예약상태가 입금완료(10) 일 경우 입금등록버튼 비활성화
+		/* 예약상태가 입금완료(10) 일 경우 입금등록버튼 비활성화 */
 		if(!fn_empty(gv_prc_sts)){
-			if(gv_prc_sts == "08" || gv_prc_sts == "09" || gv_prc_sts == "10"){ //환불요청(08), 예약취소(09), 입금완료(10)
-				$(".ui-dialog-buttonset > button#save").attr("disabled", true);
+			if(gv_prc_sts == "08" || gv_prc_sts == "09" || gv_prc_sts == "10"){    //환불요청(08), 예약취소(09), 입금완료(10)
+				$(".ui-dialog-buttonset > button#save"  ).attr("disabled", true);
 				$(".ui-dialog-buttonset > button#delete").attr("disabled", true);
-				$("#btn_payreg").attr("disabled",true);				
+				$("#btn_payreg").attr("disabled",true);
 			} else {
-				$(".ui-dialog-buttonset > button#save").attr("disabled", false);
+				$(".ui-dialog-buttonset > button#save"  ).attr("disabled", false);
 				$(".ui-dialog-buttonset > button#delete").attr("disabled", false);
 				$("#btn_payreg").attr("disabled",false);
 			}	
 		}
 		
-		//입금일자 달력세팅
+		/* 입금일자 달력세팅 */
 		$('#PAY_DT').datepicker({
-		    dateFormat : 'yy.mm.dd',
-		    showOn : 'both'
+			dateFormat : 'yy.mm.dd',
+			showOn     : 'both'
 		}).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
-		    function(e) {
+			function(e) {
 		});
 		
-		//입금일자 현재일자로 세팅
-		var day = new Date();
+		/* 입금일자 현재일자로 세팅 */
+		var day   = new Date();
 		var today = String(day.getFullYear()) + String(("0" + (1 + day.getMonth())).slice(-2)) + String(("0" + day.getDate()).slice(-2));
-		$("#PAY_DT"      ).val(Util.converter.dateFormat1(today));
+		$("#PAY_DT").val(Util.converter.dateFormat1(today));
 		
-		//그리드 생성
+		/* 그리드 생성 */
 		createGrid();
 		
 		var url = "/deposit/selectDepositHdrAjax.do";
-     	var param = {"REQ_DT" : gv_req_dt 
-	               , "SEQ"    : gv_seq
-	                };
-     	fn_ajax(url, true, param, function(data, xhr){
+		var param = { "REQ_DT" : gv_req_dt 
+					, "SEQ"    : gv_seq
+					};
+		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
 				alert("입금 정보조회 오류, 시스템 관리자에게 문의해주세요.");
 			} else{
 				if(!fn_empty(data.result)){
-					$("input[name='INVOICE_AMT']").val(numberWithCommas(data.result.INVOICE_AMT));  //견적금액
-					$("input[name='BAL_AMT']").val(numberWithCommas(data.result.BAL_AMT));  //잔액금액
-					$("input[name='DEP_AMT']").val(numberWithCommas(data.result.DEP_AMT));  //예약금액
-					//입금록록 조회
-					cSearch('00');  //전체					
+					$("input[name='INVOICE_AMT']").val(numberWithCommas(data.result.INVOICE_AMT));    //견적금액
+					$("input[name='BAL_AMT']").val(numberWithCommas(data.result.BAL_AMT));            //잔액금액
+					$("input[name='DEP_AMT']").val(numberWithCommas(data.result.DEP_AMT));            //예약금액
+					/* 입금록록 조회 */
+					cSearch('00');    //전체					
 				}else{
 					alert("비용 테이블 자료가 존재하지않습니다.")
 				}
@@ -302,22 +327,27 @@ $(function() {
 		});
 	}
 	
-	//비용상세 마지막레코드 조회
+	/******************************************** 
+	 * @Subject : 비용상세 마지막레코드 조회
+	 * @Content : 마지막 레코드 조회 후 화면 설정
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function selectLastTbReqFeeInfo(){
-		var url = "/deposit/selectLastTbReqFeeInfoAjax.do";
-     	var param = {"REQ_DT" : gv_req_dt 
-	               , "SEQ"    : gv_seq
-	                };
-     	fn_ajax(url, true, param, function(data, xhr){
+		var url   = "/deposit/selectLastTbReqFeeInfoAjax.do";
+		var param = {"REQ_DT" : gv_req_dt 
+					, "SEQ"    : gv_seq
+					};
+		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
 				alert("비용 상세 조회오류, 시스템 관리자에게 문의하세요.");
 			} else{
 				if(!fn_empty(data.result)){
-					$("input[name='DCT_AMT']").val(0);				//할인금액 초기화
-					$("input[name='ACCU_AMT']").val(numberWithCommas(data.result.ACCU_AMT)); //총입금금액(누적금액)
-					$("input[name='BAL_AMT']").val(numberWithCommas(data.result.BAL_AMT));  //잔액금액						
+					$("input[name='DCT_AMT']").val(0);                                          //할인금액 초기화
+					$("input[name='ACCU_AMT']").val(numberWithCommas(data.result.ACCU_AMT));    //총입금금액(누적금액)
+					$("input[name='BAL_AMT']").val(numberWithCommas(data.result.BAL_AMT));      //잔액금액						
 					
-					//잔액이 0일 경우, 등록버튼 비활성화
+					/* 잔액이 0일 경우, 등록버튼 비활성화 */
 					if(data.result.BAL_AMT == 0){
 						$("#btn_payreg").attr("disabled",true);
 					}
@@ -330,48 +360,59 @@ $(function() {
 		});
 	}
 	
-	//하단 목록리스트 출력
+	/******************************************** 
+	 * @Subject : 조회
+	 * @Content : 조회 데이터 목록리스트 출력
+	 * @See     : selectLastTbReqFeeInfo()
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function cSearch(payType){
 		var url = "/deposit/selectDepositListAjax.do";
 		var param = {"SEQ"     : gv_seq
-				   , "REQ_DT"  : gv_req_dt
-				   , "PAY_TYPE": payType
-				   };
+					, "REQ_DT"  : gv_req_dt
+					, "PAY_TYPE": payType
+					};
 		
 		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
 				alert("입금목록 리스트 조회 오류, 시스템관리자에게 문의하세요.");
 			} else {
 				if(!fn_empty(data.result)){
-					reloadGrid("depositGrid", data.result);  //그리드 재로드
-					btGrid.gridResizing('depositGrid');  //그리드 리사이킹
-					//비용상세 마지막레코드 조회
+					reloadGrid("depositGrid", data.result);    //그리드 재로드
+					btGrid.gridResizing('depositGrid');        //그리드 리사이킹
+					/* 비용상세 마지막레코드 조회 */
 					selectLastTbReqFeeInfo();
 				} else {
-					reloadGrid("depositGrid", data.result);  //그리드 재로드
-					btGrid.gridResizing('depositGrid');  //그리드 리사이킹
+					reloadGrid("depositGrid", data.result);    //그리드 재로드
+					btGrid.gridResizing('depositGrid');        //그리드 리사이킹
 				}
 			}
-	    });
+		});
 	}
 	
+	/******************************************** 
+	 * @Subject : 입금 내역 저장
+	 * @Content : 입금 내역 저장
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function returnPopupRslt(){
 		if(confirm("<s:message code='confirm.save'/>")){
-			
-			var url = '/deposit/selectPopupReturnRsltAjx.do';			
-			var param = {"SEQ"     : gv_seq
-					   , "REQ_DT"  : gv_req_dt			  
-					   };
+			var url = '/deposit/selectPopupReturnRsltAjx.do';
+			var param = { "SEQ"     : gv_seq
+						, "REQ_DT"  : gv_req_dt 
+						};
 			
 			fn_ajax(url, false, param, function(data, xhr){
 				if(data.MESSAGE != "OK"){
 					alert("입금 저장 오류, 시스템 관리자에게 문의하세요.");
 				} else {
 					if(!fn_empty(data.result)){
-						p_rtnData = {"PAY_DEP_AMT": data.result.pay_dep_amt   //입금예약금
-								   , "DEP_IN_DT"  : data.result.dep_in_dt     //예약금입금일자
-								   , "PRC_STS_NM" : data.result.prc_sts_nm	  //예약상태명
-								   , "PRC_STS" : data.result.prc_sts};  	  //예약상태
+						p_rtnData = {"PAY_DEP_AMT": data.result.pay_dep_amt    //입금예약금
+								   , "DEP_IN_DT"  : data.result.dep_in_dt      //예약금입금일자
+								   , "PRC_STS_NM" : data.result.prc_sts_nm	   //예약상태명
+								   , "PRC_STS"    : data.result.prc_sts};      //예약상태
 						popupClose($('#p_pickUpGbnPopup').data('pid'));
 					} else {
 						alert("입금 저장 오류, 시스템 관리자에게 문의하세요.");
@@ -381,7 +422,12 @@ $(function() {
 		}	
 	}
 	
-	//그리드 생성
+	/******************************************** 
+	 * @Subject : 그리드 생성 함수
+	 * @Content : 조회 내역 그리드 생성 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function createGrid(){
 		var colName = [
 						  '<s:message code="deposit.seq"/>'
@@ -391,7 +437,7 @@ $(function() {
 						, '<s:message code="deposit.dctamt"/>'
 						, '<s:message code="deposit.invoiceamt"/>'
 						, '<s:message code="deposit.balamt"/>'
-						, '<s:message code="deposit.regdtm"/>'						
+						, '<s:message code="deposit.regdtm"/>'
 					];
 
 		var colModel = [
@@ -407,18 +453,18 @@ $(function() {
 					];
 		
 		var gSetting = {
-		        pgflg:false,
-		        exportflg : false,  //엑셀, pdf 출력 버튼 노출여부
-		        colsetting : false,
-				searchInit : false,
-				resizeing : true,
-				rownumbers:false,
-				shrinkToFit: false,
-				autowidth: true,
-				queryPagingGrid:false, // 쿼리 페이징 처리 여부
-				height : 300
+				pgflg          : false,
+				exportflg      : false,    //엑셀, pdf 출력 버튼 노출여부
+				colsetting     : false,
+				searchInit     : false,
+				resizeing      : true,
+				rownumbers     : false,
+				shrinkToFit    : false,
+				autowidth      : true,
+				queryPagingGrid: false,    // 쿼리 페이징 처리 여부
+				height         : 300
 		};
-		// 그리드 생성 및 초기화
+		/* 그리드 생성 및 초기화 */
 		btGrid.createGrid('depositGrid', colName, colModel, gSetting);
 	}
 	
@@ -456,12 +502,12 @@ $(function() {
 				alert("삭제하였습니다.");
 				
 				var payType = $("#PAY_TYPE_SEARCH").val();
-				cSearch(payType); //입금목록 조회
+				cSearch(payType);    //입금목록 조회
 				
-				// 삭제한 행이 마지막 행일 경우
+				/* 삭제한 행이 마지막 행일 경우 */
 				if ($('#depositGrid').getGridParam('reccount') == '1') {
-					$("input[name='BAL_AMT']" ).val($("input[name='INVOICE_AMT']").val());  // 잔여금액 초기화
-					$("input[name='ACCU_AMT']").val('0');  // 총입금금액 초기화
+					$("input[name='BAL_AMT']" ).val($("input[name='INVOICE_AMT']").val());    // 잔여금액 초기화
+					$("input[name='ACCU_AMT']").val('0');                                     // 총입금금액 초기화
 				}
 			});
 		}

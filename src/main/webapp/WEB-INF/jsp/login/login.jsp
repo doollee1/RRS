@@ -64,7 +64,7 @@ function initRsa(){
 			$("#RSAModulus").val(data.RSAModulus);
 			$("#RSAExponent").val(data.RSAExponent);
 			
-			login();  //로그인
+			setTimeout(login(), 100);   //0.1초후 로그인
 		}
 	});
 } 
@@ -95,6 +95,7 @@ function login() {
 	var rsa = new RSAKey();
     rsa.setPublic($('#RSAModulus').val(),$('#RSAExponent').val());
 
+	//sendData["searchData"]["PASSWORD"] = $("#PASSWORD").val();
 	sendData["searchData"]["PASSWORD"] = rsa.encrypt($("#PASSWORD").val());
 	fn_ajax(url, false, sendData, function(data, xhr) {
 		if(data.success) {

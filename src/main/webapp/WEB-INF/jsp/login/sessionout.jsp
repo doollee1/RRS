@@ -8,7 +8,7 @@
  */
 %>
 <script type="text/javascript">
-<c:if test="${sessionOut == 1}">
+<c:if test="${sessionOut eq '1'}">
 	alert('Session has expired. You have been taken to the login page.');
 	parent.location.href = '/login/login.do';
 </c:if>

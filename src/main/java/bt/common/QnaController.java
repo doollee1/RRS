@@ -11,11 +11,9 @@ public class QnaController {
 	public String QnaList(ModelMap model) throws Exception{
 		return "/common/QnaList";
 	}
-	
+
 	@RequestMapping(value="/common/QnaView.do")
 	public String QnaView(ModelMap model) throws Exception{
 		return "/common/QnaView";
 	}
-	
-	
 }

@@ -26,15 +26,15 @@ import bt.common.service.NoticeService;
 public class NoticeController {
 	@Resource(name = "NoticeService")
 	private NoticeService noticeService;
-	
+
 	@Resource(name = "FileService")
 	private FileService fileService;
-	
+
 	@Resource(name = "CommonService")
 	private CommonService commonService;
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(NoticeController.class);
-	
+
 	/**
 	 * 공지사항 리스트 페이지 호출
 	 * @param model
@@ -45,7 +45,7 @@ public class NoticeController {
 	public String NoticeList(ModelMap model) throws Exception{
 		return "/common/NoticeList";
 	}
-	
+
 	/**
 	 * 공지사항 리스트 조회
 	 * @param reqData
@@ -58,12 +58,12 @@ public class NoticeController {
 	public BRespData selectNoticeList(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
-		
+
 		respData.put("result", noticeService.selectNoticeInfo(param));
-		
+
 		return respData;
 	}
-	
+
 	/**
 	 * 공지사항 조회
 	 * @param reqData
@@ -76,17 +76,17 @@ public class NoticeController {
 	public BRespData selectAppAuthInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
-		
+
 		List<BMap> list = noticeService.selectNoticeInfo(param);
 		param.put("FILE_UID", list.get(0).getString("FILE_UID"));
 		List<BMap> fileList = fileService.selectFileInfo(param);
-		
+
 		respData.put("result", list.get(0));
 		respData.put("fileResult", fileList);
-		
+
 		return respData;
 	}
-	
+
 	/**
 	 * 공지사항 작성 페이지 호출
 	 * @param model
@@ -98,7 +98,7 @@ public class NoticeController {
 		model.addAttribute("noticetype", commonService.selectCommonCode("NOTICE_TP"));
 		return "/common/NoticeWrite";
 	}
-	
+
 	/**
 	 * 공지사항 이미지 업로드 팝업 호출
 	 * @param model
@@ -109,7 +109,7 @@ public class NoticeController {
 	public String noticeImageUpload(ModelMap model) throws Exception{
 		return "/popup/NoticeImageUploadPopup";
 	}
-	
+
 	/**
 	 * 공지사항 이미지 업로드
 	 * @param req
@@ -125,7 +125,7 @@ public class NoticeController {
 		respData.put("result", list);
 		return respData;
 	}
-	
+
 	/**
 	 * 공지사항 파일 첨부 업로드
 	 * @param req
@@ -141,7 +141,7 @@ public class NoticeController {
 		respData.put("result", list);
 		return respData;
 	}
-	
+
 	/**
 	 * 공지사항 등록
 	 * @param reqData
@@ -156,12 +156,12 @@ public class NoticeController {
 		BRespData respData = new BRespData();
 		//String test1 = param.get("CONTENTS").toString().replaceAll("<", "&lt;");
 		//String test2 = test1.replaceAll(">", "&gt;");
-		
+
 		//param.put("CONTENTS", test2);
 		noticeService.insertNoticeInfo(param);
 		return respData;
 	}
-	
+
 	/**
 	 * 공지사항 뷰 화면 호출
 	 * @param model
@@ -172,7 +172,7 @@ public class NoticeController {
 	public String NoticeView(ModelMap model) throws Exception{
 		return "/common/NoticeView";
 	}
-	
+
 	/**
 	 * 공지사항 첨부파일 다운로드
 	 * @param req
@@ -183,7 +183,7 @@ public class NoticeController {
 	public void downloadNoticeAttach(HttpServletRequest req, HttpServletResponse resp) throws Exception{
 		noticeService.downloadNoticeAttach(req, resp);
 	}
-	
+
 	/**
 	 * 공지사항 첨부파일 삭제
 	 * @param reqData
@@ -200,10 +200,10 @@ public class NoticeController {
 		BRespData respData = new BRespData();
 
 		noticeService.deleteNoticeAttach(param);
-		
+
 		return respData;
 	}
-	
+
 	@RequestMapping(value = "/common/updateNoticeCnt.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData updateNoticeCnt(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
@@ -211,14 +211,13 @@ public class NoticeController {
 		BRespData respData = new BRespData();
 
 		noticeService.updateNoticeCnt(param);
-		
+
 		return respData;
 	}
-	
-	
+
+
 	/**
 	 * 공지사항 삭제
-	 * 
 	 * @param reqData
 	 * @param req
 	 * @return
@@ -227,25 +226,19 @@ public class NoticeController {
 	@RequestMapping(value = "/common/deleteNoticeInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData deleteNoticeInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
-		
-		logger.info("============= 공지사항 삭제처리 Controller =============");
-		
 		BMap param = reqData.getParamDataMap("param");
 		logger.info("param : "+param);
-		
+
 		BRespData respData = new BRespData();
 
-		//공지사항 삭제
-		int result = noticeService.deleteNoticeInfo(param); 
-		logger.info("삭제결과 : "+result);
-		
+		int result = noticeService.deleteNoticeInfo(param);
+
 		if(result < 1) {
 			respData.put("result", "fail");
 			return respData;
 		}
-		
-		respData.put("result", "success");		
+
+		respData.put("result", "success");
 		return respData;
 	}
-	
 }

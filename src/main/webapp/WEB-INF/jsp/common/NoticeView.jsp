@@ -7,7 +7,7 @@
 	 */
 %>
 <c:import url="../import/frameTop.jsp">
-	<c:param name="progcd" value="NoticeView" />
+	<c:param name="progcd" value="BB02" />
 </c:import>
 
 <!--****dummy*** -->
@@ -27,8 +27,7 @@
 		</div>
 			<colgroup>
 				<col width="130px" />
-		        <col/>
-		    </colgroup>
+			</colgroup>
 			<tr>
 				<th><s:message code='notice.title'/></th>
 				<td colspan="3">
@@ -46,7 +45,7 @@
 					<label id="lblFromDate"></label> &nbsp;~&nbsp;
 					<label id="lblToDate"></label>
 				</td>
-			</tr>			
+			</tr>
 			<tr style="height: 30px;">
 				<th><s:message code='notice.file'/></th>
 				<td colspan="3" style="margin:5px;">
@@ -59,13 +58,13 @@
 					<div id="divContents" class="ctm_mg_wrap" style="float:left; width:100%; height:480px; overflow-y:auto;">
 					</div>
 				</td>
-			</tr>			
+			</tr>
 		</table>
 	</div>
 </div>
 
 <script type="text/javascript">
-<%-- 
+<%--
   * ========= 공통버튼 클릭함수 =========
   * 검색 : cSearch()
   * 추가 : cAdd()
@@ -82,34 +81,48 @@
   * 버튼 표시/숨김 : setCommBtn('ret', true) : Search,Add,Del,Save,Print,Upload,Excel,Pdf,Cancel,User1,2,3,4,5
   * ===============================
 --%>
-	//초기 로드
+	/******************************************** 
+	 * @Subject : 화면 OPEN 시 최초 실행 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$(function() {
 		initLayout();
 		$('#cBtnSearch').text("<s:message code='button.list'/>");
 		$('#cBtnAdd').text("<s:message code='button.modify'/>");
-		
+		$('#cBtnSave').text("<s:message code='button.delete'/>");
+
 		$('#cBtnSearch').addClass("cls");
 		$('#cBtnSearch').addClass("cBtnList_style");
-		
+
 		$('#cBtnAdd').addClass("cls");
 		$('#cBtnAdd').addClass("cBtnEdit_style");
-		
-		
+
+		$('#cBtnSave').addClass("cls");
+		$('#cBtnSave').removeClass("cBtnSave_style");
+		$('#cBtnSave').addClass("cBtnDel_style");
+
 		$("#hNoticeNo").val("${param.NOTICE_NO}");
 		selectNoticeInfo();
 		updateNoticeCnt();
 	});
-	
+
+	/******************************************** 
+	 * @Subject : 공지사항 상세정보
+	 * @Content : DB에서 공지사항의 상세정보를 가져온다
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function selectNoticeInfo(){
-		
 		if ($("#hNoticeNo").val() == "") return;
-		
+
 		var url = "/common/selectNoticeInfo.do";
 		var param = { "param" : {
 				"S_NOTICE_NO" : $("#hNoticeNo").val()
 			}
 		};
-		
+
 		fn_ajax(url, false, param, function(data, xhr){
 			var result = data.result;
 			$("#lblTitle").text(result.TITLE);
@@ -122,12 +135,18 @@
 			}else{
 				setCommBtn("Add", false);
 			}
-			
+
 			var file = data.fileResult;
 			output(file);
 		});
 	}
-	
+
+	/******************************************** 
+	 * @Subject : 첨부파일 다운로드
+	 * @Content : 공지사항의 첨부파일 다운로드
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function output(data){
 		$.each(data, function(index, item){
 			var link = "/common/downloadNoticeAttach.do?f=" + item.NEW_FILE_NM + "&of=" + item.SRC_FILE_NM;
@@ -135,58 +154,75 @@
 			$("#noticeAttach").append("<br/>");
 		});
 	}
-	
+
+	/******************************************** 
+	 * @Subject : 목록 버튼 클릭
+	 * @Content : 공지사항 목록 페이지로 이동
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function cSearch(){
 		fn_pageMove("/common/NoticeList.do");
 	}
-	
+
+	/******************************************** 
+	 * @Subject : 수정 버튼 클릭
+	 * @Content : 공지사항 수정 화면으로 이동
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function cAdd(){
 		var param = {
 			"NOTICE_NO" : "${param.NOTICE_NO}"
 		};
-		
+
 		fn_pageMove("/common/NoticeWrite.do", param);
 	}
-	
-	//공지사항 삭제
-	function cDel(){
+
+	/******************************************** 
+	 * @Subject : 삭제 버튼 클릭
+	 * @Content : 공지사항 삭제
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
+	function cSave(){
 		if ($("#hNoticeNo").val() == "") return;
-		
 		if(confirm("삭제하시겠습니까?")){
 			var url = '/common/deleteNoticeInfo.do';
 			var param = {"param" : {
 					"NOTICE_NO" : $("#hNoticeNo").val()
 				}
 			};
-			
+
 			fn_ajax(url, false, param, function(data, xhr){
 				if(data.result == "success"){
-					
 					alert("삭제 성공하였습니다.");
 					cSearch();
 				} else {
-					
 					alert("삭제 실패하였습니다.");
 				}
-				
 			});
 		}
 	}
-	
+
+	/******************************************** 
+	 * @Subject : 공지사항 조회수 +1
+	 * @Content : 공지사항 삭제
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function updateNoticeCnt() {
 		if ($("#hNoticeNo").val() == "") return;
-		
+
 		var url = "/common/updateNoticeCnt.do";
 		var param = { "param" : {
 				"NOTICE_NO" : $("#hNoticeNo").val()
 			}
 		};
-		
+
 		fn_ajax(url, false, param, function(data, xhr) {
-			
 		});
 	}
 </script>
 
 <c:import url="../import/frameBottom.jsp" />
-	

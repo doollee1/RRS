@@ -13,13 +13,12 @@ import bt.common.dao.FlightDao;
 
 @Service("FlightService")
 public class FlightService {
-	
 	@Resource(name="CommonCodeDao")
 	private CommonCodeDao commonCodeDao;
-	
+
 	@Resource(name="FlightDao")
 	private FlightDao flightDao;
-	
+
 	/**
 	 * 항공편 조회
 	 * @param param
@@ -29,6 +28,7 @@ public class FlightService {
 	public List<BMap> selectFlightInfo(BMap param) throws Exception {
 		return flightDao.selectFlightInfo(param);
 	}
+
 	/**
 	 * 항공편 추가
 	 * @param code
@@ -42,10 +42,10 @@ public class FlightService {
 			for(int i=0; i < insertParam.size();i++) {
 				BMap detail = new BMap(insertParam.get(i));
 				detail.put("LOGIN_USER", LoginInfo.getUserId());
-				
+
 				list.add(detail);
 			}
-			
+
 			flightDao.insertFlightInfo(list);
 		}
 		catch (Exception e) {
@@ -66,7 +66,7 @@ public class FlightService {
 			for(int i=0; i < updateParam.size();i++) {
 				BMap detail = new BMap(updateParam.get(i));
 				detail.put("LOGIN_USER", LoginInfo.getUserId());
-				
+
 				flightDao.updateFlightInfo(detail);
 			}
 		}
@@ -79,7 +79,7 @@ public class FlightService {
 	/**
 	 * 항공편 삭제
 	 * @param param
-	 * @return 
+	 * @return
 	 * @throws Exception
 	 */
 	public Boolean deleteFlightInfo(List<BMap> paramList) throws Exception {

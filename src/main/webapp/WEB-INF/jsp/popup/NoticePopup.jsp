@@ -7,6 +7,7 @@
  * @Description : 메인 공지사항 팝업
  */
 %>
+
 <div id="noticePopup" style="overflow-y:auto;">
 	<form id="frmNoticeP" action="#">
 	<div id="pop_ct_form_wrap">
@@ -14,8 +15,8 @@
 			<caption></caption>
 			<colgroup>
 				<col width="130px" />
-		        <col />
-		    </colgroup>
+				<col />
+			</colgroup>
 			<tr>
 				<th><s:message code='notice.title'/></th>
 				<td colspan="3">
@@ -44,14 +45,18 @@
 			<tbody></tbody>
 		</table>
 	</div>
-	</form>	
+	</form>
 	<div class="emptyH10"></div>
-	
 	<div id="CONTENTS" style="padding:5px;"></div>
-
 </div>
 
 <script type="text/javascript">
+/******************************************** 
+ * @Subject : 화면 OPEN 시 최초 실행 함수
+ * @Content : 팝업창 설정
+ * @Since   : 2024.07.11
+ * @Author  : 
+ ********************************************/
 $(function() {
 	$('#noticePopup').dialog({
 		title : '<s:message code='notice.notice'/>',
@@ -76,11 +81,16 @@ $(function() {
 	});
 });
 
-//상세조회
+	/******************************************** 
+	 * @Subject : 조회 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 function retrieveNoticeP(noticecd) {
 	var url = '/common/selectNoticeInfo.do';
 	var sendData = {'param': {'S_NOTICE_NO' : noticecd}}
-	
+
 	fn_ajax(url, false, sendData, function(data, xhr) {
 		var noticeInfo = data.result;
 		var file = data.fileResult;
@@ -106,7 +116,7 @@ function updateNoticeCnt(noticecd){
 			"NOTICE_NO" : noticecd
 		}
 	};
-	
+
 	fn_ajax(url, false, param, function(data, xhr) {
 	});
 }

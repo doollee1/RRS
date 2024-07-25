@@ -3,26 +3,26 @@
 
 <mapper namespace="NoticeMapper">
 	<select id="selectNoticeInfo" parameterType="BMap" resultType="BMap">
-	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->	
+	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
 	/* Notice.xml -> selectNoticeInfo */
 		SELECT ROW_NUMBER() OVER(ORDER BY A.NOTICE_NO DESC) AS ROWNUM <!-- 페이징을 위한 컬럼 컬럼 이름 ROWNUM 해야만 됨. -->
-			  ,A.NOTICE_NO
-			  ,A.TITLE
-			  ,A.NOTICE_TP
-			  ,GetCodeNm('NOTICE_TP', A.NOTICE_TP, #{LANG}) AS NOTICE_TP_NM
-			  ,A.REG_ID
-			  ,B.NAME_1ST  AS REG_NM
-			  ,FMTDDATE(A.REG_DT, 'YYYY.MM.DD') AS REG_DT
-			  ,A.CNT
-			  ,A.CONTENTS
-			  ,FMTDDATE(A.FROMDATE, 'YYYY.MM.DD') AS FROMDATE
-			  ,FMTDDATE(A.TODATE, 'YYYY.MM.DD')   AS TODATE
-			  ,CASE WHEN DATEDIFF(FMTDDATE(NOW(),'YYYYMMDD'), FMTDDATE(A.FROMDATE,'YYYYMMDD')) <![CDATA[ <= ]]> 0 AND 
-			             DATEDIFF(FMTDDATE(NOW(),'YYYYMMDD'), FMTDDATE(A.FROMDATE,'YYYYMMDD')) <![CDATA[ >= ]]> -7 THEN 'Y'
+			 , A.NOTICE_NO
+			 , A.TITLE
+			 , A.NOTICE_TP
+			 , GetCodeNm('NOTICE_TP', A.NOTICE_TP, #{LANG}) AS NOTICE_TP_NM
+			 , A.REG_ID
+			 , B.NAME_1ST                                   AS REG_NM
+			 , FMTDDATE(A.REG_DT, 'YYYY.MM.DD')             AS REG_DT
+			 , A.CNT
+			 , A.CONTENTS
+			 , FMTDDATE(A.FROMDATE, 'YYYY.MM.DD')           AS FROMDATE
+			 , FMTDDATE(A.TODATE, 'YYYY.MM.DD')             AS TODATE
+			 , CASE WHEN DATEDIFF(FMTDDATE(NOW(),'YYYYMMDD'), FMTDDATE(A.FROMDATE,'YYYYMMDD')) <![CDATA[ <= ]]> 0 AND
+						 DATEDIFF(FMTDDATE(NOW(),'YYYYMMDD'), FMTDDATE(A.FROMDATE,'YYYYMMDD')) <![CDATA[ >= ]]> -7 THEN 'Y'
 					ELSE 'N' END NEW_YN
-			  ,A.FILE_UID
-		  FROM BC_NOTICE A  
-	INNER JOIN BC_USER B  
+			 , A.FILE_UID
+		  FROM BC_NOTICE A
+	INNER JOIN BC_USER   B
 			ON A.REG_ID = B.USER_ID
 		 WHERE 1 = 1
 		<if test='S_TITLE != null and S_TITLE != ""'>
@@ -36,7 +36,7 @@
 		</if>
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
-	
+
 	<insert id="insertNoticeInfo" parameterType="BMap">
 	/* Notice.xml -> insertNoticeInfo */
 		INSERT INTO BC_NOTICE
@@ -60,7 +60,7 @@
 					,#{CONTENTS}
 					,0
 					,DATE_FORMAT(#{FROMDATE}, '%Y%m%d')
-					,DATE_FORMAT(#{TODATE}, '%Y%m%d') 
+					,DATE_FORMAT(#{TODATE},   '%Y%m%d')
 			<if test='FILE_UID != null and FILE_UID != ""'>
 					,#{FILE_UID}
 			</if>
@@ -71,48 +71,48 @@
 					,#{LOGIN_USER}
 					)
 	</insert>
-	
+
 	<update id="updateNoticeInfo" parameterType="BMap">
 	/* Notice.xml -> updateNoticeInfo */
 		UPDATE BC_NOTICE
 		   SET TITLE = #{TITLE}
-		   	  ,NOTICE_TP = #{NOTICE_TP}
-		   	  ,CONTENTS = #{CONTENTS}
-		   	  ,FROMDATE = DATE_FORMAT(#{FROMDATE}, '%Y%m%d') 
-		   	  ,TODATE = DATE_FORMAT(#{TODATE}, '%Y%m%d')
-		   	  ,UPT_DT = NOW()
-		   	  ,UPT_ID = #{LOGIN_USER}
+			 , NOTICE_TP = #{NOTICE_TP}
+			 , CONTENTS  = #{CONTENTS}
+			 , FROMDATE  = DATE_FORMAT(#{FROMDATE}, '%Y%m%d')
+			 , TODATE    = DATE_FORMAT(#{TODATE}, '%Y%m%d')
+			 , UPT_DT    = NOW()
+			 , UPT_ID    = #{LOGIN_USER}
 		<if test='FILE_UID != null and FILE_UID != ""'>
-			  ,FILE_UID = #{FILE_UID}
+			 , FILE_UID  = #{FILE_UID}
 		</if>
 		 WHERE NOTICE_NO = #{NOTICE_NO}
 	</update>
-	
+
 	<update id="updateNoticeCnt" parameterType="BMap">
 	/* Notice.xml -> updateNoticeCnt */
 		UPDATE BC_NOTICE
 		   SET CNT = CNT + 1
 		 WHERE NOTICE_NO = #{NOTICE_NO}
 	</update>
-	
+
 	<select id="selectMainNotice" parameterType="BMap" resultType="BMap">
 	/* Notice.xml -> selectMainNotice */
-	  SELECT * 
-	      FROM (
-				SELECT ROW_NUMBER() OVER(ORDER BY NOTICE_NO DESC) ROWNUM,
-					   GetCodeNm('NOTICE_TP', NOTICE_TP,'EN') NOTICE_TP, 
-					   TITLE, 
-					   FMTDDATE(FROMDATE, 'YYYY.MM.DD') FROMDATE, 
-					   FMTDDATE(TODATE, 'YYYY.MM.DD') TODATE, 
-					   REG_ID, 
-					   CNT,
-			  		   CASE WHEN DATEDIFF(FMTDDATE(NOW(),'YYYYMMDD'), FMTDDATE(FROMDATE,'YYYYMMDD')) <![CDATA[ <= ]]> 0 AND 
-			            	     DATEDIFF(FMTDDATE(NOW(),'YYYYMMDD'), FMTDDATE(FROMDATE,'YYYYMMDD')) <![CDATA[ >= ]]> -7 THEN 'Y'
-							ELSE 'N' END NEW_YN
-				  FROM BC_NOTICE)A
-		  WHERE ROWNUM <![CDATA[ < ]]> 11
+	  SELECT *
+		FROM (
+			SELECT ROW_NUMBER() OVER(ORDER BY NOTICE_NO DESC) AS ROWNUM,
+				   GetCodeNm('NOTICE_TP', NOTICE_TP,'EN')     AS NOTICE_TP,
+				   TITLE,
+				   FMTDDATE(FROMDATE, 'YYYY.MM.DD')           AS FROMDATE,
+				   FMTDDATE(TODATE,   'YYYY.MM.DD')           AS TODATE,
+				   REG_ID,
+				   CNT,
+				   CASE WHEN DATEDIFF(FMTDDATE(NOW(),'YYYYMMDD'), FMTDDATE(FROMDATE,'YYYYMMDD')) <![CDATA[ <= ]]> 0 AND
+							 DATEDIFF(FMTDDATE(NOW(),'YYYYMMDD'), FMTDDATE(FROMDATE,'YYYYMMDD')) <![CDATA[ >= ]]> -7 THEN 'Y'
+						ELSE 'N' END NEW_YN
+			  FROM BC_NOTICE) A
+		WHERE ROWNUM <![CDATA[ < ]]> 11
 	</select>
-	
+
 	<!-- 공지사항 삭제 -->
 	<delete id="deleteNoticeInfo" parameterType="BMap">
 		DELETE FROM BC_NOTICE

@@ -14,13 +14,11 @@ import bt.reserve.service.ReserveService;
 
 @Service
 public class QnaService {
-
 	private static final Logger logger = LoggerFactory.getLogger(QnaService.class);
-	
-	
+
 	@Resource
 	private QnaDao qnaDao;
-	
+
 	public List<BMap> qnaSelectList(BMap param) throws Exception {
 		return qnaDao.QnaSelectList(param);
 	}
@@ -33,12 +31,10 @@ public class QnaService {
 	public Boolean qnaInsertAnswer(BMap param) throws Exception {
 		Boolean isValid = true;
 
-        try {
-        
-        	qnaDao.qnaInsertAnswer(param);
-		 
+		try {
+			qnaDao.qnaInsertAnswer(param);
 		} catch (Exception e) {
-		    // TODO: handle exception
+			// TODO: handle exception
 			e.printStackTrace();
 			isValid = false;
 		}

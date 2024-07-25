@@ -21,13 +21,13 @@
 				<!---<caption></caption> --->
 				<colgroup>
 					<col width="100px" />
-			        <col width="200px" />
-			        <col width="100px" />
-			        <col width="200px" />
-			        <col width="100px" />
-			        <col width="200px" />
-			    </colgroup>
-		   		<tr>
+					<col width="200px" />
+					<col width="100px" />
+					<col width="200px" />
+					<col width="100px" />
+					<col width="200px" />
+				</colgroup>
+				<tr>
 					<th><s:message code='system.UserID'/></th>
 					<td>
 						<input type="hidden" id="COMP_CD" name = 'COMP_CD' />
@@ -60,7 +60,7 @@
 					<td width="150">
 						<input type="text" id="DEPT_CD" name="DEPT_CD" class="cmc_txt" style="width:80px; float:left;"/>
 						<button class='grid_popupbtn' id='btn_department' type='button' style="float:left;"></button>
-						<p class="data_side_text" name="DEPT_NM" id="DEPT_NM"></p></td>
+						<p class="data_side_text" name="DEPT_NM" id="DEPT_NM"></p>
 					</td>
 				</tr>
 				<tr>
@@ -149,14 +149,13 @@
 
 <script type="text/javascript">
 $(function() {
-	
 	$('#START_DT').val($.datepicker.formatDate('dd.mm.yy', new Date()));
 	
 	$('#USER_TP').change(function() {
 		if($('#USER_TP').val() == '02'){
 			$('#CUST_CD').removeAttr("readonly");
 			$('#WEB_ID').attr("readonly",false);
-			$('#DEPT_CD').attr("readonly",false);					
+			$('#DEPT_CD').attr("readonly",false);
 		}else{
 			$('#CUST_CD').attr("readonly",false);
 			$('#WEB_ID').removeAttr("readonly");
@@ -170,21 +169,21 @@ $(function() {
 	$('#LANG_CD').val(getCookie("Language").toUpperCase());
 	
 	$('#p_UserInfo').dialog({
-		title :'<s:message code='system.userinfo'/>',
+		title    :'<s:message code='system.userinfo'/>',
 		autoOpen : false,
-		//height: 400,
-		width: 940,
-		modal : true,
+		//height : 400,
+		width    : 940,
+		modal    : true,
 		buttons : {
 			'<s:message code='system.save'/>' : {
-				text: '<s:message code='system.save'/>',
-				id : 'save',
+				text : '<s:message code='system.save'/>',
+				id   : 'save',
 				click: function() {
 					saveUserInfo();
 				}
 			},
 			'<s:message code='button.close'/>' : {
-				text: '<s:message code='button.close'/>',
+				text : '<s:message code='button.close'/>',
 				click: function() {
 					$(this).dialog("close");
 				}
@@ -192,7 +191,8 @@ $(function() {
 
 		},
 		close : function() {
-			popupClose($(this).attr('id')); /* 필수로 들어가야함 */
+			/* 필수로 들어가야함 */
+			popupClose($(this).attr('id'));
 		},
 		open : function() {
 			if(fn_empty($(this).data("COMP_CD"))){
@@ -221,14 +221,14 @@ $(function() {
 			}		
 		$('#START_DT').datepicker({
 			dateFormat : 'dd.mm.yy',
-			showOn : 'both'
+			showOn     : 'both'
 		}).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
 			function(e) {
 		});
 		
 		$('#STOP_DT').datepicker({
 			dateFormat : 'dd.mm.yy',
-			showOn : 'both'
+			showOn     : 'both'
 		}).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
 			function(e) {
 		});
@@ -245,8 +245,8 @@ $(function() {
 	
 	$("#btn_department").click(function(e){
 
-		var url = "/common/DeptPopup.do";
-		var pid = "deptPopup"
+		var url   = "/common/DeptPopup.do";
+		var pid   = "deptPopup"
 		var param = {"S_DEPT_CD" : $("#DEPT_CD").val()};
 		
 		popupOpen(url, pid, param, function(data){
@@ -258,7 +258,7 @@ $(function() {
 	})
 	
 	$("#btn_init").click(function(e){
-		var url = "/common/initPw.do";
+		var url   = "/common/initPw.do";
 		var param = {"param" : {		
 				"COMP_CD" : $("#COMP_CD").val(),
 				"USER_ID" : $("#USER_ID").val()
@@ -267,7 +267,8 @@ $(function() {
 		
 		fn_ajax(url, false, param, function(data, xhr){
 			if(data.success){
-				alert("<s:message code="confirm.init"/>");	/* 변경하였습니다. */
+				/* confirm.init : 변경하였습니다. */
+				alert("<s:message code="confirm.init"/>");
 			}else{
 				alert(data.message);
 			}
@@ -282,7 +283,7 @@ function selectUserInfo(compCd, userId, userTp){
 		}
 	};
 	
-	var url = "/common/selectUserInfo.do"
+	var url = "/common/selectUserInfo.do";
 	
 	fn_ajax(url, false, param, function(data, xhr){
 		fn_dataBind('frmUserInfo', data.result[0]);
@@ -291,8 +292,8 @@ function selectUserInfo(compCd, userId, userTp){
 
 function saveUserInfo(){
 	var formData = formIdAllToMap('frmUserInfo');
-	var param = {"param" : formData};
-	var url = "/common/saveUserInfo.do"
+	var param    = {"param" : formData};
+	var url      = "/common/saveUserInfo.do"
 		
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
@@ -300,7 +301,7 @@ function saveUserInfo(){
 				alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
 			}else{
 				alert("<s:message code='info.save'/>");
-				popupClose($('#p_UserInfo').data('pid'));			
+				popupClose($('#p_UserInfo').data('pid'));
 			}
 		});
 	}

@@ -41,4 +41,7 @@
     <error-code>404</error-code>
     <location>/common/error.jsp</location>
   </error-page>
+  <session-config>
+	<session-timeout>120</session-timeout>		
+  </session-config>
 </web-app>

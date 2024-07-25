@@ -19,11 +19,10 @@ import bt.common.service.QnaService;
 @RestController
 public class QnaRestController {
 	private static final Logger logger = LoggerFactory.getLogger(QnaRestController.class);
-	
+
 	@Resource
 	private QnaService qnaService;
-	
-	
+
 	@RequestMapping(value="/common/qnaSelectList.do")
 	public BRespData qnaSelectList(@RequestBody BReqData reqData,HttpServletRequest req)throws Exception{
 		BMap param = reqData.getParamDataMap("param");
@@ -31,34 +30,29 @@ public class QnaRestController {
 		respData.put("result", qnaService.qnaSelectList(param));
 		return respData;
 	}
-	
+
 	@RequestMapping(value="/common/QnaViewDetail.do")
 	public BRespData qnaViewDetail(@RequestBody BReqData reqData,HttpServletRequest req)throws Exception{
 		BMap paramData = new BMap();
 		BRespData respData = new BRespData();
-		paramData.put("QNA_SEQ"   , (String) reqData.get("QNA_SEQ"));
-		respData.put("result", qnaService.qnaViewDetail(paramData));
-		respData.put("answer", qnaService.qnaViewAnswer(paramData));
+		paramData.put("QNA_SEQ", (String) reqData.get("QNA_SEQ"));
+		respData.put("result"  , qnaService.qnaViewDetail(paramData));
+		respData.put("answer"  , qnaService.qnaViewAnswer(paramData));
 		return respData;
 	}
-	
+
 	@RequestMapping(value = "/common/qnaAnswerInsert.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData pickupManager(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BRespData respData = new BRespData();
-		
+
 		BMap paramData = new BMap();
-		paramData.put("QNA_SEQ"   , reqData.get("QNA_SEQ"));
-		paramData.put("CONTENT"    , (String)reqData.get("CONTENT"));
+		paramData.put("QNA_SEQ", reqData.get("QNA_SEQ"));
+		paramData.put("CONTENT", (String)reqData.get("CONTENT"));
 
 		if(!qnaService.qnaInsertAnswer(paramData)){
 			respData.put("dup", "Y");
 		};
-		
 		return respData;
 	}
-	
-	
-	
-
 }

@@ -136,10 +136,10 @@ public class UserController {
 		BMap param = reqData.getParamDataMap("param");
 		param.put("COMP_CD", LoginInfo.getCompCd());
 		BRespData respData = new BRespData();
+		HttpSession session = req.getSession();
 		
 		try{
-			LoginController loginController = new LoginController();
-			HttpSession session = req.getSession();
+			LoginController loginController = new LoginController();			
 	        PrivateKey privateKey = (PrivateKey) session.getAttribute(LoginController.RSA_WEB_KEY);
 	 
 	        // 복호화
@@ -155,9 +155,13 @@ public class UserController {
 	        userService.changePw(param);
 	        
 	        respData.put("success", true);
-		}catch(Exception e){
+		} catch(Exception e){
 			respData.put("success", false);
 			respData.put("message", e.getMessage());
+		} finally {
+			
+			//개인키 세션에서 제거
+			session.removeAttribute(LoginController.RSA_WEB_KEY);
 		}
 		
 		return respData;

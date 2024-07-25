@@ -8,21 +8,24 @@
  */
 %>
 <div id="memberUserPopup">
+	<!--  버튼 셋팅 start-->
 	<div class="oms_popup_button">
 		<button class='btn btn-default' id='btn_download_excel_form' type='button' onclick='downloadExcel();'>
-      		엑셀샘플파일 내려받기
-      	</button>
+			엑셀샘플파일 내려받기
+		</button>
 		<button class='btn btn-default' id='btn_upload_excel_popup' type='button' onclick="uploadExcelFunc()">
 			엑셀 업로드
-      	</button>
+		</button>
 		<button class='btn btn-default' id='btn_memberUserAddPopup' type='button'>
-      		등록
-      	</button>
-      	<button class='btn btn-default' id='btn_delete' type='button' onclick='deleteMemberUser()'>
-      		삭제
-      	</button>
+			등록
+		</button>
+		<button class='btn btn-default' id='btn_delete' type='button' onclick='deleteMemberUser()'>
+			삭제
+		</button>
 	</div>
+	<!-- 버튼 셋팅 end -->
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
+		<!-- 그리드 시작 -->
 		<div class="pop_grid_wrap">	
 			<table id="grid_MemberUser" class="user_info_table"></table>
 			<div id="pager_MemberUser"></div>
@@ -31,19 +34,27 @@
 	</div>
 </div>
 <style>
-    td { cursor:pointer; }
+	td { cursor:pointer; }
 </style>
 <script type="text/javascript">
+/******************************************** 
+ * @Subject : 팝업 창 기본 설정
+ * @Content : 화면 비율 및 버튼 이벤트 
+ * @See     : grid_MemberUser_Load() / popupSearch()
+ * @Since   : 2024.05.23
+ * @Author  : 장소현
+ ********************************************/
 $(function() {
 	$('#memberUserPopup').dialog({
-		title:'멤버 회원 정보',
+		title   :'멤버 회원 정보',
 		autoOpen: false,
-		height: 468,
-		width: 1300,
-		modal: true,
+		height  : 468,
+		width   : 1300,
+		modal   : true,
 		buttons: {
+			/* 닫기 버튼 추가 */
 			'<s:message code='button.close'/>': {
-				text:'<s:message code='button.close'/>',
+				text :'<s:message code='button.close'/>',
 				click: function() {
 					$(this).dialog('close');
 				}
@@ -60,14 +71,14 @@ $(function() {
 				ondblClickRow: function(rowid, iRow, iCol, e) {
 					grid1_ondblClickRow(rowid, iRow, iCol, e);
 					// popupClose($('#memberUserPopup').data('pid'));
-		    	}
+				}
 			});
 			
 			gridData = $(this).data('gridData');
 			if (fn_empty(gridData) == false) {
 				$('#grid1').jqGrid('clearGridData');
-			    $('#grid1').jqGrid('setGridParam', {data:gridData});
-			    $('#grid1').trigger('reloadGrid');
+				$('#grid1').jqGrid('setGridParam', {data:gridData});
+				$('#grid1').trigger('reloadGrid');
 			}
 		},
 		close: function(e, ui) {
@@ -76,6 +87,7 @@ $(function() {
 		}
 	});
 	
+	/* 등록 버튼 클릭 이벤트 */
 	$("#btn_memberUserAddPopup").click(function(e) {
 		var param = {"RET_YN" : "N"}
 		memberUserPopup(param);
@@ -99,120 +111,146 @@ function grid_MemberUser_Load() {
 	];
 	
 	var colModel = [
-		{ name: 'ROWNUM', width: 100, align: 'center' },
+		{ name: 'ROWNUM'   , width: 100, align: 'center' },
 		{ name: 'MEMBER_ID', width: 100, align: 'center' },
-		{ name: 'HAN_NAME', width: 100, align: 'center' },
-		{ name: 'ENG_NAME', width: 100, align: 'center' },
-		{ name: 'TEL_NO', width: 120, align: 'center' },
-		{ name: 'EMAIL', width: 120, align: 'center' },
+		{ name: 'HAN_NAME' , width: 100, align: 'center' },
+		{ name: 'ENG_NAME' , width: 100, align: 'center' },
+		{ name: 'TEL_NO'   , width: 120, align: 'center' },
+		{ name: 'EMAIL'    , width: 120, align: 'center' },
 		{ name: 'PARTNER_HAN_NAME', width: 100, align: 'center' },
 		{ name: 'PARTNER_ENG_NAME', width: 100, align: 'center' },
-		{ name: 'PARTNER_GENDER', width: 70, align: 'center' },
-		{ name: 'PARTNER_TEL_NO', width: 120, align: 'center' },
+		{ name: 'PARTNER_GENDER'  , width: 70, align: 'center' },
+		{ name: 'PARTNER_TEL_NO'  , width: 120, align: 'center' },
 		{ name: 'RET_YN', width: 50, align: 'center' },
-		{ name: 'CHK', index: 'CHK', width: 50, align: 'center', formatter: gridCboxFormat, sortable: false }
+		{ name: 'CHK'   , index: 'CHK', width: 50, align: 'center', formatter: gridCboxFormat, sortable: false }
 	];
 
 	var gSetting = {
-			height: 277,
-			pgflg:true,
-			exportflg : false,  //엑셀, pdf 출력 버튼 노출여부
-			colsetting : false,  // 컬럼 설정 버튼 노출여부
-			searchInit : false,  // 데이터 검색 버튼 노출여부
-			resizeing : true,
-			rownumbers:false,
-			shrinkToFit: true,
-			autowidth: true,
-			queryPagingGrid:true // 쿼리 페이징 처리 여부
-		};
+		height: 277,
+		pgflg :true,
+		exportflg  : false,     // 엑셀, pdf 출력 버튼 노출여부
+		colsetting : false,     // 컬럼 설정 버튼 노출여부
+		searchInit : false,     // 데이터 검색 버튼 노출여부
+		resizeing  : true,
+		rownumbers :false,
+		shrinkToFit: true,
+		autowidth  : true,
+		queryPagingGrid:true    // 쿼리 페이징 처리 여부
+	};
+	
 	btGrid.createGrid('grid_MemberUser', colName, colModel, gSetting);
 }
 
+/******************************************** 
+ * @Subject : 엑셀샘플파일 내려받기 버튼 클릭 함수
+ * @Content : 엑셀 파일 다운로드
+ * @Since   : 2024.07.11
+ * @Author  : 
+ ********************************************/
 function downloadExcel(){
-	// Get grid column info
-	var title = "MemberSampleExcel";
+	/* Get grid column info */
+	var title         = "MemberSampleExcel";
 	var excelColModel = [];
-	var colModel = $("#grid_MemberUser").jqGrid('getGridParam','colModel');
-	var colName=$("#grid_MemberUser").jqGrid('getGridParam','colNames');
+	var colModel      = $("#grid_MemberUser").jqGrid('getGridParam','colModel');
+	var colName       = $("#grid_MemberUser").jqGrid('getGridParam','colNames');
 	for(var i=0; i<colModel.length; i++) {
-		if(colModel[i].hidden===true){continue;}
-		if(colModel[i].colmenu===false){continue;}
-		if(colModel[i].name==='ROWNUM' || colName[i]===''){continue;}
+		if(colModel[i].hidden ===true)  {continue;}
+		if(colModel[i].colmenu===false) {continue;}
+		if(colModel[i].name   ==='ROWNUM' || colName[i]===''){continue;}
 		var rowdata={};
-		rowdata['label']=colName[i];
-		rowdata['name']=colModel[i].name;
-		rowdata['width']=colModel[i].width;
-		rowdata['align']=fn_empty(colModel[i].align)?'left':colModel[i].align;
-		rowdata['formatter']=fn_empty(colModel[i].formatter)?'':colModel[i].formatter;
+		rowdata['label']    = colName[i];
+		rowdata['name']     = colModel[i].name;
+		rowdata['width']    = colModel[i].width;
+		rowdata['align']    = fn_empty(colModel[i].align)?'left':colModel[i].align;
+		rowdata['formatter']= fn_empty(colModel[i].formatter)?'':colModel[i].formatter;
 		excelColModel.push(rowdata);
 		if(colModel[i].formatter=='select'){
 			$('#' + gid).jqGrid('setColProp',colModel[i].name,{unformat:gridUnfmt});
 		}
 	}
 	
- 	var param = { 
- 		'COL_NM': excelColModel,
- 		'TITLE': title,
+	var param = { 
+		'COL_NM': excelColModel,
+		'TITLE' : title,
 	};
- 	
- 	// ajax
- 	fn_ajax('/rrs/downloadExcelSample.do', true, param, function(data, xhr) {
-        var exceldata = base64DecToArr(data.exceldata);
-        var filename = title + '.xlsx';
-        var blob = new Blob([exceldata], {
-            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        });
-        if (typeof window.navigator.msSaveBlob !== 'undefined') {
-            window.navigator.msSaveBlob(blob, filename);
-        } else {
-            var URL = window.URL || window.webkitURL;
-            var downloadUrl = URL.createObjectURL(blob);
-            if (filename) {
-                var a = document.createElement('a');
-                if (typeof a.download === 'undefined') {
-                    window.location = downloadUrl;
-                } else {
-                    a.href = downloadUrl;
-                    a.download = filename;
-                    document.body.appendChild(a);
-                    a.click();
-                }
-            } else {
-                window.location = downloadUrl;
-            }
-            setTimeout(function() {
-                URL.revokeObjectURL(downloadUrl);
-            }, 100);
-        }
-    });
- 	
+	
+	/* ajax */
+	fn_ajax('/rrs/downloadExcelSample.do', true, param, function(data, xhr) {
+		var exceldata = base64DecToArr(data.exceldata);
+		var filename  = title + '.xlsx';
+		var blob      = new Blob([exceldata], {
+			type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+		});
+		if (typeof window.navigator.msSaveBlob !== 'undefined') {
+			window.navigator.msSaveBlob(blob, filename);
+		} else {
+			var URL         = window.URL || window.webkitURL;
+			var downloadUrl = URL.createObjectURL(blob);
+			if (filename) {
+				var a = document.createElement('a');
+				if (typeof a.download === 'undefined') {
+					window.location = downloadUrl;
+				} else {
+					a.href     = downloadUrl;
+					a.download = filename;
+					document.body.appendChild(a);
+					a.click();
+				}
+			} else {
+				window.location = downloadUrl;
+			}
+			setTimeout(function() {
+				URL.revokeObjectURL(downloadUrl);
+			}, 100);
+		}
+	});
+	
 }
 
+/******************************************** 
+ * @Subject : 엑셀 업로드 버튼 함수
+ * @Content : 엑셀 업로드
+ * @See     : popupSearch()
+ * @Since   : 2024.05.23
+ * @Author  : 
+ ********************************************/
 function uploadExcelFunc(param) {
 	var url = "/rrs/MemberUserExcelUploadPopup.do";
-	var pid = "p_MemberUserExcelUploadPopup";  //팝업 페이지의 취상위 div ID
+	var pid = "p_MemberUserExcelUploadPopup";    //팝업 페이지의 취상위 div ID
 
 	popupOpen(url, pid, param, function(data) {
 		popupSearch();
 	});
 }
 
-// popupSearch
+/******************************************** 
+ * @Subject : 조회 함수
+ * @Content : 조회 후 데이터 셋팅
+ * @See     : setTelNoHypen() / setPatnerGender()
+ * @Since   : 2024.05.23
+ * @Author  : 장소현
+ ********************************************/
 function popupSearch() {
 	var sendData = {};
-	var url = '/rrs/selectMemberUserInfo.do';
+	var url      = '/rrs/selectMemberUserInfo.do';
 	
 	fn_ajax(url, false, sendData, function(data, xhr) {
-		var gridData     = data.result;
+		var gridData = data.result;
 		$('#grid_MemberUser').jqGrid('clearGridData');
-	    $('#grid_MemberUser').jqGrid('setGridParam', {data:gridData});
-	    $('#grid_MemberUser').trigger('reloadGrid');
-	    
+		$('#grid_MemberUser').jqGrid('setGridParam', {data:gridData});
+		$('#grid_MemberUser').trigger('reloadGrid');
+		
 	});
 	setTelNoHypen();
 	setPatnerGender();
 }
 
+/******************************************** 
+ * @Subject : 전화번호 하이픈 셋팅 함수
+ * @Content : 전화번호 하이픈 추가
+ * @Since   : 2024.05.23
+ * @Author  : 장소현
+ ********************************************/
 function setTelNoHypen() {
 	var rowDataList = $("#grid_MemberUser").getRowData();
 	for(var i=0; i<rowDataList.length; i++) {
@@ -224,26 +262,39 @@ function setTelNoHypen() {
 	}
 }
 
+/******************************************** 
+ * @Subject : 배우자 성별 셋팅 함수
+ * @Content : 코드 번호로 조회 된 배우자 성별 한글로 전환
+ * @Since   : 2024.05.23
+ * @Author  : 장소현
+ ********************************************/
 function setPatnerGender() {
-	var url = '/rrs/selectMemCodeInfo.do';
+	var url      = '/rrs/selectMemCodeInfo.do';
 	var sendData = {'param' : {"HEAD_CD": 500250}};
 	
 	fn_ajax(url, false, sendData, function(data, xhr) {
-		var codeInfo = data.result;
+		var codeInfo    = data.result;
 		var rowDataList = $("#grid_MemberUser").getRowData();
 		
-		for(var i=0; i<rowDataList.length; i++) {			
+		for(var i=0; i<rowDataList.length; i++) {
 			var patnerGender = rowDataList[i].PARTNER_GENDER;
 			
 			$.each(codeInfo, function(index, item){
 				if (patnerGender === item.CODE) {
 					$("#grid_MemberUser").jqGrid('setCell', i+1, 'PARTNER_GENDER', item.CODE_NM);
 				}
-			});	
-		}		
-	});		
+			});
+		}
+	});
 }
 
+/******************************************** 
+ * @Subject : 그리드 클릭 함수
+ * @Content : 해당 멤버 회원 정보 수정 팝업 Open
+ * @See     : memberUserPopup()
+ * @Since   : 2024.05.23
+ * @Author  : 장소현
+ ********************************************/	
 function grid1_ondblClickRow(rowid, iRow, iCol, e){
 	var gridData = $("#grid_MemberUser").getRowData(rowid);
 
@@ -262,39 +313,57 @@ function grid1_ondblClickRow(rowid, iRow, iCol, e){
 	memberUserPopup(param);
 }
 
+/******************************************** 
+ * @Subject : 멤버 회원 정보  팝업 Open 함수
+ * @Content : param 값이 있을 경우에는 해당 값을 셋팅
+ * @See     : popupSearch()
+ * @Since   : 2024.05.23
+ * @Author  : 장소현
+ ********************************************/	
 function memberUserPopup(param){
 	var url = "/rrs/MemberUserAddPopup.do";
-	var pid = "p_MemberUserAdd";  //팝업 페이지의 취상위 div ID
+	var pid = "p_MemberUserAdd";    //팝업 페이지의 취상위 div ID
 
 	popupOpen(url, pid, param, function(data) {
 		popupSearch();
 	});
 }
 
+/******************************************** 
+ * @Subject : 삭제 버튼 함수
+ * @Content : 맴버 회원 정보 삭제
+ * @See     : popupSearch()
+ * @Since   : 2024.07.11
+ * @Author  : 
+ ********************************************/	
 function deleteMemberUser() {
-	var ids = $("#grid_MemberUser").jqGrid("getDataIDs");
+	var ids      = $("#grid_MemberUser").jqGrid("getDataIDs");
 	var gridData = [];
-	var cnt = 0;
+	var cnt      = 0;
+	
 	btGrid.gridSaveRow('grid_MemberUser');
+
 	for(var i = 0; i < ids.length; i++){
 		if($('#grid_MemberUser_' + ids[i] + '_CHK').prop('checked')){
 			cnt++;
-			var rowData = $("#grid_MemberUser").getRowData(ids[i]);
+			var rowData    = $("#grid_MemberUser").getRowData(ids[i]);
 			rowData.TEL_NO = rowData.TEL_NO.replace(/-/g, '');
 			gridData.push(rowData);
 		}
 	}
 	
+	/* 삭제 할 데이터를 선택하지 않았을 경우 reuturn */
 	if(cnt < 1){
 		alert("삭제할 데이타를 선택하십시오.");
 		return;
 	}
 	
 	if(confirm("삭제하시겠습니까?")){
-		var url = '/rrs/deleteMemberUserInfo.do';
+		var url   = '/rrs/deleteMemberUserInfo.do';
 		var param = {"gridData" : gridData};
 		
 		fn_ajax(url, false, param, function(data, xhr){
+			/* 회원정보 탈퇴 여부 확인 */ 
 			if (data.isExistUserMember == 'Y') {
 				alert("회원정보가 있습니다. 탈퇴로 변경 부탁드립니다");
 			} else {
@@ -304,5 +373,4 @@ function deleteMemberUser() {
 		});
 	}
 }
-
 </script>

@@ -62,7 +62,7 @@
 							<td><select id="S_MATL_POP-SALES_ORG_CD" name="S_MATL_POP-SALES_ORG_CD" class="">
 								</select>
 							</td>
-							<td><s:message code="material.distrChl"/></p></td>
+							<td><p><s:message code="material.distrChl"/></p></td>
 							<td><select id="S_MATL_POP-DISTRB_CH" name="S_MATL_POP-DISTRB_CH" class="">
 								</select>
 							</td>

@@ -19,7 +19,6 @@
 	<form id="frmSearch" action="#">
 		<input type="hidden"  name="CURRENT_PAGE"  id="CURRENT_PAGE" />
 		<input type="hidden"  name="ROWS_PER_PAGE"  id="ROWS_PER_PAGE" />
-		<!------------->
 		<div class="tab_top_search">
 			<table>
 				<tbody>
@@ -29,8 +28,8 @@
 							<select id="S_MEM_GBN" name="S_MEM_GBN" class="cmc_combo" style="width:80px;">
 								<option value="">전체</option>
 								<c:forEach var="i" items="${mem_gbn}">
-							    	<option value="${i.CODE}">${i.CODE_NM}</option>
-						    	</c:forEach>
+									<option value="${i.CODE}">${i.CODE_NM}</option>
+								</c:forEach>
 							</select>
 						</td>
 						<td class="small_td"><p><s:message code='system.UserID'/></p></td>
@@ -41,7 +40,6 @@
 				</tbody>
 			</table>
 		</div>
-		<!-------------->	
 	</form>
 	<!-- Search condition end -->
 	
@@ -77,19 +75,24 @@
   * 버튼 표시/숨김 : setCommBtn('ret', true) : Search,Add,Del,Save,Print,Upload,Excel,Pdf,Cancel,User1,2,3,4,5
   * ===============================
 --%>
-  	$(document).on("keyup", "input[noSpecial]", function() {$(this).val( $(this).val().replace(/[^ㄱ-힣a-zA-Z0-9]/gi,"") );});
-  
-	//init
+
+	/* 정규화 */
+	$(document).on("keyup", "input[noSpecial]", function() {$(this).val( $(this).val().replace(/[^ㄱ-힣a-zA-Z0-9]/gi,"") );});
+
+  	/******************************************** 
+	 * @Subject : 화면 OPEN 시 최초 실행 함수
+	 * @Content : 화면, 조회 조건 이벤트, 그리드 이벤트 셋팅
+	 * @See     : initLayout() / createGrid1() / cSearch()
+	 * @Since   : 2024.05.22
+	 * @Author  : 장소현
+	 ********************************************/
 	$(function() {
-		// setCommBtn("User6", false);	// hide bookmark button
+		/* 멤버정보등록 버튼 추가 */
 		$('#cBtnUser1').text("멤버정보등록");
 		$('#cBtnUser1').addClass("cBtnUser1_style");
 		
 		initLayout();
 		createGrid1();
-		//cSearch();
-		
-		
 		
 		/* grid1 Event */
 		$('#grid1').jqGrid('setGridParam', {
@@ -98,20 +101,27 @@
 			}
 		});
 		
+		/* 조회 조건 -> 사용자ID Enter Event */
 		$('#S_USER_ID').on('keypress', function (e) {
 			if(e.which == 13){
 				cSearch(null)
 			}
 		});
 		
+		/* 조회 조건 -> 사용자명 Enter Event */
 		$('#S_USER_NM').on('keypress', function (e) {
 			if(e.which == 13){
 				cSearch(null)
 			}
 		});
-		
 	});
 
+	/******************************************** 
+	 * @Subject : 그리드 생성 함수
+	 * @Content : 조회 내역 그리드 생성 
+	 * @Since   : 2024.05.22
+	 * @Author  : 장소현
+	 ********************************************/
 	function createGrid1(){
 		var colName = [
 			'순번',
@@ -124,61 +134,76 @@
 			'개인정보 동의 여부',
 			'선택'
 		]
+		
 		var colModel = [
-			{ name: 'ROWNUM', width: 50, align: 'center' },
-			{ name: 'MEM_NM', width: 100, align: 'center' },
+			{ name: 'ROWNUM'  , width: 50, align: 'center' },
+			{ name: 'MEM_NM'  , width: 100, align: 'center' },
 			{ name: 'HAN_NAME', width: 100, align: 'center' },
 			{ name: 'ENG_NAME', width: 100, align: 'center' },
-			{ name: 'TEL_NO', width: 100, align: 'center' },
-			{ name: 'USER_ID', width: 100, align: 'center' },
-			{ name: 'EMAIL', width: 120, align: 'center' },
-			{ name: 'PERINFO_AGREE_YN', width: 100, align: 'center' },
+			{ name: 'TEL_NO'  , width: 100, align: 'center' },
+			{ name: 'USER_ID' , width: 100, align: 'center' },
+			{ name: 'EMAIL'   , width: 120, align: 'center' },
+			{ name: 'PERINFO_AGREE_YN' , width: 100, align: 'center' },
 			{ name: 'CHK', index: 'CHK', width: 50, align: 'center', formatter: gridCboxFormat, sortable: false }
 		]
 		
 		var gSetting = {
 				height:632,
-				pgflg:true,
-				exportflg : false,  //엑셀, pdf 출력 버튼 노출여부, td 태그안에 체크박스가 들어가 있어 pdf 생성시 에러발생
-				colsetting : false,  // 컬럼 설정 버튼 노출여부
-				searchInit : false,  // 데이터 검색 버튼 노출여부
-				resizeing : true,
-				rownumbers:false,
+				pgflg :true,
+				exportflg  : false,     // 엑셀, pdf 출력 버튼 노출여부, td 태그안에 체크박스가 들어가 있어 pdf 생성시 에러발생
+				colsetting : false,     // 컬럼 설정 버튼 노출여부
+				searchInit : false,     // 데이터 검색 버튼 노출여부
+				resizeing  : true,
+				rownumbers :false,
 				shrinkToFit: true,
-				autowidth: true,
-				queryPagingGrid:true // 쿼리 페이징 처리 여부				
+				autowidth  : true,
+				queryPagingGrid:true    // 쿼리 페이징 처리 여부				
 		};
 		
 		btGrid.createGrid('grid1', colName, colModel, gSetting);
 		btGrid.gridResizing('grid1');
 	}
 	
+	/******************************************** 
+	 * @Subject : 조회 함수
+	 * @Content : 조회 내역 값 화면 셋팅
+	 * @See     : setTelNoHypen()
+	 * @Since   : 2024.05.22
+	 * @Author  : 장소현
+	 ********************************************/
 	function cSearch(currentPage){
 		var vCurrentPage = 1;
 		var vRowsPerPage;
+		
 		if(!fn_empty(currentPage)){
 			vCurrentPage = currentPage;
 		} else if(!fn_empty($('#CURRENT_PAGE').val())) {
-			vCurrentPage = $('#CURRENT_PAGE').val();
+			vCurrentPage = $('#CURRENT_PAGE' ).val();
 		} else {
 			vCurrentPage = 1;
 		}
 		vRowsPerPage = btGrid.getGridRowSel('grid1_pager');
-		$('#CURRENT_PAGE').val(vCurrentPage);
+		$('#CURRENT_PAGE' ).val(vCurrentPage);
 		$('#ROWS_PER_PAGE').val(vRowsPerPage);
 		
-		var url = "/rrs/selectUserInfo.do";
-		
+		var url      = "/rrs/selectUserInfo.do";
 		var formData = formIdAllToMap('frmSearch');
-		var param = {"param":formData};
+		var param    = {"param":formData};
 		
 		fn_ajax(url, false, param, function(data, xhr){
 			reloadGrid("grid1", data.result);
 			btGrid.gridQueryPaging($('#grid1'), 'cSearch', data.result);
 		});
+		
 		setTelNoHypen();
 	}
 	
+	/******************************************** 
+	 * @Subject : 그리드 클릭 Event 셋팅 함수
+	 * @Content : 그리드 클릭 시 팝업 Open
+	 * @Since   : 2024.05.22
+	 * @Author  : 장소현
+	 ********************************************/
 	function grid1_ondblClickRow(rowid, iRow, iCol, e){
 		var gridData = $("#grid1").getRowData(rowid);
 		var param = {
@@ -187,32 +212,55 @@
 		userPopup(param);
 	}
 	
+	/******************************************** 
+	 * @Subject : 전화번호 하이픈 셋팅 함수
+	 * @Content : 전화번호 하이픈 추가
+	 * @Since   : 2024.05.22
+	 * @Author  :
+	 ********************************************/
 	function setTelNoHypen() {
 		var rowDataList = $("#grid1").getRowData();
 		for(var i=0; i<rowDataList.length; i++) {
+			/* 전화번호 하이픈 삭제 */
 			var convert_TEL_NO = rowDataList[i].TEL_NO.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
 			$("#grid1").jqGrid('setCell', i+1, 'TEL_NO', convert_TEL_NO);
 		}
 	}
 	
+	/******************************************** 
+	 * @Subject : 추가 버튼 클릭 함수
+	 * @Content : 추가 버튼 클릭 시 회원가입 팝업 Open
+	 * @Since   : 2024.05.22
+	 * @Author  : 장소현
+	 ********************************************/
 	function cAdd() {
 		userPopup();
 	}
 	
+	/******************************************** 
+	 * @Subject : 팝업 Open 함수
+	 * @Content : 회원가입 or 회원 정보 수정 팝업 Open
+	 * @Since   : 2024.05.22
+	 * @Author  : 장소현
+	 ********************************************/
 	function userPopup(param) {
 		var url = "/rrs/UserPopup.do";
-		var pid = "p_User";  //팝업 페이지의 취상위 div ID
+		var pid = "p_User";    //팝업 페이지의 취상위 div ID
 
 		popupOpen(url, pid, param, function(data) {
-			
 			cSearch();
 		});
 	}
 	
-	// 멤버정보등록 버튼
+	/******************************************** 
+	 * @Subject : 멤버정보등록 버튼 클릭 함수
+	 * @Content : 멤버 회원 정보 팝업 Open
+	 * @Since   : 2024.05.22
+	 * @Author  : 장소현
+	 ********************************************/
 	function cUser1(param) {
 		var url = "/rrs/MemberUserPopup.do";
-		var pid = "p_MemberUser";  //팝업 페이지의 취상위 div ID
+		var pid = "p_MemberUser";    //팝업 페이지의 취상위 div ID
 
 		popupOpen(url, pid, param, function(data) {
 			$( 'input' ).remove('#SEARCH_MEMBER_ID');
@@ -220,10 +268,17 @@
 		});
 	}
 	
+	/******************************************** 
+	 * @Subject : 삭제 버튼 클릭 함수
+	 * @Content : 조회 내역 삭제
+	 * @Since   : 2024.05.22
+	 * @Author  :
+	 ********************************************/
 	function cDel(){
-		var ids = $("#grid1").jqGrid("getDataIDs");
+		var ids      = $("#grid1").jqGrid("getDataIDs");
 		var gridData = [];
-		var cnt = 0;
+		var cnt      = 0;
+		
 		btGrid.gridSaveRow('grid1');
 		for(var i = 0; i < ids.length; i++){
 			if($('#grid1_' + ids[i] + '_CHK').prop('checked')){
@@ -247,7 +302,7 @@
 		}
 	}
 	
-	//grid checkbox event
+	/* grid checkbox event */
 	function grid_cbox_onclick(gid, rowid, colkey) {
 		
 	}

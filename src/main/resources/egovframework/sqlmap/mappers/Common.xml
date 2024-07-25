@@ -5,30 +5,30 @@
 	<!-- 그리드 컬럼 정보 추가 -->
 	<insert id="insertGridColInfo" parameterType="BMap">
 	/* Common.xml -> insertGridColInfo */
-		INSERT INTO BC_GRIDINFO 
-				    (COMP_CD
-				    ,USER_ID
-				    ,WINDOW_NAME
-				    ,GRID_ID
-				    ,COL_KEY
-				    ,COL_NAME
-				    ,COL_HIDDEN
-				    ,COL_WIDTH
-				    ,COL_INX
-				    ,REG_DT
-				    ,REG_ID
-				    ,UPT_DT
-				    ,UPT_ID
-				    )
+		INSERT INTO BC_GRIDINFO
+					(COMP_CD
+					,USER_ID
+					,WINDOW_NAME
+					,GRID_ID
+					,COL_KEY
+					,COL_NAME
+					,COL_HIDDEN
+					,COL_WIDTH
+					,COL_INX
+					,REG_DT
+					,REG_ID
+					,UPT_DT
+					,UPT_ID
+					)
 			 VALUES (#{COMP_CD}
-			 		,#{USER_ID}
-			 		,#{WINDOWNAME}
-			 		,#{GRIDID}
-			 		,#{COLKEY}
-			 		,#{COLNAME}
-			 		,#{COLHIDDEN}
-			 		,#{COLWIDTH}
-			 		,#{COLINX}
+					,#{USER_ID}
+					,#{WINDOWNAME}
+					,#{GRIDID}
+					,#{COLKEY}
+					,#{COLNAME}
+					,#{COLHIDDEN}
+					,#{COLWIDTH}
+					,#{COLINX}
 					,NOW()
 					,#{USER_CD}
 					,NOW()
@@ -39,12 +39,12 @@
 	<!-- 그리드 컬럼 정보 삭제 -->
 	<delete id="deleteGridColInfo" parameterType="BMap">
 	/* Common.xml -> deleteGridColInfo */
-		DELETE FROM BC_GRIDINFO 
-		 WHERE USER_ID = #{USER_ID} 
-		   AND WINDOW_NAME = #{WINDOWNAME} 
+		DELETE FROM BC_GRIDINFO
+		 WHERE USER_ID = #{USER_ID}
+		   AND WINDOW_NAME = #{WINDOWNAME}
 		   AND GRID_ID = #{GRIDID}
 	</delete>
-	  
+
 	<!-- 로그인 사용자의 그리드 정보 가져오기 -->
 	<select id="selectGridColInfoAll" parameterType="BMap" resultType="BMap">
 	/* Common.xml -> selectGridColInfoAll */
@@ -53,72 +53,72 @@
 			  ,WINDOW_NAME WINDOWNAME
 			  ,GRID_ID GRIDID
 			  ,COL_KEY COLKEY
-			  ,COL_NAME COLNAME 
+			  ,COL_NAME COLNAME
 			  ,COL_HIDDEN COLHIDDEN
 			  ,COL_WIDTH COLWIDTH
 			  ,COL_INX COLINX
-		  FROM BC_GRIDINFO  
+		  FROM BC_GRIDINFO
 		 WHERE COMP_CD = #{COMP_CD}
 		   AND USER_ID = #{USER_ID}
 	  ORDER BY USER_ID
-	  		  ,WINDOW_NAME
-	  		  ,GRID_ID
-	  		  ,COL_INX
+			  ,WINDOW_NAME
+			  ,GRID_ID
+			  ,COL_INX
 	</select>
-	
+
 	<select id="selectCommonCode" parameterType="BMap" resultType="CodeVO">
 	/* Common.xml -> selectCommonCode */
-		SELECT TAIL.READ_CD CODE			  
-		     , GetCodeNm(HEAD.HEAD_ID, TAIL.CODE, #{LANG}) VALUE
-		FROM BC_COMM_H HEAD  
-		JOIN BC_COMM_L TAIL ON HEAD.HEAD_CD = TAIL.HEAD_CD AND TAIL.STATUS = 'Y'
-		WHERE HEAD.HEAD_ID = #{HEAD_CD}
-		AND HEAD.STATUS = 'Y'
-		ORDER BY TAIL.PRIORITY
+		SELECT TAIL.READ_CD CODE
+			 , GetCodeNm(HEAD.HEAD_ID, TAIL.CODE, #{LANG}) VALUE
+		  FROM BC_COMM_H HEAD
+		  JOIN BC_COMM_L TAIL ON HEAD.HEAD_CD = TAIL.HEAD_CD AND TAIL.STATUS = 'Y'
+		 WHERE HEAD.HEAD_ID = #{HEAD_CD}
+		   AND HEAD.STATUS = 'Y'
+		 ORDER BY TAIL.PRIORITY
 	</select>
-	
+
 	<select id="selectCommonCodeRef" parameterType="BMap" resultType="CodeVO">
 	/* Common.xml -> selectCommonCodeRef */
 		SELECT CODE CODE
 			  ,CODE_NM VALUE
-              ,REF_CHR1
-              ,REF_CHR2
-              ,REF_CHR3
-              ,REF_CHR4
-              ,REF_CHR5
-		  FROM BC_COMM_L  
+			  ,REF_CHR1
+			  ,REF_CHR2
+			  ,REF_CHR3
+			  ,REF_CHR4
+			  ,REF_CHR5
+		  FROM BC_COMM_L
 		 WHERE HEAD_CD = #{HEAD_CD}
 		   AND STATUS = 'Y'
 		<if test="REF_CHR1 != null and REF_CHR1 != ''">
-	  	   AND REF_CHR1 = #{REF_CHR1}
-	  	</if>
+		   AND REF_CHR1 = #{REF_CHR1}
+		</if>
 		<if test="REF_CHR2 != null and REF_CHR2 != ''">
-	  	   AND REF_CHR2 = #{REF_CHR2}
-	  	</if>
+		   AND REF_CHR2 = #{REF_CHR2}
+		</if>
 		<if test="REF_CHR3 != null and REF_CHR3 != ''">
-	  	   AND REF_CHR3 = #{REF_CHR3}
-	  	</if>
+		   AND REF_CHR3 = #{REF_CHR3}
+		</if>
 		<if test="REF_CHR4 != null and REF_CHR4 != ''">
-	  	   AND REF_CHR4 = #{REF_CHR4}
-	  	</if>
+		   AND REF_CHR4 = #{REF_CHR4}
+		</if>
 		<if test="REF_CHR5 != null and REF_CHR5 != ''">
-	  	   AND REF_CHR5 = #{REF_CHR5}
-	  	</if>
+		   AND REF_CHR5 = #{REF_CHR5}
+		</if>
 		<if test="REF_NUM1 != null and REF_NUM1 != ''">
-	  	   AND REF_NUM1 = #{REF_NUM1}
-	  	</if>
+		   AND REF_NUM1 = #{REF_NUM1}
+		</if>
 		<if test="REF_NUM2 != null and REF_NUM2 != ''">
-	  	   AND REF_NUM2 = #{REF_NUM2}
-	  	</if>
+		   AND REF_NUM2 = #{REF_NUM2}
+		</if>
 		<if test="REF_NUM3 != null and REF_NUM3 != ''">
-	  	   AND REF_NUM3 = #{REF_NUM3}
-	  	</if>
+		   AND REF_NUM3 = #{REF_NUM3}
+		</if>
 		<if test="REF_NUM4 != null and REF_NUM4 != ''">
-	  	   AND REF_NUM4 = #{REF_NUM4}
-	  	</if>
+		   AND REF_NUM4 = #{REF_NUM4}
+		</if>
 		<if test="REF_NUM5 != null and REF_NUM5 != ''">
-	  	   AND REF_NUM5 = #{REF_NUM5}
-	  	</if>
-	  ORDER BY PRIORITY
+		   AND REF_NUM5 = #{REF_NUM5}
+		</if>
+		 ORDER BY PRIORITY
 	</select>
 </mapper>

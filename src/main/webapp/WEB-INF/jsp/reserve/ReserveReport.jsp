@@ -9,7 +9,8 @@
 <c:import url="../import/frameTop.jsp">
 	<c:param name="progcd" value="RV02" />
 </c:import>
-<div id="ctu_wrap">	
+
+<div id="ctu_wrap">
 	<div id="ctm_mg_wrap">
 		<div class="ct_grid_top_wrap">
 			<div class="ct_grid_top_left"><h4><s:message code="reservation.title1"/></h4></div>
@@ -22,30 +23,30 @@
 		<div class="tab_top_search2">
 			<table>
 				<tbody>
-					<tr>  
-					    <td class="small_td"><p style="margin:0 0 4px 18px">조회기간</p></td>
-					    <td class="small_td" style="text-align:center;">
-					    	<select id="S_DATE_GBN" name="S_DATE_GBN" class="cmc_combo" style="width:100px;">
-					    		<option value="S_REQ">예약일자</option>
-					    		<option value="S_CHK_IN">체크인</option>
-					    	</select>
-					    </td>
+					<tr>
+						<td class="small_td"><p style="margin:0 0 4px 18px">조회기간</p></td>
+						<td class="small_td" style="text-align:center;">
+							<select id="S_DATE_GBN" name="S_DATE_GBN" class="cmc_combo" style="width:100px;">
+								<option value="S_REQ">예약일자</option>
+								<option value="S_CHK_IN">체크인</option>
+							</select>
+						</td>
 						<td class="medium_td" style="display:flex; margin-top:3px;">
-						    <input type="text" name="FROM_DT" id="FROM_DT" data-type="date" style="text-align:center; width:90px; float:left; "/>
-						    <div style="margin:0 10px 0 10px;">-</div>
-						    <input type="text" name="TO_DT" id="TO_DT" data-type="date" style="text-align:center; width:90px; float:left;"/>
-					    </td>
-					    <td class="small_td"><p style="margin:0 0 4px 18px">구분</p></td>
-					    <td class="small_td" style="text-align:center;">
-					    	<select id="S_MEM_GBN" name="S_MEM_GBN" class="cmc_combo" style="width:100px;">
-					    		<option value="">전체</option>
+							<input type="text" name="FROM_DT" id="FROM_DT" data-type="date" style="text-align:center; width:90px; float:left; "/>
+							<div style="margin:0 10px 0 10px;">-</div>
+							<input type="text" name="TO_DT" id="TO_DT" data-type="date" style="text-align:center; width:90px; float:left;"/>
+						</td>
+						<td class="small_td"><p style="margin:0 0 4px 18px">구분</p></td>
+						<td class="small_td" style="text-align:center;">
+							<select id="S_MEM_GBN" name="S_MEM_GBN" class="cmc_combo" style="width:100px;">
+								<option value="">전체</option>
 								<c:forEach var="i" items="${mem_gbn}">
-							    	<option value="${i.CODE}">${i.CODE_NM}</option>
-						    	</c:forEach>
-					    	</select>
-					    </td>
-					    <td class="small_td"><p style="margin:0 0 4px 18px">사용자명</p></td>
-					    <td class="medium_td"><input type="text" id="S_USER_NM" name="S_USER_NM" class="cmc_txt" maxlength="30" noSpecial /></td>
+									<option value="${i.CODE}">${i.CODE_NM}</option>
+								</c:forEach>
+							</select>
+						</td>
+						<td class="small_td"><p style="margin:0 0 4px 18px">사용자명</p></td>
+						<td class="medium_td"><input type="text" id="S_USER_NM" name="S_USER_NM" class="cmc_txt" maxlength="30" noSpecial /></td>
 					</tr>
 				</tbody>
 			</table>
@@ -86,7 +87,7 @@
 </style>
 
 <script type="text/javascript">
-<%-- 
+<%--
   * ========= 공통버튼 클릭함수 =========
   * 검색 : cSearch()
   * 추가 : cAdd()
@@ -103,36 +104,42 @@
   * 버튼 표시/숨김 : setCommBtn('ret', true) : Search,Add,Del,Save,Print,Upload,Excel,Pdf,Cancel,User1,2,3,4,5
   * ===============================
 --%>
-	//초기 날짜 세팅값
-	var origin_FROM_DT    = '';	
+
+	var origin_FROM_DT    = '';
 	var origin_TO_DT      = '';
 	var origin_CHK_IN_DT  = '';
 	var origin_CHK_OUT_DT = '';
-	var selectNum  = "";		// 선택 그리드 순번
-	
+	var selectNum         = "";    // 선택 그리드 순번
+
+	/******************************************** 
+	 * @Subject : 화면 OPEN 시 최초 실행 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 이주형
+	 ********************************************/
 	$(function() {
 		setCommBtn("Save", false);
-		fn_Init(); //초기 로드
-		
+		fn_Init();
+
 		$('#S_USER_NM').on('keypress', function (e) {
 			if(e.which == 13){
 				cSearch(null)
 			}
 		});
 	});
-	
+
 	function fn_Init(){
-		var fromDay = preMonth(); 	//이전달 첫날
-		var toDay   = getlastMonth();	//이번달 마지막날
-		
+		var fromDay = preMonth();   //이전달 첫날
+		var toDay   = getlastMonth();   //이번달 마지막날
+
 		origin_FROM_DT = Util.converter.dateFormat1(Util.converter.dateFormat3(fromDay).substr(0,6)+'01');
 		origin_TO_DT   = Util.converter.dateFormat1(Util.converter.dateFormat3(toDay));
-		
+
 		$("#FROM_DT").val(origin_FROM_DT);
 		$("#TO_DT").val(origin_TO_DT);
-		viewGrid();	// 초기 grid 생성
+		viewGrid(); // 초기 grid 생성
 	}
-	
+
 	function viewGrid(vFROM_DT, vTO_DT) {
 		let FROM_DT = '';
 		let TO_DT = '';
@@ -141,7 +148,7 @@
 		} else {
 			FROM_DT = vFROM_DT;
 		}
-		
+
 		if(fn_empty(vTO_DT)) {
 			TO_DT = $("#TO_DT").val();
 
@@ -151,7 +158,7 @@
 		createreserveReportGrid(FROM_DT, TO_DT);
 		setGroupHeadersGrid(FROM_DT, TO_DT);
 	}
-	
+
 	function createreserveReportGrid(FROM_DT, TO_DT) {
 		var defaultColName = [
 			'예약 라운딩',
@@ -189,9 +196,9 @@
 			'추가사항',
 			'상세조회'
 		];
-				
+
 		var defaultColModel = [
-			{name : 'DAYWEEK'     , width :10, align : 'center', hidden:true },	//예약라운딩값
+			{name : 'DAYWEEK'     , width :10, align : 'center', hidden:true }, //예약라운딩값
 			{name: 'ROWNUM'       , width: 70,  align: 'center'}, //순번
 			{name: 'REQ_DT'       , width: 80,  align: 'center'}, //일자
 			{name: 'SEQ'          , width: 70,  align: 'center'}, //순번
@@ -237,12 +244,12 @@
 			shrinkToFit: false,
 			autowidth: true,
 			queryPagingGrid : true, // 쿼리 페이징 처리 여부
-			height : 280, 
+			height : 280,
 		};
 
 		// 그리드 생성 및 초기화
 		btGrid.createGrid('reserveReportGrid', defaultColName, defaultColModel, gSetting);
-		
+
 		//룸추가 일수 + 룸추가 개수
 		var newWidth = $("#reserveReportGrid_ROOM_ADD_IL").width() + $("#reserveReportGrid_ROOM_ADD_CNT").outerWidth(true);
 		jQuery("#reserveReportGrid").jqGrid("setLabel", "ROOM_ADD_IL", "룸추가", "", { style: "width: " + newWidth + "px;", colspan: "2" });
@@ -252,8 +259,8 @@
 		jQuery("#reserveReportGrid").jqGrid("setLabel", "PRIM_ADD_IL", "프리미엄 룸추가", "", { style: "width: " + newWidth2 + "px;", colspan: "2" });
 		jQuery("#reserveReportGrid").jqGrid("setLabel", "PRIM_ADD_CNT", "", "", {style: "display: none"});
 	}
-	
-	// 월별 그리드 
+
+	// 월별 그리드
 	function createreserveDayReportGrid(FROM_DT, TO_DT) {
 		const sFromDt = FROM_DT.replaceAll(".","");
 		const sToDt   = TO_DT.replaceAll(".","");
@@ -266,9 +273,9 @@
 		for(var i=sFromDt; i<=sToDt; i++) {
 			var dd   = ''+i;
 			var year = dd.substr(0, 4);
-			var mon  = dd.substr(4, 2);		
+			var mon  = dd.substr(4, 2);
 			var day  = dd.substr(6, 2);
-			
+
 			colModel[cnt] = {
 					name: 'day'+i,
 					width: 180,
@@ -278,7 +285,7 @@
 			};
 			var dayWeekName = getDayOfWeek(year + "." + mon + "." + day);
 			colName[cnt] = i + " (" + dayWeekName + ")";
-			
+
 			var last = new Date(year, mon, 0);
 			last = last.getDate();
 			if (day == last) {
@@ -289,7 +296,7 @@
 					i = i+100-last;
 				}
 			}
-			
+
 			cnt ++;
 		}
 		var gSetting = {
@@ -302,14 +309,14 @@
 			shrinkToFit: false,
 			autowidth: true,
 			queryPagingGrid : false, // 쿼리 페이징 처리 여부
-			height : 60, 
+			height : 60,
 		};
-		
+
 		// 그리드 생성 및 초기화
 		btGrid.createGrid('reserveDayReportGrid', colName, colModel, gSetting);
-		
+
 	}
-	
+
 	// 그리드 헤더 세팅
 	function setGroupHeadersGrid(FROM_DT, TO_DT) {
 		const defaultGroupHeader = [
@@ -329,7 +336,7 @@
 			groupHeaders: defaultGroupHeader,
 		});
 	}
-	
+
 	//상세정보보기 버튼
 	function showDetail(cellvalue, options, rowObject){
 		var str = "";
@@ -338,25 +345,25 @@
 		str += "<div>";
 		str += "<button class='btn btn-default' onclick=\"javascript:fn_detail('" + rowid + "')\"> 상 세 보 기 </button>";
 		str += "</div>";
-		
+
 		return str;
 	}
-	
+
 	//상세정보보기 버튼 클릭시 팝업창
 	function fn_detail(rowid){
 		var selRowData = $("#reserveReportGrid").jqGrid("getRowData",rowid);
-		
-	    var url = "/reserve/reserveRegi3.do";
-	    var pid = "p_reserveListRegi"; //팝업 페이지의 취상위 div ID
-	    var param = {};                       
-		param.SEQ    = selRowData.SEQ;    
-		param.REQ_DT = selRowData.REQ_DT.replaceAll(".",""); 
+
+		var url = "/reserve/reserveRegi3.do";
+		var pid = "p_reserveListRegi"; //팝업 페이지의 취상위 div ID
+		var param = {};
+		param.SEQ    = selRowData.SEQ;
+		param.REQ_DT = selRowData.REQ_DT.replaceAll(".","");
 		param.DETAIL = 'Y';
-		
-	    popupOpen(url, pid, param, function(data) {
-	    });
+
+		popupOpen(url, pid, param, function(data) {
+		});
 	}
-	
+
 	// 조회
 	function cSearch(currentPage) {
 		// paging
@@ -372,7 +379,7 @@
 		vRowsPerPage = btGrid.getGridRowSel('reserveReportGrid_pager');
 		$('#CURRENT_PAGE').val(vCurrentPage);
 		$('#ROWS_PER_PAGE').val(vRowsPerPage);
-		
+
 		var FROM_DT = $("#FROM_DT").val();
 		var TO_DT   = $("#TO_DT").val();
 		var url = "/reserve/reserveReportSelectList.do";
@@ -380,24 +387,24 @@
 		formData.FROM_DT = formData.FROM_DT.replaceAll(/\./gi, '');
 		formData.TO_DT   = formData.TO_DT.replaceAll(/\./gi, '');
 		var param = {"param":formData};
-		
+
 		if((origin_FROM_DT.substr(0,7) !== FROM_DT.substr(0,7)) || (origin_TO_DT.substr(0,7) !== TO_DT.substr(0,7))) {
 			origin_FROM_DT = FROM_DT;
 			origin_TO_DT   = TO_DT;
-			$.jgrid.gridUnload("#reserveReportGrid");	// grid 초기화
+			$.jgrid.gridUnload("#reserveReportGrid");   // grid 초기화
 			viewGrid(FROM_DT, TO_DT);
 		}
 
 		fn_ajax(url, true, param, function(data, xhr) {
-		    reloadGrid("reserveReportGrid", fn_dataSet(data.result));
+			reloadGrid("reserveReportGrid", fn_dataSet(data.result));
 			btGrid.gridQueryPaging($('#reserveReportGrid'), 'cSearch', data.result);
-			
+
 			$('#reserveReportGrid').bind('jqGridSelectRow', function(e, rowid, status) {
 				grid1_onCilckRow(e, rowid, status);
 			});
-			
+
 			var dayWeek = "";
-			
+
 			for(let i=0; i<data.result.length; i++) {
 				// 일자별 현황값 추가
 				dayWeek = "";
@@ -405,8 +412,8 @@
 				if(reservationDayList.length > 0) {
 					for(let j=0; j<reservationDayList.length; j++) {
 						const dt  = Number(reservationDayList[j].BAS_DT);
-						const numOfPerson = reservationDayList[j].PER_STR;		
-						
+						const numOfPerson = reservationDayList[j].PER_STR;
+
 						dayWeek += "day" + dt + "/" + numOfPerson + ",";
 					}
 
@@ -415,41 +422,41 @@
 			}
 		});
 	}
-	
+
 	// 조회내역 그리드 클릭 이벤트
 	function grid1_onCilckRow(e, rowid, status){
-		selectNum = rowid;	// 선택 그리드 순번
+		selectNum = rowid;  // 선택 그리드 순번
 		origin_CHK_IN_DT  = $('#reserveReportGrid').jqGrid('getRowData',rowid).CHK_IN_DT;
 		origin_CHK_OUT_DT = $('#reserveReportGrid').jqGrid('getRowData',rowid).CHK_OUT_DT;
-		
+
 		$.jgrid.gridUnload("#reserveDayReportGrid");
-		
+
 		if (($('#reserveReportGrid').jqGrid('getRowData',rowid).CHK_IN_DT != "") && ($('#reserveReportGrid').jqGrid('getRowData',rowid).CHK_OUT_DT != "")) {
 			// 월별 그리드 조회 기간에 맞게 다시 셋팅
 			createreserveDayReportGrid(origin_CHK_IN_DT, origin_CHK_OUT_DT);
-			$("#reserveDayReportGrid").jqGrid("addRowData", 0, {}, 'first'); 
+			$("#reserveDayReportGrid").jqGrid("addRowData", 0, {}, 'first');
 
 			var dayArr = ($('#reserveReportGrid').jqGrid('getRowData',rowid).DAYWEEK).split(",");
 			for(var i=0; i<dayArr.length; i++) {
 				var sDay = dayArr[i].split("/");
 				$('#reserveDayReportGrid').jqGrid('setCell', 0, sDay[0], sDay[1]);
-			}	
-			
+			}
+
 			// 주말 음영 처리
 			const weekendOfMonth = getWeekendOfMonth(origin_CHK_IN_DT, origin_CHK_OUT_DT);
 			for(let j=0; j<weekendOfMonth.length; j++) {
 				$('#reserveDayReportGrid').jqGrid('setCell', 0, "day"+weekendOfMonth[j], "", {'background-color':'#FFCB9E'});
 			}
-		}	
+		}
 	}
-	
+
 	// 예약 라운딩 그리드 row 초기화, 세팅
 	function DayGridSet() {
 		var FROM_DT = $("#FROM_DT").val();
 		var TO_DT   = $("#TO_DT").val();
-		
+
 		$("#reserveDayReportGrid").clearGridData();
-		$("#reserveDayReportGrid").jqGrid("addRowData", 0, {}, 'first'); 
+		$("#reserveDayReportGrid").jqGrid("addRowData", 0, {}, 'first');
 
 		// 주말 음영 처리
 		const weekendOfMonth = getWeekendOfMonth(FROM_DT, TO_DT);
@@ -457,14 +464,14 @@
 			$('#reserveDayReportGrid').jqGrid('setCell', 0, "day"+weekendOfMonth[j], "", {'background-color':'#FFCB9E'});
 		}
 	}
-	
+
 	function cSave() {
 		btGrid.gridSaveRow('reserveDayReportGrid');
-		
+
 		const ids = selectNum;
 		const gridData = [];
 		gridData.push($("#reserveDayReportGrid").getRowData(0));
-		
+
 		const url = '/reserve/saveReserveList.do';
 		const param = {"param":{"FROM_DT"  : origin_CHK_IN_DT.replaceAll(/\./gi, ''),
 					   "TO_DT"    : origin_CHK_OUT_DT.replaceAll(/\./gi, ''),
@@ -472,13 +479,13 @@
 					   "REQ_SEQ"  : $("#reserveReportGrid").getRowData(selectNum).SEQ,
 					   "gridData" : gridData}
 					   };
-		
+
 		fn_ajax(url, false, param, function(data, xhr){
 			alert("저장하였습니다.");
 			cSearch();
-		}); 
+		});
 	}
-	
+
 	//데이터 포멧 변경
 	function fn_dataSet(data){
 		var array = [];
@@ -498,23 +505,23 @@
 				else if(key == "REQ_TEL_NO"){
 					value = formatPhoneNumber(value);
 				}
-				
+
 				obj[key] = value;
 				delete obj;
 			});
-	        array.push(obj);
+			array.push(obj);
 		}
 		return array;
 	}
-	
+
 	// 무슨 요일인지 체크
 	//ex) getDayOfWeek('2022-06-13')
-	function getDayOfWeek(yyyyMMdd) { 
-	    const week = ['일', '월', '화', '수', '목', '금', '토'];
-	    const dayOfWeek = week[new Date(yyyyMMdd).getDay()];
-	    return dayOfWeek;
+	function getDayOfWeek(yyyyMMdd) {
+		const week = ['일', '월', '화', '수', '목', '금', '토'];
+		const dayOfWeek = week[new Date(yyyyMMdd).getDay()];
+		return dayOfWeek;
 	}
-	
+
 	// 주말인 날짜 리턴
 	function getWeekendOfMonth(FROM_DT, TO_DT) {
 		const from_dt = FROM_DT.replaceAll(/\./gi, '');
@@ -526,7 +533,7 @@
 			const year = dd.substr(0, 4);
 			const mon  = dd.substr(4, 2);
 			const day  = dd.substr(6, 2);
-			
+
 			const dayOfWeek = getDayOfWeek(year + "." + mon + "." + day);
 			if(dayOfWeek == '토' || dayOfWeek == '일') {
 				weekendOfMonth.push(i);
@@ -534,22 +541,22 @@
 		}
 		return weekendOfMonth;
 	}
-	
+
 	//전화번호 변환
 	function formatPhoneNumber (input) {
-	    var cleanInput = input.replaceAll(/[^0-9]/g, "");
-	    var result = "";
-	    var length = cleanInput.length;
-	    if(length === 8) {
-	        result = cleanInput.replace(/(\d{4})(\d{4})/, '$1-$2');
-	    } else if(cleanInput.startsWith("02") && (length === 9 || length === 10)) {
-	        result = cleanInput.replace(/(\d{2})(\d{3,4})(\d{4})/, '$1-$2-$3');
-	    } else if(!cleanInput.startsWith("02") && (length === 10 || length === 11)) {
-	        result = cleanInput.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
-	    } else {
-	        result = undefined;
-	    }
-	    return result;
+		var cleanInput = input.replaceAll(/[^0-9]/g, "");
+		var result = "";
+		var length = cleanInput.length;
+		if(length === 8) {
+			result = cleanInput.replace(/(\d{4})(\d{4})/, '$1-$2');
+		} else if(cleanInput.startsWith("02") && (length === 9 || length === 10)) {
+			result = cleanInput.replace(/(\d{2})(\d{3,4})(\d{4})/, '$1-$2-$3');
+		} else if(!cleanInput.startsWith("02") && (length === 10 || length === 11)) {
+			result = cleanInput.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
+		} else {
+			result = undefined;
+		}
+		return result;
 	}
 </script>
 <c:import url="../import/frameBottom.jsp" />

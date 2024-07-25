@@ -24,25 +24,25 @@
 			  ,REF_NUM5
 			  ,REMARKS
 			  ,STATUS
-		  FROM BC_COMM_H   
+		  FROM BC_COMM_H
 		 WHERE 1 = 1
 		<if test='S_HEAD_CD != null and S_HEAD_CD != ""'>
 		   AND HEAD_CD LIKE SetParam(#{S_HEAD_CD})
 		</if>
 		<if test='S_HEAD_NM != null and S_HEAD_NM != ""'>
 	    	<if test='LANG == "EN"'>
-    		  	 AND HEAD_EN LIKE setParam(#{S_HEAD_NM})
-    		</if>
-    		<if test='LANG == "FR"'>
-    		  	AND HEAD_FR LIKE setParam(#{S_HEAD_NM})
-    		</if>
-    		<if test='LANG != "EN" and LANG != "FR"'>
-    		  	AND HEAD_NM LIKE setParam(#{S_HEAD_NM})
-    		</if>
+			  	 AND HEAD_EN LIKE setParam(#{S_HEAD_NM})
+			</if>
+			<if test='LANG == "FR"'>
+			  	AND HEAD_FR LIKE setParam(#{S_HEAD_NM})
+			</if>
+			<if test='LANG != "EN" and LANG != "FR"'>
+			  	AND HEAD_NM LIKE setParam(#{S_HEAD_NM})
+			</if>
 		</if>
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
-	
+
 	<insert id="insertCommonCodeMasterInfo" parameterType="BMap">
 	/* CommonCode.xml -> insertCommonCodeMasterInfo */
 		INSERT INTO BC_COMM_H
@@ -70,7 +70,7 @@
 					,UPT_ID
 					)
 			 VALUES (#{HEAD_CD}
-			        ,#{HEAD_ID}
+					,#{HEAD_ID}
 					,#{HEAD_NM}
 					,#{HEAD_EN}
 					,#{HEAD_FR}
@@ -93,15 +93,15 @@
 					,#{LOGIN_USER}
 					)
 	</insert>
-	
+
 	<update id="updateCommonCodeMasterInfo" parameterType="BMap">
 	/* CommonCode.xml -> updateCommonCodeMasterInfo */
 		UPDATE BC_COMM_H
-		   SET HEAD_ID = #{HEAD_ID}
-		      ,HEAD_NM = #{HEAD_NM}
-		      ,HEAD_EN = #{HEAD_EN}
-		      ,HEAD_FR = #{HEAD_FR}
-		      ,HEAD_4TH = #{HEAD_4TH}
+		   SET HEAD_ID  = #{HEAD_ID}
+			  ,HEAD_NM  = #{HEAD_NM}
+			  ,HEAD_EN  = #{HEAD_EN}
+			  ,HEAD_FR  = #{HEAD_FR}
+			  ,HEAD_4TH = #{HEAD_4TH}
 			  ,REF_CHR1 = #{REF_CHR1}
 			  ,REF_CHR2 = #{REF_CHR2}
 			  ,REF_CHR3 = #{REF_CHR3}
@@ -112,32 +112,32 @@
 			  ,REF_NUM3 = #{REF_NUM3}
 			  ,REF_NUM4 = #{REF_NUM4}
 			  ,REF_NUM5 = #{REF_NUM5}
-			  ,REMARKS = #{REMARKS}
-			  ,STATUS = #{STATUS}
-			  ,UPT_DT = NOW()
-			  ,UPT_ID = #{LOGIN_USER}
-		 WHERE HEAD_CD = #{HEAD_CD}
+			  ,REMARKS  = #{REMARKS}
+			  ,STATUS   = #{STATUS}
+			  ,UPT_DT   = NOW()
+			  ,UPT_ID   = #{LOGIN_USER}
+		 WHERE HEAD_CD  = #{HEAD_CD}
 	</update>
-	
+
 	<delete id="deleteCommonCodeMasterInfo" parameterType="BMap">
 	/* CommonCode.xml -> deleteCommonCodeMasterInfo */
 		DELETE BC_COMM_H
 	 	 WHERE HEAD_CD = #{HEAD_CD}
 	</delete>
-	
+
 	<select id="selectCommonCodeMasterCnt" parameterType="BMap" resultType="int">
 	/* CommonCode.xml -> selectCommonCodeMasterCnt */
 		SELECT COUNT(1)
-		  FROM BC_COMM_H   
+		  FROM BC_COMM_H
 		 WHERE HEAD_CD = #{HEAD_CD}
 	</select>
-	
+
 	<select id="selectCommonCodeHead" parameterType="BMap" resultType="String">
 	/* CommonCode.xml -> selectCommonCodeHead */
 		SELECT CONVERT(IFNULL(MAX(HEAD_CD), '99900') + 10 , CHAR) HEAD_CD
-  		  FROM BC_COMM_H;
-	</select> 
-	
+		  FROM BC_COMM_H;
+	</select>
+
 	<select id="selectCommonCodeDetailInfo" parameterType="BMap" resultType="BMap">
 	<include refid="page.pagingPre"/> <!-- 페이징 처리 시작 -->
 		/* CommonCode.xml -> selectCommonCodeDetailInfo */
@@ -161,11 +161,11 @@
 			  ,REF_NUM5
 			  ,PRIORITY
 			  ,STATUS
-		  FROM BC_COMM_L   
+		  FROM BC_COMM_L
 		 WHERE HEAD_CD = #{HEAD_CD}
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
-	
+
 	<insert id="insertCommonCodeDetailInfo" parameterType="BMap">
 		/* CommonCode.xml -> insertCommonCodeDetailInfo */
 		INSERT INTO BC_COMM_L
@@ -218,14 +218,14 @@
 					,#{LOGIN_USER}
 					)
 	</insert>
-	
+
 	<update id="updateCommonCodeDetailInfo" parameterType="BMap">
 	/* CommonCode.xml -> updateCommonCodeDetailInfo */
 		UPDATE BC_COMM_L
-		   SET READ_CD = #{READ_CD}
-			  ,CODE_NM = #{CODE_NM}
-			  ,CODE_EN = #{CODE_EN}
-			  ,CODE_FR = #{CODE_FR}
+		   SET READ_CD  = #{READ_CD}
+			  ,CODE_NM  = #{CODE_NM}
+			  ,CODE_EN  = #{CODE_EN}
+			  ,CODE_FR  = #{CODE_FR}
 			  ,CODE_4TH = #{CODE_4TH}
 			  ,REF_CHR1 = #{REF_CHR1}
 			  ,REF_CHR2 = #{REF_CHR2}
@@ -238,13 +238,13 @@
 			  ,REF_NUM4 = #{REF_NUM4}
 			  ,REF_NUM5 = #{REF_NUM5}
 			  ,PRIORITY = #{PRIORITY}
-			  ,STATUS = SUBSTRING(#{STATUS},1,1)
-			  ,UPT_DT = NOW()
-			  ,UPT_ID = #{LOGIN_USER}
-		 WHERE HEAD_CD = #{HEAD_CD}
-		   AND CODE = #{CODE}
+			  ,STATUS   = SUBSTRING(#{STATUS},1,1)
+			  ,UPT_DT   = NOW()
+			  ,UPT_ID   = #{LOGIN_USER}
+		 WHERE HEAD_CD  = #{HEAD_CD}
+		   AND CODE     = #{CODE}
 	</update>
-	
+
 	<delete id="deleteCommonCodeDetailInfo" parameterType="BMap">
 	/* CommonCode.xml -> deleteCommonCodeDetailInfo */
 		DELETE FROM BC_COMM_L
@@ -253,7 +253,7 @@
 		   AND CODE = #{CODE}
 		</if>
 	</delete>
-	
+
 	<select id="selectCommonCodeDetailCnt" parameterType="BMap" resultType="int">
 	/* CommonCode.xml -> selectCommonCodeDetailCnt */
 		SELECT COUNT(1)
@@ -266,92 +266,84 @@
 		   AND CODE_NM = #{CODE_NM}
 		 </if>
 	</select>
-	
+
 	<select id="selectCommonCodeList" parameterType="Map" resultType="BMap">
 	/* CommonCode.xml -> selectCommonCodeList */
-		SELECT
-			A.HEAD_ID HEAD_ID
-		   ,GetHeadNm(A.HEAD_ID, #{languageCode}) HEAD_NM
-		   ,GetCodeNm(A.HEAD_ID, B.CODE, #{languageCode}) CODE_NM
-		   ,B.READ_CD + ' - ' +GetCodeNm(A.HEAD_ID, B.CODE, #{languageCode}) S_CODE_NM
-		   ,B.READ_CD CODE
-		   ,B.CODE REFVALUE
-		   ,B.REF_CNT CNT
-		   ,B.REF_CHR1 REF1
-		   ,B.REF_CHR2 REF2
-		   ,B.REF_CHR3 REF3
-		FROM
-			BC_COMM_H A INNER JOIN BC_COMM_L B
-			ON B.HEAD_CD = A.HEAD_CD
-		WHERE
-			A.STATUS = 'Y' AND B.STATUS = 'Y'
-		  AND
-			A.HEAD_ID IN
+		SELECT A.HEAD_ID HEAD_ID
+			  ,GetHeadNm(A.HEAD_ID, #{languageCode}) HEAD_NM
+			  ,GetCodeNm(A.HEAD_ID, B.CODE, #{languageCode}) CODE_NM
+			  ,B.READ_CD + ' - ' +GetCodeNm(A.HEAD_ID, B.CODE, #{languageCode}) S_CODE_NM
+			  ,B.READ_CD CODE
+			  ,B.CODE REFVALUE
+			  ,B.REF_CNT CNT
+			  ,B.REF_CHR1 REF1
+			  ,B.REF_CHR2 REF2
+			  ,B.REF_CHR3 REF3
+		  FROM BC_COMM_H A 
+	INNER JOIN BC_COMM_L B ON B.HEAD_CD = A.HEAD_CD
+		 WHERE A.STATUS = 'Y' AND B.STATUS = 'Y'
+		   AND A.HEAD_ID IN
 			<foreach item="item" collection="code" open="(" close=")" separator=",">
 				#{item}
 			</foreach>
 	  ORDER BY B.PRIORITY ASC
 	</select>
-	
+
 	<select id="selectCommonCodeByRef" parameterType="HashMap" resultType="BMap">
 	/* Common.xml -> selectCommonCodeByRef */
-		SELECT
-			A.HEAD_ID HEAD_ID
-		   ,GetHeadNm(A.HEAD_ID, #{languageCode}) HEAD_NM
-		   ,GetCodeNm(A.HEAD_ID, B.CODE, #{languageCode}) CODE_NM
-		   ,B.READ_CD + ' - ' +GetCodeNm(A.HEAD_ID, B.CODE, #{languageCode}) S_CODE_NM
-		   ,B.READ_CD CODE
-		   ,B.CODE REFVALUE
-		   ,B.REF_CNT CNT
-		   ,B.REF_CHR1 REF1
-		   ,B.REF_CHR2 REF2
-		   ,B.REF_CHR3 REF3
-		FROM
-			BC_COMM_H A INNER JOIN BC_COMM_L B
-			ON B.HEAD_CD = A.HEAD_CD
-		WHERE
-			A.STATUS = 'Y' AND B.STATUS = 'Y'
-		  AND
-			A.HEAD_ID = #{HEAD_ID}
-			AND B.CODE LIKE #{CODE} + '%'
-	  ORDER BY B.PRIORITY ASC
+		SELECT A.HEAD_ID HEAD_ID
+			  ,GetHeadNm(A.HEAD_ID, #{languageCode}) HEAD_NM
+			  ,GetCodeNm(A.HEAD_ID, B.CODE, #{languageCode}) CODE_NM
+			  ,B.READ_CD + ' - ' +GetCodeNm(A.HEAD_ID, B.CODE, #{languageCode}) S_CODE_NM
+			  ,B.READ_CD CODE
+			  ,B.CODE REFVALUE
+			  ,B.REF_CNT CNT
+			  ,B.REF_CHR1 REF1
+			  ,B.REF_CHR2 REF2
+			  ,B.REF_CHR3 REF3
+		  FROM BC_COMM_H A 
+	INNER JOIN BC_COMM_L B ON B.HEAD_CD = A.HEAD_CD
+		 WHERE A.STATUS = 'Y' AND B.STATUS = 'Y'
+		   AND A.HEAD_ID = #{HEAD_ID}
+		   AND B.CODE LIKE #{CODE} + '%'
+		 ORDER BY B.PRIORITY ASC
 	</select>
-	
+
 	<select id="selectCommPopup" parameterType="BMap" resultType="BMap">
 	/* CommonCode.xml -> selectCommPopup */
-		SELECT H.HEAD_ID, 
-	           L.READ_CD AS CODE, 
+		SELECT H.HEAD_ID,
+			   L.READ_CD AS CODE,
 			   GetCodeNm(H.HEAD_ID, L.CODE, #{LANG}) AS NAME
-	           FROM BC_COMM_H H
-		 INNER JOIN BC_COMM_L L 
-                 ON H.HEAD_CD = L.HEAD_CD 
-                AND L.STATUS = 'Y'
-     		  WHERE H.HEAD_ID = #{S_HEAD_ID}
-     		  <if test="RefCode != null and RefCode != ''">
-     		  	AND CODE LIKE CONCAT('%', #{RefCode} , '%')
-     		  </if>
-     		  <if test='S_CODE != null and S_CODE != ""'>
-	            AND (L.CODE LIKE setParam(#{S_CODE})
-     		  	<if test='LANG == "EN"'>
-     		  		 OR CODE_EN LIKE setParam(#{S_CODE})
-     		  	</if>
-     		  	<if test='LANG == "FR"'>
-     		  		 OR CODE_FR LIKE setParam(#{S_CODE})
-     		  	</if>
-     		  	<if test='LANG != "EN" and LANG != "FR"'>
-     		  		 OR CODE_NM LIKE setParam(#{S_CODE})
-     		  	</if>
-     		  	)
-     		</if>
-       	  ORDER BY L.PRIORITY
-	          
+		  FROM BC_COMM_H H
+		 INNER JOIN BC_COMM_L L
+			ON H.HEAD_CD = L.HEAD_CD
+		   AND L.STATUS = 'Y'
+		 WHERE H.HEAD_ID = #{S_HEAD_ID}
+		<if test="RefCode != null and RefCode != ''">
+			AND CODE LIKE CONCAT('%', #{RefCode} , '%')
+		</if>
+		<if test='S_CODE != null and S_CODE != ""'>
+			AND (L.CODE LIKE setParam(#{S_CODE})
+			<if test='LANG == "EN"'>
+				 OR CODE_EN LIKE setParam(#{S_CODE})
+			</if>
+			<if test='LANG == "FR"'>
+				 OR CODE_FR LIKE setParam(#{S_CODE})
+			</if>
+			<if test='LANG != "EN" and LANG != "FR"'>
+				 OR CODE_NM LIKE setParam(#{S_CODE})
+			</if>
+			)
+		</if>
+		ORDER BY L.PRIORITY
+
 	</select>
-	
+
 	<select id="getCodeNm" parameterType="BMap" resultType="String">
 	/* CommonCode.xml -> getCodeNm */
 		SELECT GETCODENM(#{S_HEAD_ID}, #{S_CODE}, #{LANG})
 	</select>
-	
+
 	<select id="selectFlightInfo" parameterType="BMap" resultType="BMap">
 	/* CommonCode.xml -> selectFlightInfo */
 		SELECT ROW_NUMBER() OVER(ORDER BY REF_CHR3, REF_CHR1, CODE_NM) ROWNUM,
@@ -370,7 +362,7 @@
 		 </if>
 	  ORDER BY REF_CHR3, REF_CHR1, CODE_NM
 	</select>
-	
+
 	<insert id="insertFlightInfo" parameterType="List">
 /* CommonCode.xml -> insertFlightInfo */
 		INSERT INTO BC_COMM_L
@@ -399,7 +391,7 @@
 			   UPT_DT,
 			   UPT_ID
 		     )
-		VALUES 
+		VALUES
 		<foreach collection="list" item="item" separator=",">
 			(   #{item.HEAD_CD},
 				#{item.CODE_NM},
@@ -428,7 +420,7 @@
 				)
 			</foreach>
 </insert>
-	
+
 	<update id="updateFlightInfo" parameterType="BMap">
 	/* CommonCode.xml -> updateFlightInfo */
 		UPDATE BC_COMM_L
@@ -440,7 +432,7 @@
 			   STATUS   = #{STATUS},
 			   UPT_DT   = NOW(),
 			   UPT_ID   = #{LOGIN_USER}
-		 WHERE HEAD_CD  = #{HEAD_CD} 
+		 WHERE HEAD_CD  = #{HEAD_CD}
 		   AND CODE     = #{CODE}
 	</update>
 	<delete id="deleteFlightInfo" parameterType="BMap">

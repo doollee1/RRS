@@ -109,62 +109,66 @@
 </div>
 
 <script type="text/javascript">
+	/* 정규식 체크 */
 	$(document).on("keyup", "input[noSpecial]", function() {$(this).val( $(this).val().replace(/[^a-zA-Z0-9]/gi,"") );});
-	$(document).on("keyup", 'input[EMAIL]', function() {$(this).val($(this).val().replace(/[^a-zA-Z0-9@._-]/g, ''));});
+	$(document).on("keyup", 'input[EMAIL]',     function() {$(this).val($(this).val().replace(/[^a-zA-Z0-9@._-]/g, ''));});
 	
-	var idChkYN = false; //아이디 중복확인 여부
+	var idChkYN = false;    // 아이디 중복확인 여부
 
+	/* 이름 정규식 체크 */
 	$(document).on("focusout", '[class^=onlyKor]', function() {
 		const regExp = /[ㄱ-ㅎㅏ-ㅣ가-힣]/gi; 
 		if($(this).val() != "" && !regExp.test($(this).val())){
-	    	alert("한글로 작성해주세요.");
-	    	$(this).val("");
-	    }
+			alert("한글로 작성해주세요.");
+			$(this).val("");
+		}
 	});
 
+	/* 영문이름 정규식 체크 */
 	$(document).on("focusout", '[class^=onlyEng]', function() {
 		const regExp =  /^[a-zA-Z]*$/; 
 		if($(this).val() != "" && !regExp.test($(this).val())){
-	    	alert("영문으로 작성해주세요.");
-	    	$(this).val("");
-	    }
+			alert("영문으로 작성해주세요.");
+			$(this).val("");
+		}
 	});
 
+	/* 전화번호 정규식 체크*/
 	$(document).on("focusout", '[class^=onlyNum]', function() {
 		const regExp = /^[0123456789-]*$/;
 		if($(this).val() != "" && !regExp.test($(this).val())){
-	    	alert("숫자로 작성해주세요.");
-	    	$(this).val("");
-	    }else{
-	    	$(this).val($(this).val().replace(/^(\d{2,3})(\d{3,4})(\d{4})$/g, "$1-$2-$3"));
-	    }
+			alert("숫자로 작성해주세요.");
+			$(this).val("");
+		}else{
+			$(this).val($(this).val().replace(/^(\d{2,3})(\d{3,4})(\d{4})$/g, "$1-$2-$3"));
+		}
 	});
 
-	//아이디가 변하면 중복체크 다시하도록 값 초기화
+	/* 아이디가 변하면 중복체크 다시하도록 값 초기화 */
 	$('#USER_ID_POP').on("change", function(){
 		idChkYN = false;
 	});
 	
-	// 회원 타입 변경 이벤트
+	/* 회원 타입 변경 이벤트 */
 	$("#MEM_GBN_POP").on("change", function() {
 		idChkYN = false;
-		$("#USER_ID_POP").val("");
+		$("#USER_ID_POP" ).val("");
 		$("#HAN_NAME_POP").val("");
 		$("#ENG_NAME_POP").val("");
-		$("#TEL_NO_POP").val("");
-		$("#EMAIL_POP").val("");
+		$("#TEL_NO_POP"  ).val("");
+		$("#EMAIL_POP"   ).val("");
 		$("#PERINFO_AGREE_YN").val("N");
-		$("#RET_YN").val("N");
+		$("#RET_YN"          ).val("N");
 		if($("#MEM_GBN_POP").val() == '01') {
 			$("#btn_userSearchPopup").show();
-			$("#HAN_NAME_POP").addClass("onlyKor");
+			$("#HAN_NAME_POP"       ).addClass("onlyKor");
 			return;
 		} else if($("#MEM_GBN_POP").val() == '02') {
 			$("#btn_userSearchPopup").hide();
-			$("#HAN_NAME_POP").addClass("onlyKor");
-		} else if($("#MEM_GBN_POP").val() == '04') {
+			$("#HAN_NAME_POP"       ).addClass("onlyKor");
+		} else if($("#MEM_GBN_POP"  ).val() == '04') {
 			$("#btn_userSearchPopup").hide();
-			$("#HAN_NAME_POP").removeClass("onlyKor");
+			$("#HAN_NAME_POP"       ).removeClass("onlyKor");
 		}
 		$("#MEMBER_ID_POP").val("");
 		$("#REG_ID"   ).val("");
@@ -173,55 +177,64 @@
 		$("#UPD_DTM"  ).val("");
 	});
 
+	/******************************************** 
+	 * @Subject : 팝업 창 기본 설정
+	 * @Content : 화면 비율 및 버튼 이벤트 
+	 * @See     : saveUserInfo() / typeChage()
+	 * @Since   : 2024.05.25
+	 * @Author  : 장소현
+	 ********************************************/
 	$(function() {
 		$('#p_UserInfo').dialog({
-			title :'회원가입',
+			title    :'회원가입',
 			autoOpen : false,
-			width: 940,
-			modal : true,
+			width    : 940,
+			modal    : true,
 			buttons : {
+				/* 저장 버튼 */
 				'<s:message code='system.save'/>' : {
 					text: '<s:message code='system.save'/>',
-					id : 'save',
+					id  : 'save',
 					click: function() {
 						saveUserInfo();
 					}
 				},
 				'<s:message code='button.close'/>' : {
-					text: '<s:message code='button.close'/>',
+					text : '<s:message code='button.close'/>',
 					click: function() {
 						$(this).dialog("close");
 					}
 				},
-	
 			},
+			/* 닫기 버튼 */
 			close : function() {
 				p_rtnData = [];
-				popupClose($(this).data('pid')); /* 필수로 들어가야함 */
+				/* 필수로 들어가야함 */
+				popupClose($(this).data('pid'));
 			},
 			open : function() {
-				$("#mem_gbn_announce").text("");
+				$("#mem_gbn_announce"   ).text("");
 				$("#btn_userChgMemPopup").hide();
 				if(!fn_empty($(this).data("USER_ID"))) {
 					$(".ui-dialog-title").text("회원 정보 수정");
-					// 회원 수정 팝업인 경우
-					selectUserInfo($(this).data("USER_ID"));	// USER_ID로 조회
-					$("#USER_ID_POP").attr("readonly", true);	// USER_ID_POP readonly
+					/* 회원 수정 팝업인 경우 */
+					selectUserInfo($(this).data("USER_ID"));     // USER_ID로 조회
+					$("#USER_ID_POP").attr("readonly", true);    // USER_ID_POP readonly
 					$("#btn_idCheck").hide();
-					// 회원 구분 disabled
-					$("#MEM_GBN_POP").attr("disabled", true);
+					/* 회원 구분 disabled */
+					$("#MEM_GBN_POP"        ).attr("disabled", true);
 					$("#btn_userSearchPopup").attr("disabled", true);
 					$("#btn_userSearchPopup").hide();
-					// 멤버 회원이면 이름, 영문이름, 전화번호 readonly
+					/* 멤버 회원이면 이름, 영문이름, 전화번호 readonly */
 					var MEM_GUBUN = $("#MEM_GBN_POP").val();
 					if(MEM_GUBUN == "01") {
 						$("#HAN_NAME_POP").attr("readonly", true);
 						$("#ENG_NAME_POP").attr("readonly", true);
-						$("#TEL_NO_POP").attr("readonly", true);
-						$("#EMAIL_POP").attr("readonly", true);
+						$("#TEL_NO_POP"  ).attr("readonly", true);
+						$("#EMAIL_POP"   ).attr("readonly", true);
 						$("#mem_gbn_announce").text("※ 멤버의 이름, 전화번호, 이메일 변경은 멤버정보등록 팝업에서 가능합니다.");
 					}
-					// 회원 타입 일반일 경우 멤버 변경 버튼 활성화
+					/* 회원 타입 일반일 경우 멤버 변경 버튼 활성화 */
 					if (MEM_GUBUN == "02") {
 						$("#btn_userChgMemPopup").show();
 					}
@@ -229,7 +242,7 @@
 					typeChage();
 					idChkYN = true;
 					
-					// 신규 등록 or 수정
+					/* 신규 등록 or 수정 */
 					$("#isNew").val("N");
 				}else{
 					$("#isNew").val("Y");
@@ -240,6 +253,12 @@
 		});
 	});
 
+	/******************************************** 
+	 * @Subject : 조회 함수
+	 * @Content : 데이터 조회 후 화면에 셋팅
+	 * @Since   : 2024.05.25
+	 * @Author  : 장소현
+	 ********************************************/
 	function selectUserInfo(userId){
 		var param = {
 			"param": {
@@ -261,10 +280,16 @@
 		});
 	}
 
+	/******************************************** 
+	 * @Subject : 저장 함수
+	 * @Content : 입력 데이터 확인 후 저장
+	 * @Since   : 2024.05.25
+	 * @Author  : 장소현
+	 ********************************************/
 	function saveUserInfo(){
-		var formData = formIdAllToMap('frmUserInfo');
+		var formData        = formIdAllToMap('frmUserInfo');
 		formData.TEL_NO_POP = formData.TEL_NO_POP.replace(/-/g, '');
-		// validtaion check
+		/* validtaion check */
 		if(formData.HAN_NAME_POP === "") {
 			alert("이름을 입력해주세요.");
 			return;
@@ -286,85 +311,109 @@
 			return;
 		}
 		
-		var setData = {	  "USER_ID"  		 : formData.USER_ID_POP
-						, "HAN_NAME" 		 : formData.HAN_NAME_POP
-						, "ENG_NAME" 		 : formData.ENG_NAME_POP
-						, "TEL_NO"  		 : formData.TEL_NO_POP
-						, "EMAIL" 			 : formData.EMAIL_POP
-						, "MEM_GBN"			 : formData.MEM_GBN_POP
-						, "MEMBER_ID" 		 : formData.MEMBER_ID_POP
+		var setData = {	  "USER_ID"          : formData.USER_ID_POP
+						, "HAN_NAME"         : formData.HAN_NAME_POP
+						, "ENG_NAME"         : formData.ENG_NAME_POP
+						, "TEL_NO"           : formData.TEL_NO_POP
+						, "EMAIL"            : formData.EMAIL_POP
+						, "MEM_GBN"          : formData.MEM_GBN_POP
+						, "MEMBER_ID"        : formData.MEMBER_ID_POP
 						, "PERINFO_AGREE_YN" : formData.PERINFO_AGREE_YN
-						, "RET_YN" 			 : formData.RET_YN
-						, "REG_ID" 			 : formData.REG_ID
-						, "REG_DTM" 		 : formData.REG_DTM
-						, "UPD_ID" 			 : formData.UPD_ID
-						, "UPD_DTM" 		 : formData.UPD_DTM
-						, "isNew" 			 : formData.isNew
-						, "PASSWD" 			 : formData.PASSWD
+						, "RET_YN"           : formData.RET_YN
+						, "REG_ID"           : formData.REG_ID
+						, "REG_DTM"          : formData.REG_DTM
+						, "UPD_ID"           : formData.UPD_ID
+						, "UPD_DTM"          : formData.UPD_DTM
+						, "isNew"            : formData.isNew
+						, "PASSWD"           : formData.PASSWD
 					  };
 		
 		var param = {"param" : setData};
-		var url = "/rrs/saveUserInfo.do";
+		var url   = "/rrs/saveUserInfo.do";
 		
 		if(confirm("<s:message code='confirm.save'/>")){
-				fn_ajax(url, false, param, function(data, xhr){
-					if((data.isExistMemberID == 'Y') && !(formData.MEMBER_ID_POP == formData.Ex_MEMBER_ID_POP)){
-						alert("중복되는 멤버ID입니다."); 
-					} else {
-						alert("<s:message code='info.save'/>");
-						p_rtnData = {   "USER_ID"    : $('#USER_ID_POP'  ).val()
-								   	  , "MEM_GBN"    : $('#MEM_GBN_POP'  ).val()
-								   	  , "REQ_HAN_NM" : $('#HAN_NAME_POP' ).val()
-								   	  , "REQ_ENG_NM" : $('#ENG_NAME_POP' ).val()
-								   	  , "REQ_TEL_NO" : $('#TEL_NO_POP'   ).val()
-								   };
-						popupClose($('#p_UserInfo').data('pid'));
-					}
-				});
+			fn_ajax(url, false, param, function(data, xhr){
+				/* 맴버 ID 중복 확인 */
+				if((data.isExistMemberID == 'Y') && !(formData.MEMBER_ID_POP == formData.Ex_MEMBER_ID_POP)){
+					alert("중복되는 멤버ID입니다."); 
+				} else {
+					alert("<s:message code='info.save'/>");
+					p_rtnData = {   "USER_ID"    : $('#USER_ID_POP'  ).val()
+								  , "MEM_GBN"    : $('#MEM_GBN_POP'  ).val()
+								  , "REQ_HAN_NM" : $('#HAN_NAME_POP' ).val()
+								  , "REQ_ENG_NM" : $('#ENG_NAME_POP' ).val()
+								  , "REQ_TEL_NO" : $('#TEL_NO_POP'   ).val()
+							};
+					popupClose($('#p_UserInfo').data('pid'));
+				}
+			});
 		}
 	}
 
+	/******************************************** 
+	 * @Subject : 전화번호 하이픈
+	 * @Content : 전화번호 하이픈
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function autoHyphen(target) {
 		target.value = target.value
 			.replace(/[^0-9]/g, '')
-		  	.replace(/^(\d{0,3})(\d{0,4})(\d{0,4})$/g, "$1-$2-$3").replace(/(\-{1,2})$/g, "");
+			.replace(/^(\d{0,3})(\d{0,4})(\d{0,4})$/g, "$1-$2-$3").replace(/(\-{1,2})$/g, "");
 		return target;
 	}
 
+	/******************************************** 
+	 * @Subject : 이메일 양식 체크
+	 * @Content : 이메일 양식 체크
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function validChk_email(val){
 		var pattern = /([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
 		return (val != '' && val != 'undefined' && pattern.test(val));
 	}
 
-	// 멤버 찾기 클릭 
+	/******************************************** 
+	 * @Subject : 멤버 찾기 버튼 함수
+	 * @Content : 멤버 찾기 팝업 Open
+	 * @See     : typeChage()
+	 * @Since   : 2024.07.11
+	 * @Author  : 장소현
+	 ********************************************/
 	$('#btn_userSearchPopup').on('click', function(e) {
-		var url = "/rrs/UserInfoSearchPopup.do";
-		var pid = "UserInfoSearchPopup";
+		var url   = "/rrs/UserInfoSearchPopup.do";
+		var pid   = "UserInfoSearchPopup";
 		var param = {};
 		
 		popupOpen(url, pid, param, function(data) {
 			if(!fn_empty(data)){
-				$("#HAN_NAME_POP").val(data.HAN_NAME);
-				$("#ENG_NAME_POP").val(data.ENG_NAME);
-				$("#TEL_NO_POP").val(data.TEL_NO);
-				$("#USER_ID_POP").val(data.MEMBER_ID);
+				$("#HAN_NAME_POP" ).val(data.HAN_NAME);
+				$("#ENG_NAME_POP" ).val(data.ENG_NAME);
+				$("#TEL_NO_POP"   ).val(data.TEL_NO);
+				$("#USER_ID_POP"  ).val(data.MEMBER_ID);
 				$("#MEMBER_ID_POP").val(data.MEMBER_ID);
-				$("#EMAIL_POP").val(data.EMAIL);
-				$("#REG_ID").val(data.REG_ID);
-				$("#REG_DTM").val(data.REG_DTM);
-				$("#UPD_ID").val(data.UPD_ID);
-				$("#UPD_DTM").val(data.UPD_DTM);
+				$("#EMAIL_POP"    ).val(data.EMAIL);
+				$("#REG_ID"       ).val(data.REG_ID);
+				$("#REG_DTM"      ).val(data.REG_DTM);
+				$("#UPD_ID"       ).val(data.UPD_ID);
+				$("#UPD_DTM"      ).val(data.UPD_DTM);
 				
 				typeChage();
 				
 				idChkYN   = false;
 			}
 		});
-		
 		p_rtnData = {};
 	});
 	
-	// 멤버 변경 클릭
+	/******************************************** 
+	 * @Subject : 멤버 변경 버튼 함수
+	 * @Content : 일반 회원 멤버로 변경하는 팝업 Open
+	 * @See     : typeChage()
+	 * @Since   : 2024.07.11
+	 * @Author  : 장소현
+	 ********************************************/
 	$('#btn_userChgMemPopup').on('click', function(e) {
 		var url = "/rrs/MemberUserAddPopup.do";
 		var pid = "p_MemberUserAdd";
@@ -376,26 +425,31 @@
 					, "USER_ID"  : $("#USER_ID_POP").val()
 					};
 		popupOpen(url, pid, param, function(data) {
-			// 저장했는지 체크
+			/* 저장했는지 체크 */
 			if (data.CHG_YN == "Y") {
-				selectUserInfo(data.USER_ID);		// 변경 내용으로 Search
+				selectUserInfo(data.USER_ID);    // 변경 내용으로 Search
 				
 				$("#HAN_NAME_POP").attr("readonly", true);
 				$("#ENG_NAME_POP").attr("readonly", true);
-				$("#TEL_NO_POP").attr("readonly", true);
-				$("#EMAIL_POP").attr("readonly", true);
-				$("#mem_gbn_announce").text("※ 멤버의 이름, 전화번호, 이메일 변경은 멤버정보등록 팝업에서 가능합니다.");
-				$("#btn_userChgMemPopup").hide();	// 멤버 변경 버튼 숨김
+				$("#TEL_NO_POP"  ).attr("readonly", true);
+				$("#EMAIL_POP"   ).attr("readonly", true);
+				$("#mem_gbn_announce"   ).text("※ 멤버의 이름, 전화번호, 이메일 변경은 멤버정보등록 팝업에서 가능합니다.");
+				$("#btn_userChgMemPopup").hide();   // 멤버 변경 버튼 숨김
 				typeChage();						// 타입변경
 			}
 		});
-		
 		p_rtnData = {};
 	});
 
-	//아이디 중복체크
+	/******************************************** 
+	 * @Subject : 아이디 중복확인 버튼 함수
+	 * @Content : 입력한 ID 글자수 확인 후 중복인지 확인
+	 * @See     : idCheck()
+	 * @Since   : 2024.07.11
+	 * @Author  : 장소현
+	 ********************************************/
 	$('#btn_idCheck').on('click', function(e) {
-		var idCnt = $('#USER_ID_POP').val().length;
+		var idCnt = $('#USER_ID_POP').val().length;    // 입력 ID 글자수
 		if (idCnt == 0) {
 			alert("회원 ID를 입력해주세요.");
 		} else if (($('#MEM_GBN_POP').val() != "01") && (idCnt<6)) {
@@ -403,18 +457,22 @@
 		} else {
 			idCheck(idCnt);
 		}
-		
 	});
 
+	/******************************************** 
+	 * @Subject : 아이디 중복확인
+	 * @Content : 아이디 중복확인
+	 * @Since   : 2024.07.11
+	 * @Author  : 장소현
+	 ********************************************/
 	function idCheck(idCnt) {
-		var idCnt = $('#USER_ID_POP').val().length;
-		var url   = "/UserIdCheck.do";
-		var param = {
+		var idCnt  = $('#USER_ID_POP').val().length;
+		var url    = "/UserIdCheck.do";
+		var param  = {
 			"param": {"USER_ID" : $('#USER_ID_POP').val()}
 		}
 	
 		fn_ajax(url, false, param, function(data, xhr){
-			
 			if(data.isExistUser == 'Y'){
 				alert("회원가입이 가능한 ID입니다.");
 				idChkYN = true;
@@ -424,16 +482,20 @@
 		});
 	}
 
-
+	/******************************************** 
+	 * @Subject : 회원 타입 변경 함수
+	 * @Content : 연락처 하이픈 처리, 등록 일시, 업데이트 일시 타입 셋팅
+	 * @Since   : 2024.07.11
+	 * @Author  : 장소현
+	 ********************************************/
 	function typeChage() {
-		// 연락처 하이픈 처리
-		var tel_no = $("#TEL_NO_POP").val();
+		var tel_no         = $("#TEL_NO_POP").val();
 		var convert_tel_no = tel_no.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
 		$("#TEL_NO_POP").val(convert_tel_no);
 		
 		var reg_dtm = $("#REG_DTM").val();
 		var upd_dtm = $("#UPD_DTM").val();
-		$("#REG_DTM").val(new Date(Number(reg_dtm)).toLocaleDateString());	// 등록일시 readonly
-		$("#UPD_DTM").val(new Date(Number(upd_dtm)).toLocaleDateString());	// 수정일시 readonly
+		$("#REG_DTM").val(new Date(Number(reg_dtm)).toLocaleDateString());    // 등록일시 readonly
+		$("#UPD_DTM").val(new Date(Number(upd_dtm)).toLocaleDateString());    // 수정일시 readonly
 	}
 </script>

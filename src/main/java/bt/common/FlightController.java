@@ -17,18 +17,16 @@ import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
 import bt.common.service.FlightService;
 
-
 @Controller
-public class FlightController {	
+public class FlightController {
 	@Resource(name = "FlightService")
 	private FlightService flightService;
-	
+
 	@RequestMapping(value = "/common/FlightManager.do")
 	public String CommonCodeManager(ModelMap model) throws Exception{
-		
 		return "/common/FlightManager";
 	}
-	
+
 	/**
 	 * 항공편관리 리스트 호출
 	 * @param reqData
@@ -42,13 +40,12 @@ public class FlightController {
 		BMap param = new BMap();
 		param.put("TIME", reqData.get("TIME"));
 		param.put("NAME", reqData.get("NAME"));
-		
+
 		BRespData respData = new BRespData();
-		
 		respData.put("result", flightService.selectFlightInfo(param));
-		
 		return respData;
 	}
+
 	/**
 	 * 항공편관리 추가 및 수정
 	 * @param reqData
@@ -60,7 +57,7 @@ public class FlightController {
 	@ResponseBody
 	public BRespData saveFlightInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BRespData respData = new BRespData();
-		
+
 		List<BMap> insertParam = reqData.getParamDataList("IData");
 		if(insertParam.size() == 0) {
 			List<BMap> updateParam = reqData.getParamDataList("UData");
@@ -71,7 +68,7 @@ public class FlightController {
 				respData.put("success", false);
 			}
 		}else {
-			if( flightService.insertFlightInfo(insertParam) ) 
+			if( flightService.insertFlightInfo(insertParam) )
 			{
 				List<BMap> updateParam = reqData.getParamDataList("UData");
 				if(flightService.updateFlightInfo(updateParam)) {
@@ -87,6 +84,7 @@ public class FlightController {
 		}
 		return respData;
 	}
+
 	/**
 	 * 항공편관리 삭제
 	 * @param reqData
@@ -99,14 +97,13 @@ public class FlightController {
 	public BRespData deleteFlightInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BRespData respData = new BRespData();
 		List<BMap> paramList = reqData.getParamDataList("gridData");
-		
+
 		if(flightService.deleteFlightInfo(paramList)) {
 			respData.put("success", true);
 		}
 		else {
 			respData.put("success", false);
 		}
-		
 		return respData;
 	}
 }

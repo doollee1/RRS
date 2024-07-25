@@ -22,24 +22,24 @@
 				<!---<caption></caption> --->
 				<colgroup>
 					<col width="100px" />
-			        <col width="200px" />
-			        <col width="100px" />
-			        <col width="200px" />
-			        <col width="200px" />
-			        <col width="200px" />
-			        <col width="200px" />
-			        <col width="200px" />
-			    </colgroup>
-		   		<tr>
+					<col width="200px" />
+					<col width="100px" />
+					<col width="200px" />
+					<col width="200px" />
+					<col width="200px" />
+					<col width="200px" />
+					<col width="200px" />
+				</colgroup>
+					<tr>
 					<th><s:message code='system.UserID'/></th>
 					<td>
-						<input type="hidden" id="COMP_CD" name = 'COMP_CD' />
-						<input type="hidden" id="USER_TP" name = 'USER_TP' value="01" />
-						<input type="hidden" id="LANG_CD" name = 'LANG_CD' value="en" />
-						<input type="hidden" id="STATUS" name = 'STATUS' value="A" />
+						<input type="hidden" id="COMP_CD"  name = 'COMP_CD' />
+						<input type="hidden" id="USER_TP"  name = 'USER_TP' value="01" />
+						<input type="hidden" id="LANG_CD"  name = 'LANG_CD' value="en" />
+						<input type="hidden" id="STATUS"   name = 'STATUS' value="A" />
 						<input type="hidden" id="START_DT" name = 'START_DT' />
-						<input type="hidden" id="STOP_DT" name = 'STOP_DT' value="9999.12.31" />
-						<input type="text" id="USER_ID" name="USER_ID" class="cmc_txt disabled" readonly="readonly" style="width:150px;" maxlength="15" noSpecial />
+						<input type="hidden" id="STOP_DT"  name = 'STOP_DT' value="9999.12.31" />
+						<input type="text" id="USER_ID"    name="USER_ID" class="cmc_txt disabled" readonly="readonly" style="width:150px;" maxlength="15" noSpecial />
 					</td>
 					<th><s:message code='system.name'/></th>
 					<td>
@@ -60,6 +60,7 @@
 </div>
 
 <script type="text/javascript">
+/* 정규식 */
 $(document).on("keyup", "input[noSpecial]", function() {$(this).val( $(this).val().replace(/[^ㄱ-힣a-zA-Z0-9]/gi,"") );});
 
 $(function() {
@@ -68,11 +69,11 @@ $(function() {
 	$('#USER_TP').change(function() {
 		if($('#USER_TP').val() == '02'){
 			$('#CUST_CD').removeAttr("readonly");
-			$('#WEB_ID').attr("readonly",false);
-			$('#DEPT_CD').attr("readonly",false);					
+			$('#WEB_ID' ).attr("readonly",false);
+			$('#DEPT_CD').attr("readonly",false);
 		}else{
 			$('#CUST_CD').attr("readonly",false);
-			$('#WEB_ID').removeAttr("readonly");
+			$('#WEB_ID' ).removeAttr("readonly");
 			$('#DEPT_CD').removeAttr("readonly");
 		}
 	});
@@ -82,57 +83,66 @@ $(function() {
 	createCodeBox('USER_TP', false);
 	$('#LANG_CD').val(getCookie("Language").toUpperCase());
 	
+	/******************************************** 
+	 * @Subject : 팝업 창 기본 설정
+	 * @Content : 화면 비율 및 버튼 이벤트
+	 * @See     : saveUserInfo()
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$('#p_UserInfo').dialog({
-		title :'<s:message code='system.userinfo'/>',
+		title    :'<s:message code='system.userinfo'/>',
 		autoOpen : false,
 		//height: 400,
 		width: 940,
-		modal : true,
-		buttons : {
+		modal    : true,
+		buttons  : {
+			/* 저장 버튼 */
 			'<s:message code='system.save'/>' : {
 				text: '<s:message code='system.save'/>',
-				id : 'save',
+				id  : 'save',
 				click: function() {
 					saveUserInfo();
 				}
 			},
+			/* 닫기 버튼 */
 			'<s:message code='button.close'/>' : {
-				text: '<s:message code='button.close'/>',
+				text : '<s:message code='button.close'/>',
 				click: function() {
 					$(this).dialog("close");
 				}
 			},
-
 		},
 		close : function() {
-			popupClose($(this).attr('id')); /* 필수로 들어가야함 */
+			/* 필수로 들어가야함 */
+			popupClose($(this).attr('id')); 
 		},
 		open : function() {
 			if(fn_empty($(this).data("COMP_CD"))){
-				$("#USER_ID").removeAttr("READONLY", false);
-				$("#COMP_CD").val("${loginVO.compCd}");
-				$("#ISNEW").val("0");
+				$("#USER_ID" ).removeAttr("READONLY", false);
+				$("#COMP_CD" ).val("${loginVO.compCd}");
+				$("#ISNEW"   ).val("0");
 				$("#btn_init").hide();
 				$(".ui-dialog-title").text("사용자정보 등록");
 			}else{
 				$("#USER_TP").val($(this).data("USER_TP"));
-				$("#AUTH").val($(this).data("AUTH"));
+				$("#AUTH"   ).val($(this).data("AUTH"));
 				selectUserInfo($(this).data("COMP_CD"), $(this).data("USER_ID"));
-				$("#ISNEW").val("1");
-				if($('#USER_TP').val() == '02'){
+				$("#ISNEW"  ).val("1");
+				if($('#USER_TP' ).val() == '02'){
 					$('#CUST_CD').removeAttr("readonly");
-					$('#WEB_ID').attr("readonly",false);
-					$('#DEPT_CD').attr("readonly",false);					
+					$('#WEB_ID' ).attr("readonly",false);
+					$('#DEPT_CD').attr("readonly",false);
 				}else{
 					$('#CUST_CD').attr("readonly",false);
-					$('#WEB_ID').removeAttr("readonly");
+					$('#WEB_ID' ).removeAttr("readonly");
 					$('#DEPT_CD').removeAttr("readonly");
 				}
-				if($('#AUTH').val().substring(1,2) =='N'){
+				if($('#AUTH' ).val().substring(1,2) =='N'){
 					$("#save").hide();
 					$("#btn_init").hide();
 				}
-			}	
+			}
 			/*
 		$('#START_DT').datepicker({
 			dateFormat : 'dd.mm.yy',
@@ -160,9 +170,8 @@ $(function() {
 	});
 	
 	$("#btn_department").click(function(e){
-
-		var url = "/common/DeptPopup.do";
-		var pid = "deptPopup"
+		var url   = "/common/DeptPopup.do";
+		var pid   = "deptPopup"
 		var param = {"S_DEPT_CD" : $("#DEPT_CD").val()};
 		
 		popupOpen(url, pid, param, function(data){
@@ -173,6 +182,12 @@ $(function() {
 		});
 	})
 	
+	/******************************************** 
+	 * @Subject : 비밀번호 초기화 버튼
+	 * @Content : 비밀번호 초기화 버튼
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$("#btn_init").click(function(e){
 		var url = "/common/initPw.do";
 		var param = {"param" : {		
@@ -183,7 +198,8 @@ $(function() {
 		
 		fn_ajax(url, false, param, function(data, xhr){
 			if(data.success){
-				alert("<s:message code="confirm.init"/>");	/* 변경하였습니다. */
+				/* confirm.init : 변경하였습니다. */
+				alert("<s:message code="confirm.init"/>");
 			}else{
 				alert(data.message);
 			}
@@ -191,6 +207,12 @@ $(function() {
 	})
 });
 
+/******************************************** 
+ * @Subject : 조회 함수
+ * @Content : 데이터 조회
+ * @Since   : 2024.07.11
+ * @Author  : 
+ ********************************************/
 function selectUserInfo(compCd, userId, userTp){
 	var param = {"param" : {
 			"COMP_CD" : compCd,
@@ -205,6 +227,12 @@ function selectUserInfo(compCd, userId, userTp){
 	});
 }
 
+/******************************************** 
+ * @Subject : 저장 함수
+ * @Content : 데이터 입력 값 확인 후 저장
+ * @Since   : 2024.07.11
+ * @Author  : 
+ ********************************************/
 function saveUserInfo(){
 	var formData = formIdAllToMap('frmUserInfo');
 	

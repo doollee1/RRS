@@ -48,15 +48,22 @@ public class ServiceInterceptor extends HandlerInterceptorAdapter {
 				if (request.getHeader(Constants.METHOD_ID) != null) {
 					
 					// Ajax일 경우
-					response.sendError(991);
-					response.sendRedirect("/login/login.do");	
-					
+					response.sendError(991);					
+															
 				} else {
 					
-					response.setContentType("text/html; charset=UTF-8");
-		            PrintWriter out = response.getWriter();
-		            out.println("<script>alert('Session has expired. You have been taken to the login page.'); location.href='/login/login.do';</script>");
-		            out.flush();
+					try {
+						
+						response.setContentType("text/html; charset=UTF-8");
+						PrintWriter out = response.getWriter();
+						out.println("<script>alert('Session has expired. You have been taken to the login page.'); location.href='/login/login.do';</script>");
+						out.flush();
+						
+					} catch(Exception e) {
+						response.reset();						
+						throw e;
+					}
+					
 				}
 				
 				//ModelMap map = new ModelMap("sessionOut", "1");

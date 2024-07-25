@@ -26,30 +26,36 @@
 				</tbody>
 			</table>
 		</div>
-		<!-------------->	
 	</form>
-	
+	<!-- Search condition end -->
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
+		<!-- 그리드 start -->
 		<div class="pop_grid_wrap">	
 			<table id="grid_MemberUser"></table>
 			<div id="pager_MemberUser"></div>
 		</div>	
-		<!-- 그리드 끝 -->
+		<!-- 그리드 end -->
 	</div>
-	<!-- Search condition end -->
-	
 </div>
 <script type="text/javascript">
 $(function() {
+	/******************************************** 
+	 * @Subject : 팝업 창 기본 설정
+	 * @Content : 화면 비율 및 버튼 이벤트
+	 * @See     : grid_MemberUser_Load() / UserInfoSearch()
+	 * @Since   : 2024.07.11
+	 * @Author  : 장소현
+	 ********************************************/
 	$('#UserInfoSearchPopup').dialog({
-		title:'멤버 찾기',
+		title   :'멤버 찾기',
 		autoOpen: false,
-		height: 400,
-		width: 700,
-		modal: true,
+		height  : 400,
+		width   : 700,
+		modal   : true,
 		buttons: {
+			/* 닫기 버튼 */
 			'<s:message code='button.close'/>': {
-				text:'<s:message code='button.close'/>',
+				text :'<s:message code='button.close'/>',
 				click: function() {
 					$(this).dialog('close');
 				}
@@ -72,6 +78,12 @@ $(function() {
 	});
 });
 
+/******************************************** 
+ * @Subject : 조회 함수
+ * @Content : 멤버 데이터 조회 후 화면 셋팅
+ * @Since   : 2024.07.11
+ * @Author  : 장소현
+ ********************************************/
 function grid_MemberUser_Load() {
 	var colName = [
 		'멤버ID',
@@ -99,53 +111,84 @@ function grid_MemberUser_Load() {
 
 	var gSetting = {
 			height: 220,
-			pgflg:true,
-			exportflg : false,  //엑셀, pdf 출력 버튼 노출여부
-			colsetting : false,  // 컬럼 설정 버튼 노출여부
-			searchInit : false,  // 데이터 검색 버튼 노출여부
-			resizeing : true,
-			rownumbers:false,
+			pgflg :true,
+			exportflg  : false,       // 엑셀, pdf 출력 버튼 노출여부
+			colsetting : false,      // 컬럼 설정 버튼 노출여부
+			searchInit : false,      // 데이터 검색 버튼 노출여부
+			resizeing  : true,
+			rownumbers :false,
 			shrinkToFit: true,
-			autowidth: true,
-			queryPagingGrid:false // 쿼리 페이징 처리 여부
+			autowidth  : true,
+			queryPagingGrid:false    // 쿼리 페이징 처리 여부
 		};
 	btGrid.createGrid('grid_MemberUser', colName, colModel, gSetting);
 }
-// 조회 버튼
+
+/******************************************** 
+ * @Subject : 조회 버튼 클릭
+ * @Content : 조회 버튼 클릭
+ * @Since   : 2024.07.11
+ * @Author  : 장소현
+ ********************************************/
 $(function() {
 	$("#btn_searck").on("click",function() {
 		UserInfoSearch();
 	});
 });
 
-// 엔터
+/******************************************** 
+ * @Subject : 엔터 Event 함수
+ * @Content : 조회 조건 입력 칸에서 엔터 클릭 시 Event
+ * @See     : UserInfoSearch()
+ * @Since   : 2024.07.11
+ * @Author  : 장소현
+ ********************************************/
 $("input").on("keyup",function(key){         
 	if(key.keyCode==13) {             
 		UserInfoSearch();   
 	}     
 });
 
-// 검색창 바뀔때
+/******************************************** 
+ * @Subject : 조회 조건 입력 칸 내용 변경 Event
+ * @Content : 조회 조건 입력 칸 내용이 변경될 경우 재조회하는 Event
+ * @See     : UserInfoSearch()
+ * @Since   : 2024.07.11
+ * @Author  : 장소현
+ ********************************************/
 $(function() {
 	$("#MEMBER_SEARCH_TEXT").on("input",function(e) {
 		UserInfoSearch();
 	});
 });
 
+/******************************************** 
+ * @Subject : 조건 조회 함수
+ * @Content : 조건으로 조회 후 데이터 화면에 셋팅
+ * @See     : setTelNoHypen()
+ * @Since   : 2024.07.11
+ * @Author  : 장소현
+ ********************************************/
 function UserInfoSearch() {
 	var formData = formIdAllToMap('frmSearch');
-	var param = {"param":formData};
-	var url = "/rrs/selectSearchUserInfo.do";
+	var param    = {"param":formData};
+	var url      = "/rrs/selectSearchUserInfo.do";
 	
 	fn_ajax(url, false, param, function(data, xhr) {
 		var gridData     = data.result;
 		$('#grid_MemberUser').jqGrid('clearGridData');
-	    $('#grid_MemberUser').jqGrid('setGridParam', {data:gridData});
-	    $('#grid_MemberUser').trigger('reloadGrid');
+		$('#grid_MemberUser').jqGrid('setGridParam', {data:gridData});
+		$('#grid_MemberUser').trigger('reloadGrid');
 	});
 	setTelNoHypen();
 }
 
+/******************************************** 
+ * @Subject : 전화번호 하이픈 처리 함수
+ * @Content : 전화번호 하이픈 처리
+ * @Since   : 2024.07.11
+ * @Author  : 장소현
+ ********************************************/
 function setTelNoHypen() {
 	var rowDataList = $("#grid_MemberUser").getRowData();
 	for(var i=0; i<rowDataList.length; i++) {
@@ -154,6 +197,12 @@ function setTelNoHypen() {
 	}
 }
 
+/******************************************** 
+ * @Subject : 그리드 클릭 Evnet 함수
+ * @Content : 팝업 close 후 ㅣ해당 그리드의 내용을 상위 팝업에 셋팅
+ * @Since   : 2024.07.11
+ * @Author  : 장소현
+ ********************************************/
 function grid1_ondblClickRow(rowid, iRow, iCol, e){
 	var gridData = $("#grid_MemberUser").getRowData(rowid);
 	p_rtnData = {

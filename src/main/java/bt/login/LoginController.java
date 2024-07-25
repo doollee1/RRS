@@ -111,7 +111,7 @@ public class LoginController {
         KeyPairGenerator generator;
         try {
             generator = KeyPairGenerator.getInstance(LoginController.RSA_INSTANCE);
-            generator.initialize(1024);
+            generator.initialize(1024);  //1024
  
             KeyPair keyPair = generator.genKeyPair();
             KeyFactory keyFactory = KeyFactory.getInstance(LoginController.RSA_INSTANCE);
@@ -153,9 +153,10 @@ public class LoginController {
 		BMap param = reqData.getParamDataMap("searchData");
 		BRespData respData = new BRespData();
 		
+		HttpSession session = req.getSession();
+		
 		try{
-			HttpSession session = req.getSession();
-			
+						
 			//세센종료시
 			logger.info("====== privateKey : "+session.getAttribute(LoginController.RSA_WEB_KEY));
 			if(session.getAttribute(LoginController.RSA_WEB_KEY) == null) {
@@ -181,9 +182,10 @@ public class LoginController {
 				respData.put("message", "세션이 종료됬습니다. 다시 로그인해주세요.");
 				return respData;
 	        }
-	         
+	        
+			
 	        // 다시 암호화
-	         param.put("PASSWORD", EgovFileScrty.encryptPassword(param.getString("PASSWORD"), param.getString("USER_ID")));
+	        param.put("PASSWORD", EgovFileScrty.encryptPassword(param.getString("PASSWORD"), param.getString("USER_ID")));
 	        
 			LoginVO loginVO = loginService.selectCmUserForContractReq(param);
 			
@@ -220,9 +222,7 @@ public class LoginController {
 			// 성공시에만 세션정보 저장
 			if(loginVO != null){
 				// 로그인정보를 세션에 저장
-				//session.setMaxInactiveInterval(10); 
-				//session.setMaxInactiveInterval(60*300);
-				session.setMaxInactiveInterval(60*120);  //2시간 세션시간(60초 * 120)
+				//session.setMaxInactiveInterval(60*120);  //2시간 세션시간(60초 * 120)
 				session.setAttribute("loginVO", loginVO);
 			}
 			
@@ -231,7 +231,12 @@ public class LoginController {
 			if (lang != null) {
 				WebUtils.setSessionAttribute((HttpServletRequest) req, SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, StringUtils.parseLocaleString(lang));
 			}
-		}catch(Exception e){
+			
+		} catch(Exception e){
+			
+			logger.info("===== 로그인예외 : "+e.getMessage());
+			e.printStackTrace();
+			
 			//접속실패 이력 등록
 			BMap mapCmSysConect = new BMap();
 			mapCmSysConect.put("USER_ID", param.get("USER_ID"));
@@ -241,8 +246,14 @@ public class LoginController {
 			mapCmSysConect.put("STATUS", "FAIL");
 			loginService.insertCmSysConectByLogin(mapCmSysConect);
 			
+			
 			respData.put("success", false);
 			respData.put("message", e.getMessage());
+			
+		} finally {
+			
+			//개인키 세션에서 제거
+			session.removeAttribute(LoginController.RSA_WEB_KEY);
 		}
 		
 		return respData;
@@ -293,8 +304,9 @@ public class LoginController {
      * @throws Exception
      */
     public String decryptRsa(PrivateKey privateKey, String securedValue) throws Exception {
-        Cipher cipher = Cipher.getInstance(LoginController.RSA_INSTANCE);
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         byte[] encryptedBytes = hexToByteArray(securedValue);
+        
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
         String decryptedValue = new String(decryptedBytes, "utf-8"); // 문자 인코딩 주의.
@@ -332,7 +344,7 @@ public class LoginController {
         KeyPairGenerator generator;
         try {
             generator = KeyPairGenerator.getInstance(LoginController.RSA_INSTANCE);
-            generator.initialize(1024);
+            generator.initialize(1024);   //1024
  
             KeyPair keyPair = generator.genKeyPair();
             KeyFactory keyFactory = KeyFactory.getInstance(LoginController.RSA_INSTANCE);
