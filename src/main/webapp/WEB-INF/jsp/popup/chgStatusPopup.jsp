@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
 <%
@@ -15,21 +15,21 @@
 		<table class="pop_tblForm">
 			<colgroup>
 				<col width="20%" />
-		        <col width="30%" />
-		        <col width="20%" />
-		        <col width="30%" />
-		    </colgroup>
+				<col width="30%" />
+				<col width="20%" />
+				<col width="30%" />
+			</colgroup>
 			<tr>
-			    <th>현재상태</th>
-			    <td>
-				    <div style="display:inline-flex;" >
+				<th>현재상태</th>
+				<td>
+					<div style="display:inline-flex;" >
 						<input type="text"    name="P_PRC_STS_NM" id="P_PRC_STS_NM" readonly>
 						<input type="hidden"  name="P_PRC_STS"    id="P_PRC_STS"    readonly>
 					</div>
 				</td>
 				<th>변경상태</th>
-			    <td>
-				    <select id="CHG_PRC_STS" name="CHG_PRC_STS" class="cmc_combo" style="width:62%;">
+				<td>
+					<select id="CHG_PRC_STS" name="CHG_PRC_STS" class="cmc_combo" style="width:62%;">
 					</select>
 				</td>
 			</tr>
@@ -56,24 +56,29 @@
 			  [<b style="color: red; font-weight: bold;">입금완료</b>]에서 상태변경 시 : 예약확정, 환불요청, 환불완료, 예약취소<br/>
 			  &nbsp;&nbsp;&nbsp;&nbsp;
 		</b>
-			
 	</div>
 </div>
 
 <script type="text/javascript">
+	/********************************************
+	 * @Subject : 화면 OPEN 시 최초 실행 함수
+	 * @Content : 팝업창 설정
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 $(function() {
 	var req_dt;
 	var seq;
 	var prc_sts;
 	var prc_sts_nm;
 	var mem_gbn;
-	
+
 	$('#p_changeStatusPopup').dialog({
-		title :'<s:message code='reservation.stateTitle'/>',
+		title    :'<s:message code='reservation.stateTitle'/>',
 		autoOpen : false,
-		height: 'auto',
-		width: 1076.4,
-		modal : true,
+		height   : 'auto',
+		width    : 1076.4,
+		modal    : true,
 		buttons : {
 			'<s:message code='reservation.chgState'/>' : {
 				text: '<s:message code='reservation.chgState'/>',
@@ -97,45 +102,58 @@ $(function() {
 			cSearch();
 		}
 	});
-	
-	
+
+	/********************************************
+	 * @Subject : 상태값을 조회하는 함수
+	 * @Content : 현재 상태에서 변경할 수 있는 상태값만 표시
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function cSearch(receivcedData){
-		var url = "/reserve/selectReserveStatus.do";
-		//var param = {"CODE"   : prc_sts };
+		var url   = "/reserve/selectReserveStatus.do";
 		var param = { "SEQ"    : seq
-				    , "REQ_DT" : req_dt
+					, "REQ_DT" : req_dt
 		};
 		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
 				alert("조회에 실패했습니다. 시스템 관리자에게 문의해 주세요.");
 			}else{
-				// 01 예약요청(일반), 02 예약요청(멤버), 03 예약가능(일반), 04 예약신청(일반), 05 예약입금대기
-				// 06 예약확정       , 07 환불요청       , 08 환불완료, 09 예약취소, 10 입금완료
+				/* 01 예약요청(일반), 02 예약요청(멤버), 03 예약가능(일반), 04 예약신청(일반), 05 예약입금대기 */
+				/* 06 예약확정      , 07 환불요청       , 08 환불완료,      09 예약취소,       10 입금완료 */
 				var vhtml;
 				vhtml += '<option value="" >--<s:message code="system.select"/>--</option>'
 				$.each(data.result , function ( i , v){
-					if(prc_sts == "01"){ // 예약요청(일반) >> 예약가능, 예약취소
+					if(prc_sts == "01"){
+						/* 예약요청(일반) >> 예약가능, 예약취소 */
 						if(v.CODE == "03" || v.CODE == "09"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
-					} else if(prc_sts =="02"){ // 예약요청(멤버) >> 예약입금대기, 예약취소
+
+					} else if(prc_sts =="02"){
+						/* 예약요청(멤버) >> 예약입금대기, 예약취소 */
 						if(v.CODE == "05" || v.CODE == "09"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
-					} else if(prc_sts =="03"){ // 예약가능(일반) >> 예약요청(일반), 예약신청, 예약취소
+
+					} else if(prc_sts =="03"){
+						/* 예약가능(일반) >> 예약요청(일반), 예약신청, 예약취소 */
 						if(v.CODE == "01" || v.CODE == "04" || v.CODE == "09"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
-					} else if(prc_sts =="04"){ // 예약신청(일반) >> 예약입금대기, 예약가능(일반/에이전트 일때), 예약취소
+
+					} else if(prc_sts =="04"){
+						/* 예약신청(일반) >> 예약입금대기, 예약가능(일반/에이전트), 예약취소 */
 						if(mem_gbn == "02" || mem_gbn == "04"){
 							if(v.CODE == "03"){
 								vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 							}
-						} 
+						}
 						if(v.CODE == "05" || v.CODE == "09"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
-					} else if(prc_sts =="05"){ // 예약입금대기 >> 예약신청, 예약확정, 예약취소
+
+					} else if(prc_sts =="05"){
+						/* 예약입금대기 >> 예약신청, 예약확정, 예약취소 */
 						if(mem_gbn == "01"){
 							if(v.CODE == "02"){
 								vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
@@ -145,27 +163,36 @@ $(function() {
 								vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 							}
 						}
-					
 						if(v.CODE == "06" || v.CODE == "09"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
-					} else if(prc_sts =="06"){ // 예약확정 >> 예약입금대기, 환불요청, 환불완료, 예약취소, 입금완료
+
+					} else if(prc_sts =="06"){
+						/* 예약확정 >> 예약입금대기, 환불요청, 환불완료, 예약취소, 입금완료 */
 						if(v.CODE == "05" || v.CODE == "07" || v.CODE == "08" || v.CODE == "09" || v.CODE == "10"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
-					} else if(prc_sts =="07"){ // 환불요청 >> 예약입금대기, 예약확정, 환불완료
+
+					} else if(prc_sts =="07"){
+						/* 환불요청 >> 예약입금대기, 예약확정, 환불완료 */
 						if(v.CODE == "05" || v.CODE == "06" || v.CODE == "08"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
-					} else if(prc_sts =="08"){ // 환불완료 >> 환불요청
+
+					} else if(prc_sts =="08"){
+						/* 환불완료 >> 환불요청 */
 						if(v.CODE == "07"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
-					} else if(prc_sts =="09"){ // 예약취소 >> 예약입금대기, 예약확정
+
+					} else if(prc_sts =="09"){
+						/* 예약취소 >> 예약입금대기, 예약확정 */
 						if(v.CODE == "05" || v.CODE == "06"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
-					} else if(prc_sts == "10"){ // 입금완료 >> 예약확정, 환불요청, 환불완료, 예약취소
+
+					} else if(prc_sts == "10"){
+						/* 입금완료 >> 예약확정, 환불요청, 환불완료, 예약취소 */
 						if(v.CODE == "06" || v.CODE == "07" || v.CODE == "08" || v.CODE == "09"){
 							vhtml += '<option value = '+v.CODE+'>'+v.CODE_NM+'</option>';
 						}
@@ -175,39 +202,51 @@ $(function() {
 			}
 		});
 	}
-	
+
+	/********************************************
+	 * @Subject : 기본값 설정 함수
+	 * @Content : 예약상세 화면에서 가져온 값들을 설정
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function fn_init (receivedData){
 		prc_sts    = receivedData.PRC_STS;
 		prc_sts_nm = receivedData.PRC_STS_NM;
 		req_dt     = receivedData.REQ_DT;
 		seq        = receivedData.SEQ;
 		mem_gbn    = receivedData.MEM_GBN;
-		
+
 		$("#P_PRC_STS"   ).val(prc_sts);
 		$("#P_PRC_STS_NM").val(prc_sts_nm);
 	}
-	
+
+	/********************************************
+	 * @Subject : 저장 버튼 클릭
+	 * @Content : 잔금이 남아있는지 확인 후
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function saveStatus() {
 		var prcSts =  $("#CHG_PRC_STS option:selected").val();
 		if($("#CHG_PRC_STS option:selected").val() == ""){
 			alert("변경상태를 선택해주세요.");
 			return;
 		}
-		
+
 		var url = "/reserve/selectBalAmt.do";
 		var param = { "SEQ"    : seq
-				    , "REQ_DT" : req_dt
+					, "REQ_DT" : req_dt
 		};
-		// 환불 완료, 예약취소, 입금완료 일때 잔금 확인
+		/* 환불 완료, 예약취소, 입금완료 일때 잔금 확인 */
 		if (prcSts == "08" || prcSts == "09" || prcSts == "10") {
 			fn_ajax(url, true, param, function(data, xhr){
-				// 잔금이 남아 있을 경우 confirm 
+				/* 잔금이 남아 있을 경우 confirm */
 				if( data.bal_amt != 0 ){
 					if( confirm("입금이 완료되지 않았습니다. 계속 상태변경을 진행하시겠습니까?") ){
 						updateStatus();
 					}
 				} else {
-					// 잔금이 없으면 바로 저장
+					/* 잔금이 없으면 바로 저장 */
 					updateStatus();
 				}
 			});
@@ -215,17 +254,23 @@ $(function() {
 			updateStatus();
 		}
 	}
-	
+
+	/********************************************
+	 * @Subject : 변경되는 상태값으로 저장
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function updateStatus(){
 		var url = "/reserve/updateReserveStatus.do";
 		var param = { "REQ_DT"      : req_dt
-				    , "SEQ"         : parseInt(seq)
-				    , "CHG_PRC_STS" : $("#CHG_PRC_STS option:selected").val()
-				    };
+					, "SEQ"         : parseInt(seq)
+					, "CHG_PRC_STS" : $("#CHG_PRC_STS option:selected").val()
+					};
 		if(confirm("<s:message code='confirm.save'/>")){
 			fn_ajax(url, true, param, function(data, xhr){
 				if(data.dup == 'Y'){
-					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
+					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>");
 				}else{
 					alert("<s:message code='info.save'/>");
 					popupClose($('#p_changeStatusPopup').data('pid'));
@@ -233,7 +278,6 @@ $(function() {
 			});
 		}
 	}
-	
 });
 
 </script>

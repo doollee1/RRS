@@ -9,7 +9,7 @@
 <c:import url="../import/frameTop.jsp">
 	<c:param name="progcd" value="ContactPerson" />
 </c:import>
-	 
+
 <!-- dummy -->
 <div class="top_button_h_margin"></div>
 
@@ -23,31 +23,31 @@
 		<table width="100%">
 			<tbody>
 				<tr>
-	      			<td class="small_td"><p><s:message code="customer.Customer"/></p></td>
-	      			<td><input type="text" id="CUST_CD" name="CUST_CD"></td>
-	      			<td class="small_td"><p><s:message code="customer.Name"/></p></td>
-	      			<td><input type="text" id="CUST_NM" name="CUST_NM" maxlength="20"></td>
-	      			<td class="small_td"><p><s:message code="customer.SrchTerm"/></p></td>
-	      			<td class="2coll_wide_td">
-	      				<input type="text" id="SEARCH_NM1" name="SEARCH_NM1" maxlength="20">
-	      				<input type="text" id="SEARCH_NM2" name="SEARCH_NM2" maxlength="20">
-	      			</td>
-	      		</tr>
-	      	</tbody>
-	      </table>
-	    </div>  
+					<td class="small_td"><p><s:message code="customer.Customer"/></p></td>
+					<td><input type="text" id="CUST_CD" name="CUST_CD"></td>
+					<td class="small_td"><p><s:message code="customer.Name"/></p></td>
+					<td><input type="text" id="CUST_NM" name="CUST_NM" maxlength="20"></td>
+					<td class="small_td"><p><s:message code="customer.SrchTerm"/></p></td>
+					<td class="2coll_wide_td">
+						<input type="text" id="SEARCH_NM1" name="SEARCH_NM1" maxlength="20">
+						<input type="text" id="SEARCH_NM2" name="SEARCH_NM2" maxlength="20">
+					</td>
+				</tr>
+			</tbody>
+		  </table>
+		</div>
 	</form>
 	<!-- 검색조건 영역 끝 -->
-		
+
 	<!-- 그리드 시작 -->
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
 		<div class="ct_grid_top_wrap">
 			<div class="ct_grid_top_left">
 				<h4><s:message code='customer.contactList'/></h4>
 			</div>
-		</div>		
+		</div>
 		<table id="grid1"></table>
-	    <div id="grid1_pager"></div>
+		<div id="grid1_pager"></div>
 	</div>
 	<!-- 그리드 끝 -->
 
@@ -65,29 +65,29 @@
 			</div>
 		</div>
 	</div>
-		<form id="frmPersonInfo" action="#">
+	<form id="frmPersonInfo" action="#">
 		<input type="hidden" name="ISNEW" id="ISNEW" value="1" />
 		<input type="hidden" name="CODE"  id="CODE" value="1" />
 		<input type="hidden" name="H_CUST_CD" id="H_CUST_CD" />
 		<input type="hidden" name="ACCOUNT_GR" id="ACCOUNT_GR" />
-		
+
 			<table class="table_line2" width="100%">
 					<tr>
-		      			<td class="small_td"><p><span>*</span>&nbsp;<s:message code="customer.lastName"/></td>
-		      			<td><input type="text" id="NAME_2ND" name="NAME_2ND" maxlength="35" ess="ess" class="cmc_txt disabled" disabled="" readonly="readonly" ></td>
-		      			<td class="small_td"><p><span>*</span>&nbsp;<s:message code="customer.firstName"/></td>
-		      			<td><input type="text" id="NAME_1ST" name="NAME_1ST" maxlength="35" ess="ess" class="cmc_txt disabled" disabled="" readonly="readonly" ></td>
-		      			<td class="small_td"><p><s:message code="customer.fullName"/></p></td>
-		      			<td><input type="text" id="FULL_NM" name="FULL_NM" maxlength="35" disabled="" readonly="readonly"></td>
-	      			</tr>
-	      			<tr>
-	      				<td class="small_td"><p><s:message code="customer.SrchTermOne"/></p></td>
-	      				<td><input type="text" id="C_SEARCH_NM1" name="C_SEARCH_NM1" maxlength="10" disabled="" readonly="readonly">
+						<td class="small_td"><p><span>*</span>&nbsp;<s:message code="customer.lastName"/></td>
+						<td><input type="text" id="NAME_2ND" name="NAME_2ND" maxlength="35" ess="ess" class="cmc_txt disabled" disabled="" readonly="readonly" ></td>
+						<td class="small_td"><p><span>*</span>&nbsp;<s:message code="customer.firstName"/></td>
+						<td><input type="text" id="NAME_1ST" name="NAME_1ST" maxlength="35" ess="ess" class="cmc_txt disabled" disabled="" readonly="readonly" ></td>
+						<td class="small_td"><p><s:message code="customer.fullName"/></p></td>
+						<td><input type="text" id="FULL_NM" name="FULL_NM" maxlength="35" disabled="" readonly="readonly"></td>
+					</tr>
+					<tr>
+						<td class="small_td"><p><s:message code="customer.SrchTermOne"/></p></td>
+						<td><input type="text" id="C_SEARCH_NM1" name="C_SEARCH_NM1" maxlength="10" disabled="" readonly="readonly">
 						<input type="text" id="C_SEARCH_NM2" name="C_SEARCH_NM2" maxlength="10" disabled="" readonly="readonly"></td>
 						<td class="small_td"><p><s:message code="customer.grd.Department"/></p></td>
 						<td>
 							<select id="DEPT_CD" name="DEPT_CD" disabled="" readonly="readonly"></select>
-		        		</td>
+						</td>
 						<td class="small_td"><p>Archive</p></td>
 						<td><input style="margin-left:-0.5px;" type="checkbox" name="DEL_YN" id="DEL_YN" disabled="" readonly="readonly"></td>
 					</tr>
@@ -100,9 +100,9 @@
 						<td class="small_td"><p><s:message code="customer.grd.Function"/></p></td>
 						<td>
 							<select id="FUNC_CD" name="FUNC_CD" disabled="" readonly="readonly"></select>
-		        		</td>
-		        		<td></td>
-		        		<td></td>
+						</td>
+						<td></td>
+						<td></td>
 					</tr>
 					<tr>
 						<td class="small_td"><p><s:message code="customer.PostalCodeCity"/></p></td>
@@ -117,13 +117,13 @@
 						<td class="small_td"><p><s:message code="customer.Country"/></p></td>
 						<td colspan="2">
 							<select id="COUNTRY_CD" name="COUNTRY_CD" disabled="" readonly="readonly" ></select>
-		        		</td>
+						</td>
 						<td>&nbsp;</td>
 						<td>&nbsp;</td>
 						<td>&nbsp;</td>
-		        	</tr>
+					</tr>
 
-	       	 		<tr>
+					<tr>
 						<td class="small_td"><p><s:message code="customer.Telephone"/></p></td>
 						<td><input type="text" id="TEL_NO" name="TEL_NO" maxlength="16" disabled="" readonly="readonly"></td>
 						<td class="small_td"><p><s:message code="customer.Extension"/></p></td>
@@ -147,40 +147,40 @@
 						<td><p><s:message code="customer.updateid"/></p></td>
 						<td><input type="text" id="UPT_ID" name="UPT_ID" disabled="" readonly="readonly"></td>
 					</tr>
-				</table>
-				<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:2px;">
+			</table>
+	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:2px;">
 		<div class="ct_grid_top_wrap">
 			<div class="ct_grid_top_left">
 				<h4>QCells Attributes</h4>
 			</div>
 		</div>
 	</div>
-				<table class="table_line2" width="100%">
-					<tr>
-						<td>
-							<table width="60%">
-								<tr>
-									<td width="50px"><input type="checkbox" name="QT_YN" id="QT_YN" disabled="" readonly="readonly"></td>
-									<td class="small_td"><p style="margin-left:-2px">Send quotation via E-mail</p></td>
-									<td width="50px"><input type="checkbox" name="SO_YN" id="SO_YN" disabled="" readonly="readonly"></td>
-									<td class="small_td"><p style="margin-left:-2px">Send proforma/order confirmation via E-mail</p></td>
-								</tr>
-								<tr>
-									<td><input type="checkbox" name="DLV_YN" id="DLV_YN" disabled="" readonly="readonly"></td>
-									<td class="small_td"><p style="margin-left:-2px">Send delivery note via E-mail</p></td>
-									<td><input type="checkbox" name="INV_YN" id="INV_YN" disabled="" readonly="readonly"></td>
-									<td class="small_td"><p style="margin-left:-2px">Send invoice via E-mail</p></td>
-										
-								</tr>
-							</table>
-						</td>
-					</tr>
-				</table>	
-    </form>
+		<table class="table_line2" width="100%">
+			<tr>
+				<td>
+					<table width="60%">
+						<tr>
+							<td width="50px"><input type="checkbox" name="QT_YN" id="QT_YN" disabled="" readonly="readonly"></td>
+							<td class="small_td"><p style="margin-left:-2px">Send quotation via E-mail</p></td>
+							<td width="50px"><input type="checkbox" name="SO_YN" id="SO_YN" disabled="" readonly="readonly"></td>
+							<td class="small_td"><p style="margin-left:-2px">Send proforma/order confirmation via E-mail</p></td>
+						</tr>
+						<tr>
+							<td><input type="checkbox" name="DLV_YN" id="DLV_YN" disabled="" readonly="readonly"></td>
+							<td class="small_td"><p style="margin-left:-2px">Send delivery note via E-mail</p></td>
+							<td><input type="checkbox" name="INV_YN" id="INV_YN" disabled="" readonly="readonly"></td>
+							<td class="small_td"><p style="margin-left:-2px">Send invoice via E-mail</p></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</form>
 	</div>
 </div>
+
 <script type="text/javascript">
-<%-- 
+<%--
   * ========= 공통버튼 클릭함수 =========
   * 검색 : cSearch()
   * 추가 : cAdd()
@@ -197,12 +197,18 @@
   * 버튼 표시/숨김 : setCommBtn('ret', true) : Search,Add,Del,Save,Print,Upload,Excel,Pdf,Cancel,User1,2,3,4,5
   * ===============================
 --%>
-  var args;
-	//초기 로드
+	var args;
+
+	/********************************************
+	 * @Subject : 화면 OPEN 시 최초 실행 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$(function() {
-		setCommBtn('Search', true);				
-		setCommBtn('Add', false);				
-		setCommBtn('Save', false);				
+		setCommBtn('Search', true);
+		setCommBtn('Add', false);
+		setCommBtn('Save', false);
 
 		initLayout();
 		createGrid1();
@@ -211,14 +217,14 @@
 						   , 'FUNC_CD'
 						   , 'COUNTRY_CD'
 							];
-					
+
 		createCodeBoxByEdit(codeBoxArray, true);
-			
+
 		$('#CUST_CD').focus();
 		$('#grid1').bind('jqGridSelectRow', function(e, rowid, status) {
 				grid1_onCilckRow(e, rowid, status);
 			});
-	
+
 		$('#btnEdit').on('click', function (e) {
 			if(fn_empty($('#grid1').jqGrid('getGridParam', 'selrow'))){
 				args = '<s:message code='system.customer'/>';
@@ -249,7 +255,7 @@
 				$('#btnAdd').attr("disabled",false).attr("readonly",false);
 			}
 		});
-		
+
 		$('#btnAdd').on('click', function (e) {
 			$('#btnEdit').attr("disabled",true).attr("readonly",true);
 			$('#btnSave').attr("disabled",false).attr("readonly",false);
@@ -260,11 +266,11 @@
 		$('#btnSave').on('click', function (e) {
 			savePerson();
 		});
-		
+
 		$("#NAME_1ST").on('keyup', function (e) {
 			$("#FULL_NM").val($("#NAME_2ND").val() + ' ' + $("#NAME_1ST").val());
 		});
-		
+
 		$("#NAME_2ND").on('keyup', function (e) {
 			$("#FULL_NM").val($("#NAME_2ND").val() + ' ' + $("#NAME_1ST").val());
 		});
@@ -273,51 +279,61 @@
 			$("#btnAdd").hide();
 			$("#btnEdit").hide();
 		}
-		
+
 		if(auth.substring(3,4) =='N'){
 			$("#btnSave").hide();
 		}
-		
-		$('.tab_top_search input').on('keypress', function(e) { if(e.keyCode === 13) { cSearch() } }); 
+
+		$('.tab_top_search input').on('keypress', function(e) { if(e.keyCode === 13) { cSearch() } });
 	});
-	
+
+	/********************************************
+	 * @Subject : 그리드 설정 및 초기화
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function createGrid1(){
 		var colName = [
-			     	  '<s:message code="customer.partnerid"/>'
+					  '<s:message code="customer.partnerid"/>'
 					, '<s:message code="system.customer"/>'
-		     		, '<s:message code="customer.lastName"/>'
-		     		, '<s:message code="customer.firstName"/>'
-		     		, '<s:message code="customer.SrchTerm"/>'
-		     		];
-		     	var colModel = [
- 				 	  { name: 'CODE', width: 70, align: 'center' }
-					, { name: 'CUST_CD', width: 70, align: 'center', hidden :true }          
-		     		, { name: 'NAME_2ND', width: 70, align: 'left', }
-		     		, { name: 'NAME_1ST', width: 70, align: 'left'}
-		     		, { name: 'SEARCH_NM', width: 70, align: 'left'}
-		     		];
-		     	
+					, '<s:message code="customer.lastName"/>'
+					, '<s:message code="customer.firstName"/>'
+					, '<s:message code="customer.SrchTerm"/>'
+					];
+				var colModel = [
+					  { name: 'CODE',      width: 70, align: 'center' }
+					, { name: 'CUST_CD',   width: 70, align: 'center', hidden :true }
+					, { name: 'NAME_2ND',  width: 70, align: 'left'   }
+					, { name: 'NAME_1ST',  width: 70, align: 'left'   }
+					, { name: 'SEARCH_NM', width: 70, align: 'left'   }
+					];
+
 		var gSetting = {
 				pgflg:true,
-				exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
-				colsetting : true,  // 컬럼 설정 버튼 노출여부
-				searchInit : false,  // 데이터 검색 버튼 노출여부
+				exportflg : true,      //엑셀, pdf 출력 버튼 노출여부
+				colsetting : true,     // 컬럼 설정 버튼 노출여부
+				searchInit : false,    // 데이터 검색 버튼 노출여부
 				resizeing : true,
 				rownumbers:false,
 				shrinkToFit: true,
 				autowidth: true,
-				queryPagingGrid:true, // 쿼리 페이징 처리 여부
+				queryPagingGrid:true,  // 쿼리 페이징 처리 여부
 				height:260
 		};
-		
+
 		btGrid.createGrid('grid1', colName, colModel, gSetting);
 	}
-	
-	
+
+	/********************************************
+	 * @Subject : 그리드 클릭 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function grid1_onCilckRow(e, rowid, status){
-		
 		$('#btnEdit').attr("disabled",false).attr("readonly",false);
-		
+
 		$("#frmPersonInfo").trigger('reset');
 		$("#NAME_2ND").attr("disabled",true).attr("readonly",false); //입력가능
 		$('#NAME_1ST').attr("disabled",true).attr("readonly",false);
@@ -338,18 +354,18 @@
 		$('#INV_YN').attr("disabled",true).attr("readonly",false);
 		$('#DLV_YN').attr("disabled",true).attr("readonly",false);
 		$('#btnSave').attr("disabled",true).attr("readonly",false);
-		
+
 		if(fn_empty(rowid)){
 			rowid = $('#grid1').jqGrid('getGridParam', 'selrow');
 		}
-		var rowData = $("#grid1").getRowData(rowid);
 		
-		var url = '/customer/getContactInfo.do';
+		var rowData  = $("#grid1").getRowData(rowid);
+		var url      = '/customer/getContactInfo.do';
 		var formData = formIdAllToMap('frmSearch');
-		
+
 		formData["CUST_CD"] = rowData["CUST_CD"];
-		formData["CODE"] = rowData["CODE"];
-		
+		formData["CODE"]    = rowData["CODE"];
+
 		var param = {"param":formData};
 		fn_ajax(url, false, param, function(data, xhr){
 			if(!fn_empty(data)){
@@ -359,28 +375,33 @@
 			}
 		});
 	}
-	
-	function cSearch(currentPage){
 
-		var param = {"CUST_CD": $("#CUST_CD").val(),
-					 "NAME"   : $("#CUST_NM").val(),
+	/********************************************
+	 * @Subject : 조회 버튼 클릭
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
+	function cSearch(currentPage){
+		var param = {"CUST_CD"    : $("#CUST_CD").val(),
+					 "NAME"       : $("#CUST_NM").val(),
 					 "SEARCH_NM1" : $("SEARCH_NM1").val(),
 					 "SEARCH_NM2" : $("SEARCH_NM2").val()};
-						
+
 		fn_ajax('/customer/retrieveGeneral.do', true, param, function(data) {
 			if (!data.RESULT) {
 				return;
 			}
-			
+
 			if (data.RESULT.length > 1) {
-				var url = "/popup/ContactPersonSearchPopup.do";
-				var pid = "ContactPearsonSearchPopup";			
-				var param = {"CUST_CD" : $("#CUST_CD").val()
-							,"CUST_NM" : $("#CUST_NM").val()
+				var url   = "/popup/ContactPersonSearchPopup.do";
+				var pid   = "ContactPearsonSearchPopup";
+				var param = {"CUST_CD"    : $("#CUST_CD").val()
+							,"CUST_NM"    : $("#CUST_NM").val()
 							,"SEARCH_NM1" : $("#SEARCH_NM1").val()
 							,"SEARCH_NM2" : $("#SEARCH_NM2").val()};
 				param.window = window;
-				
+
 				popupOpen(url, pid, param, function(e, selecedData){
 					if(!fn_empty(selecedData)){
 						$.each(selecedData, function(k, v) {
@@ -409,9 +430,15 @@
 			}
 		});
 	}
-	
+
+	/********************************************
+	 * @Subject : 조회 함수
+	 * @Content : (연결된 controller가 없음)
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function searchPerson(){
-		var url = '/customer/getContactList.do';
+		var url      = '/customer/getContactList.do';
 		var sendData = {'CUST_CD': $('#CUST_CD').val()};
 		fn_ajax(url, false, sendData, function(data, xhr){
 			if(!fn_empty(data.result)){
@@ -421,7 +448,7 @@
 			}else{
 				//alert('<s:message code="validator.notfound"/>');
 				$("#frmPersonInfo").trigger('reset');
-				
+
 				$("#NAME_2ND").attr("disabled",true).attr("readonly",false); //입력가능
 				$('#NAME_1ST').attr("disabled",true).attr("readonly",false);
 				$('#C_SEARCH_NM1').attr("disabled",true).attr("readonly",false);
@@ -441,16 +468,23 @@
 				$('#INV_YN').attr("disabled",true).attr("readonly",false);
 				$('#DLV_YN').attr("disabled",true).attr("readonly",false);
 				$('#btnSave').attr("disabled",true).attr("readonly",false);
-				
+
 				$('#grid1').jqGrid('clearGridData');
 				$('#grid1').trigger('reloadGrid');
 			}
 		});
 	}
+
+	/********************************************
+	 * @Subject : 추가 버튼 클릭
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function addPerson(){
-		var url = '/customer/selectCustomerCnt.do';
+		var url      = '/customer/selectCustomerCnt.do';
 		var sendData = {'CUST_CD':$('#CUST_CD').val()};
-		
+
 		fn_ajax(url, false, sendData, function(data, xhr){
 			if(data.result > 0){
 				$("#frmPersonInfo").trigger('reset');
@@ -483,11 +517,17 @@
 			}
 		});
 	}
-	
+
+	/********************************************
+	 * @Subject : 주소 추가 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function addAddress(){
-		var url = '/customer/retrieveGeneral.do';
+		var url      = '/customer/retrieveGeneral.do';
 		var sendData = {'CUST_CD':$('#CUST_CD').val()};
-		
+
 		fn_ajax(url, false, sendData, function(data, xhr){
 			$('#STREET_NM').val(data.RESULT[0].STREET_NM);
 			$('#HAUS_NO').val(data.RESULT[0].HAUS_NO);
@@ -497,15 +537,21 @@
 			$("#COUNTRY_CD").val(data.RESULT[0].COUNTRY_CD).attr("selected", "selected");
 		});
 }
+
+	/********************************************
+	 * @Subject : 저장 버튼 클릭
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function savePerson(){
 		if (fn_inputCheck('frmPersonInfo') == false) return;
-		
+
 		if (confirm("<s:message code='confirm.save'/>")) {
 			var formdata = formIdAllToMap('frmPersonInfo');
-			
 			var url = '/customer/saveContactPerson.do';
-			var param = {'paramData':formdata
-						,'CUST_CD' : $("#CUST_CD").val()};
+			var param = {'paramData': formdata
+						,'CUST_CD'  : $("#CUST_CD").val()};
 			fn_ajax(url, false, param, function(data, xhr){
 				alert("<s:message code='info.save'/>");
 				searchPerson();

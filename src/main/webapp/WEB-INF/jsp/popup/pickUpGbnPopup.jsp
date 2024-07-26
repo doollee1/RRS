@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
 <%
@@ -20,16 +20,16 @@
 			<table class="pop_tblForm pickUpTable">
 				<colgroup>
 					<col width="20%" />
-			        <col width="30%" />
-			        <col width="20%" />
-			        <col width="30%" />
-			    </colgroup>
-		   		
-		   		<tr>
-		   	     	<th class="text-center" style="font-weight:bold; background: #cfeff8; border: solid 2px #59a5cd;"><s:message code='meetSanding.meet'/></th>
+					<col width="30%" />
+					<col width="20%" />
+					<col width="30%" />
+				</colgroup>
+
+				<tr>
+					<th class="text-center" style="font-weight:bold; background: #cfeff8; border: solid 2px #59a5cd;"><s:message code='meetSanding.meet'/></th>
 					<td>
 						<select id="PICK_GBN_1" name="PICK_GBN_1" class="cmc_combo" style="width:62%; margin: 5px;">
-						    <c:forEach var="i" items="${region}">
+							<c:forEach var="i" items="${region}">
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
@@ -38,32 +38,32 @@
 						<input type="hidden" id="HD_PROD_SEQ3" name="HD_PROD_SEQ3">
 						<input type="hidden" id="HD_PROD_SEQ4" name="HD_PROD_SEQ4">
 					</td>
-				
+
 					<th class="text-center" style="font-weight:bold; background: #cfeff8; border: solid 2px #59a5cd;"><s:message code='meetSanding.prdCnt'/></th>
 					<td>
-					    <select id="PRD_CNT" name="PRD_CNT" class="cmc_combo" style="width:62%; margin: 5px;">
-						    <option value="">--<s:message code='system.select'/>--</option>
-						    <option value="1">1</option>
-						    <option value="2">2</option>
-						    <option value="3">3</option>
-						    <option value="4">4</option>
+						<select id="PRD_CNT" name="PRD_CNT" class="cmc_combo" style="width:62%; margin: 5px;">
+							<option value="">--<s:message code='system.select'/>--</option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
 						</select>
 					</td>
 				</tr>
-				
+
 				<tr>
 					<td style="padding: 4px 0;"></td>
 				</tr>
-				
+
 				<tr>
-				    <th><s:message code='meetSanding.prdGbn'/></th>
+					<th><s:message code='meetSanding.prdGbn'/></th>
 					<td>
 						<select id="PROD_SEQ1" name="PROD_SEQ1" class="cmc_combo" style="width:100%;">
 						</select>
 					</td>
 				</tr>
 				<tr>
-				    <th><s:message code='meetSanding.personCnt'/></th>
+					<th><s:message code='meetSanding.personCnt'/></th>
 					<td>
 						<input type="text" class="cmc_txt" id="PER_NUM1" value="0" style="width:51.5%;" name="PER_NUM1" maxlength="3"/>명
 					</td>
@@ -73,24 +73,24 @@
 					</td>
 				</tr>
 				<tr>
-				    <th><s:message code='meetSanding.fee'/></th>
+					<th><s:message code='meetSanding.fee'/></th>
 					<td>
 						<input type="text" class="cmc_txt fee" id="USE_AMT1" value="0" name="USE_AMT1" style="width:51.5%;" readonly/>원
-					</td>	
+					</td>
 					<th><s:message code='meetSanding.addFee'/></th>
 					<td>
-						<input type="text" class="cmc_txt fee withComma" id="ADD_AMT1" value="0" name="ADD_AMT1" style="width:51.5%;"	maxlength="9"/>원
+						<input type="text" class="cmc_txt fee withComma" id="ADD_AMT1" value="0" name="ADD_AMT1" style="width:51.5%;"   maxlength="9"/>원
 					</td>
 				</tr>
 				<tr class="doubleCnt">
-				    <th><s:message code='meetSanding.prdGbn'/></th>
+					<th><s:message code='meetSanding.prdGbn'/></th>
 					<td>
-					    <select id="PROD_SEQ2" name="PROD_SEQ2" class="cmc_combo" style="width:100%;">
+						<select id="PROD_SEQ2" name="PROD_SEQ2" class="cmc_combo" style="width:100%;">
 						</select>
 					</td>
 				</tr>
 				<tr class="doubleCnt">
-				    <th><s:message code='meetSanding.personCnt'/></th>
+					<th><s:message code='meetSanding.personCnt'/></th>
 					<td>
 						<input type="text" class="cmc_txt" id="PER_NUM2" value="0" style="width:51.5%;" name="PER_NUM2" maxlength="3"/>명
 					</td>
@@ -100,26 +100,25 @@
 					</td>
 				</tr>
 				<tr class="doubleCnt">
-				    <th><s:message code='meetSanding.fee'/></th>
+					<th><s:message code='meetSanding.fee'/></th>
 					<td>
 						<input type="text" class="cmc_txt fee" id="USE_AMT2" value="0" name="USE_AMT2" style="width:51.5%;" readonly/>원
-					</td>	
+					</td>
 					<th><s:message code='meetSanding.addFee'/></th>
 					<td>
 						<input type="text" class="cmc_txt fee withComma" id="ADD_AMT2" value="0" name="ADD_AMT2" style="width:51.5%;" maxlength="9"/>원
 					</td>
 				</tr>
-				
-				
+
 				<tr class="doubleCnt3">
-				    <th><s:message code='meetSanding.prdGbn'/></th>
+					<th><s:message code='meetSanding.prdGbn'/></th>
 					<td>
-					    <select id="PROD_SEQ3" name="PROD_SEQ3" class="cmc_combo" style="width:100%;">
+						<select id="PROD_SEQ3" name="PROD_SEQ3" class="cmc_combo" style="width:100%;">
 						</select>
 					</td>
 				</tr>
 				<tr class="doubleCnt3">
-				    <th><s:message code='meetSanding.personCnt'/></th>
+					<th><s:message code='meetSanding.personCnt'/></th>
 					<td>
 						<input type="text" class="cmc_txt" id="PER_NUM3" value="0" style="width:51.5%;" name="PER_NUM3" maxlength="3"/>명
 					</td>
@@ -129,26 +128,25 @@
 					</td>
 				</tr>
 				<tr class="doubleCnt3">
-				    <th><s:message code='meetSanding.fee'/></th>
+					<th><s:message code='meetSanding.fee'/></th>
 					<td>
 						<input type="text" class="cmc_txt fee" id="USE_AMT3" value="0" name="USE_AMT3" style="width:51.5%;" readonly/>원
-					</td>	
+					</td>
 					<th><s:message code='meetSanding.addFee'/></th>
 					<td>
 						<input type="text" class="cmc_txt fee withComma" id="ADD_AMT3" value="0" name="ADD_AMT3" style="width:51.5%;" maxlength="9"/>원
 					</td>
 				</tr>
-				
-				
+
 				<tr class="doubleCnt4">
-				    <th><s:message code='meetSanding.prdGbn'/></th>
+					<th><s:message code='meetSanding.prdGbn'/></th>
 					<td>
-					    <select id="PROD_SEQ4" name="PROD_SEQ4" class="cmc_combo" style="width:100%;">
+						<select id="PROD_SEQ4" name="PROD_SEQ4" class="cmc_combo" style="width:100%;">
 						</select>
 					</td>
 				</tr>
 				<tr class="doubleCnt4">
-				    <th><s:message code='meetSanding.personCnt'/></th>
+					<th><s:message code='meetSanding.personCnt'/></th>
 					<td>
 						<input type="text" class="cmc_txt" id="PER_NUM4" value="0" style="width:51.5%;" name="PER_NUM4" maxlength="3"/>명
 					</td>
@@ -158,10 +156,10 @@
 					</td>
 				</tr>
 				<tr class="doubleCnt4">
-				    <th><s:message code='meetSanding.fee'/></th>
+					<th><s:message code='meetSanding.fee'/></th>
 					<td>
 						<input type="text" class="cmc_txt fee" id="USE_AMT4" value="0" name="USE_AMT4" style="width:51.5%;" readonly/>원
-					</td>	
+					</td>
 					<th><s:message code='meetSanding.addFee'/></th>
 					<td>
 						<input type="text" class="cmc_txt fee withComma" id="ADD_AMT4" value="0" name="ADD_AMT4" style="width:51.5%;" maxlength="9"/>원
@@ -169,20 +167,26 @@
 				</tr>
 			</table>
 		</div>
-	</form>	
+	</form>
 </div>
 
 <script type="text/javascript">
+	/********************************************
+	 * @Subject : 화면 OPEN 시 최초 실행 함수
+	 * @Content : 팝업창 설정
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 $(function() {
 	var gv_req_dt;
 	var gv_seq;
 	var gv_tot_person;
 	$('#p_pickUpGbnPopup').dialog({
-		title :'<s:message code='meetSanding.Regi'/>',
+		title    :'<s:message code='meetSanding.Regi'/>',
 		autoOpen : false,
-		//height: 400,
-		width: 940,
-		modal : true,
+		//height   : 400,
+		width    : 940,
+		modal    : true,
 		buttons : {
 			'<s:message code='system.save'/>' : {
 				text: '<s:message code='system.save'/>',
@@ -197,7 +201,6 @@ $(function() {
 					$(this).dialog("close");
 				}
 			},
-
 		},
 		close : function() {
 			p_rtnData = [];
@@ -208,7 +211,7 @@ $(function() {
 			fn_init($(this).data());
 		}
 	});
-	
+
 	$("#PRD_CNT").change(function(){
 		if($(this).val() == '2'){
 			$(".doubleCnt").show();
@@ -228,10 +231,10 @@ $(function() {
 			$(".doubleCnt4").hide();
 		}
 	});
-	
+
 	$("#PICK_GBN_1").change(function(){
-	    var thisVal  = $(this).val();
-	    selec_init(thisVal);
+		var thisVal  = $(this).val();
+		selec_init(thisVal);
 		if(thisVal == "01"){ // 미신청
 			fn_readonly(true);
 			$(".doubleCnt").hide();
@@ -248,11 +251,11 @@ $(function() {
 			$(".doubleCnt4").hide();
 			$("#PER_NUM1").val(gv_tot_person);
 		}
-		
+
 		$('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').prop("selected" , true);
 		$('#PROD_SEQ1 option[data='+thisVal+']').show();
 		$('#PROD_SEQ1 option').not('[data='+thisVal+']').hide();
-		
+
 		$('#PROD_SEQ2 option[data='+thisVal+']:eq(0)').prop("selected" , true);
 		$('#PROD_SEQ2 option[data='+thisVal+']').show();
 		$('#PROD_SEQ2 option').not('[data='+thisVal+']').hide();
@@ -264,18 +267,18 @@ $(function() {
 		$('#PROD_SEQ4 option[data='+thisVal+']:eq(0)').prop("selected" , true);
 		$('#PROD_SEQ4 option[data='+thisVal+']').show();
 		$('#PROD_SEQ4 option').not('[data='+thisVal+']').hide();
-		
+
 		$("#USE_AMT1").val(fn_comma($('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').attr("com_amt")));
 		$("#USE_AMT2").val(fn_comma($('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').attr("com_amt")));
 		$("#USE_AMT3").val(fn_comma($('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').attr("com_amt")));
 		$("#USE_AMT4").val(fn_comma($('#PROD_SEQ1 option[data='+thisVal+']:eq(0)').attr("com_amt")));
 	});
-	
+
 	$("#PROD_SEQ1").on("change" , function(){
 		var prd_val = $(this).val();
 		var vfee;
 		var v_com_amt1 = parseInt($("#PROD_SEQ1 option:selected").attr("com_amt"));
-		
+
 		if(!fn_empty(prd_val)){
 			vfee =  v_com_amt1;
 		}else{
@@ -283,7 +286,7 @@ $(function() {
 		}
 		$("#USE_AMT1").val(vfee);
 	});
-	
+
 	$("#PROD_SEQ2").on("change" , function(){
 		var prd_val = $(this).val();
 		var vfee2;
@@ -319,27 +322,38 @@ $(function() {
 		}
 		$("#USE_AMT4").val(vfee4);
 	});
-	
+
 	$(".withComma").on("keyup" , function(){
 		var tmpValue = $(this).val().replace(/[^0-9,]/g,'');
 		tmpValue = tmpValue.replace(/[,]/g,'');
 		// 천단위 콤마 처리 후 값 강제변경
-	    $(this).val(numberWithCommas(tmpValue));
+		$(this).val(numberWithCommas(tmpValue));
 	});
-	
-	// 천단위 콤마 (소수점포함)
+
+	/********************************************
+	 * @Subject : 천단위 콤마 (소수점포함)
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function numberWithCommas(num) {
-	    var parts = num.toString().split(".");	
-	    return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? "." + parts[1] : "");
+		var parts = num.toString().split(".");
+		return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? "." + parts[1] : "");
 	}
-	
+
+	/********************************************
+	 * @Subject : 읽기전용(readonly) 속성으로 변경하는 함수
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function fn_readonly (temp){
 		$("#PRD_CNT"  ).attr("disabled" , temp);
 		$("#PROD_SEQ1").attr("disabled" , temp);
 		$("#PROD_SEQ2").attr("disabled" , temp);
 		$("#PROD_SEQ3").attr("disabled" , temp);
 		$("#PROD_SEQ4").attr("disabled" , temp);
-		
+
 		$("#PER_NUM1" ).attr("readonly" , temp);
 		$("#CAR_NUM1" ).attr("readonly" , temp);
 		$("#PER_NUM2" ).attr("readonly" , temp);
@@ -348,19 +362,25 @@ $(function() {
 		$("#CAR_NUM3" ).attr("readonly" , temp);
 		$("#PER_NUM4" ).attr("readonly" , temp);
 		$("#CAR_NUM4" ).attr("readonly" , temp);
-		
+
 		$("#ADD_AMT1" ).attr("readonly" , temp);
 		$("#ADD_AMT2" ).attr("readonly" , temp);
 		$("#ADD_AMT3" ).attr("readonly" , temp);
 		$("#ADD_AMT4" ).attr("readonly" , temp);
 	}
-	
+
+	/********************************************
+	 * @Subject : 상세 조회 함수
+	 * @Content : 예약상세 팝업창에서 가져온 값으로 조회
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function mkSelect(recevicedData){
 		var url = "/reserve/selectPrdInfo.do";
-		var param = {"CHK_IN_DT"     : recevicedData.CHK_IN_DT // 연도
-					, "CHK_OUT_DT"     : recevicedData.CHK_OUT_DT 
-					, "PICK_GBN"     : recevicedData.PICK_GBN 
-		            };
+		var param = { "CHK_IN_DT"   : recevicedData.CHK_IN_DT
+					, "CHK_OUT_DT"  : recevicedData.CHK_OUT_DT
+					, "PICK_GBN"    : recevicedData.PICK_GBN
+					};
 		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
 				alert("상세 조회 오류입니다. 시스템 관리자에게 문의해 주세요.");
@@ -381,27 +401,33 @@ $(function() {
 			}
 		});
 	}
-	
+
+	/********************************************
+	 * @Subject : 기본값 설정
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function fn_init(recevicedData) {
 		gv_req_dt     = recevicedData.REQ_DT;
 		gv_seq        = recevicedData.SEQ;
 		gv_tot_person = recevicedData.PICK_PERSON;
 		gv_pick_gbn = recevicedData.PICK_GBN;
-		
+
 		selec_init("01");
-		
+
 		if(!fn_empty(recevicedData.PRC_STS)){
 			if(recevicedData.PRC_STS == "08" || recevicedData.PRC_STS == "09" ||recevicedData.PRC_STS == "10"){
 				$(".ui-dialog-buttonset > button#save").attr("disabled", true);
-			}	
+			}
 		}
-		
+
 		var url = "/reserve/selectPickupList.do";
-     	var param = {"REQ_DT"     : gv_req_dt 
-	               , "REQ_SEQ"    : parseInt(gv_seq)
-	               , "REQ_SEQ"    : parseInt(gv_seq)
-	                };
-     	fn_ajax(url, true, param, function(data, xhr){
+		var param = {"REQ_DT"     : gv_req_dt
+				   , "REQ_SEQ"    : parseInt(gv_seq)
+				   , "REQ_SEQ"    : parseInt(gv_seq)
+					};
+		fn_ajax(url, true, param, function(data, xhr){
 			if(data.MESSAGE != "OK"){
 				alert("상세 조회 오류입니다. 시스템 관리자에게 문의해 주세요.");
 			}else{
@@ -433,12 +459,12 @@ $(function() {
 								}
 							}else if(k == "PROD_SEQ"){
 								$("#PROD_SEQ" + parseInt(i+1) + ' option[prod_seq='+v+']').prop("selected", true);
-								$("#HD_"+k+parseInt(i+1)).val(v); 
+								$("#HD_"+k+parseInt(i+1)).val(v);
 							}else if(k == "USE_AMT" || k == "ADD_AMT"){
 								$("#"+k+parseInt(i+1)).val(fn_comma(v));
 							}else{
 								$("#"+k+parseInt(i+1)).val(v);
-							}	
+							}
 						});
 					}
 					$(".ui-dialog-buttonset > button#save").text("수정");
@@ -449,15 +475,21 @@ $(function() {
 			}
 		});
 	}
-	
-	function selec_init(data){ // 초기화
+
+	/********************************************
+	 * @Subject : 데이터 초기화 함수
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
+	function selec_init(data){
 		$('#PROD_SEQ1 option[value='+ data +']:eq(0)').prop("checked", true);
-	
+
 		$("#PER_NUM1" ).val("0");
 		$("#CAR_NUM1" ).val("0");
 		$("#ADD_AMT1" ).val("0");
 		$("#USE_AMT1" ).val("0");
-		
+
 		$("#PER_NUM2" ).val("0");
 		$("#CAR_NUM2" ).val("0");
 		$("#ADD_AMT2" ).val("0");
@@ -472,17 +504,23 @@ $(function() {
 		$("#CAR_NUM4" ).val("0");
 		$("#ADD_AMT4" ).val("0");
 		$("#USE_AMT4" ).val("0");
-		
+
 		$(".doubleCnt").hide();
 		if(data != "01") $("#PRD_CNT").val("1");
 		else             $("#PRD_CNT").val("");
 	}
-	
+
+	/********************************************
+	 * @Subject : 저장 버튼 클릭
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function savePickInfo(){
 		var formData = formIdAllToMap('frmPickupFrm');
 		var array = new Array();
-		
-		for (var i = 1; i < parseInt(formData.PRD_CNT) + 1	; i++) {
+
+		for (var i = 1; i < parseInt(formData.PRD_CNT) + 1  ; i++) {
 			var obj = new Object();
 			obj.ADD_AMT     = parseInt($("#ADD_AMT"+i).val().replaceAll(",", ""));
 			obj.CAR_NUM     = parseInt($("#CAR_NUM"+i).val());
@@ -493,91 +531,95 @@ $(function() {
 			obj.HD_PROD_SEQ = parseInt($('#HD_PROD_SEQ'+i).val());
 			array.push(obj);
 		}
-		
+
 		if(!validation(array)) return;
-		
+
 		var param = {"detail"   : array
 				   , "REQ_SEQ"  : parseInt(gv_seq)
 				   , "REQ_DT"   : gv_req_dt
 				   , "PICK_GBN" : $("#PICK_GBN_1").val()
-				   , "PER_NUM"  : gv_tot_person 
+				   , "PER_NUM"  : gv_tot_person
 				   };
 		if(confirm("<s:message code='confirm.save'/>")){
 			var url = '/reserve/pickupManager.do';
 			fn_ajax(url, false, param, function(data, xhr){
 				if(data.dup == 'Y'){
-					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>"); 
+					alert("<s:message code='errors.failErpValid' javaScriptEscape='false'/>");
 				}else{
 					alert("<s:message code='info.save'/>");
 					p_rtnData = {"PER_NUM"  : gv_tot_person
 							   , "PICK_GBN" : param.PICK_GBN};
-					
 					popupClose($('#p_pickUpGbnPopup').data('pid'));
 				}
 			});
 		}
 	}
-	
+
+	/********************************************
+	 * @Subject : 저장 전 값이 올바른지 확인
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function validation(data){
 		var prd_cnt = $("#PRD_CNT").val();
 		if(!fn_empty(prd_cnt)){
 			for (var i = 1; i < parseInt(prd_cnt) + 1 ; i++) {
 				if($("#PER_NUM"+i).val() == "0" || fn_empty($("#PER_NUM"+i).val())){
 					alert("인원수를 입력해 주세요.");
-			        return false;
-			    }
-			    
-		    	if(prd_cnt == 1){
-		    		if(parseInt($("#PER_NUM1").val()) > parseInt(gv_tot_person)){
-				    	alert("입력하신 인원수가 총인원보다 많습니다.");
-				    	return false;
-				    }
-		    	}else if(prd_cnt == 2){
-		    		if(parseInt($("#PER_NUM2").val()) > parseInt(gv_tot_person)){
-				    	alert("입력하신 인원수가 총인원보다 많습니다.");
-				    	return false;
-				    }
-		    	}else if(prd_cnt == 3){
-		    		if(parseInt($("#PER_NUM3").val()) > parseInt(gv_tot_person)){
-				    	alert("입력하신 인원수가 총인원보다 많습니다.");
-				    	return false;
-				    }
-		    	}else if(prd_cnt == 4){
-		    		if(parseInt($("#PER_NUM4").val()) > parseInt(gv_tot_person)){
-				    	alert("입력하신 인원수가 총인원보다 많습니다.");
-				    	return false;
-				    }
-		    	}
-		    	
-		    	if($("#CAR_NUM"+i).val() == "0" || fn_empty($("#CAR_NUM"+i).val())){
-		    		alert("이용횟수를 입력해주세요.");
-			        return false;
-			    }
-		    	
-		    	if(prd_cnt == 2){
-	 		    	if(data[0].PROD_SEQ == data[1].PROD_SEQ){
-						alert("같은 상품은 선택할 수 없습니다.");
+					return false;
+				}
+
+				if(prd_cnt == 1){
+					if(parseInt($("#PER_NUM1").val()) > parseInt(gv_tot_person)){
+						alert("입력하신 인원수가 총인원보다 많습니다.");
 						return false;
-	 		    	}
+					}
+				}else if(prd_cnt == 2){
+					if(parseInt($("#PER_NUM2").val()) > parseInt(gv_tot_person)){
+						alert("입력하신 인원수가 총인원보다 많습니다.");
+						return false;
+					}
 				}else if(prd_cnt == 3){
-	 		    	if(data[0].PROD_SEQ == data[1].PROD_SEQ || data[0].PROD_SEQ == data[2].PROD_SEQ || data[1].PROD_SEQ == data[2].PROD_SEQ){
+					if(parseInt($("#PER_NUM3").val()) > parseInt(gv_tot_person)){
+						alert("입력하신 인원수가 총인원보다 많습니다.");
+						return false;
+					}
+				}else if(prd_cnt == 4){
+					if(parseInt($("#PER_NUM4").val()) > parseInt(gv_tot_person)){
+						alert("입력하신 인원수가 총인원보다 많습니다.");
+						return false;
+					}
+				}
+
+				if($("#CAR_NUM"+i).val() == "0" || fn_empty($("#CAR_NUM"+i).val())){
+					alert("이용횟수를 입력해주세요.");
+					return false;
+				}
+
+				if(prd_cnt == 2){
+					if(data[0].PROD_SEQ == data[1].PROD_SEQ){
 						alert("같은 상품은 선택할 수 없습니다.");
 						return false;
-	 		    	}
-		    	}else if(prd_cnt == 4){
-		    		if(data[0].PROD_SEQ == data[1].PROD_SEQ || data[0].PROD_SEQ == data[2].PROD_SEQ || data[0].PROD_SEQ == data[3].PROD_SEQ){
+					}
+				}else if(prd_cnt == 3){
+					if(data[0].PROD_SEQ == data[1].PROD_SEQ || data[0].PROD_SEQ == data[2].PROD_SEQ || data[1].PROD_SEQ == data[2].PROD_SEQ){
 						alert("같은 상품은 선택할 수 없습니다.");
 						return false;
-	 		    	}else if(data[1].PROD_SEQ == data[2].PROD_SEQ || data[1].PROD_SEQ == data[3].PROD_SEQ || data[2].PROD_SEQ == data[3].PROD_SEQ){
+					}
+				}else if(prd_cnt == 4){
+					if(data[0].PROD_SEQ == data[1].PROD_SEQ || data[0].PROD_SEQ == data[2].PROD_SEQ || data[0].PROD_SEQ == data[3].PROD_SEQ){
 						alert("같은 상품은 선택할 수 없습니다.");
 						return false;
-	 		    	}
-		    	}
-				
+					}else if(data[1].PROD_SEQ == data[2].PROD_SEQ || data[1].PROD_SEQ == data[3].PROD_SEQ || data[2].PROD_SEQ == data[3].PROD_SEQ){
+						alert("같은 상품은 선택할 수 없습니다.");
+						return false;
+					}
+				}
 			}
 		}
 		return true;
-	}		    
+	}
 });
 
 </script>

@@ -4,7 +4,7 @@
 <%
 	/**
 	 * @Name : SystemManager
-	 * @Description : 시스템(메뉴) 관리 화면
+	 * @Description : 메뉴 관리 화면
 	 */
 %>
 <c:import url="../import/frameTop.jsp">
@@ -12,9 +12,7 @@
 </c:import>
 
 <!-- 검색조건 영역 시작 -->
-<div id="ctu_no_resize">
-
-</div>
+<div id="ctu_no_resize"></div>
 <!-- 검색조건 영역 끝 -->
 
 <!-- dummy -->
@@ -29,30 +27,30 @@
 				<tbody>
 					<tr>
 						<td class="small_td"><s:message code='system.usedornot'/></td>
-						<td><select id="USED_OR_NOT" name="USED_OR_NOT" class="">
-							</select>
+						<td>
+							<select id="USED_OR_NOT" name="USED_OR_NOT" class=""></select>
 						</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
 	</form>
-	
+
 	<!-- 그리드 시작 -->
 	<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
 		<div class="ct_grid_top_wrap">
 			<div class="ct_grid_top_left">
 				<h4><s:message code='title.mainmenulist'/></h4>
-			</div>	
+			</div>
 			<div class="ct_grid_top_right">
 				<button type='button' class='btn btn-default' id='btnAdd_h'><i class='fa fa-plus-square-o'></i><s:message code='button.add'/></button>
 				<button type='button' class='btn btn-default' id='btnSave_h'><i class='fa fa-save'></i><s:message code='button.save'/></button>
 				<input type="hidden" name="CURRENT_PAGE"  id="CURRENT_PAGE" />
 				<input type="hidden" name="ROWS_PER_PAGE"  id="ROWS_PER_PAGE" />
-			</div>	
+			</div>
 		</div>
 		<table id="grid1"></table>
-	    <div id="grid1_pager"></div>
+		<div id="grid1_pager"></div>
 	</div>
 	<!-- 그리드 끝 -->
 
@@ -61,23 +59,22 @@
 		<div class="ct_grid_top_wrap">
 			<div class="ct_grid_top_left">
 				<h4><s:message code='title.submenulist'/></h4>
-			</div>	
+			</div>
 			<div class="ct_grid_top_right">
 				<button type='button' class='btn btn-default' id='btnAdd_d'><i class='fa fa-plus-square-o'></i><s:message code='button.add'/></button>
 				<button type='button' class='btn btn-default' id='btnSave_d'><i class='fa fa-save'></i><s:message code='button.save'/></button>
 				<input type="hidden" name="CURRENT_PAGE2"  id="CURRENT_PAGE2" />
 				<input type="hidden" name="ROWS_PER_PAGE2"  id="ROWS_PER_PAGE2" />
-			</div>	
+			</div>
 		</div>
 		<table id="grid2"></table>
-	    <div id="grid2_pager"></div>
+		<div id="grid2_pager"></div>
 	</div>
 	<!-- 그리드 끝 -->
-	
 </div>
 
 <script type="text/javascript">
-<%-- 
+<%--
   * ========= 공통버튼 클릭함수 =========
   * 검색 : cSearch()
   * 추가 : cAdd()
@@ -94,69 +91,74 @@
   * 버튼 표시/숨김 : setCommBtn('ret', true) : Search,Add,Del,Save,Print,Upload,Excel,Pdf,Cancel,User1,2,3,4,5
   * ===============================
 --%>
-    var args ;
-	
+	var args ;
+
+	/********************************************
+	 * @Subject : 화면 OPEN 시 최초 실행 함수
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	$(function() {
 		initLayout();
 		createGrid1();
 		createGrid2();
+		
 		setCommBtn('Add', false);
 		setCommBtn('Save', false);
-		
 		createCodeBox('USED_OR_NOT',true);
+
+		/* 대메뉴 목록 그리드 행 클릭시*/
 		$('#grid1').bind('jqGridSelectRow', function(e, rowid, status) {
 			grid1_onCilckRow(e, rowid, status);
 		});
 
+		/* 대메뉴 그리드 추가 버튼*/
 		$("#btnAdd_h").click(function(e){
 			var data = {"ROW_STATUS" : "I"};
 			btGrid.gridAddRow("grid1", "last", data);
-
 			clearGrid("grid2");
 		});
-		
+
+		/* 대메뉴 그리드 저장 버튼 */
 		$("#btnSave_h").click(function(e){
 			cSave();
 		});
-		
+
+		/* 중메뉴 그리드 추가 버튼 */
 		$("#btnAdd_d").click(function(e){
 			addMenuGroup();
 		});
-		
+
+		/* 중메뉴 그리드 저장 버튼 */
 		$("#btnSave_d").click(function(e){
 			saveMenuGroup();
 		});
-		
+
+		/* 대메뉴 그리드 값 변경 이벤트 */
 		$("#grid1").bind("change", function() {
-			
 			var changeRowId = $('#grid1').jqGrid('getGridParam', 'selrow');
-			
 			$('#grid1_' + changeRowId + '_CHK').prop('checked', true);
-			
 			if($('#grid1').jqGrid('getRowData', changeRowId).ROW_STATUS != "I"){
 				$("#grid1").jqGrid('setCell', $("#grid1").getGridParam('selrow'), 'ROW_STATUS', 'U');
 			}
 		});
-		
-		$("#grid2").bind("change", function() {
 
+		/* 중메뉴 그리드 값 변경 이벤트*/
+		$("#grid2").bind("change", function() {
 			var changeRowId = $('#grid2').jqGrid('getGridParam', 'selrow');
-			
 			$('#grid2_' + changeRowId + '_CHK').prop('checked', true);
-			
 			if($('#grid2').jqGrid('getRowData', changeRowId).ROW_STATUS != "I"){
 				$("#grid2").jqGrid('setCell', $("#grid2").getGridParam('selrow'), 'ROW_STATUS', 'U');
-			}	
-
+			}
 		});
-		
-		
+
 		$('#grid2').jqGrid('setGridParam', {
 			onCellSelect: function (rowid, index, content, event) {
 				keyValue = $(this).jqGrid('getCell', rowid, 'PROG_CD');
 			}
 		});
-		
+
 		$('#grid2').on('keypress', function (e) {
 			var changeRowId = $('#grid2').jqGrid('getGridParam', 'selrow');
 			if((keyValue != $('#grid2').jqGrid('getRowData', changeRowId).PROG_CD)){
@@ -165,12 +167,12 @@
 				}
 			}
 		});
-		
+
 		if(auth.substring(1,2) =='N'){
 			$("#btnAdd_h").hide();
 			$("#btnAdd_d").hide();
 		}
-		
+
 		if(auth.substring(3,4) =='N'){
 			$("#btnSave_h").hide();
 			$("#btnSave_d").hide();
@@ -178,10 +180,16 @@
 		cSearch();
 		//menuSearch();
 	});
-	
+
+	/********************************************
+	 * @Subject : 대메뉴 그리드 설정 및 초기화
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function createGrid1(){
 		var colName = ['<input type="checkbox" style="margin-top:1px;margin-left:8px" onclick="hdCheckboxAll(event, \'grid1\')" /> ',
-		                '<s:message code='system.compcd'/>',
+						'<s:message code='system.compcd'/>',
 						'<s:message code='system.systemcode'/>',
 						'<s:message code='system.systemname'/>',
 						'<s:message code='system.systemenglishname'/>',
@@ -192,22 +200,22 @@
 						'ROW_STATUS'
 						];
 		var colModel = [
-			{name : 'CHK',index : 'CHK',width : 20,align : 'center',formatter : gridCboxFormat, hidden: true, sortable: false},
-			{ name: 'COMP_CD', width: 100, align: 'center', hidden: true },
-			{ name: 'SYSTEM_CD', width: 120, align: 'center', editable:true , editoptions:{maxlength:10}},
-			{ name: 'SYSTEM_NM', width: 180, editable:true, editoptions:{maxlength:50}},
-			{ name: 'SYSTEM_EN', width: 180, editable:true, editoptions:{maxlength:50}},
-			{ name: 'SYSTEM_FR', width: 180, editable:true, editoptions:{maxlength:50}},
-			{ name: 'SYSTEM_4TH', width: 180, editable:true, editoptions:{maxlength:50}, hidden: true},
-			{ name: 'PRIORITY', width: 70, editable:true, align:'right',formatter: 'integer', editoptions:{maxlength:10}},
-			{ name: 'STATUS', width: 70, align: 'center', editable:true, edittype:"select", formatter : "select", editoptions:{value:'${griduseyn}'}},
-			{ name: 'ROW_STATUS', width: 10, align: 'center', hidden: true }
-	  	];
-		
+			{ name: 'CHK',        index : 'CHK', width : 20, align : 'center', formatter : gridCboxFormat, hidden: true, sortable: false},
+			{ name: 'COMP_CD',    width: 100, align: 'center', hidden: true },
+			{ name: 'SYSTEM_CD',  width: 120, align: 'center', editable:true , editoptions:{maxlength:10}},
+			{ name: 'SYSTEM_NM',  width: 180, editable:true,   editoptions:{maxlength:50}},
+			{ name: 'SYSTEM_EN',  width: 180, editable:true,   editoptions:{maxlength:50}},
+			{ name: 'SYSTEM_FR',  width: 180, editable:true,   editoptions:{maxlength:50}},
+			{ name: 'SYSTEM_4TH', width: 180, editable:true,   editoptions:{maxlength:50}, hidden: true},
+			{ name: 'PRIORITY',   width: 70,  editable:true,   align:'right', formatter: 'integer', editoptions:{maxlength:10}},
+			{ name: 'STATUS',     width: 70,  align: 'center', editable:true, edittype:"select", formatter : "select", editoptions:{value:'${griduseyn}'}},
+			{ name: 'ROW_STATUS', width: 10,  align: 'center', hidden: true }
+		];
+
 		var gSetting = {
-		        pgflg:true,
-		        exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
-		        colsetting : true,
+				pgflg:true,
+				exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
+				colsetting : true,
 				searchInit : false,
 				resizeing : true,
 				rownumbers:false,
@@ -216,13 +224,19 @@
 				queryPagingGrid:true, // 쿼리 페이징 처리 여부
 				height:271
 		};
-		
+
 		btGrid.createGrid('grid1', colName, colModel, gSetting);
 	}
-	
+
+	/********************************************
+	 * @Subject : 중메뉴 그리드 설정 및 초기화
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function createGrid2(){
 		var colName = ['<input type="checkbox" style="margin-top:1px;" onclick="hdCheckboxAll(event, \'grid2\')" /> ',
-		               '<s:message code='system.compcd'/>',
+					   '<s:message code='system.compcd'/>',
 						'<s:message code='system.systemcode'/>',
 						'<s:message code='system.programcode'/>',
 						'<s:message code='system.programname'/>',
@@ -235,25 +249,25 @@
 						'<s:message code='system.usedornot'/>',
 						'ROW_STATUS'];
 		var colModel = [
-			{name : 'CHK',index : 'CHK',width : 20,align : 'center',formatter : gridCboxFormat, hidden: true},
-			{ name: 'COMP_CD', width: 100, align: 'center', hidden: true },
-			{ name: 'SYSTEM_CD', width: 120, align: 'center' },
-			{ name: 'PROG_CD', width: 120, align: 'center', editable:true ,editoptions:{maxlength:20}},
-			{ name: 'PROG_NM', width: 180, editable:true, editoptions:{maxlength:50}},
-			{ name: 'PROG_EN', width: 180, editable:true,editoptions:{maxlength:50}},
-			{ name: 'PROG_FR', width: 180, editable:true,editoptions:{maxlength:50}},
-			{ name: 'PROG_4TH', width: 180, editable:true,editoptions:{maxlength:50}, hidden: true},
-			{ name: 'PROG_LV', width: 70, hidden:true },
-			{ name: 'PROG_GROUP', width: 70, hidden:true },
-			{ name: 'PRIORITY', width: 70, editable:true, align:'right',formatter: 'integer',editoptions:{maxlength:10}},
-			{ name: 'STATUS', width: 70, align: 'center', editable:true, edittype:"select", formatter : "select", editoptions:{value:'${griduseyn}'}},
-			{ name: 'ROW_STATUS', width: 10, align: 'center', hidden: true }
-	  	];
-		
+			{ name: 'CHK',        index : 'CHK', width : 20, align : 'center', formatter : gridCboxFormat, hidden: true},
+			{ name: 'COMP_CD',    width: 100, align: 'center', hidden: true },
+			{ name: 'SYSTEM_CD',  width: 120, align: 'center' },
+			{ name: 'PROG_CD',    width: 120, align: 'center', editable:true ,editoptions:{maxlength:20}},
+			{ name: 'PROG_NM',    width: 180, editable:true, editoptions:{maxlength:50}},
+			{ name: 'PROG_EN',    width: 180, editable:true, editoptions:{maxlength:50}},
+			{ name: 'PROG_FR',    width: 180, editable:true, editoptions:{maxlength:50}},
+			{ name: 'PROG_4TH',   width: 180, editable:true, editoptions:{maxlength:50}, hidden: true},
+			{ name: 'PROG_LV',    width: 70,  hidden:true },
+			{ name: 'PROG_GROUP', width: 70,  hidden:true },
+			{ name: 'PRIORITY',   width: 70,  editable:true, align:'right',formatter: 'integer',editoptions:{maxlength:10}},
+			{ name: 'STATUS',     width: 70,  align: 'center', editable:true, edittype:"select", formatter : "select", editoptions:{value:'${griduseyn}'}},
+			{ name: 'ROW_STATUS', width: 10,  align: 'center', hidden: true }
+		];
+
 		var gSetting = {
-		        pgflg:true,
-		        exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
-		        colsetting : true,
+				pgflg:true,
+				exportflg : true,  //엑셀, pdf 출력 버튼 노출여부
+				colsetting : true,
 				searchInit : false,
 				resizeing : true,
 				rownumbers:false,
@@ -262,10 +276,16 @@
 				queryPagingGrid:true, // 쿼리 페이징 처리 여부
 				height:271
 		};
-		
+
 		btGrid.createGrid('grid2', colName, colModel, gSetting);
 	}
-	
+
+	/********************************************
+	 * @Subject : 대메뉴 그리드 행 클릭 시
+	 * @Content : 기존의 중메뉴 그리드를 초기화 후 다시 조회
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function grid1_onCilckRow(e, rowid, status){
 		if(rowid.indexOf("new") > -1){
 			clearGrid("grid2");
@@ -274,6 +294,12 @@
 		menuSearch(null, rowid);
 	}
 
+	/********************************************
+	 * @Subject : 화면 OPEN 시 최초 실행 함수
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function cSearch(currentPage){
 		var vCurrentPage = 1;
 		var vRowsPerPage;
@@ -284,21 +310,20 @@
 		} else {
 			vCurrentPage = 1;
 		}
+
 		vRowsPerPage = btGrid.getGridRowSel('grid1_pager');
 		$('#CURRENT_PAGE').val(vCurrentPage);
 		$('#ROWS_PER_PAGE').val(vRowsPerPage);
 		var url = "/system/selectSystemInfo.do";
-		
 		var formData = formIdAllToMap('frmSearch');
 		var param = {"param":formData};
-		
+
 		fn_ajax(url, false, param, function(data, xhr){
 			if(fn_empty(data)){
 				clearGrid("grid2");
 				//$('#btnAdd').hide();
 				//$('#btnSave').hide();
 				//initLayout();
-				
 			}else{
 				reloadGrid("grid1", data.result);
 				btGrid.gridQueryPaging($('#grid1'), 'cSearch', data.result);
@@ -308,10 +333,14 @@
 					$("#grid2").jqGrid("clearGridData", true);
 				}
 			}
-
 		});
 	}
-	
+
+	/********************************************
+	 * @Content : 대메뉴 그리드 저장 버튼
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function cSave(){
 		var ids = $("#grid1").jqGrid("getDataIDs");
 		var gridData = [];
@@ -323,20 +352,20 @@
 				gridData.push($("#grid1").getRowData(ids[i]));
 			}
 		}
-		
+
 		if(cnt < 1){
 			args = '<s:message code='system.systemcode'/>';
 			alert("<s:message code='errors.saveNull' arguments='" + args + "' javaScriptEscape='false'/>");
 			return;
 		}
-		
+
 		for(var i = 0; i < gridData.length; i++){
 			if(fn_empty(gridData[i]["SYSTEM_CD"])){
 				args = '<s:message code='system.systemcode'/>';
 				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
 				return;
 			}
-			
+
 			if(fn_empty(gridData[i]["SYSTEM_NM"])){
 				args = '<s:message code='system.systemname'/>';
 				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
@@ -346,7 +375,6 @@
 
 		if(confirm("<s:message code='confirm.save'/>")){
 			var formData = formIdAllToMap('frmSearch');
-			
 			var url = '/system/saveSystemInfo.do';
 			var param = {"param" : formData,"gridData" : gridData};
 			fn_ajax(url, false, param, function(data, xhr){
@@ -354,16 +382,28 @@
 					alert("<s:message code='info.save'/>");
 					cSearch();
 				}else{
-					alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
+					alert("<s:message code='errors.dup' javaScriptEscape='false'/>");
 				}
 			});
 		}
 	}
-	
+
+	/********************************************
+	 * @Subject : 인쇄 버튼 클릭
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function cPrint(){
 		pagePrintPreview();
 	}
-	
+
+	/********************************************
+	 * @Subject : 엑셀 버튼 클릭
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function cExcel(){
 		//그리드 데이터 가져오기
 		var griddata = $('#grid1').getRowData();
@@ -372,18 +412,16 @@
 			alert("<s:message code='info.nodata.msg' javaScriptEscape='false'/>");
 			return;
 		}
-		
+
 		var colNms = excelToMap();
-		
-	 	var param = { 'S_STATUS':$("#S_STATUS").val()
-	 				 ,'COL_NM':colNms
-	 				 ,'TITLE':'<s:message code='search.mainmenulist'/>'
+		var param = { 'S_STATUS':$("#S_STATUS").val()
+					 ,'COL_NM':colNms
+					 ,'TITLE':'<s:message code='search.mainmenulist'/>'
 					};
-		
-		fn_formSubmit('/system/excelSystemInfo.do', param);	
+		fn_formSubmit('/system/excelSystemInfo.do', param);
 	}
+
 	function excelToMap() {
-		
 		var colNms = $("#grid1").jqGrid('getGridParam','colNames');
 		var colid = $("#grid1")[0].p.colModel;
 		var _string =  '%' ;
@@ -391,15 +429,20 @@
 		for(var i= 0 ; i < colid.length; i++) {
 			if(colid[i].name != "CHK"){
 				if(i == (colid.length -1)) {
-					 _string += ''+colid[i].name+':'		+ colNms[i] +'';
-				}else  _string += ''+colid[i].name+':'		+ colNms[i] +',';
+					 _string += ''+colid[i].name+':'        + colNms[i] +'';
+				}else  _string += ''+colid[i].name+':'      + colNms[i] +',';
 			}
 		}
 		_string +=  '%' ;
 		//var pramDataList = "[" + _string + "]";
 		return _string;
 	}
-	
+
+	/********************************************
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function menuSearch(currentPage, rowid){
 		var vCurrentPage = 1;
 		var vRowsPerPage;
@@ -419,7 +462,7 @@
 
 		var rowData = $("#grid1").getRowData(rowid);
 		var url = "/system/selectProgInfo.do";
-		
+
 		if(rowData["ROW_STATUS"] == "I"){
 			$("#grid1").setColProp("SYSTEM_CD", {editable : true});
 			btGrid.gridEditRow("grid1", rowid);
@@ -427,7 +470,7 @@
 		}else{
 			$("#grid1").setColProp("SYSTEM_CD", {editable : false});
 		}
-		
+
 		btGrid.gridEditRow("grid1", rowid);
 		var formData = formIdAllToMap('frmSearch');
 		formData["S_SYSTEM_CD"] = rowData["SYSTEM_CD"];
@@ -438,20 +481,29 @@
 		fn_ajax(url, false, param, function(data, xhr){
 			reloadGrid("grid2", data.result);
 			btGrid.gridQueryPaging($('#grid2'), 'menuSearch', data.result);
-// 			if(data.result.length > 0){
-// 				$('#grid2').jqGrid('setSelection', $('#grid2').jqGrid('getDataIDs')[0]);
-// 			}
+//          if(data.result.length > 0){
+//              $('#grid2').jqGrid('setSelection', $('#grid2').jqGrid('getDataIDs')[0]);
+//          }
 		});
 	}
-	
+
+	/********************************************
+	 * @Content : 중메뉴 그리드 추가 버튼
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function addMenuGroup(){
 		var rowId = $('#grid1').jqGrid('getGridParam', 'selrow');
 		var rowData = $("#grid1").getRowData(rowId);
-		var addData = {"SYSTEM_CD" : rowData["SYSTEM_CD"], "ROW_STATUS" : "I"};		
+		var addData = {"SYSTEM_CD" : rowData["SYSTEM_CD"], "ROW_STATUS" : "I"};
 		btGrid.gridAddRow("grid2", "last", addData);
-			
 	}
 
+	/********************************************
+	 * @Content : 중메뉴 그리드 저장 버튼
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function saveMenuGroup(){
 		var ids = $("#grid2").jqGrid("getDataIDs");
 		var gridData = [];
@@ -463,47 +515,45 @@
 				gridData.push($("#grid2").getRowData(ids[i]));
 			}
 		}
-		
+
 		if(cnt < 1){
 			args = '<s:message code='system.programcode'/>';
 			alert("<s:message code='errors.saveNull' arguments='" + args + "' javaScriptEscape='false'/>");
 			return;
 		}
-		
+
 		for(var i = 0; i < gridData.length; i++){
 			if(fn_empty(gridData[i]["SYSTEM_CD"])){
 				args = '<s:message code='system.systemcode'/>';
 				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
 				return;
 			}
-			
+
 			if(fn_empty(gridData[i]["PROG_CD"])){
 				args = '<s:message code='system.programcode'/>';
 				alert("<s:message code='errors.required' arguments='" + args + "' javaScriptEscape='false'/>");
 				return;
 			}
-			
+
 			gridData[i]["PROG_LV"] = 0;
 			gridData[i]["PROG_GROUP"] = gridData[i]["PROG_CD"];
 		}
 
 		if(confirm("<s:message code='confirm.save'/>")){
 			var formData = formIdAllToMap('frmSearch');
-			
 			var url = '/system/saveProgInfo.do';
 			var param = {"param" : formData,"gridData" : gridData};
 			fn_ajax(url, false, param, function(data, xhr){
 				if(data.dup == 'Y'){
-					alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
+					alert("<s:message code='errors.dup' javaScriptEscape='false'/>");
 				}else{
 					alert("<s:message code='info.save'/>");
 					cSearch();
 				}
-
 			});
 		}
 	}
-	
+
 	/* 그리드 헤더 체크박스 선택 */
 	function hdCheckboxAll(e, gid) {
 		e = e || event;
@@ -521,7 +571,6 @@
 
 	//그리드 체크박스 이벤트
 	function grid_cbox_onclick(gid, rowid, colkey) {
-		
 	}
 </script>
 

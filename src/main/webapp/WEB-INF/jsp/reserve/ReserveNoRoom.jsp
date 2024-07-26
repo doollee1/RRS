@@ -216,7 +216,7 @@ function createRoomGrid() {
  * @Author  : 이주형
  ********************************************/
 function delRow(cellvalue, options, rowObject){
-	var str = "";
+	var str   = "";
 	var rowid = options.rowId;
 
 	str += "<div>";
@@ -262,7 +262,7 @@ function cSearch(currentPage) {
 $("#inputRow").click(function(){
 	btGrid.gridSaveRow('roomGrid');
 	var rowData = $("#roomGrid").getRowData();
-	var date = $("#noRoomDate").val();
+	var date    = $("#noRoomDate").val();
 
 	if($("#noRoomDate").val().length == 0){
 		alert("<s:message code='info.inputdate'/>");
@@ -324,7 +324,7 @@ function cSave() {
 			return;
 		}
 
-		var url = "/reserve/saveNoRoom.do";
+		var url   = "/reserve/saveNoRoom.do";
 		var param = {"detail"    : insertData};
 
 		fn_ajax(url, true, param, function(data, xhr) {
@@ -469,7 +469,7 @@ function fn_delete(rowid,idx){
  ********************************************/
 function validChk_date(date){
 	/* YYYY-MM-DD 일때 */
-	var format = /^(19|20|21)\d{2}-(0[0-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
+	var format  = /^(19|20|21)\d{2}-(0[0-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
 	/* YYYYMMDD 나 YYYYMDD 일때 */
 	var format2 = /^(19|20|21)\d{2}(0[0-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])$/;
 
@@ -529,8 +529,8 @@ function nextCalendar() {
  * @Author  :
  ********************************************/
 function buildCalendar() {
-	let doMonth = new Date(toDay.getFullYear(), toDay.getMonth(), 1);
-	let lastDate = new Date(toDay.getFullYear(), toDay.getMonth() + 1, 0);
+	let doMonth    = new Date(toDay.getFullYear(), toDay.getMonth(), 1);
+	let lastDate   = new Date(toDay.getFullYear(), toDay.getMonth() + 1, 0);
 	let tbCalendar = document.querySelector(".scriptCalendar > tbody");
 
 	document.getElementById("calYear").innerText = toDay.getFullYear();                       //   YYYY월
@@ -555,21 +555,21 @@ function buildCalendar() {
 	   시작값은 1일을 직접 지정하고 요일값( doMonth.getDay() )를 빼서 마이너스( - )로 for문을 시작한다. */
 	for(let day = 1 - doMonth.getDay(); daysLength >= day; day++) {
 		let column = row.insertCell();
-		// 평일( 전월일과 익월일의 데이터 제외 )
+		/* 평일( 전월일과 익월일의 데이터 제외 ) */
 		if(Math.sign(day) == 1 && lastDate.getDate() >= day) {
-			// 평일 날짜 데이터 삽입
+			/* 평일 날짜 데이터 삽입 */
 			column.innerText = autoLeftPad(day, 2);
-			// 일요일인 경우
+			/* 일요일인 경우 */
 			if(dom % 7 == 1) {
 				column.style.color = "#FF4D4D";
 			}
-			// 토요일인 경우
+			/* 토요일인 경우 토요일이 지나면 다시 가로 행을 한줄 추가 */
 			if(dom % 7 == 0) {
 				column.style.color = "#4D4DFF";
-				row = tbCalendar.insertRow();   //   토요일이 지나면 다시 가로 행을 한줄 추가한다.
+				row = tbCalendar.insertRow();
 			}
 		}
-		// 평일 전월일과 익월일의 데이터 날짜변경
+		/* 평일 전월일과 익월일의 데이터 날짜변경 */
 		else {
 			let exceptDay = new Date(doMonth.getFullYear(), doMonth.getMonth(), day);
 			column.innerText = autoLeftPad(exceptDay.getDate(), 2);
@@ -577,30 +577,30 @@ function buildCalendar() {
 			column.style.backgroundColor = "#E5E5E5";
 		}
 
-		// 전월, 명월 음영처리
-		// 현재년과 선택 년도가 같은경우
+		/* 전월, 명월 음영처리 */
+		/* 현재년과 선택 년도가 같은 경우 */
 		if(toDay.getFullYear() == nowDate.getFullYear()) {
-			// 현재월과 선택월이 같은경우
+			/* 현재월과 선택월이 같은 경우  */
 			if(toDay.getMonth() == nowDate.getMonth()) {
-				// 현재일보다 이전인 경우이면서 현재월에 포함되는 일인경우
+				/* 현재일보다 이전인 경우이면서 현재월에 포함되는 일인 경우 */
 				if(nowDate.getDate() > day && Math.sign(day) == 1) {
 					column.style.backgroundColor = "#FFFFFF";
 					column.style.cursor = "pointer";
 					column.onclick = function(){ calendarChoiceDay(this); }
 				}
-				// 현재일보다 이후이면서 현재월에 포함되는 일인경우
+				/* 현재일보다 이후이면서 현재월에 포함되는 일인경우 */
 				if(nowDate.getDate() < day && lastDate.getDate() >= day) {
 					column.style.backgroundColor = "#FFFFFF";
 					column.style.cursor = "pointer";
 					column.onclick = function(){ calendarChoiceDay(this); }
 				}
-				// 현재일인 경우
+				/* 현재일인 경우 */
 				else if(nowDate.getDate() == day) {
 					column.style.backgroundColor = "#CEE3F6";
 					column.style.cursor = "pointer";
 					column.onclick = function(){ calendarChoiceDay(this); }
 				}
-			// 현재월보다 이전인경우
+			/* 현재월보다 이전인 경우 */
 			} else if(toDay.getMonth() < nowDate.getMonth()) {
 				if(Math.sign(day) == 1 && day <= lastDate.getDate()) {
 					column.style.backgroundColor = "#FFFFFF";
@@ -608,7 +608,7 @@ function buildCalendar() {
 					column.onclick = function(){ calendarChoiceDay(this); }
 				}
 			}
-			// 현재월보다 이후인경우
+			/* 현재월보다 이후인 경우 */
 			else {
 				if(Math.sign(day) == 1 && day <= lastDate.getDate()) {
 					column.style.backgroundColor = "#FFFFFF";
@@ -617,7 +617,7 @@ function buildCalendar() {
 				}
 			}
 		}
-		// 선택한년도가 현재년도보다 작은경우
+		/* 선택한년도가 현재년도보다 작은경우 */
 		else if(toDay.getFullYear() < nowDate.getFullYear()) {
 			if(Math.sign(day) == 1 && day <= lastDate.getDate()) {
 				column.style.backgroundColor = "#FFFFFF";
@@ -626,7 +626,7 @@ function buildCalendar() {
 				//column.style.backgroundColor = "#E5E5E5";
 			}
 		}
-		// 선택한년도가 현재년도보다 큰경우
+		/* 선택한년도가 현재년도보다 큰 경우 */
 		else {
 			if(Math.sign(day) == 1 && day <= lastDate.getDate()) {
 				column.style.backgroundColor = "#FFFFFF";
@@ -658,10 +658,10 @@ function calendarChoiceDay(column) {
 		document.getElementsByClassName("choiceDay")[0].classList.remove("choiceDay");
 	}
 
-	//   선택일 체크 표시
+	/* 선택일 체크 표시 */
 	column.style.backgroundColor = "#FF9999";
 
-	//   선택일 클래스명 변경
+	/* 선택일 클래스명 변경 */
 	column.classList.add("choiceDay");
 	column.id = 'choiceDay';
 

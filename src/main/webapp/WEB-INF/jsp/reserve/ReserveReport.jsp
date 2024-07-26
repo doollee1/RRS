@@ -109,7 +109,7 @@
 	var origin_TO_DT      = '';
 	var origin_CHK_IN_DT  = '';
 	var origin_CHK_OUT_DT = '';
-	var selectNum         = "";    // 선택 그리드 순번
+	var selectNum         = "";
 
 	/******************************************** 
 	 * @Subject : 화면 OPEN 시 최초 실행 함수
@@ -135,26 +135,26 @@
 	 * @Author  : 
 	 ********************************************/
 	function fn_Init(){
-		var fromDay = preMonth();   //이전달 첫날
-		var toDay   = getlastMonth();   //이번달 마지막날
+		var fromDay = preMonth();     //이전달 1일
+		var toDay   = getlastMonth(); //이번달 마지막날
 
 		origin_FROM_DT = Util.converter.dateFormat1(Util.converter.dateFormat3(fromDay).substr(0,6)+'01');
 		origin_TO_DT   = Util.converter.dateFormat1(Util.converter.dateFormat3(toDay));
 
 		$("#FROM_DT").val(origin_FROM_DT);
 		$("#TO_DT").val(origin_TO_DT);
-		viewGrid(); // 초기 grid 생성
+		viewGrid();
 	}
 
 	/******************************************** 
-	 * @Subject : 기본 설정 값 셋팅 함수
+	 * @Subject : 
 	 * @Content : 
 	 * @Since   : 2024.07.11
 	 * @Author  : 
 	 ********************************************/
 	function viewGrid(vFROM_DT, vTO_DT) {
 		let FROM_DT = '';
-		let TO_DT = '';
+		let TO_DT   = '';
 		if(fn_empty(vFROM_DT)) {
 			FROM_DT = $("#FROM_DT").val();
 		} else {
@@ -265,14 +265,14 @@
 			height : 280,
 		};
 
-		// 그리드 생성 및 초기화
+		/* 그리드 생성 및 초기화 */
 		btGrid.createGrid('reserveReportGrid', defaultColName, defaultColModel, gSetting);
 
-		//룸추가 일수 + 룸추가 개수
+		/* 그리드 헤더 병합(하단부) */
 		var newWidth = $("#reserveReportGrid_ROOM_ADD_IL").width() + $("#reserveReportGrid_ROOM_ADD_CNT").outerWidth(true);
 		jQuery("#reserveReportGrid").jqGrid("setLabel", "ROOM_ADD_IL", "룸추가", "", { style: "width: " + newWidth + "px;", colspan: "2" });
 		jQuery("#reserveReportGrid").jqGrid("setLabel", "ROOM_ADD_CNT", "", "", {style: "display: none"});
-		//프리미엄 룸추가 일수 + 프리미엄 룸추가 개수
+		
 		var newWidth2 = $("#reserveReportGrid_PRIM_ADD_IL").width() + $("#reserveReportGrid_PRIM_ADD_CNT").outerWidth(true);
 		jQuery("#reserveReportGrid").jqGrid("setLabel", "PRIM_ADD_IL", "프리미엄 룸추가", "", { style: "width: " + newWidth2 + "px;", colspan: "2" });
 		jQuery("#reserveReportGrid").jqGrid("setLabel", "PRIM_ADD_CNT", "", "", {style: "display: none"});
@@ -290,8 +290,8 @@
 
 		const colModel = [];
 		const colName  = [];
-		var cnt = 0;
-		var last = "";
+		var cnt        = 0;
+		var last       = "";
 
 		for(var i=sFromDt; i<=sToDt; i++) {
 			var dd   = ''+i;
@@ -308,7 +308,6 @@
 			};
 			var dayWeekName = getDayOfWeek(year + "." + mon + "." + day);
 			colName[cnt] = i + " (" + dayWeekName + ")";
-
 			var last = new Date(year, mon, 0);
 			last = last.getDate();
 			if (day == last) {
@@ -319,7 +318,6 @@
 					i = i+100-last;
 				}
 			}
-
 			cnt ++;
 		}
 		var gSetting = {
@@ -335,9 +333,8 @@
 			height : 60,
 		};
 
-		// 그리드 생성 및 초기화
+		/* 그리드 생성 및 초기화 */
 		btGrid.createGrid('reserveDayReportGrid', colName, colModel, gSetting);
-
 	}
 
 	/******************************************** 
@@ -348,15 +345,15 @@
 	 ********************************************/
 	function setGroupHeadersGrid(FROM_DT, TO_DT) {
 		const defaultGroupHeader = [
-			{startColumnName: 'REQ_DT'    , numberOfColumns: 2, titleText: '예약일자'},
-			{startColumnName: 'REQ_HAN_NM', numberOfColumns: 3, titleText: '예약자'},
-			{startColumnName: 'FLIGHT_IN' , numberOfColumns: 2, titleText: '항공편'},
-			{startColumnName: 'PICK_IN'   , numberOfColumns: 2, titleText: '픽업차량'},
-			{startColumnName: 'TWIN_CNT'  , numberOfColumns: 6, titleText: '리조트(숙박)'},
-			{startColumnName: 'INV_REG_DT', numberOfColumns: 2, titleText: '인보이스'},
-			{startColumnName: 'DEP_IN_DT' , numberOfColumns: 2, titleText: '예약금'},
-			{startColumnName: 'BAL_IN_DT' , numberOfColumns: 2, titleText: '잔금'},
-			{startColumnName: 'ROUNDING_WEEK'  , numberOfColumns: 3, titleText: '골프(라운딩)'},
+			{startColumnName: 'REQ_DT',        numberOfColumns: 2, titleText: '예약일자'},
+			{startColumnName: 'REQ_HAN_NM',    numberOfColumns: 3, titleText: '예약자'},
+			{startColumnName: 'FLIGHT_IN',     numberOfColumns: 2, titleText: '항공편'},
+			{startColumnName: 'PICK_IN',       numberOfColumns: 2, titleText: '픽업차량'},
+			{startColumnName: 'TWIN_CNT',      numberOfColumns: 6, titleText: '리조트(숙박)'},
+			{startColumnName: 'INV_REG_DT',    numberOfColumns: 2, titleText: '인보이스'},
+			{startColumnName: 'DEP_IN_DT',     numberOfColumns: 2, titleText: '예약금'},
+			{startColumnName: 'BAL_IN_DT',     numberOfColumns: 2, titleText: '잔금'},
+			{startColumnName: 'ROUNDING_WEEK', numberOfColumns: 3, titleText: '골프(라운딩)'}
 		];
 
 		$('#reserveReportGrid').jqGrid('setGroupHeaders', {
@@ -372,7 +369,7 @@
 	 * @Author  : 이주형
 	 ********************************************/
 	function showDetail(cellvalue, options, rowObject){
-		var str = "";
+		var str   = "";
 		var rowid = options.rowId;
 
 		str += "<div>";
@@ -390,9 +387,8 @@
 	 ********************************************/
 	function fn_detail(rowid){
 		var selRowData = $("#reserveReportGrid").jqGrid("getRowData",rowid);
-
-		var url = "/reserve/reserveRegi3.do";
-		var pid = "p_reserveListRegi"; //팝업 페이지의 취상위 div ID
+		var url   = "/reserve/reserveRegi3.do";
+		var pid   = "p_reserveListRegi";
 		var param = {};
 		param.SEQ    = selRowData.SEQ;
 		param.REQ_DT = selRowData.REQ_DT.replaceAll(".","");
@@ -409,7 +405,6 @@
 	 * @Author  : 
 	 ********************************************/
 	function cSearch(currentPage) {
-		// paging
 		var vCurrentPage = 1;
 		var vRowsPerPage;
 		if(!fn_empty(currentPage)){
@@ -423,9 +418,9 @@
 		$('#CURRENT_PAGE').val(vCurrentPage);
 		$('#ROWS_PER_PAGE').val(vRowsPerPage);
 
-		var FROM_DT = $("#FROM_DT").val();
-		var TO_DT   = $("#TO_DT").val();
-		var url = "/reserve/reserveReportSelectList.do";
+		var FROM_DT  = $("#FROM_DT").val();
+		var TO_DT    = $("#TO_DT").val();
+		var url      = "/reserve/reserveReportSelectList.do";
 		var formData = formIdAllToMap('frmSearch');
 		formData.FROM_DT = formData.FROM_DT.replaceAll(/\./gi, '');
 		formData.TO_DT   = formData.TO_DT.replaceAll(/\./gi, '');
@@ -434,7 +429,7 @@
 		if((origin_FROM_DT.substr(0,7) !== FROM_DT.substr(0,7)) || (origin_TO_DT.substr(0,7) !== TO_DT.substr(0,7))) {
 			origin_FROM_DT = FROM_DT;
 			origin_TO_DT   = TO_DT;
-			$.jgrid.gridUnload("#reserveReportGrid");   // grid 초기화
+			$.jgrid.gridUnload("#reserveReportGrid");
 			viewGrid(FROM_DT, TO_DT);
 		}
 
@@ -449,17 +444,15 @@
 			var dayWeek = "";
 
 			for(let i=0; i<data.result.length; i++) {
-				// 일자별 현황값 추가
+				/* 일자별 현황값 추가 */
 				dayWeek = "";
 				const reservationDayList = data.result[i].dayOfReservation;
 				if(reservationDayList.length > 0) {
 					for(let j=0; j<reservationDayList.length; j++) {
 						const dt  = Number(reservationDayList[j].BAS_DT);
 						const numOfPerson = reservationDayList[j].PER_STR;
-
 						dayWeek += "day" + dt + "/" + numOfPerson + ",";
 					}
-
 				}
 				$('#reserveReportGrid').jqGrid('setCell', [i+1], 'DAYWEEK', dayWeek);
 			}
@@ -473,24 +466,24 @@
 	 * @Author  : 
 	 ********************************************/
 	function grid1_onCilckRow(e, rowid, status){
-		selectNum = rowid;  // 선택 그리드 순번
+		selectNum = rowid;
 		origin_CHK_IN_DT  = $('#reserveReportGrid').jqGrid('getRowData',rowid).CHK_IN_DT;
 		origin_CHK_OUT_DT = $('#reserveReportGrid').jqGrid('getRowData',rowid).CHK_OUT_DT;
 
 		$.jgrid.gridUnload("#reserveDayReportGrid");
 
 		if (($('#reserveReportGrid').jqGrid('getRowData',rowid).CHK_IN_DT != "") && ($('#reserveReportGrid').jqGrid('getRowData',rowid).CHK_OUT_DT != "")) {
-			// 월별 그리드 조회 기간에 맞게 다시 셋팅
+			/* 월별 그리드 조회 기간에 맞게 다시 셋팅 */
 			createreserveDayReportGrid(origin_CHK_IN_DT, origin_CHK_OUT_DT);
 			$("#reserveDayReportGrid").jqGrid("addRowData", 0, {}, 'first');
 
 			var dayArr = ($('#reserveReportGrid').jqGrid('getRowData',rowid).DAYWEEK).split(",");
-			for(var i=0; i<dayArr.length; i++) {
+			for(var i = 0; i < dayArr.length; i++) {
 				var sDay = dayArr[i].split("/");
 				$('#reserveDayReportGrid').jqGrid('setCell', 0, sDay[0], sDay[1]);
 			}
 
-			// 주말 음영 처리
+			/* 주말 음영 처리 */
 			const weekendOfMonth = getWeekendOfMonth(origin_CHK_IN_DT, origin_CHK_OUT_DT);
 			for(let j=0; j<weekendOfMonth.length; j++) {
 				$('#reserveDayReportGrid').jqGrid('setCell', 0, "day"+weekendOfMonth[j], "", {'background-color':'#FFCB9E'});
@@ -511,7 +504,7 @@
 		$("#reserveDayReportGrid").clearGridData();
 		$("#reserveDayReportGrid").jqGrid("addRowData", 0, {}, 'first');
 
-		// 주말 음영 처리
+		/* 주말 음영 처리 */
 		const weekendOfMonth = getWeekendOfMonth(FROM_DT, TO_DT);
 		for(let j=0; j<weekendOfMonth.length; j++) {
 			$('#reserveDayReportGrid').jqGrid('setCell', 0, "day"+weekendOfMonth[j], "", {'background-color':'#FFCB9E'});
@@ -532,11 +525,13 @@
 		gridData.push($("#reserveDayReportGrid").getRowData(0));
 
 		const url = '/reserve/saveReserveList.do';
-		const param = {"param":{"FROM_DT"  : origin_CHK_IN_DT.replaceAll(/\./gi, ''),
-					   "TO_DT"    : origin_CHK_OUT_DT.replaceAll(/\./gi, ''),
-					   "REQ_DT"   : $("#reserveReportGrid").getRowData(selectNum).REQ_DT.replaceAll(/\./gi, ''),
-					   "REQ_SEQ"  : $("#reserveReportGrid").getRowData(selectNum).SEQ,
-					   "gridData" : gridData}
+		const param = { "param"    : {
+						"FROM_DT"  : origin_CHK_IN_DT.replaceAll(/\./gi, ''),
+						"TO_DT"    : origin_CHK_OUT_DT.replaceAll(/\./gi, ''),
+						"REQ_DT"   : $("#reserveReportGrid").getRowData(selectNum).REQ_DT.replaceAll(/\./gi, ''),
+						"REQ_SEQ"  : $("#reserveReportGrid").getRowData(selectNum).SEQ,
+						"gridData" : gridData
+						}
 					   };
 
 		fn_ajax(url, false, param, function(data, xhr){
@@ -556,16 +551,17 @@
 		for (var i = 0; i < data.length; i++) {
 			var obj = new Object;
 			$.each(data[i] , function(key , value){
-				//날짜 변경 YYYYMMDD > YYYY.MM.DD
-				//예약일자 / 체크인 / 체크아웃 / 인보이스발행일자 / 예약금입금일자 / 잔금입금일자
-				if((key == "REQ_DT" || key == "CHK_IN_DT" || key == "CHK_OUT_DT" || key == "DEP_IN_DT" || key == "INV_REG_DT" || key == "BAL_IN_DT") && value != ""){
+				/* 날짜 변경 YYYYMMDD > YYYY.MM.DD */
+				/* 예약일자 / 체크인 / 체크아웃 / 인보이스발행일자 / 예약금입금일자 / 잔금입금일자 */
+				if((key == "REQ_DT" || key == "CHK_IN_DT" || key == "CHK_OUT_DT" || 
+					key == "DEP_IN_DT" || key == "INV_REG_DT" || key == "BAL_IN_DT") && value != ""){
 					value = Util.converter.dateFormat1(value);
 				}
-				//금액에  ',' 추가
+				/* 금액에 ',' 추가 */
 				else if(key == "TOT_AMT" || key == "DEP_AMT" || key == "BAL_AMT"){
 					value = fn_comma(value);
 				}
-				//전화번호에  '-' 추가
+				/* 전화번호에 '-' 추가 */
 				else if(key == "REQ_TEL_NO"){
 					value = formatPhoneNumber(value);
 				}
@@ -585,7 +581,7 @@
 	 * @Author  : 
 	 ********************************************/
 	function getDayOfWeek(yyyyMMdd) {
-		const week = ['일', '월', '화', '수', '목', '금', '토'];
+		const week      = ['일', '월', '화', '수', '목', '금', '토'];
 		const dayOfWeek = week[new Date(yyyyMMdd).getDay()];
 		return dayOfWeek;
 	}
@@ -599,14 +595,13 @@
 	function getWeekendOfMonth(FROM_DT, TO_DT) {
 		const from_dt = FROM_DT.replaceAll(/\./gi, '');
 		const to_dt   = TO_DT.replaceAll(/\./gi, '');
-
 		const weekendOfMonth = [];
+		
 		for(let i=from_dt; i<=to_dt; i++) {
 			const dd   = ''+i;
 			const year = dd.substr(0, 4);
 			const mon  = dd.substr(4, 2);
 			const day  = dd.substr(6, 2);
-
 			const dayOfWeek = getDayOfWeek(year + "." + mon + "." + day);
 			if(dayOfWeek == '토' || dayOfWeek == '일') {
 				weekendOfMonth.push(i);
@@ -623,8 +618,8 @@
 	 ********************************************/
 	function formatPhoneNumber (input) {
 		var cleanInput = input.replaceAll(/[^0-9]/g, "");
-		var result = "";
-		var length = cleanInput.length;
+		var result     = "";
+		var length     = cleanInput.length;
 		if(length === 8) {
 			result = cleanInput.replace(/(\d{4})(\d{4})/, '$1-$2');
 		} else if(cleanInput.startsWith("02") && (length === 9 || length === 10)) {
