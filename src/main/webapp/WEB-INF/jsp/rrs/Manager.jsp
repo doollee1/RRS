@@ -25,8 +25,14 @@
 					<tr>
 						<td class="small_td"><p><s:message code='system.UserID'/></p></td>
 						<td class="medium_td"><input type="text" id="S_USER_ID" name="S_USER_ID" class="cmc_txt" maxlength="20" noSpecial /></td>
-						<td class="small_td"><p><s:message code='system.Username'/></p></td>
-						<td class="medium_td"><input type="text" id="S_USER_NM" name="S_USER_NM" class="cmc_txt" maxlength="30" noSpecial /></td>
+						<td class="small_td"><p>사용자구분</p></td>
+						<td class="medium_td">
+							<select id="S_USER_NM" name="S_USER_NM" class="cmc_combo text-center" style="width:170px; margin: 0 5px">
+								<option value="">-전체-</option>
+								<option value="관리자">관리자</option>
+								<option value="에이전시">에이전시</option>
+							</select>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -115,7 +121,7 @@
 	 ********************************************/
 	function createGrid1(){
 		var colName = ['<s:message code='system.UserID'/>',
-					   '<s:message code='system.fullname'/>',
+					   '사용자구분',
 					   '텔리그램ID',
 					   '텔리그램토큰',
 					   '<s:message code='system.compcd'/>']

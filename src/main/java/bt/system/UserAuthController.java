@@ -22,16 +22,16 @@ import bt.system.service.UserAuthService;
 public class UserAuthController {
 	@Resource(name = "UserAuthService")
 	private UserAuthService userAuthService;
-	
+
 	@Resource(name = "CommonService")
 	private CommonService commonService;
-	
+
 	@RequestMapping(value = "/system/UserAuthManager.do")
 	public String UserAuthManager(ModelMap model) throws Exception{
 		model.addAttribute("griduseyn", commonService.selectCommonCodeGrid("USED_OR_NOT"));
 		return "/system/UserAuthManager";
 	}
-	
+
 	@RequestMapping(value = "/popup/UserPopup.do")
 	public String UserPopup(ModelMap model) throws Exception{
 		model.addAttribute("griduseyn", commonService.selectCommonCodeGrid("USED_OR_NOT"));
@@ -42,37 +42,37 @@ public class UserAuthController {
 	public String UserPopup2(ModelMap model) throws Exception{
 		return "/popup/UserPopup2";
 	}
-	
+
 	@RequestMapping(value = "/system/selectUserAuthInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData selectUserAuthInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
-		
+
 		respData.put("result", userAuthService.selectUserAuthInfo(param));
-		
+
 		return respData;
 	}
-	
+
 	@RequestMapping(value = "/system/saveUserAuthInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData saveUserAuthInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		List<BMap> paramList = reqData.getParamDataList("gridData");
 		BRespData respData = new BRespData();
-		
+
 		userAuthService.saveUserAuthInfo(paramList);
-		
+
 		return respData;
 	}
-	
+
 	@RequestMapping(value = "/system/deleteUserAuthInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData deleteUserAuthInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		List<BMap> paramList = reqData.getParamDataList("gridData");
 		BRespData respData = new BRespData();
-		
+
 		userAuthService.deleteUserAuthInfo(paramList);
-		
+
 		return respData;
 	}
 }

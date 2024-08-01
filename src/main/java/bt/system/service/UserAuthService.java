@@ -14,7 +14,7 @@ import bt.system.dao.UserAuthDao;
 public class UserAuthService {
 	@Resource(name = "UserAuthDao")
 	private UserAuthDao userAuthDao;
-	
+
 	/**
 	 * 사용자 권한 정보 조회
 	 * @param param
@@ -24,7 +24,7 @@ public class UserAuthService {
 	public List<BMap> selectUserAuthInfo(BMap param) throws Exception{
 		return userAuthDao.selectUserAuthInfo(param);
 	}
-	
+
 	/**
 	 * 사용자 권한 정보 저장
 	 * @param paramList
@@ -42,7 +42,7 @@ public class UserAuthService {
 			}
 		}
 	}
-	
+
 	/**
 	 * 사용자 권한 정보 삭제
 	 * @param paramList

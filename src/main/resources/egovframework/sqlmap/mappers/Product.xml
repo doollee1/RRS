@@ -48,7 +48,7 @@
 				 WHERE HEAD_CD = 500000
 				   AND B.HDNG_GBN = C.CODE) HDNG_GBN_CODE	
 		  FROM TB_BAS_YY_INFO A
-	LEFT JOIN TB_PROD_INFO B
+	INNER JOIN TB_PROD_INFO B
 		    ON A.BAS_YY_SEQ = B.BAS_YY_SEQ
 		   AND A.BAS_YY = B.BAS_YY
            AND A.SSN_GBN = B.SSN_GBN
@@ -77,9 +77,9 @@
          WHERE 1 = 1
            AND A.HEAD_CD = #{HEAD_CD}
          ORDER BY A.PRIORITY
-	   <if test="Season == true">
-<!-- 		 ORDER BY A.PRIORITY -->
-	   </if>
+		<if test="Season == true">
+		<!--  ORDER BY A.PRIORITY -->
+		</if>
 	</select>
 	
 	<select id="selectCond" parameterType="Bmap" resultType="Bmap">
@@ -358,10 +358,12 @@
 		   AND B.PRC_STS != 09
 	</select>	  
 	<select id="selectMSendingInfoList" parameterType="hashMap" resultType="hashMap">
-	/* Product.xml -> selectMSendingInfoList */
+/* Product.xml -> selectMSendingInfoList */
         SELECT 
               ROW_NUMBER() OVER(ORDER BY A.HDNG_GBN , A.PROD_COND  ,A.PROD_SEQ ) AS ROWNUM
 	      	 , A.HDNG_GBN
+     	 	 , (SELECT C.CODE_NM FROM BC_COMM_L C WHERE C.REF_CHR1 = A.HDNG_GBN
+	         			   						AND C.HEAD_CD = 500210 )  AS PICKUP_ZONE
 	      	 , A.PROD_COND
         	 , A.PROD_SEQ
 	      	 , A.PROD_COND
@@ -382,7 +384,7 @@
 	    ORDER BY A.HDNG_GBN  
     		   , A.PROD_COND
     		   , A.PROD_SEQ
-    </select>
+</select>
 	
     <select id="selectExtraChargeInfoList" parameterType="hashMap" resultType="hashMap">
     /* Product.xml -> selectExtraChargeInfoList */

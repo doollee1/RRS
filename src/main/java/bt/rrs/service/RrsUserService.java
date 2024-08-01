@@ -1,5 +1,7 @@
 package bt.rrs.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -13,6 +15,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import bt.btframework.excel.POIExcelRRS;
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.LoginInfo;
+import bt.common.dao.UserDao;
 import bt.rrs.dao.RrsUserDao;
 import egovframework.com.utl.sim.service.EgovFileScrty;
 
@@ -20,6 +23,9 @@ import egovframework.com.utl.sim.service.EgovFileScrty;
 public class RrsUserService {
 	@Resource(name = "RrsUserDao")
 	private RrsUserDao rrsUserDao;
+	
+	@Resource(name = "UserDao")
+	private UserDao userDao;   //관리자
 	
 	/**
 	 * 회원 정보 조회
@@ -75,6 +81,7 @@ public class RrsUserService {
 				return bMap;
 			}
 		}
+						
 		
 		// 중복되는 멤버ID 있는지 체크
 		int memberIDCnt = rrsUserDao.selectMemberUserInfoCnt(param);
@@ -86,18 +93,51 @@ public class RrsUserService {
 		String isNew = param.getString("isNew");
 	
 		int cnt = rrsUserDao.selectUserInfoCnt(param); //현 ID가 등록된 ID인지 카운트
+			
+		if("03".equals(MEM_GBN) || "04".equals(MEM_GBN)  || "05".equals(MEM_GBN)) {
+			
+			param.put("COMP_CD", "1000");				
+			param.put("NAME_1ST", "에이전시");
+			param.put("NAME_2ND", param.getString("ENG_NAME"));
+			param.put("USER_TP", "01");
+			param.put("USER_GD", MEM_GBN);
+			param.put("LANG_CD", "KO");
+			param.put("STATUS", "A");
+			param.put("E_MAIL", param.getString("EMAIL"));
+			param.put("START_DT", new SimpleDateFormat("yyyyMMdd").format(new Date()));
+			param.put("STOP_DT", "9999.12.31");
+			
+			cnt = userDao.selectUserInfoCnt(param); //현 ID가 등록된 ID인지 카운트 
+		}
+		
 		if(isNew.equals("Y")) {
+			
 			// 신규 입력인 경우
 			if(cnt == 0) {
+			
 				param.put("PASSWD", EgovFileScrty.encryptPassword("fam1!", param.getString("USER_ID")));   //"fam1!"
-				rrsUserDao.insertUserInfo(param); //등록되지 않았을 때 등록
+				rrsUserDao.insertUserInfo(param); //등록되지 않았을 때 사용자 등록
+					
+				if("03".equals(MEM_GBN) || "04".equals(MEM_GBN)  || "05".equals(MEM_GBN)) {
+										
+					param.put("PW_CURR", EgovFileScrty.encryptPassword("fam1!", param.getString("USER_ID")));  //최초 아이디 등록시 패스워드 oms1234					
+					userDao.insertUserInfo(param); //등록되지 않았을 때 관리자 등록
+				}
+				
 			} else {
+				
 				bMap.put("result", "isExistUser");
 				return bMap;
 			}
+			
 		} else {
-			// 수정인경우
-			rrsUserDao.updateUserInfo(param); //등록된 사용자 정보 수정
+			
+			// 수정인경우							
+			rrsUserDao.updateUserInfo(param); //등록된 사용자 정보 수정				
+			if("03".equals(MEM_GBN) || "04".equals(MEM_GBN)  || "05".equals(MEM_GBN)) {
+				userDao.updateUserInfo(param); //등록된 관리자 정보 수정
+			}
+			
 		}
 
 		bMap.put("result", "success");
@@ -113,6 +153,14 @@ public class RrsUserService {
 		for(int i = 0; i < paramList.size(); i++){
 			BMap param = new BMap(paramList.get(i));
 			rrsUserDao.deleteUserInfo(param);
+			
+			//관리자 정보 같이 삭제
+			param.put("COMP_CD", "1000");		
+			int adminCnt = userDao.selectUserInfoCnt(param);			
+			if(adminCnt > 0) {		
+				userDao.deleteUserInfo(param); //관리자 같이
+			}
+			
 		}
 	}
 	

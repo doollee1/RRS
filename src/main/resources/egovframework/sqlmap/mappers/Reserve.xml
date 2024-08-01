@@ -136,13 +136,15 @@
    <if test="PRC_STS != null and PRC_STS != ''">
 	   AND T3.PRC_STS = #{PRC_STS}
    </if>
-
+    <if test="AGENCY_ID != null and AGENCY_ID != ''">
+       AND T3.USER_ID = #{AGENCY_ID}
+   </if>
  ORDER BY T3.ROWNUM
 	<include refid="page.pagingPost"/> <!-- 페이징 처리 끝 -->
 	</select>
 
 	<select id="selectGetCommonCode" parameterType="Bmap" resultType="Bmap">
-		SELECT T1.CODE , T1.CODE_NM
+		SELECT T1.CODE , T1.CODE_NM, T1.REF_CHR1
 		  FROM BC_COMM_L T1
 		  JOIN BC_COMM_H T2 ON T2.HEAD_CD = /**/ T1.HEAD_CD
 		 WHERE 1 = 1
@@ -654,7 +656,12 @@
 			  ,EMAIL
 		 FROM tb_member as T1
 		WHERE 1 = 1
+		  <if test="S_HAN_NAME != null and S_HAN_NAME != ''">
 		  AND HAN_NAME LIKE CONCAT('%',#{S_HAN_NAME},'%')
+		  </if>
+		  <if test="S_USER_ID != null and S_USER_ID != ''">
+		  AND USER_ID  LIKE CONCAT('%',#{S_USER_ID},'%')
+		  </if>
 	</select>
 
 	<update id="updateInvoiceDetailInfo" parameterType="BMap">
@@ -1262,11 +1269,15 @@
 				  , #{AGN_GB          }
 				  , #{AGN_CD          }
 		   <choose>
-			   <when test="PRC_STS == '04'">
+			   <when test="'03'.equals(MEM_GBN) or '04'.equals(MEM_GBN) or '05'.equals(MEM_GBN)">
 				  , #{PRC_STS}
 			   </when>
 			   <otherwise>
-				  , (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' ELSE NULL END )
+				  , (CASE WHEN #{MEM_GBN} = '01' THEN '02' 
+				          WHEN #{MEM_GBN} = '02' THEN '04' 
+				          ELSE #{PRC_STS} 
+				          END 
+				    )
 			   </otherwise>
 		   </choose>
 				  , #{CHK_IN_DT       }
@@ -1295,7 +1306,7 @@
 												WHERE HDNG_GBN = #{HDNG_GBN}
 												AND BAS_YY = LEFT(#{CHK_IN_DT},4)
 
-							<if test="'02'.equals(MEM_GBN) or '04'.equals(MEM_GBN)">
+							<if test="'02'.equals(MEM_GBN) or '03'.equals(MEM_GBN) or '04'.equals(MEM_GBN) or '05'.equals(MEM_GBN)">
 							<![CDATA[
 							AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
 												 THEN 'DU10'
@@ -1322,7 +1333,7 @@
 												WHERE HDNG_GBN = #{HDNG_GBN}
 												AND BAS_YY = LEFT(#{CHK_IN_DT},4)
 
-							<if test="'02'.equals(MEM_GBN) or '04'.equals(MEM_GBN)">
+							<if test="'02'.equals(MEM_GBN) or '03'.equals(MEM_GBN) or '04'.equals(MEM_GBN) or '05'.equals(MEM_GBN)">
 							<![CDATA[
 							AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
 												 THEN 'DU10'
@@ -1454,7 +1465,7 @@
 												WHERE HDNG_GBN = #{HDNG_GBN}
 												AND BAS_YY = LEFT(#{CHK_IN_DT},4)
 
-							<if test="'02'.equals(MEM_GBN) or '04'.equals(MEM_GBN)">
+							<if test="'02'.equals(MEM_GBN) or '03'.equals(MEM_GBN) or '04'.equals(MEM_GBN) or '05'.equals(MEM_GBN)">
 							<![CDATA[
 							AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
 												 THEN 'DU10'
@@ -1481,7 +1492,7 @@
 												WHERE HDNG_GBN = #{HDNG_GBN}
 												AND BAS_YY = LEFT(#{CHK_IN_DT},4)
 
-							<if test="'02'.equals(MEM_GBN) or '04'.equals(MEM_GBN)">
+							<if test="'02'.equals(MEM_GBN) or '03'.equals(MEM_GBN) or '04'.equals(MEM_GBN) or '05'.equals(MEM_GBN)">
 							<![CDATA[
 							AND PROD_COND = CASE WHEN PROD_COND != '0' AND DATEDIFF(CAST(#{CHK_OUT_DT} AS DATE), CAST(#{CHK_IN_DT} AS DATE)) >= 10
 												 THEN 'DU10'
@@ -1625,7 +1636,7 @@
 		   , #{REQ_ENG_NM}
 		   , #{REQ_TEL_NO}
 		   , #{MEM_GBN   }
-		   , (CASE WHEN #{MEM_GBN} = '01' THEN '02' WHEN #{MEM_GBN} = '02' THEN '01' WHEN #{MEM_GBN} = '03' THEN '11' ELSE NULL END )
+		   , #{PRC_STS}
 		   , '01'
 		   , NOW()
 		   , #{LOGIN_USER}
@@ -2084,16 +2095,19 @@ DELETE
 		)
 		SELECT DISTINCT A.COM_AMT  AS PACKAGE_AMT /* 숙박비 */
 		  FROM (
-			  SELECT
-			   <if test = 'AGN_GB == null or "".equals(AGN_GB)'>
+			  SELECT		   
+			   <if test = '"01".equals(MEM_GBN) or "02".equals(MEM_GBN)'>
 				MAX(AA.COM_AMT) AS COM_AMT                          <!-- 일반금액 -->
 			   </if>
-			   <if test = 'AGN_GB != null and "1".equals(AGN_GB)'>
+			   <if test = 'MEM_GBN != null and "03".equals(MEM_GBN)'>
 				MAX(AA.AGN_DIS_AMT) AS COM_AMT                      <!-- 총판에이전시금액 -->
 			   </if>
-			   <if test = 'AGN_GB != null and "2".equals(AGN_GB)'>
+			   <if test = 'MEM_GBN != null and "04".equals(MEM_GBN)'>
 				MAX(AA.AGN_COM_AMT) AS COM_AMT                      <!-- 일반에이전시금액 -->
 			   </if>
+			   <if test = 'MEM_GBN != null and "05".equals(MEM_GBN)'>
+				MAX(AA.COM_AMT) AS COM_AMT                      	<!-- 자체에이전시금액 -->
+			   </if>			   
 				FROM tb_prod_info   AA
 				JOIN tb_bas_yy_info BB
 				  ON AA.HDNG_GBN   = #{HDNG_GBN} /* 항목구분 */
@@ -2117,17 +2131,29 @@ DELETE
 
 	<!-- 멤버 숙박비계산 -->
 	<select id="selectMemRoomChargeCalc" parameterType="BMap" resultType="BMap">
-	<![CDATA[
+	
 		WITH RECURSIVE TEMP_CHK_DT AS (
 			SELECT DATE_FORMAT(#{CHK_IN_DT}, '%Y%m%d') AS CHK_DT
 			 UNION
 			SELECT DATE_FORMAT(DATE_ADD(TEMP_CHK_DT.CHK_DT, INTERVAL 1 DAY), '%Y%m%d') AS CHK_DT
 			  FROM TEMP_CHK_DT
-			 WHERE DATE_FORMAT(DATE_ADD(TEMP_CHK_DT.CHK_DT, INTERVAL 1 DAY), '%Y%m%d') <= #{CHK_OUT_DT}-1
+			 WHERE DATE_FORMAT(DATE_ADD(TEMP_CHK_DT.CHK_DT, INTERVAL 1 DAY), '%Y%m%d') <![CDATA[<=]]> #{CHK_OUT_DT}-1
 		)
 		SELECT DISTINCT A.COM_AMT  AS MEM_ROOM_CHARGE /* 숙박비 */
 		  FROM (
-			  SELECT MAX(AA.COM_AMT) AS COM_AMT
+			  SELECT 
+			   <if test = '"01".equals(MEM_GBN) or "02".equals(MEM_GBN)'>
+				MAX(AA.COM_AMT) AS COM_AMT                          <!-- 일반금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "03".equals(MEM_GBN)'>
+				MAX(AA.AGN_DIS_AMT) AS COM_AMT                      <!-- 총판에이전시금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "04".equals(MEM_GBN)'>
+				MAX(AA.AGN_COM_AMT) AS COM_AMT                      <!-- 일반에이전시금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "05".equals(MEM_GBN)'>
+				MAX(AA.COM_AMT) AS COM_AMT                      	<!-- 자체에이전시금액 -->
+			   </if>
 				FROM tb_prod_info   AA
 				JOIN tb_bas_yy_info BB
 				  ON AA.HDNG_GBN   = '28' /* 항목구분 (숙박(멤버))*/
@@ -2139,26 +2165,35 @@ DELETE
 				  OR CC.CHK_DT BETWEEN BB.ST_DT3 AND BB.ED_DT3
 			  GROUP BY CC.CHK_DT
 			  ) A
-	]]>
 	</select>
 
 
 	<!-- 비라운딩, 소아 추가숙박비 계산 -->
-	<select id="selectNokidChargeCalc" parameterType="BMap" resultType="BMap">
-		<![CDATA[
+	<select id="selectNokidChargeCalc" parameterType="BMap" resultType="BMap">		
 		WITH RECURSIVE TEMP_CHK_DT AS (
 			SELECT DATE_FORMAT(#{CHK_IN_DT}, '%Y%m%d') AS CHK_DT
 			 UNION
 			SELECT DATE_FORMAT(DATE_ADD(TEMP_CHK_DT.CHK_DT, INTERVAL 1 DAY), '%Y%m%d') AS CHK_DT
 			  FROM TEMP_CHK_DT
-			 WHERE DATE_FORMAT(DATE_ADD(TEMP_CHK_DT.CHK_DT, INTERVAL 1 DAY), '%Y%m%d') <= #{CHK_OUT_DT} -1
+			 WHERE DATE_FORMAT(DATE_ADD(TEMP_CHK_DT.CHK_DT, INTERVAL 1 DAY), '%Y%m%d') <![CDATA[<=]]> #{CHK_OUT_DT} -1
 		)
 		SELECT DISTINCT A.COM_AMT  AS NOKID_AMT /* 식사 + 숙박비 */
 		  FROM (
 			  SELECT AA.BAS_YY /* 기준년도 */
 				   , AA.BAS_YY_SEQ /* 기간년도순번 */
 				   , AA.PROD_SEQ /* 상품순번 */
-				   , MAX(AA.COM_AMT) AS COM_AMT
+				   <if test = '"01".equals(MEM_GBN) or "02".equals(MEM_GBN)'>
+				   , MAX(AA.COM_AMT) AS COM_AMT                          <!-- 일반금액 -->
+				   </if>
+				   <if test = 'MEM_GBN != null and "03".equals(MEM_GBN)'>
+				   , MAX(AA.AGN_DIS_AMT) AS COM_AMT                      <!-- 총판에이전시금액 -->
+				   </if>
+				   <if test = 'MEM_GBN != null and "04".equals(MEM_GBN)'>
+				   , MAX(AA.AGN_COM_AMT) AS COM_AMT                      <!-- 일반에이전시금액 -->
+				   </if>
+				   <if test = 'MEM_GBN != null and "05".equals(MEM_GBN)'>
+				   , MAX(AA.COM_AMT) AS COM_AMT                      	<!-- 자체에이전시금액 -->
+				   </if>
 			FROM tb_prod_info   AA
 			JOIN tb_bas_yy_info BB
 			  ON AA.HDNG_GBN   = '30'    /* 숙박,식사 ONLY */
@@ -2170,17 +2205,27 @@ DELETE
 			  OR CC.CHK_DT BETWEEN BB.ST_DT3 AND BB.ED_DT3
 		   GROUP BY AA.BAS_YY, AA.BAS_YY_SEQ, AA.PROD_SEQ, CC.CHK_DT
 		   ) A
-		]]>
+	
 	</select>
 
 	<!-- 오전 라운딩 변경 계산 -->
-	<select id="roundChgCalc" parameterType="BMap" resultType="BMap">
-		<![CDATA[
+	<select id="roundChgCalc" parameterType="BMap" resultType="BMap">		
 			SELECT DISTINCT
 				   A.CODE                               AS ITEM_CD          /* 항목코드 */
 				  ,'주말 오후 라운딩 -> 오전 라운딩 변경'         AS ITEM_NM          /* 항목명  */
-				  , A.REF_CHR2                          AS AMT_SIGN         /* 통화기호 */
-				  , C.COM_AMT                           AS PER_AMT          /* 이용금액 */
+				  , A.REF_CHR2                          AS AMT_SIGN         /* 통화기호 */				  
+				  <if test = '"01".equals(MEM_GBN) or "02".equals(MEM_GBN)'>
+				  , C.COM_AMT                           AS PER_AMT      <!-- 일반금액 -->
+				  </if>
+				  <if test = 'MEM_GBN != null and "03".equals(MEM_GBN)'>
+				  , C.AGN_DIS_AMT 						AS PER_AMT      <!-- 총판에이전시금액 -->
+				  </if>
+				  <if test = 'MEM_GBN != null and "04".equals(MEM_GBN)'>
+				  , C.AGN_COM_AMT 						AS PER_AMT      <!-- 일반에이전시금액 -->
+				  </if>
+				  <if test = 'MEM_GBN != null and "05".equals(MEM_GBN)'>
+				  , C.COM_AMT 							AS PER_AMT      <!-- 자체에이전시금액 -->
+				  </if>
 				  , '1'                                 AS USE_DAY          /* 이용기간 */
 				  , A.REF_CHR3                          AS UNIT_DAY         /* 사용단위 */
 				  , IFNULL(B.M_PERSON, 0) + IFNULL(B.G_PERSON, 0)  AS USE_NUM         /* 이용인원 */
@@ -2200,18 +2245,27 @@ DELETE
 			 AND (B.CHK_IN_DT BETWEEN D.ST_DT1 AND D.ED_DT1
 				  OR B.CHK_IN_DT BETWEEN D.ST_DT2 AND D.ED_DT2
 				  OR B.CHK_IN_DT BETWEEN D.ST_DT3 AND D.ED_DT3
-				 )
-		]]>
+				 )		
 	</select>
 
 	<!-- 싱글 룸  추가 계산 -->
-	<select id="roomupCalc" parameterType="BMap" resultType="BMap">
-		<![CDATA[
+	<select id="roomupCalc" parameterType="BMap" resultType="BMap">	
 		 SELECT DISTINCT
 				A.CODE           AS ITEM_CD         /* 항목코드 */
 			   ,A.CODE_NM        AS ITEM_NM         /* 항목명  */
 			   ,A.REF_CHR2       AS AMT_SIGN        /* 통화기호 */
-			   ,C.COM_AMT        AS PER_AMT         /* 이용금액 */
+			   <if test = '"01".equals(MEM_GBN) or "02".equals(MEM_GBN)'>
+			   , C.COM_AMT       AS PER_AMT      <!-- 일반금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "03".equals(MEM_GBN)'>
+			   , C.AGN_DIS_AMT 	 AS PER_AMT      <!-- 총판에이전시금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "04".equals(MEM_GBN)'>
+			   , C.AGN_COM_AMT 	 AS PER_AMT      <!-- 일반에이전시금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "05".equals(MEM_GBN)'>
+			   , C.COM_AMT 	 	AS PER_AMT      <!-- 자체에이전시금액 -->
+			   </if>
 			   ,B.ROOM_ADD_IL    AS USE_DAY         /* 이용 */
 			   ,A.REF_CHR3       AS UNIT_DAY        /* 사용단위 */
 			   ,B.ROOM_ADD_CNT   AS USE_NUM         /* 수량 */
@@ -2233,18 +2287,27 @@ DELETE
 		   AND (B.CHK_IN_DT BETWEEN D.ST_DT1 AND D.ED_DT1
 				OR B.CHK_IN_DT BETWEEN D.ST_DT2 AND D.ED_DT2
 				OR B.CHK_IN_DT BETWEEN D.ST_DT3 AND D.ED_DT3
-			   )
-		]]>
+			   )	
 	</select>
 
 	<!-- 프리미엄  추가 계산 -->
-	<select id="primCalc" parameterType="BMap" resultType="BMap">
-		<![CDATA[
+	<select id="primCalc" parameterType="BMap" resultType="BMap">		
 		 SELECT DISTINCT
 				A.CODE           AS ITEM_CD         /* 항목코드 */
 			   ,A.CODE_NM        AS ITEM_NM         /* 항목명  */
 			   ,A.REF_CHR2       AS AMT_SIGN        /* 통화기호 */
-			   ,C.COM_AMT        AS PER_AMT         /* 이용금액 */
+			   <if test = '"01".equals(MEM_GBN) or "02".equals(MEM_GBN)'>
+			   , C.COM_AMT       AS PER_AMT      <!-- 일반금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "03".equals(MEM_GBN)'>
+			   , C.AGN_DIS_AMT 	 AS PER_AMT      <!-- 총판에이전시금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "04".equals(MEM_GBN)'>
+			   , C.AGN_COM_AMT 	 AS PER_AMT      <!-- 일반에이전시금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "05".equals(MEM_GBN)'>
+			   , C.COM_AMT 	 	AS PER_AMT      <!-- 자체에이전시금액 -->
+			   </if>
 			   ,B.PRIM_ADD_IL    AS USE_DAY         /* 이용 */
 			   ,A.REF_CHR3       AS UNIT_DAY        /* 사용단위 */
 			   ,B.PRIM_ADD_CNT   AS USE_NUM         /* 수량 */
@@ -2266,19 +2329,28 @@ DELETE
 		   AND (B.CHK_IN_DT BETWEEN D.ST_DT1 AND D.ED_DT1
 				OR B.CHK_IN_DT BETWEEN D.ST_DT2 AND D.ED_DT2
 				OR B.CHK_IN_DT BETWEEN D.ST_DT3 AND D.ED_DT3
-			   )
-		]]>
+			   )		
 	</select>
 
 
 	<!-- Early Check In 추가 계산 -->
-	<select id="earlyCheckInCalc" parameterType="BMap" resultType="BMap">
-		<![CDATA[
+	<select id="earlyCheckInCalc" parameterType="BMap" resultType="BMap">		
 		 SELECT DISTINCT
 				A.CODE AS ITEM_CD               /* 항목코드 */
 			   ,A.CODE_NM AS ITEM_NM            /* 항목명  */
 			   ,A.REF_CHR2 AS AMT_SIGN          /* 통화기호 */
-			   ,C.COM_AMT     AS PER_AMT        /* 이용금액 */
+			   <if test = '"01".equals(MEM_GBN) or "02".equals(MEM_GBN)'>
+			   , C.COM_AMT       AS PER_AMT      <!-- 일반금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "03".equals(MEM_GBN)'>
+			   , C.AGN_DIS_AMT 	 AS PER_AMT      <!-- 총판에이전시금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "04".equals(MEM_GBN)'>
+			   , C.AGN_COM_AMT 	 AS PER_AMT      <!-- 일반에이전시금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "05".equals(MEM_GBN)'>
+			   , C.COM_AMT 	 	AS PER_AMT      <!-- 자체에이전시금액 -->
+			   </if>
 			   ,'1' AS USE_DAY                  /* 사용횟수 */
 			   ,A.REF_CHR3    AS UNIT_DAY       /* 사용단위 */
 			   ,#{ROOM_PERSON} as USE_NUM       /* 수량 */
@@ -2300,19 +2372,28 @@ DELETE
 			AND ( B.CHK_IN_DT BETWEEN D.ST_DT1 AND D.ED_DT1
 				  OR B.CHK_IN_DT BETWEEN D.ST_DT2 AND D.ED_DT2
 				  OR B.CHK_IN_DT BETWEEN D.ST_DT3 AND D.ED_DT3
-				)
-		]]>
+				)	
 	</select>
 
 
 	<!-- Late Check Out  추가 계산 -->
-	<select id="lateCheckOutCalc" parameterType="BMap" resultType="BMap">
-		<![CDATA[
+	<select id="lateCheckOutCalc" parameterType="BMap" resultType="BMap">		
 		 SELECT DISTINCT
 				A.CODE AS ITEM_CD               /* 항목코드 */
 			   ,A.CODE_NM AS ITEM_NM            /* 항목명  */
-			   ,A.REF_CHR2 AS AMT_SIGN          /* 통화기호 */
-			   ,C.COM_AMT     AS PER_AMT        /* 이용금액 */
+			   ,A.REF_CHR2 AS AMT_SIGN          /* 통화기호 */			   
+			   <if test = '"01".equals(MEM_GBN) or "02".equals(MEM_GBN)'>
+			   , C.COM_AMT       AS PER_AMT      <!-- 일반금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "03".equals(MEM_GBN)'>
+			   , C.AGN_DIS_AMT 	 AS PER_AMT      <!-- 총판에이전시금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "04".equals(MEM_GBN)'>
+			   , C.AGN_COM_AMT 	 AS PER_AMT      <!-- 일반에이전시금액 -->
+			   </if>
+			   <if test = 'MEM_GBN != null and "05".equals(MEM_GBN)'>
+			   , C.COM_AMT 	 	 AS PER_AMT      <!-- 자체에이전시금액 -->
+			   </if>
 			   ,'1' AS USE_DAY                  /* 사용횟수 */
 			   ,A.REF_CHR3    AS UNIT_DAY       /* 사용단위 */
 			   ,#{ROOM_PERSON} as USE_NUM       /* 수량 */
@@ -2334,8 +2415,7 @@ DELETE
 			AND ( B.CHK_IN_DT BETWEEN D.ST_DT1 AND D.ED_DT1
 				  OR B.CHK_IN_DT BETWEEN D.ST_DT2 AND D.ED_DT2
 				  OR B.CHK_IN_DT BETWEEN D.ST_DT3 AND D.ED_DT3
-				)
-		]]>
+				)		
 	</select>
 
 

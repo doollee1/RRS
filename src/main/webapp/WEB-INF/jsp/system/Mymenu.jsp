@@ -183,8 +183,25 @@ function cSearch() {
 	var url       = '/system/getMenuList.do';
 	var sendData  = {'searchData':gv_searchData};
 
-	fn_sendData(sid, url, sendData);
-	getMyMenu();
+	//fn_sendData(sid, url, sendData);
+	fn_ajax(url, true, sendData, function(data, xhr){
+		if(data.MESSAGE != "OK"){
+			alert("메뉴 리스트 조회 오류, 시스템관리자에게 문의하세요.");
+		} else {
+			if(!fn_empty(data.resultMenuList)){
+				reloadGrid("grid1", data.resultMenuList);   //그리드 재로드
+				btGrid.gridResizing('grid1');        		//그리드 리사이킹		
+				
+				//내메뉴 리스트 조회
+				getMyMenu();
+				
+			} else {
+				alert("메뉴 리스트 조회 오류, 시스템관리자에게 문의하세요.");
+			}
+		}
+	});
+	
+	
 }
 
 	/********************************************
@@ -305,7 +322,19 @@ function getMyMenu() {
 	var url      = '/system/getMyMenuList.do';
 	var sendData = {'searchData':gv_searchData};
 
-	fn_sendData(sid, url, sendData);
+	//fn_sendData(sid, url, sendData);
+	fn_ajax(url, true, sendData, function(data, xhr){
+		if(data.MESSAGE != "OK"){
+			alert("마이메뉴 리스트 조회 오류, 시스템관리자에게 문의하세요.");
+		} else {
+			if(!fn_empty(data.resultMenuList)){
+				reloadGrid("grid2", data.resultMenuList);   //그리드 재로드
+				btGrid.gridResizing('grid2');        		//그리드 리사이킹													
+			} else {
+				alert("마이메뉴 리스트 조회 오류, 시스템관리자에게 문의하세요.");
+			}
+		}
+	});
 }
 
 	/********************************************
@@ -315,23 +344,27 @@ function getMyMenu() {
 	 * @Author  :
 	 ********************************************/
 function fn_callback(sid, data, message, code) {
+		 	
 	// 검색
-	if (sid == 'sid_getMenuList') {
+/* 	if (sid == 'sid_getMenuList') {
 		var gridData = data.resultMenuList;
 		$('#grid1').jqGrid('clearGridData');
 		$('#grid1').jqGrid('setGridParam', {data:gridData});
 		$('#grid1').trigger('reloadGrid');
-
+				
 	} else if (sid == 'sid_getMyMenuList') {
 			var gridData = data.resultMenuList;
 			$('#grid2').jqGrid('clearGridData');
 			$('#grid2').jqGrid('setGridParam', {data:gridData});
-			$('#grid2').trigger('reloadGrid');
+			$('#grid2').trigger('reloadGrid');						
 
 	} else if(sid == 'sid_saveMyMenuList') {
 		alert("<s:message code='info.save'/>");
 		cSearch();
-	}
+	} */
+	
+	alert("<s:message code='info.save'/>");
+	cSearch();
 }
 
 function changeMidMenu(){

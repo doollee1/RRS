@@ -1023,10 +1023,12 @@ function fn_getMsg(code, args) {
 	return msg;
 }
 function loadingStart() {
-	$('body').append('<div id="wrap-loading"><div id="wrap-loading" class="loader"></div></div>');
+	//$('body').append('<div id="wrap-loading"><div id="wrap-loading" class="loader"></div></div>');
+	$('body').append('<div id="div_load_image" style="position:absolute; top:50%; left:50%;width:0px;height:0px; z-index:9999; background:#f0f0f0; filter:alpha(opacity=50); opacity:alpha*0.5; margin:auto; padding:0; text-align:center"><img src="/images/img.gif" style="width:100px; height:100px;"></div>');
 }
 function loadingEnd() {
-	$('#wrap-loading').remove();
+	//$('#wrap-loading').remove();
+	$('#div_load_image').remove();
 }
 function fn_formSubmit(url, data) {
 	var form = '<form action="' + url + '" method="post">';

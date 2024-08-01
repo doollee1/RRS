@@ -1,12 +1,18 @@
 package bt.login;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPublicKeySpec;
+import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.crypto.Cipher;
@@ -15,7 +21,8 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+
 import org.springframework.stereotype.Controller ;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
@@ -45,10 +52,7 @@ public class LoginController {
 	
 	@Resource(name = "CommonService")
 	private CommonService commonService;
-	
-	@Value("${spring.profiles.active}")
-	private String activeProfile;
-		
+			
 		
 	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 	
@@ -85,7 +89,7 @@ public class LoginController {
 	public String login(ModelMap model, HttpServletRequest request) throws Exception{
 		
 		logger.info("======== 로그인화면 =======");
-		logger.info("======== 프로파일 : "+activeProfile);
+		logger.info("======== 프로파일 : "+System.getProperty("spring.profiles.active"));
 								
 		return "/login/login";
 	}
@@ -148,42 +152,23 @@ public class LoginController {
 	@ResponseBody
 	public BRespData userOverlapCheck(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		
-		logger.info("======== 로그인처리 =======");
+		logger.info("======== 로그인처리 =======");		
 		
 		BMap param = reqData.getParamDataMap("searchData");
+		//logger.info("======== param : "+param);
+		
 		BRespData respData = new BRespData();
 		
 		HttpSession session = req.getSession();
 		
 		try{
-						
-			//세센종료시
-			logger.info("====== privateKey : "+session.getAttribute(LoginController.RSA_WEB_KEY));
-			if(session.getAttribute(LoginController.RSA_WEB_KEY) == null) {
-				
-				logger.info("======== 세센종료 재로그인 =======");
-				
-				respData.put("success", false);
-				respData.put("message", "세션이 종료됬습니다. 다시 로그인해주세요.");
-				return respData;
-			}
-			
-	        PrivateKey privateKey = (PrivateKey) session.getAttribute(LoginController.RSA_WEB_KEY);	       
+										        
+	        // 복호화	        	        	
+	        String decryptedPasswd = decryptRsa(param.getString("PASSWORD"));
+	        logger.info("======== decryptedPasswd : "+decryptedPasswd);	        	
+	        param.put("PASSWORD", decryptedPasswd);
 	        
-	        
-	        // 복호화, 예외처리
-	        try {	        	
-	        	param.put("PASSWORD", decryptRsa(privateKey, param.getString("PASSWORD")));
-	        } catch(Exception e) {
-	        	
-	        	e.printStackTrace();
-	        	
-	        	respData.put("success", false);
-				respData.put("message", "세션이 종료됬습니다. 다시 로그인해주세요.");
-				return respData;
-	        }
-	        
-			
+	        			
 	        // 다시 암호화
 	        param.put("PASSWORD", EgovFileScrty.encryptPassword(param.getString("PASSWORD"), param.getString("USER_ID")));
 	        
@@ -312,7 +297,51 @@ public class LoginController {
         String decryptedValue = new String(decryptedBytes, "utf-8"); // 문자 인코딩 주의.
         return decryptedValue;
     }
+    
+    
+    /**
+     * RSA 복호화
+     * 
+     * @param encryptedText
+     * @param stringPrivateKey
+     * @return
+     */
+    public String decryptRsa(String encryptedText) {
+		String decryptedText = "";
+    	
+		try {
+			
+			//RSA 개인키의 문자열
+			org.springframework.core.io.Resource privateKeyResource = new ClassPathResource("/cert/private.key");
+			String privateKeyContent = new BufferedReader(new InputStreamReader(privateKeyResource.getInputStream())).lines().collect(Collectors.joining("\n"));
+			privateKeyContent = privateKeyContent
+					.replace("-----BEGIN PRIVATE KEY-----", "")
+					.replace("-----END PRIVATE KEY-----", "")
+					.replaceAll("\\s+", "");
+			
+			//RSA 개인키를 Private 객체로 변환			
+			byte[] privateKeyBytes = Base64.getDecoder().decode(privateKeyContent);
+			PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+			PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
+
+			//암호문을 바이트 배열로 변환하고 복호화
+			byte[] encryptedBytes =  Base64.getDecoder().decode(encryptedText);
+			Cipher cipher = Cipher.getInstance("RSA");
+			cipher.init(Cipher.DECRYPT_MODE, privateKey);
+			byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+			
+			//복호화된 데이터 문자열로 변환					
+			decryptedText = new String(decryptedBytes, StandardCharsets.UTF_8);
+			
+		} catch (Exception e) {
+			e.printStackTrace();			
+		}
+
+		return decryptedText;
+	}
  
+    
     /**
      * 16진 문자열을 byte 배열로 변환한다.
      * 

@@ -18,16 +18,16 @@ import bt.system.dao.SystemDao;
 public class SystemService {
 	@Resource(name = "SystemDao")
 	private SystemDao systemDao;
-	
+
 	public List<BMap> selectSystemInfo(BMap param) throws Exception{
 		return systemDao.selectSystemInfo(param);
 	}
-	
+
 	public List<CodeVO> selectSystemInfoForMenu(BMap param) throws Exception{
 		param.put("LANG", LoginInfo.getLang());
 		return systemDao.selectSystemInfoForMenu(param);
 	}
-	
+
 	public void saveSystemInfo(BMap param,List<BMap> paramList) throws Exception{
 		for(int i = 0; i < paramList.size(); i++){
 			BMap map = new BMap(paramList.get(i));
@@ -41,11 +41,11 @@ public class SystemService {
 			}
 		}
 	}
-	
+
 	public void insertSystemInfo(BMap param) throws Exception{
 		systemDao.insertSystemInfo(param);
 	}
-	
+
 	public void updateSystemInfo(BMap param) throws Exception{
 		systemDao.updateSystemInfo(param);
 	}
@@ -53,16 +53,17 @@ public class SystemService {
 	public void deleteSystemMasterInfo(List<BMap> paramList) throws Exception{
 		for(int i = 0; i < paramList.size(); i++){
 			BMap map = new BMap(paramList.get(i));
-			systemDao.deleteSystemMasterInfo(map); 
+			systemDao.deleteSystemMasterInfo(map);
 		}
 	}
-	
+
 	public void deleteSystemDetailInfo(List<BMap> paramList) throws Exception{
 		for(int i = 0; i < paramList.size(); i++){
 			BMap map = new BMap(paramList.get(i));
-			systemDao.deleteSystemDetailInfo(map); 
+			systemDao.deleteSystemDetailInfo(map);
 		}
 	}
+
 	public void excelSystemInfo(String title, LinkedHashMap<String,Object> header, HttpServletResponse response, BMap param) throws Exception {
 		ExcelDataListRowHandler handler = null;
 		try {
@@ -76,17 +77,15 @@ public class SystemService {
 			}
 		}
 	}
-	
+
 	/**
 	 * System Dup Code Check.
 	 */
 	public String checkSystemCode(BMap param,List<BMap> paramList) throws Exception{
-		
 		String rtnStr = "";
-		
+
 		for(int i = 0; i < paramList.size(); i++){
 			BMap map = new BMap(paramList.get(i));
-			
 			if("I".equals(map.get("ROW_STATUS"))){
 				map.put("G_COMP_CD", param.getString("G_COMP_CD"));
 				map.put("LOGIN_USER", LoginInfo.getUserId());
@@ -96,7 +95,6 @@ public class SystemService {
 				}
 			}
 		}
-		
 		return rtnStr;
 	}
 }

@@ -21,7 +21,7 @@
 			<input type="hidden" name="modify" id="modify" value="" />
 			<input type="hidden" name="P_SAVE" id="P_SAVE" />
 			<input type="hidden" name="reserveStatus" id="reserveStatus" value=""/>
-			
+
 			<table class="pop_tblForm">
 				<colgroup>
 					<col width="15%">
@@ -42,9 +42,9 @@
 					<th style="text-align:center;"><s:message code="product.season"/></th>
 					<td>&nbsp;
 						<select id="SSN_GBN" name="SSN_GBN" class="cmc_combo" style="width:238px;">
-    						<option value="3" selected>비수기</option>
-    						<option value="2">준성수기</option>
-    						<option value="1">성수기</option>
+							<option value="3" selected>비수기</option>
+							<option value="2">준성수기</option>
+							<option value="1">성수기</option>
 						</select>
 						<input type="text" name="SSN_GBN_mod" id="SSN_GBN_mod" style="display:none; width:230px;" readonly >
 					</td>
@@ -105,8 +105,7 @@
 						내용 <input type="text" name="AGN_COM_CNTN" id="AGN_COM_CNTN" style="width:248px" maxlength='50'>
 					</td>
 				</tr>
-				
-				
+
 				<tr>
 					<th style="text-align:center;">총판여행사<br/><s:message code="product.etc"/></th>
 					<td colspan=3>&nbsp;
@@ -128,41 +127,41 @@ $(function(){
 	$("#cReset").click(function(e){
 		$("#frmProductDetail").reset();
 	});
-	
+
 	/* 삭제 버튼 */
 	$("#cDel").click(function(e){
 		deleteProductInfo()
 	});
-	
+
 	/* 닫기 버튼 */
 	$("#cCancel").click(function(e){
 		$('#productDetailPopUp').dialog('close')
 	});
-	
+
 	/* 저장 버튼 */
 	$("#cSave").click(function(e){
 		validation();
 	});
-	
+
 	/* 기간선택 버튼 */
 	$("#seldt").click(function(e){
 		openSeldtPopUp();
 	})
-	
+
 	$("#HDNG_GBN").on("change", function(e){
- 		$("#PROD_COND").find("option").remove();
+		$("#PROD_COND").find("option").remove();
 		condFilter();
 	})
 
 	var toYear =  new Date().getFullYear();
 	$("#BAS_YY_IN").val(toYear);
-	
-	/******************************************** 
+
+	/********************************************
 	 * @Subject : 팝업 창 기본 설정
 	 * @Content : 화면 비율 및 버튼 이벤트
 	 * @See     : condFilter()
 	 * @Since   : 2024.07.11
-	 * @Author  : 
+	 * @Author  :
 	 ********************************************/
 	$('#productDetailPopUp').dialog({
 		title: '<s:message code="product.reg_product"/>',
@@ -178,27 +177,33 @@ $(function(){
 				$("#cSave" ).text("수정");
 				$("#modify").val("1");
 				$('#productDetailPopUp').dialog({title : '<s:message code="product.adj_product"/>'});
-				
+
 				$('#BAS_YY_IN_mod').val($(this).data("BAS_YY"));           //기준년도 (수정)
 				$('#SSN_GBN_mod'  ).val($(this).data("SSN_GBN"));          //시즌구분 (수정)
 				$('#HDNG_GBN_mod' ).val($(this).data("HDNG_GBN"));         //항목구분 (수정)
 				$('#HDNG_GBN_CODE').val($(this).data("HDNG_GBN_CODE"));    //항목구분 코드
 				
-				$("#PROD_COND"    ).val($(this).data("PROD_COND"));        //조건
+				var chgCond = "0";
+				if($(this).data("PROD_COND") == "10일미만"){
+					chgCond = "DD10"
+				}else if ($(this).data("PROD_COND") == "10일이상"){
+					chgCond = "DU10"
+				}
+				$("#PROD_COND"    ).val(chgCond);        //조건
 				$("#PROD_COND2"   ).val($(this).data("PROD_COND2"));       //조건2
 				$("#PROD_COND_mod").val($(this).data("PROD_COND"));        //조건(수정)
-				
+
 				$("#seldt_P").val($(this).data("ST_DT1") + " ~ " + $(this).data("ED_DT1"));
 				$("#seldt_I").val($(this).data("BAS_YY_SEQ"));
-				
+
 				$("#COM_AMT"    ).val($(this).data("COM_AMT"));            //일반 금액
 				$("#AGN_COM_AMT").val($(this).data("AGN_COM_AMT"));        //일반여행사 금액
 				$("#AGN_DIS_AMT").val($(this).data("AGN_DIS_AMT"));        //총판여행사 금액
-				
+
 				$("#COM_BAS_PER").val($(this).data("COM_BAS_PER"));        //일반 기준인원수
 				$("#COM_BAS_DAY").val($(this).data("COM_BAS_DAY"));        //일반 기준일수
 				$("#COM_CNTN"   ).val($(this).data("COM_CNTN"));           //일반 기타내용
-				
+
 				$("#AGN_COM_BAS_PER").val($(this).data("AGN_COM_BAS_PER"));    //일반여행사 기준인원수
 				$("#AGN_COM_BAS_DAY").val($(this).data("AGN_COM_BAS_DAY"));    //일반여행사 기준일수
 				$("#AGN_COM_CNTN"   ).val($(this).data("AGN_COM_CNTN"));       //일반여행사 기타내용
@@ -206,32 +211,41 @@ $(function(){
 				$("#AGN_DIS_BAS_PER").val($(this).data("AGN_DIS_BAS_PER"));    //총판여행사 기준인원수
 				$("#AGN_DIS_BAS_DAY").val($(this).data("AGN_DIS_BAS_DAY"));    //총판여행사 기준일수
 				$("#AGN_DIS_CNTN"   ).val($(this).data("AGN_DIS_CNTN"));       //총판여행사 기타내용
-				
+
 				$('#BAS_YY_UP'    ).val($(this).data("BAS_YY"));               //기준년도
 				$('#BAS_YY_SEQ_UP').val($(this).data("BAS_YY_SEQ"));           //기준년도 순번
 				$('#PROD_SEQ_UP'  ).val($(this).data("PROD_SEQ"));             //상품순번
-				
+
 				$('#BAS_YY_IN'    ).hide();
 				$('#BAS_YY_IN_mod').show();
 				$('#SSN_GBN'      ).hide();
 				$('#SSN_GBN_mod'  ).show();
 				$('#HDNG_GBN'     ).hide();
 				$('#HDNG_GBN_mod' ).show();
-				$('#PROD_COND'    ).hide();
-				$('#PROD_COND_mod').show();
+				
+				
 				$('#PROD_COND2'   ).show();
 				$('#seldt'        ).hide();
+
+				/* 상품정보 수정시 시즌 구분값 설정 */
+				var gbn = $(this).data("SSN_GBN");
+				if(gbn == "비수기")
+					$('#SSN_GBN').val('3');
+				else if(gbn == "준성수기")
+					$('#SSN_GBN').val('2');
+				else if(gbn == "성수기")
+					$('#SSN_GBN').val('1');
 
 				var url = "/product/selectReserveStatus.do"
 				var param = { "BAS_YY"      : $(this).data("BAS_YY")
 							, "BAS_YY_SEQ"  : $(this).data("BAS_YY_SEQ")
 							, "PROD_SEQ"    : $(this).data("PROD_SEQ")
 							};
-				
+
 				fn_ajax(url, false, param, function(data, xhr){
 					$("#reserveStatus").val(data.result.length);
 				});
-				
+
 				if($("#reserveStatus").val() > 1){
 					$("#pop_ct_form_wrap").find("input, select, button").prop("disabled",true);
 					$("[id$=_BAS_PER]"   ).prop("disabled", false);
@@ -248,7 +262,7 @@ $(function(){
 			/* 필수로 들어가야함 */
 			if($("#P_SAVE").val() == "Y"){
 				p_rtnData = {
-					"BAS_YY" : ($("#BAS_YY_UP").val() != "") ? $("#BAS_YY_UP").val() : $("#BAS_YY_IN").val(),
+					"BAS_YY"  : ($("#BAS_YY_UP").val() != "") ? $("#BAS_YY_UP").val() : $("#BAS_YY_IN").val(),
 					"SSN_GBN" : ($("#SSN_GBN" ).val() != "") ? $("#SSN_GBN"  ).val() : $("#SSN_GBN_mod").val()
 				};
 			} else {
@@ -262,18 +276,18 @@ $(function(){
 	});
 });
 
-/******************************************** 
+/********************************************
  * @Subject : 저장 함수
  * @Content : 작성 내용 저장
  * @Since   : 2024.07.11
- * @Author  : 
+ * @Author  :
  ********************************************/
 function saveProductInfo(){
 	var formData = formIdAllToMap('frmProductDetail');
-	var param = {"param" : 
-					{"SSN_GBN"         :(formData.SSN_GBN  != "" ) ? formData.SSN_GBN    : formData.SSN_GBN_mod
-					,"HDNG_GBN"        :(formData.HDNG_GBN != "" ) ? formData.HDNG_GBN   : formData.HDNG_GBN_mod
-					,"PROD_COND"       :(formData.modify   == "1") ? formData.PROD_COND2 : formData.PROD_COND	
+	var param = {"param" :
+					{"SSN_GBN"         : (formData.SSN_GBN  != "" ) ? formData.SSN_GBN    : formData.SSN_GBN_mod
+					,"HDNG_GBN"        : (formData.HDNG_GBN != "" ) ? formData.HDNG_GBN   : formData.HDNG_GBN_mod
+					,"PROD_COND"       : (formData.modify   == "1") ? formData.PROD_COND : formData.PROD_COND
 					,"COM_AMT"         : (formData.COM_AMT != "" ) ? formData.COM_AMT    : 0
 					,"AGN_COM_AMT"     : (formData.AGN_COM_AMT != "") ? formData.AGN_COM_AMT : 0
 					,"AGN_DIS_AMT"     : (formData.AGN_DIS_AMT != "") ? formData.AGN_DIS_AMT : 0
@@ -297,7 +311,7 @@ function saveProductInfo(){
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
 			if(data.SAVE == 'N'){
-				alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
+				alert("<s:message code='errors.dup' javaScriptEscape='false'/>");
 			}else{
 				alert("<s:message code='info.save'/>");
 				$("#P_SAVE").val("Y");
@@ -307,42 +321,41 @@ function saveProductInfo(){
 	}
 }
 
-/******************************************** 
+/********************************************
  * @Subject : 삭제 함수
  * @Content : 내역 삭제
  * @Since   : 2024.07.11
- * @Author  : 
+ * @Author  :
  ********************************************/
 function deleteProductInfo(){
 	var formData = formIdAllToMap('frmProductDetail');
-	var param = {"param" : 
-					{"BAS_YY"     : formData.BAS_YY_UP
-					,"BAS_YY_SEQ" : formData.BAS_YY_SEQ_UP
-					,"PROD_SEQ"   : formData.PROD_SEQ_UP
-					}
+	var param = {"BAS_YY"     : formData.BAS_YY_UP
+				,"BAS_YY_SEQ" : formData.BAS_YY_SEQ_UP
+				,"PROD_SEQ"   : formData.PROD_SEQ_UP
 				}
+	alert(JSON.stringify(param));
 	var url = "/product/deleteProductInfo.do"
-	
+
 	if(confirm("<s:message code='confirm.delete'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
 			alert("<s:message code='product.info.delete'/>");
 			$("#P_SAVE").val("Y");
-			$('#productDetailPopUp').dialog('close');		
+			$('#productDetailPopUp').dialog('close');
 		});
 	}
 }
 
-/******************************************** 
+/********************************************
  * @Subject : 기간선택 팝업 Open
  * @Content : 기간선택 칸에서 선택 버튼 클릭시 기간 선택 팝업 Open
  * @Since   : 2024.07.11
- * @Author  : 
+ * @Author  :
  ********************************************/
 function openSeldtPopUp(){
 	var url = "/popup/ProductSelectPeriodPopUp.do";
 	var pid = "productSelectPeriodPopUp";    //팝업 페이지의 최상위 div ID
 	var formData = formIdAllToMap('frmProductDetail');
-	var param = { 
+	var param = {
 			"BAS_YY" : (formData.BAS_YY_UP != "") ? formData.BAS_YY_UP : formData.BAS_YY_IN,
 			"SSN_GBN" : formData.SSN_GBN
 	}
@@ -350,12 +363,12 @@ function openSeldtPopUp(){
 	});
 }
 
-/******************************************** 
+/********************************************
  * @Subject : 유효성 검사
  * @Content : 저장 전 유효성 검사 진행
  * @See     : saveProductInfo()
  * @Since   : 2024.07.11
- * @Author  : 
+ * @Author  :
  ********************************************/
 function validation(){
 	if($("#seldt_I").val() == ""){
@@ -377,14 +390,14 @@ function validation(){
 	saveProductInfo();
 }
 
-/******************************************** 
+/********************************************
  * @Subject : 조건 필터링
  * @Content : 조건 구분 데이터 가져와 셋팅
  * @Since   : 2024.07.11
- * @Author  : 
+ * @Author  :
  ********************************************/
 function condFilter(){
-	var url      = "/popup/ProductSelectCond.do";	
+	var url      = "/popup/ProductSelectCond.do";
 	var formData = formIdAllToMap('frmProductDetail');
 	var param    = {"code" :formData.HDNG_GBN};
 	/* 수정이면 */

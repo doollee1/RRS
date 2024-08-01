@@ -22,54 +22,51 @@ import bt.system.service.AuthService;
 public class AuthController {
 	@Resource(name = "AuthService")
 	private AuthService authService;
-	
+
 	@Resource(name = "CommonService")
 	private CommonService commonService;
-	
+
 	@RequestMapping(value = "/system/AuthManager.do")
 	public String AuthManager(ModelMap model) throws Exception{
 		model.addAttribute("useyn", commonService.selectCommonCode("USED_OR_NOT"));
 		model.addAttribute("griduseyn", commonService.selectCommonCodeGrid("USED_OR_NOT"));
 		return "/system/AuthManager";
 	}
-	
+
 	@RequestMapping(value = "/system/selectAuthInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData selectAuthInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
-		
+
 		respData.put("result", authService.selectAuthInfo(param));
-		
+
 		return respData;
 	}
-	
+
 	@RequestMapping(value = "/system/saveAuthInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData saveAuthInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
 		List<BMap> paramList = reqData.getParamDataList("gridData");
-		
+
 		BRespData respData = new BRespData();
-		
+
 		if(!authService.saveAuthInfo(param, paramList)){
 			respData.put("dup", "Y");
 		};
-		
+
 		return respData;
 	}
-	
-	
-	
-	
+
 	@RequestMapping(value = "/system/deleteAuthInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData deleteAuthInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		List<BMap> paramList = reqData.getParamDataList("gridData");
 		BRespData respData = new BRespData();
-		
+
 		authService.deleteAuthInfo(paramList);
-		
+
 		return respData;
 	}
 }

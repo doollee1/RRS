@@ -32,7 +32,13 @@ public class MainController {
 	
 	@RequestMapping(value = "/home/home.do")
 	public String home(ModelMap model) throws Exception{
-		return "/home/home";
+		String retUrl = "/home/home";
+		System.out.println("LoginInfo.getName1st()----->>" + LoginInfo.getName1st());
+		if(LoginInfo.getName1st().equals("에이전시")) {
+			retUrl = "/reserve/AgencyHome";
+		}
+		System.out.println("retUrl----->>" + retUrl);
+		return retUrl;
 	}
 
 	@RequestMapping(value = "/home/home2.do")

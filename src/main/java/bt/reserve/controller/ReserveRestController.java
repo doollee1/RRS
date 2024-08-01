@@ -156,6 +156,7 @@ public class ReserveRestController {
 		BRespData respData = new BRespData();
 		
 		param.put("S_HAN_NAME" , (String) reqData.get("S_HAN_NAME"));
+		param.put("S_USER_ID"  , (String) reqData.get("S_USER_ID"));
 		respData.put("result", reserveService.setUserInfo(param));
 		return respData;
 	}

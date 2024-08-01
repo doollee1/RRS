@@ -25,70 +25,70 @@ import bt.system.service.SystemService;
 public class AppController {
 	@Resource(name = "AppService")
 	private AppService appService;
-	
+
 	@Resource(name = "SystemService")
 	private SystemService systemService;
 
 	@Resource(name = "CommonService")
 	private CommonService commonService;
-	
+
 	@RequestMapping(value = "/system/AppManager.do")
 	public String home(ModelMap model) throws Exception{
 		BMap param = new BMap();
 		param.put("G_COMP_CD", LoginInfo.getCompCd());
 		param.put("S_STATUS", "Y");
 		List<CodeVO> systemList = systemService.selectSystemInfoForMenu(param);
-		
+
 		model.addAttribute("useyn", commonService.selectCommonCode("USED_OR_NOT"));
 		model.addAttribute("griduseyn", commonService.selectCommonCodeGrid("USED_OR_NOT"));
 		model.addAttribute("systemlist", systemList);
 		return "/system/AppManager";
 	}
-	
+
 	@RequestMapping(value = "/system/selectProgInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData selectProgInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
-		
+
 		respData.put("result", appService.selectProgInfo(param));
-		
+
 		return respData;
 	}
-	
+
 	@RequestMapping(value = "/system/saveProgInfo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData saveProgInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
 		List<BMap> paramList = reqData.getParamDataList("gridData");
-		
+
 		BRespData respData = new BRespData();
-		
+
 		if(!appService.saveProgInfo(param, paramList)){
 			respData.put("dup","Y");
 		}
 		return respData;
 	}
-	
+
 	@RequestMapping(value = "/system/selectMiddleMenuCombo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData selectMiddleMenuCombo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
-		
+
 		List<CodeVO> list = appService.selectMiddleMenuCombo(param);
-		
+
 		BRespData respData = new BRespData();
 		respData.put("menulist", list);
 		return respData;
 	}
-	
+
 	@RequestMapping(value = "/system/selectProgramCombo.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData selectProgramCombo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
-		
+
 		List<CodeVO> list = appService.selectProgramCombo(param);
-		
+
 		BRespData respData = new BRespData();
 		respData.put("proglist", list);
 		return respData;

@@ -358,7 +358,7 @@
 	</update>
 
 	<delete id="deleteUserInfo" parameterType="BMap">
-		DELETE BC_USER
+		DELETE FROM BC_USER
 		 WHERE COMP_CD = #{COMP_CD}
 		   AND USER_ID = #{USER_ID}
 	</delete>

@@ -119,7 +119,7 @@ $(function() {
 				text : '<s:message code='system.save'/>',
 				id   : 'save',
 				click: function() {
-					returnPopupRslt();    //팝업결과 반환
+					returnPopupRslt();    /* 팝업결과 반환 */
 				}
 			},
 			'<s:message code='system.delete'/>' : {
@@ -142,7 +142,7 @@ $(function() {
 			popupClose($(this).attr('id'));    /* 필수로 들어가야함 */
 		},
 		open : function() {
-			fn_init($(this).data());    //최초수행
+			fn_init($(this).data());           /* 최초수행 */
 		}
 	});
 
@@ -187,7 +187,7 @@ $(function() {
 	/* 조회 버튼 클릭 */
 	$("#btn_deposit").click(function() {
 		var payType = $("#PAY_TYPE_SEARCH").val();
-		cSearch(payType);    //입금목록 조회
+		cSearch(payType);    /* 입금목록 조회 */
 	});
 	
 	/******************************************** 
@@ -233,21 +233,24 @@ $(function() {
 					, "PRC_STS"  : gv_prc_sts
 		};
 
-		fn_ajax(url, true, param, function(data, xhr){
-			if(data.MESSAGE != "OK"){
-				alert("입금등록 통신오류발생, 시스템관리자에게 문의해주세요.");
-			} else{
-				if(!fn_empty(data.result)){
-					/* 성공(SUCCESS)일 경우 */
-					if(data.result.RESULT == "SUCCESS") {
-						/* 임금목록조회 */
-						cSearch('00');    //전체 
-					}										
-				}else{
-					alert("입금 등록이 실패하였습니다, 시스템관리자에게 문의해주세요.")
+		/* 입금등록 초기화 확인 alert*/
+		if(confirm("입금 등록 진행하시겠습니까?")){
+			fn_ajax(url, true, param, function(data, xhr){
+				if(data.MESSAGE != "OK"){
+					alert("입금등록 통신오류발생, 시스템관리자에게 문의해주세요.");
+				} else{
+					if(!fn_empty(data.result)){
+						/* 성공(SUCCESS)일 경우 */
+						if(data.result.RESULT == "SUCCESS") {
+							/* 임금목록조회 */
+							cSearch('00');    //전체 
+						}
+					}else{
+						alert("입금 등록이 실패하였습니다, 시스템관리자에게 문의해주세요.")
+					}
 				}
-			}
-		});
+			});
+		}
 	});
 	
 	/******************************************** 
@@ -279,7 +282,7 @@ $(function() {
 		
 		/* 예약상태가 입금완료(10) 일 경우 입금등록버튼 비활성화 */
 		if(!fn_empty(gv_prc_sts)){
-			if(gv_prc_sts == "08" || gv_prc_sts == "09" || gv_prc_sts == "10"){    //환불요청(08), 예약취소(09), 입금완료(10)
+			if(gv_prc_sts == "08" || gv_prc_sts == "09" || gv_prc_sts == "10"){    /* 환불요청(08), 예약취소(09), 입금완료(10) */
 				$(".ui-dialog-buttonset > button#save"  ).attr("disabled", true);
 				$(".ui-dialog-buttonset > button#delete").attr("disabled", true);
 				$("#btn_payreg").attr("disabled",true);
@@ -461,7 +464,7 @@ $(function() {
 				rownumbers     : false,
 				shrinkToFit    : false,
 				autowidth      : true,
-				queryPagingGrid: false,    // 쿼리 페이징 처리 여부
+				queryPagingGrid: false,    //쿼리 페이징 처리 여부
 				height         : 300
 		};
 		/* 그리드 생성 및 초기화 */

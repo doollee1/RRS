@@ -82,7 +82,7 @@
 $(document).on("keyup", "input[noSpecial]", function() {$(this).val( $(this).val().replace(/[^a-zA-Z0-9]/gi,"") );});
 $(document).on("keyup", "input[onlyKor]",   function() {$(this).val( $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"'\\]/g,"") );});
 $(document).on("keyup", "input[onlyEng]",   function() {$(this).val( $(this).val().replace(/[^A-Za-z]/ig,"") );});
-$(document).on("keyup", 'input[EMAIL]',     function() {$(this).val($(this).val().replace(/[^a-zA-Z0-9@._-]/g, ''));});
+$(document).on("keyup", 'input[EMAIL]',     function() {$(this).val( $(this).val().replace(/[^a-zA-Z0-9@._-]/g, ''));});
 
 /* 이름 정규식 체크 */
 $(document).on("focusout", '[class^=onlyKor]', function() {
@@ -95,7 +95,7 @@ $(document).on("focusout", '[class^=onlyKor]', function() {
 
 /* 영문이름 정규식 체크 */
 $(document).on("focusout", '[class^=onlyEng]', function() {
-	const regExp =  /^[a-zA-Z]*$/; 
+	const regExp =  /^[a-zA-Z\s]+$/; 
 	if($(this).val() != "" && !regExp.test($(this).val())){
 		alert("영문으로 작성해주세요.");
 		$(this).val("");

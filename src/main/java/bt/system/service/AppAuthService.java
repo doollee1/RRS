@@ -14,11 +14,11 @@ import bt.system.dao.AppAuthDao;
 public class AppAuthService {
 	@Resource(name = "AppAuthDao")
 	private AppAuthDao appAuthDao;
-	
+
 	public List<BMap> selectAppAuthInfo(BMap param) throws Exception{
 		return appAuthDao.selectAppAuthInfo(param);
 	}
-	
+
 	public void saveAppAuthInfo(List<BMap> paramList) throws Exception{
 		for(int i = 0; i < paramList.size(); i++){
 			BMap param = new BMap(paramList.get(i));
@@ -31,7 +31,7 @@ public class AppAuthService {
 			}
 		}
 	}
-	
+
 	public void deleteAppAuthInfo(List<BMap> paramList) throws Exception{
 		for(int i = 0; i < paramList.size(); i++){
 			BMap param = new BMap(paramList.get(i));

@@ -16,11 +16,9 @@
 <script src="<c:url value='/js/common.js' />" type="text/javascript"></script>
 
 
-<!-- 순서에 유의 -->
-<script type="text/javascript" src="/js/rsa/rsa.js"></script>
-<script type="text/javascript" src="/js/rsa/jsbn.js"></script>
-<script type="text/javascript" src="/js/rsa/prng4.js"></script>
-<script type="text/javascript" src="/js/rsa/rng.js"></script>
+<!-- RSA js -->
+<script type="text/javascript" src="/js/jsencrypt/jsencrypt.min.js"></script>
+
 
 <script type="text/javascript">
 $(function() {
@@ -32,8 +30,8 @@ $(function() {
 	
 	$("#btnLogin").click(function(){
 		
-		initRsa();  //RSA 초기화
-		//login();
+		//initRsa();  //RSA 초기화
+		login();
 		
 	});
 	
@@ -54,17 +52,33 @@ function initRsa(){
 		
 	var url = "/login/initRsaAjax.do";
 	var param = {};
-	
+		
 	fn_ajax(url, false, param, function(data, xhr){
 		
 		//console.log("data : "+JSON.stringify(data));
 		
+		var rsaModulus = "";
+		var rsaExponent = "";
+		
 		if(!fn_empty(data)){
-			
+						 
 			$("#RSAModulus").val(data.RSAModulus);
 			$("#RSAExponent").val(data.RSAExponent);
 			
-			setTimeout(login(), 100);   //0.1초후 로그인
+			while(true){
+			
+				rsaModulus  = $("#RSAModulus").val();
+				rsaExponent = $("#RSAExponent").val();
+				
+				console.log("rsaModulus : "+rsaModulus);
+				console.log("rsaExpoent : "+rsaExponent);
+				
+				if(!fn_empty(rsaModulus) && !fn_empty(rsaExponent)){
+					break;
+				}
+			}
+			
+			login();   //로그인
 		}
 	});
 } 
@@ -92,21 +106,23 @@ function login() {
 	var url = '/login/actionLogin.do';
 	var sendData = {'searchData':v_searchFormInfo};
 
-	var rsa = new RSAKey();
-    rsa.setPublic($('#RSAModulus').val(),$('#RSAExponent').val());
-
-	//sendData["searchData"]["PASSWORD"] = $("#PASSWORD").val();
-	sendData["searchData"]["PASSWORD"] = rsa.encrypt($("#PASSWORD").val());
+	//var rsa = new RSAKey();
+    //rsa.setPublic($('#RSAModulus').val(),$('#RSAExponent').val());
+	//sendData["searchData"]["PASSWORD"] = rsa.encrypt($("#PASSWORD").val());
+    //sendData["searchData"]["PASSWORD"] = $("#PASSWORD").val();
+	
+    var crypt = new JSEncrypt();  //객체생성
+    crypt.setPrivateKey($('#publicKey').val());
+    	
+	var encryptedPasswd = crypt.encrypt($("#PASSWORD").val());
+	//console.log("===== encryptedPasswd : "+encryptedPasswd);
+	
+	sendData["searchData"]["PASSWORD"] = encryptedPasswd;   //base64 인코딩
+			
 	fn_ajax(url, false, sendData, function(data, xhr) {
 		if(data.success) {
     		localStorage.clear();
     		
-    		/*
-    		if(data.INIT){
-    			chk_initialpw();
-    			return;
-    		}
-    		*/
     		
 			/* 그리드 정보 로컬스토리지에 담기  */
 			var list = data.resultGridInfoAll;
@@ -146,6 +162,7 @@ function login() {
     		alert(data.message);
     		location.href = '/index.do';   //루트로 이동
     	}
+					
 	});
 }
 
@@ -249,18 +266,21 @@ function chk_initialpw(){
 </head>
 <body>
 <div id="login_wrap">
-	<div class="top_line_g">&nbsp;</div>
 
-	<!-- <div id="login_top_wrap" style="width:100%; height:60px;">
-     <div class="toplogo">
-          <img src="/images/logo_alex.png" width="140" alt="" onclick="goLogin()" style="cursor:pointer;" />
-        </div>   
-	</div>
-	 -->
+	<div class="top_line_g">&nbsp;</div>
+	
     
 	<div id="login_content_wrap">	
         <div id="login_content">
-			
+					
+
+<textarea id="publicKey" rows="6"  style=display:none>-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoQK/VFdywldBTHERXGwWEATUp
+DbyBg8J0fCkNmhEUKHxlYjDEuWq3860Kax7nCIxPzg9sS+vkrqa6llhsCBXYfkC2
+pxx/m5ViU9Il6v1Rj13vmVHL6Zv3dL5hjhPn3XoSJ8dFHPRqnW0Vtl1MivJ3Wpmg
+nZsezLLsD5JyQ3P+KQIDAQAB
+-----END PUBLIC KEY-----</textarea>
+
     
                    <form id="loginForm" name="loginForm" action="<c:url value='/home/home.do'/>" method="post">
                            <table>                      
@@ -271,14 +291,7 @@ function chk_initialpw(){
                                 <tr>
                                     <td align="center"><input type="password" id="PASSWORD" name="PASSWORD" class="idpwInput" style="width:340px;" placeholder="Password" tabindex="2" onKeyPress="if(event.keyCode == 13) javascript:login();" />
                                     </td>
-                                </tr>
-                                <%-- <tr>
-                                    <td>
-	                                    <input type="hidden" id="RSAModulus" value="${RSAModulus}"/>
-	        							<input type="hidden" id="RSAExponent" value="${RSAExponent}"/>
-	        							<input type="hidden" id="Language" name="Language" value="KO"/>
-                                    </td> 
-                                </tr> --%>
+                                </tr>                                
                                  <tr>
                                     <td>
 	                                    <input type="hidden" id="RSAModulus" />

@@ -166,7 +166,7 @@
 		} else if($("#MEM_GBN_POP").val() == '02') {
 			$("#btn_userSearchPopup").hide();
 			$("#HAN_NAME_POP"       ).addClass("onlyKor");
-		} else if($("#MEM_GBN_POP"  ).val() == '04') {
+		} else if($("#MEM_GBN_POP"  ).val() == '03' || $("#MEM_GBN_POP"  ).val() == '04' || $("#MEM_GBN_POP"  ).val() == '05') {
 			$("#btn_userSearchPopup").hide();
 			$("#HAN_NAME_POP"       ).removeClass("onlyKor");
 		}

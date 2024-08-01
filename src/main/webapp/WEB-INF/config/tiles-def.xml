@@ -28,7 +28,12 @@
       <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp" />
     </definition> -->
     
-    <!-- TEST LAYOUT -->    
+    <definition name="/reserve/AgencyHome" template="/WEB-INF/jsp/reserve/AgencyHome.jsp">      
+    	<put-attribute name="imp" value="/WEB-INF/jsp/import/import.jsp"  />
+    	<put-attribute name="top" value="/WEB-INF/jsp/import/top.jsp"  />
+        <put-attribute name="navi"   value="/WEB-INF/jsp/import/left.jsp" />  
+   </definition>
+   
     <definition name="/home/*" template="/WEB-INF/jsp/home/home.jsp">      
     	<put-attribute name="imp" value="/WEB-INF/jsp/import/import.jsp"  />
     	<put-attribute name="top" value="/WEB-INF/jsp/import/top.jsp"  />

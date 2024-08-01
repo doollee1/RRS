@@ -56,7 +56,7 @@ public class ServiceInterceptor extends HandlerInterceptorAdapter {
 						
 						response.setContentType("text/html; charset=UTF-8");
 						PrintWriter out = response.getWriter();
-						out.println("<script>alert('Session has expired. You have been taken to the login page.'); location.href='/login/login.do';</script>");
+						out.println("<script>alert('Session has expired. You have been taken to the login page.'); top.location.href='/';</script>");
 						out.flush();
 						
 					} catch(Exception e) {

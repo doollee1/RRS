@@ -21,14 +21,14 @@
 			<table class="pop_tblForm">
 				<!---<caption></caption> --->
 				<colgroup>
+					<col width="200px" />
+					<col width="150px" />
 					<col width="100px" />
+					<col width="150px" />
+					<col width="250px" />
+					<col width="150px" />
 					<col width="200px" />
-					<col width="100px" />
-					<col width="200px" />
-					<col width="200px" />
-					<col width="200px" />
-					<col width="200px" />
-					<col width="200px" />
+					<col width="150px" />
 				</colgroup>
 					<tr>
 					<th><s:message code='system.UserID'/></th>
@@ -41,9 +41,12 @@
 						<input type="hidden" id="STOP_DT"  name = 'STOP_DT' value="9999.12.31" />
 						<input type="text" id="USER_ID"    name="USER_ID" class="cmc_txt disabled" readonly="readonly" style="width:150px;" maxlength="15" noSpecial />
 					</td>
-					<th><s:message code='system.name'/></th>
+					<th>구분</th>
 					<td>
-						<input type="text"  id="NAME_1ST" name="NAME_1ST" class="cmc_txt" style="width:150px;" maxlength="40" noSpecial />
+						<select id="NAME_1ST" name="NAME_1ST" class="cmc_combo text-center" style="width:150px; margin: 0 5px">
+								<option value="관리자">관리자</option>
+								<option value="에이전시">에이전시</option>
+						</select>
 					</td>
 					<th>텔리그램 ID</th>
 					<td>
@@ -195,15 +198,17 @@ $(function() {
 				"USER_ID" : $("#USER_ID").val()
 			}
 		};
-		
-		fn_ajax(url, false, param, function(data, xhr){
-			if(data.success){
-				/* confirm.init : 변경하였습니다. */
-				alert("<s:message code="confirm.init"/>");
-			}else{
-				alert(data.message);
-			}
-		});
+		/* 비밀번호 초기화 확인 alert */
+		if(confirm("비밀번호 초기화하시겠습니까?")){
+			fn_ajax(url, false, param, function(data, xhr){
+				if(data.success){
+					/* confirm.init : 변경하였습니다. */
+					alert("<s:message code="confirm.init"/>");
+				}else{
+					alert(data.message);
+				}
+			});
+		}
 	})
 });
 

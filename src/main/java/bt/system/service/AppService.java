@@ -15,14 +15,14 @@ import bt.system.dao.AppDao;
 public class AppService {
 	@Resource(name = "AppDao")
 	private AppDao appDao;
-	
+
 	public List<BMap> selectProgInfo(BMap param) throws Exception{
 		return appDao.selectProgInfo(param);
 	}
-	
+
 	public Boolean saveProgInfo(BMap param, List<BMap> paramList) throws Exception{
 		Boolean isValid = true;
-		
+
 		for(int i = 0; i < paramList.size(); i++){
 			BMap map = new BMap(paramList.get(i));
 			map.put("G_COMP_CD", param.getString("G_COMP_CD"));
@@ -41,13 +41,13 @@ public class AppService {
 		}
 		return isValid;
 	}
-	
+
 	public List<CodeVO> selectMiddleMenuCombo(BMap param) throws Exception{
 		param.put("G_COMP_CD", LoginInfo.getCompCd());
 		param.put("LANG", LoginInfo.getLang());
 		return appDao.selectMiddleMenuCombo(param);
 	}
-	
+
 	public List<CodeVO> selectProgramCombo(BMap param) throws Exception{
 		param.put("G_COMP_CD", LoginInfo.getCompCd());
 		param.put("LANG", LoginInfo.getLang());

@@ -18,11 +18,13 @@
 <div id="p_reserveListRegi" class="reserveListRegi_default">
 	<form id="frmReserveInfo" action="#">
 		<div id="pop_ct_form_wrap">
-			<input type="hidden" name="PRC_STS"  id="PRC_STS"     value="" />
-			<input type="hidden" name="EMAIL"    id="EMAIL"       value="" />
-			<input type="hidden" name="PAY_AMT"  id="PRV_PAY_AMT" value="" />
-			<input type="hidden" name="DCT_AMT"  id="PRV_DCT_AMT" value="" />
-			<input type="hidden" name="BAL_AMT"  id="PRV_BAL_AMT" value="" />
+			<input type="hidden" name="PRC_STS"       id="PRC_STS"     value="" />
+			<input type="hidden" name="EMAIL"         id="EMAIL"       value="" />
+			<input type="hidden" name="PAY_AMT"       id="PRV_PAY_AMT" value="" />
+			<input type="hidden" name="DCT_AMT"       id="PRV_DCT_AMT" value="" />
+			<input type="hidden" name="BAL_AMT"       id="PRV_BAL_AMT" value="" />
+			<input type="hidden" name="AGENCY_YN"     id="PRV_BAL_AMT" value="${loginVO.name1st}" />
+			<input type="hidden" name="LOGIN_USER_ID" id="LOGIN_USER_ID" value="${loginVO.userId}" />
 <!--            <input type="text" name="SEQ"  id="SEQ"      value="" />   -->
 
 			<table class="pop_tblForm" >
@@ -36,12 +38,9 @@
 				</colgroup>
 
 				<tr class="idTest">
-					<th>예약자한글명</th>
+					<th>예약자한글명 </th>
 					<td class="medium_td" colspan="5">
 						<input type="text" id="REQ_HAN_NM" name="REQ_HAN_NM" class="cmc_txt text-center" style="width:160px; margin: 0 5px"/>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<button type="button" class="btn btn-warning" id="btn_search" style="opacity:80%; width:115px; height:25px">회원찾기</button>
-						<button type="button" class="btn btn-danger" id="btn_adduser" style="opacity:80%; width:115px; height:25px">회원가입</button>
 					</td>
 				</tr>
 
@@ -323,48 +322,8 @@
 						<b style="opacity:70%; color: red; font-weight: bold;">※ 미체크시 기본은 오후로 지정됩니다.</b>
 					</div>
 					</td>
-
-					<th><s:message code='reservation.invoiceDt'/></th>
-					<td>
-						<input type="text" id="INV_REG_DT" name="INV_REG_DT" data-type="date" class="text-center" readonly="readonly" style="width:80px; margin:0 5px"/>
-						<button type="button" class="btn btn-primary openPop" id="btn_create" style="opacity:80%; width:70px;">생성</button>
-					</td>
 				</tr>
-
-				<tr>
-					<th><s:message code='reservation.expdt'/></th><!-- 예약기한 -->
-					<td>
-					<input type="text" class="cmc_txt text-center"  id="EXP_DT" name="EXP_DT" data-type="date" style="width:120px; margin:0 5px" readonly="readonly"/>
-					</td>
-
-					<th><s:message code='reservation.depositDate'/></th><!-- 예약금일금일자 -->
-					<td>
-						<input type="text" class="cmc_txt text-center"  id="DEP_IN_DT" name="DEP_IN_DT" data-type="date" style="width:145px; margin:0 5px" readonly="readonly"/>
-					</td>
-
-					<th><s:message code='reservation.deposit'/></th><!-- 요청예약금 -->
-					<td>
-						<input type="text" id="DEP_AMT" name="DEP_AMT" style="width:100px; text-align: right; margin:0 5px" value="0" class="withComma" readonly="readonly"/>원
-					</td>
-				</tr>
-
-				<tr>
-					<th>입금예약금</th><!-- 입금예약금 -->
-					<td>
-						<input type="text" id="PAY_DEP_AMT" name="PAY_DEP_AMT" style="width:120px; text-align: right; margin:0 5px" value="0" class="withComma" readonly="readonly"/>원
-					</td>
-
-					<th>입금관리</th>
-					<td>
-						<button type="button" class="btn btn-success" id="btn_pay"  style="width:160px; height:25px; opacity:80%; margin: 0 20px">입금관리</button>
-					</td>
-
-					<th>입금예약상태</th>
-					<td>
-						<input type="text" class="text-center" id="PRC_STS_NM" name="PRC_STS_NM" style="width:100px; margin: 0 5px" readonly/>
-						<button type="button" class="btn btn-primary openPop" id="changeStatus" style="opacity:80%; width:70px;">상태변경</button>
-					</td>
-				</tr>
+				
 				<tr>
 					<th><s:message code='reservation.moreDetail'/></th>
 					<td colspan="5">
@@ -380,9 +339,8 @@
 				</tr>
 				<tr>
 					<td style="height:20px;" colspan="5">
-						<b id="advice1" style="opacity:90%; color: green; font-weight: bold;">&nbsp;※ [예약등록]에서 미팅샌딩 [<b style="color: red; font-weight: bold;">등록</b>],
-						인보이스 [<b style="color: red; font-weight: bold;">생성</b>], [<b style="color: red; font-weight: bold;">상태변경</b>],
-						[<b style="color: red; font-weight: bold;">입금관리</b>]는 <b style="color: red; font-weight: bold;">저장</b> 후 예약상세에서 진행해주세요.</b>
+						<b id="advice1" style="opacity:90%; color: green; font-weight: bold;">&nbsp;※ [예약등록]에서 미팅샌딩 [<b style="color: red; font-weight: bold;">등록</b>]은
+						<b style="color: red; font-weight: bold;">저장</b> 후 예약상세에서 진행해주세요.</b>
 
 						<b id="advice2" style="opacity:90%; color: green; font-weight: bold;">&nbsp;※ [예약상세]에서  <b style="color: red; font-weight: bold;">인원내역</b> 수정 시
 						<b style="color: red; font-weight: bold;">동반자정보</b>에서
@@ -428,6 +386,7 @@ $(function() {
 	var chk_out_dt;
 	var min_date;
 	var prc_sts;
+
 	var g_SEQ;
 	var g_REQ_DT;
 	var g_DSEQ;
@@ -480,15 +439,6 @@ $(function() {
 					saveReserveInfo(); /* 저장 버튼 이벤트 */
 				}
 			},
-			'<s:message code='button.delete'/>' :{
-				text: '<s:message code='button.delete'/>',
-				id : 'delete',
-				click:function(){
-					if(confirm("[삭제] 진행 시 영구 삭제 됩니다. 진행하시겠습니까?")){
-						deleteReserveInfo();
-					}
-				}
-			},
 			'<s:message code='button.close'/>' : {
 				text: '<s:message code='button.close'/>',
 				click: function() {
@@ -517,7 +467,6 @@ $(function() {
 		var selec_id  = $(this).attr('id');
 		var selec_val = $(this).val();
 		var ids       = $("#reserveGrid").jqGrid("getDataIDs");
-		var memGbn    = $("#MEM_GBN").val();
 		/* 팝업창이 수정상태일 때만 */
 		if(vflag == 'detail'){
 			/* 회원구분이 에이전시가 아닐 때만 */
@@ -577,238 +526,6 @@ $(function() {
 
 	/*******************************************************
 	 *-----------------------------------------------------*
-	 * @Subject : 사용자 ID 찾기 (ENTER)
-	 * @Goal    : ENTER를 통한 사용자 ID를 조회
-	 * @Brief   : 조회 시 1개 이상이면 /reserve/searchId.do 팝업 호출
-	 * @See     : setUserInfo.do
-	 * -----------------------------------------------------*
-	 *******************************************************/
-	$("#REQ_HAN_NM").on("keyup",function(key){
-		if(key.keyCode==13) {
-			var url = "/reserve/setUserInfo.do";
-			var param = {"S_HAN_NAME":$("#REQ_HAN_NM").val()};
-			fn_ajax(url, true, param, function(data, xhr){
-				setData = data.result;
-				delProgram();
-				$("#CHK_IN_DT").val($.datepicker.formatDate('yy.mm.dd', new Date()));
-				$("#CHK_OUT_DT").val($.datepicker.formatDate('yy.mm.dd', new Date()));
-				if (setData.cnt < 1) {  // 입력한 사용자 검색 결과가 없을때
-					alert("검색 된 사용자가 없습니다.");
-					$("#USER_ID").val("");
-					$("#MEM_GBN").val("");
-					$("#REQ_HAN_NM").val("");
-					$("#REQ_ENG_NM").val("");
-					$("#REQ_TEL_NO").val("");
-					$("#AGN_GB").val("");
-					$("#AGN_CD").val("");
-					$("#AGN_GB").attr("disabled",true);
-					$("#AGN_CD").attr("disabled",true);
-					$("#HDNG_GBN").val("");
-					$("#HDNG_GBN").attr("disabled",true);
-					$("#ADD_HDNG_GBN").val("");
-					$("#ADD_HDNG_GBN").attr("disabled",true);
-					$("#M_PERSON"  ).attr("disabled",false);
-					$("#M_PERSON").val("0");
-					$("#G_PERSON").val("0");
-					$("#N_PERSON").val("0");
-					$("#K_PERSON").val("0");
-					$("#I_PERSON").val("0");
-					$("#TOT_PERSON").val("0");
-					$("#TWIN_KING_CNT").val("0");
-					$("#TWIN_CNT").val("0");
-					$("#KING_CNT").val("0");
-					$("#DEP_IN_DT"  ).attr("disabled",true);
-				} else if (setData.cnt == 1) {  // 입력한 사용자 검색 결과가 1명일때
-					$("#MEM_GBN").attr("disabled",true);
-					$("#USER_ID").val(setData.USER_ID);
-					$("#MEM_GBN").val(setData.MEM_GBN);
-					$("#REQ_HAN_NM").val(setData.HAN_NAME);
-					$("#REQ_ENG_NM").val(setData.ENG_NAME);
-					$("#REQ_TEL_NO").val(setData.TEL_NO);
-					// 01 멤버, 02 일반, 04 에이젼시
-					if(setData.MEM_GBN == '01'){ /* [멤버]일경우 */
-						$("#AGN_GB").val("");
-						$("#AGN_CD").val("");
-						$("#AGN_GB").attr("disabled",true);
-						$("#AGN_CD").attr("disabled",true);
-						$("#HDNG_GBN").val("28");
-						$("#HDNG_GBN"     ).attr("disabled",true);
-						$("#ADD_HDNG_GBN").val("");
-						$("#ADD_HDNG_GBN").attr("disabled",true);
-						$("#M_PERSON"  ).attr("disabled",false);
-						$("#M_PERSON").val("1");
-						$("#G_PERSON").val("0");
-						$("#N_PERSON").val("0");
-						$("#K_PERSON").val("0");
-						$("#I_PERSON").val("0");
-						$("#TOT_PERSON").val("1");
-						$("#DEP_IN_DT"  ).attr("disabled",false);
-						$("#PRC_STS").val("02");/* ***** 상태값 : 멤버예약신청 ***** */
-					}else if(setData.MEM_GBN == '02'){ /* [일반]일경우 */
-						$("#AGN_GB").val("");
-						$("#AGN_CD").val("");
-						$("#AGN_GB").attr("disabled",true);
-						$("#AGN_CD").attr("disabled",true);
-						$("#M_PERSON").attr("disabled",true);
-						$("#HDNG_GBN").val("");
-						$("#HDNG_GBN").attr("disabled",true);
-						$("#ADD_HDNG_GBN").val("");
-						$("#ADD_HDNG_GBN").attr("disabled",true);
-						$("#M_PERSON").val("0");
-						$("#G_PERSON").val("1");
-						$("#N_PERSON").val("0");
-						$("#K_PERSON").val("0");
-						$("#I_PERSON").val("0");
-						$("#TOT_PERSON").val("1");
-						$("#DEP_IN_DT"  ).attr("disabled",false);
-						$("#PRC_STS").val("04"); /* ***** 상태값 : 예약신청(일반,AG) ***** */
-					}else if((setData.MEM_GBN == '03') || (setData.MEM_GBN == '04') || (setData.MEM_GBN == '05')){ /* [에이전시]일경우 */
-						$("#AGN_GB").attr("disabled",true);
-						$("#AGN_CD").attr("disabled",false);
-						$("#HDNG_GBN").val("");
-						$("#HDNG_GBN").attr("disabled",true);
-						$("#ADD_HDNG_GBN").val("");
-						$("#ADD_HDNG_GBN").attr("disabled",true);
-						$("#M_PERSON").attr("disabled",false);
-						$("#M_PERSON").val("0");
-						$("#G_PERSON").val("0");
-						$("#N_PERSON").val("0");
-						$("#K_PERSON").val("0");
-						$("#I_PERSON").val("0");
-						$("#TOT_PERSON").val("0");
-						$("#TWIN_KING_CNT").val("0");
-						$("#TWIN_CNT").val("0");
-						$("#KING_CNT").val("0");
-						$("#DEP_IN_DT"  ).attr("disabled",false);
-						$("#PRC_STS").val("06"); /* ***** 상태값 : 예약확정 ***** */
-					}else{
-						$("#AGN_GB").val("");
-						$("#AGN_CD").val("");
-						$("#AGN_GB").attr("disabled",true);
-						$("#AGN_CD").attr("disabled",true);
-						$("#HDNG_GBN").val("");
-						$("#HDNG_GBN").attr("disabled",true);
-						$("#ADD_HDNG_GBN").val("");
-						$("#ADD_HDNG_GBN").attr("disabled",true);
-						$("#M_PERSON"  ).attr("disabled",false);
-						$("#M_PERSON").val("0");
-						$("#G_PERSON").val("0");
-						$("#N_PERSON").val("0");
-						$("#K_PERSON").val("0");
-						$("#I_PERSON").val("0");
-						$("#TOT_PERSON").val("0");
-						$("#TWIN_KING_CNT").val("0");
-						$("#TWIN_CNT").val("0");
-						$("#KING_CNT").val("0");
-						$("#DEP_IN_DT"  ).attr("disabled",true);
-						$("#PRC_STS").val("04");
-					}
-					
-					fn_chgAgnGb(setData.MEM_GBN);
-					fn_chgAgnCd($("#AGN_GB").val());
-					
-					fn_roomTypeCnt();
-				} else if (setData.cnt > 1) {   // 입력한 사용자 검색 결과가 2명 이상일때
-					var url1 = "/reserve/searchId.do";
-					var pid = "p_searchIdPopup";
-					popupOpen(url1, pid, param, function(data) {
-						if(!fn_empty(data)){
-							$("#USER_ID").val(data.USER_ID);
-							$("#MEM_GBN").val(data.MEM_GBN);
-							$("#REQ_HAN_NM").val(data.REQ_HAN_NM);
-							$("#REQ_ENG_NM").val(data.REQ_ENG_NM);
-							$("#REQ_TEL_NO").val(data.REQ_TEL_NO);
-							if(data.MEM_GBN == "01"){ /* [멤버]일경우 */
-								$("#AGN_GB").val("");
-								$("#AGN_CD").val("");
-								$("#AGN_GB").attr("disabled",true);
-								$("#AGN_CD").attr("disabled",true);
-								$("#HDNG_GBN").val("28");
-								$("#HDNG_GBN"     ).attr("disabled",true);
-								$("#ADD_HDNG_GBN").val("");
-								$("#ADD_HDNG_GBN").attr("disabled",true);
-								$("#M_PERSON"  ).attr("disabled",false);
-								$("#M_PERSON").val("1");
-								$("#G_PERSON").val("0");
-								$("#N_PERSON").val("0");
-								$("#K_PERSON").val("0");
-								$("#I_PERSON").val("0");
-								$("#TOT_PERSON").val("1");
-								$("#DEP_IN_DT"  ).attr("disabled",false);
-								$("#PRC_STS").val("02"); /* ***** 상태값 : 멤버예약신청 ***** */
-							}else if(data.MEM_GBN == "02"){ /* [일반]일경우 */
-								$("#AGN_GB").val("");
-								$("#AGN_CD").val("");
-								$("#AGN_GB").attr("disabled",true);
-								$("#AGN_CD").attr("disabled",true);
-								$("#HDNG_GBN").val("");
-								$("#HDNG_GBN").attr("disabled",true);
-								$("#ADD_HDNG_GBN").val("");
-								$("#ADD_HDNG_GBN").attr("disabled",true);
-								$("#M_PERSON").attr("disabled",true);
-								$("#M_PERSON").val("0");
-								$("#G_PERSON").val("1");
-								$("#N_PERSON").val("0");
-								$("#K_PERSON").val("0");
-								$("#I_PERSON").val("0");
-								$("#TOT_PERSON").val("1");
-								$("#DEP_IN_DT"  ).attr("disabled",false);
-								$("#PRC_STS").val("04"); /* ***** 상태값 : 예약신청(일반,AG) ***** */
-							}else if((data.MEM_GBN == "03") || (data.MEM_GBN == "04") || (data.MEM_GBN == "05")){ /* [에이전시]일경우 */
-								$("#AGN_GB").attr("disabled",true);
-								$("#AGN_CD").attr("disabled",false);
-								$("#HDNG_GBN").val("");
-								$("#HDNG_GBN").attr("disabled",true);
-								$("#ADD_HDNG_GBN").val("");
-								$("#ADD_HDNG_GBN").attr("disabled",true);
-								$("#M_PERSON").attr("disabled",false);
-								$("#M_PERSON").val("0");
-								$("#G_PERSON").val("0");
-								$("#N_PERSON").val("0");
-								$("#K_PERSON").val("0");
-								$("#I_PERSON").val("0");
-								$("#TOT_PERSON").val("0");
-								$("#TWIN_KING_CNT").val("0");
-								$("#TWIN_CNT").val("0");
-								$("#KING_CNT").val("0");
-								$("#DEP_IN_DT"  ).attr("disabled",false);
-								$("#PRC_STS").val("06"); /* ***** 상태값 : 예약확정 ***** */
-							}else{
-								$("#AGN_GB").val("");
-								$("#AGN_CD").val("");
-								$("#AGN_GB").attr("disabled",true);
-								$("#AGN_CD").attr("disabled",true);
-								$("#HDNG_GBN").val("");
-								$("#HDNG_GBN").attr("disabled",true);
-								$("#ADD_HDNG_GBN").val("");
-								$("#ADD_HDNG_GBN").attr("disabled",true);
-								$("#M_PERSON"  ).attr("disabled",false);
-								$("#M_PERSON").val("0");
-								$("#G_PERSON").val("0");
-								$("#N_PERSON").val("0");
-								$("#K_PERSON").val("0");
-								$("#I_PERSON").val("0");
-								$("#TOT_PERSON").val("0");
-								$("#TWIN_KING_CNT").val("0");
-								$("#TWIN_CNT").val("0");
-								$("#KING_CNT").val("0");
-								$("#DEP_IN_DT"  ).attr("disabled",true);
-								$("#PRC_STS").val("04"); /* ***** 상태값 : 예약신청(일반,AG) ***** */
-							}
-
-							fn_chgAgnGb(data.MEM_GBN);
-							fn_chgAgnCd($("#AGN_GB").val());
-							
-							fn_roomTypeCnt();
-						}
-					});
-				}
-			});
-		}
-	});
-
-	/*******************************************************
-	 *-----------------------------------------------------*
 	 * @Subject : 화면 OPEN 시 최초 실행 함수
 	 * @Goal    : 기본 설정 값 셋팅
 	 * @Brief   : 신규 및 상세조회를 구분하여 화면 내 값 셋팅
@@ -824,9 +541,24 @@ $(function() {
 		$('#REQ_DT').val($.datepicker.formatDate('yy.mm.dd', new Date())).attr("readonly" , true); // 예약일자 오늘 값으로 셋팅 (변경불가)
 		$("#TWIN_CNT").val("0");
 		$("#KING_CNT").val("0");
-		$("#btn_adduser").hide();
 
 		if(fn_empty(seq || req_dt)){ //신규
+			/* 로그인한 에이전시 ID의 한글명, 회원구분, 에이전시 구분, ID, 영문명, 전화번호 셋팅 */
+			var url = "/reserve/setUserInfo.do";
+			var param = {"S_USER_ID":$("#LOGIN_USER_ID").val()};
+			fn_ajax(url, false, param, function(data, xhr){
+				setData = data.result;
+				$("#REQ_HAN_NM").val(setData.HAN_NAME);
+				$("#MEM_GBN").val(setData.MEM_GBN);
+				$("#USER_ID"   ).val(setData.USER_ID);
+				$("#REQ_ENG_NM").val(setData.ENG_NAME);
+				$("#REQ_TEL_NO").val(setData.TEL_NO);
+				$("#PRC_STS").val("06"); /* ***** 상태값 : 예약확정 ***** */
+				
+				fn_chgAgnGb(setData.MEM_GBN);
+				fn_chgAgnCd($("#AGN_GB").val());
+			});
+
 			$(".ui-dialog-title").text('<s:message code='reservation.registration'/>');
 			$("#CHK_IN_DT"      ).val(Util.converter.dateFormat1(today));
 			$("#CHK_OUT_DT"     ).val(Util.converter.dateFormat1(today));
@@ -834,30 +566,23 @@ $(function() {
 			$(".status"         ).hide();
 
 			vflag = "new";
-			// 예약금일금일자, 요청예약금, 예약기한, 인보이스날짜 (변경불가)
-			$("#DEP_IN_DT , #DEP_AMT , #EXP_DT , #INV_REG_DT").attr("disabled", true);
+			// 예약금일금일자
 			$("#HDNG_GBN"  ).attr("disabled",true);
 			$("#ADD_HDNG_GBN"  ).attr("disabled",true);
 			$("#insertPickGbn").attr("disabled", true); // [등록]
-			$("#btn_create").attr("disabled", true);    // [생성]
-			$("#btn_pay").attr("disabled", true);       // [입금관리]
-			$("#changeStatus").attr("disabled", true);  // [상태변경]
 			$("#advice1").show();
 			$("#advice2").hide();
-			$("#btn_adduser").show();
 			$("#delete").hide();
-			$("#REQ_HAN_NM").attr("disabled",false);
+			$("#REQ_HAN_NM").attr("disabled",true);
 			$("#USER_ID").attr("disabled",true);
 			$("#MEM_GBN").attr("disabled",true);
 			$("#AGN_GB").attr("disabled",true);
-			$("#AGN_CD").attr("disabled",true);
+			$("#AGN_CD").attr("disabled",false);
 		}else{ // 상세
 			$("#USER_ID , #MEM_GBN").attr("disabled", true); // 유저ID, 회원구분  수정불가
 			$(".ui-dialog-title").text('<s:message code='reservation.detail'/>'); // [예약상세] 타이틀 삽입
-			$("#btn_search").hide(); // 아이디 찾기 버튼 숨김
 			$("#advice1").hide();
 			$("#advice2").show();
-			$("#btn_adduser").hide();
 			$("#REQ_HAN_NM").attr("disabled",true);
 			$("#M_PERSON").attr("disabled", true);
 			$("#G_PERSON").attr("disabled", true);
@@ -868,22 +593,6 @@ $(function() {
 			initSelect(); /* *********** 예약 상세내역 조회 *********** */
 			vflag = "detail";
 		}
-
-		$('#DEP_IN_DT').datepicker({
-			dateFormat : 'yy.mm.dd',
-			showOn : 'both',
-			disabled : 'disabled'
-		}).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
-			function(e) {
-		});
-
-		$('#INV_REG_DT').datepicker({
-			dateFormat : 'yy.mm.dd',
-			showOn : 'both',
-			disabled : 'disabled'
-		}).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
-			function(e) {
-		});
 
 		$('#CHK_OUT_DT, #CHK_IN_DT, #FLIGHT_IN_DT, #FLIGHT_OUT_DT').datepicker({
 			dateFormat : 'yy.mm.dd',
@@ -899,21 +608,7 @@ $(function() {
 
 		$("#reserveGrid_pager_left").hide();
 		$("#TOT_PERSON"     ).attr("disabled",true);
-		$("#AGN_GB").val("");
-		$("#AGN_CD").val("");
 		$("#ADD_HDNG_GBN").val("");
-
-		if($("#MEM_GBN").val() == '01'){
-			if($("#G_PERSON").val() > 0){
-				$("#ADD_HDNG_GBN"  ).attr("disabled",false);
-			}else{
-				$("#ADD_HDNG_GBN"  ).attr("disabled",true);
-			}
-		}else if($("#MEM_GBN").val() == '02'){ //02 일반회원
-			$("#M_PERSON").val("0");
-			$("#M_PERSON"  ).attr("disabled",true);
-			$("#ADD_HDNG_GBN"  ).attr("disabled",true);
-		}
 
 		loadingEnd(); /*$('#wrap-loading').remove();*/
 	}
@@ -951,16 +646,16 @@ $(function() {
 	function fn_dataSet(data){
 		$.each(data, function(key , val){
 			if( key == "M_PERSON"    || key == "G_PERSON"      || key == "N_PERSON"    || key == "K_PERSON"   || key == "I_PERSON"  ||
-				key == "TOT_PERSON"  || key == "TWIN_KING_CNT" || key == "TWIN_CNT"    || key == "KING_CNT"   || key == "DEP_AMT"   ||
-				key == "PAY_DEP_AMT" || key == "ROOM_ADD_CNT"  || key == "ROOM_ADD_CNT"|| key == "PRIM_ADD_IL"|| key == "PRIM_ADD_CNT") {
+				key == "TOT_PERSON"  || key == "TWIN_KING_CNT" || key == "TWIN_CNT"    || key == "KING_CNT"   ||
+				key == "ROOM_ADD_CNT"  || key == "ROOM_ADD_CNT"|| key == "PRIM_ADD_IL"|| key == "PRIM_ADD_CNT") {
 				$('[name='+ key +']').val (fn_comma(val));
 			}else if(key == "REQ_TEL_NO"){ // 예약자전화
 				$('[name='+ key +']').val (formatPhoneNumber(val));
 			}else if(key == "RND_CHG_YN1" || key == "RND_CHG_YN2"){ // 토요일/일요일 체크박스
 				if(val == "Y") $('[name='+ key +']').prop("checked", true);
 				else           $('[name='+ key +']').prop("checked", false);
-			}else if(key == "REQ_DT" || key == "CHK_IN_DT" || key == "CHK_OUT_DT" || key == "INV_REG_DT" ||
-					 key == "EXP_DT" || key == "DEP_IN_DT" || key == "FLIGHT_IN_DT" || key == "FLIGHT_OUT_DT"){
+			}else if(key == "REQ_DT" || key == "CHK_IN_DT" || key == "CHK_OUT_DT" ||
+					 key == "FLIGHT_IN_DT" || key == "FLIGHT_OUT_DT"){
 				if(!fn_empty(val)){
 					$('[name='+ key +']').val(Util.converter.dateFormat1(val));
 				}else{
@@ -1007,12 +702,6 @@ $(function() {
 			}
 		}
 
-		if(!fn_empty(data.INV_REG_DT)){
-			$("#btn_create").text("수정");
-		} else {
-			$("#btn_create").text("생성");
-		}
-
 		//입금예약상태에 따른 상세 입력 상태변경
 		if(!fn_empty(data.PRC_STS)){
 			if(data.PRC_STS == "08" || data.PRC_STS == "09" || data.PRC_STS == "10"){
@@ -1023,26 +712,19 @@ $(function() {
 			}
 		}
 
-		// 01 멤버, 02 일반, 04 에이젼시
-		if(data.MEM_GBN == '01'){
-			$("#AGN_GB").val("");
-			$("#AGN_CD").val("");
-			$("#HDNG_GBN").attr("disabled",true);
-			$("#AGN_GB").attr("disabled",true);
-			$("#AGN_CD").attr("disabled",true);
-		}else if(data.MEM_GBN == '02'){
-			$("#AGN_GB").val("");
-			$("#AGN_CD").val("");
-			$("#AGN_GB").attr("disabled",true);
-			$("#AGN_CD").attr("disabled",true);
-			$("#M_PERSON").attr("disabled",true);
-			REQ_HAN_NM
-		}else if((data.MEM_GBN == '03') || (data.MEM_GBN == '04') || (data.MEM_GBN == '05')){
+		/* 03 에이전시(총판) 04 에이전시(일반) 05 에이전시(자체)*/
+		if((data.MEM_GBN == '03') || (data.MEM_GBN == '04') || (data.MEM_GBN == '05')){
 			$("#M_PERSON").attr("disabled",true);
 			$("#HDNG_GBN").attr("disabled",false);
 			$("#ADD_HDNG_GBN").attr("disabled",true);
 			$("#AGN_GB").attr("disabled",true);
 			$("#AGN_CD").attr("disabled",false);
+		} else {
+			$("#AGN_GB").val("");
+			$("#AGN_CD").val("");
+			$("#HDNG_GBN").attr("disabled",true);
+			$("#AGN_GB").attr("disabled",true);
+			$("#AGN_CD").attr("disabled",true);
 		}
 		
 		/* 에이전시 코드 selected 목록 선택 */
@@ -1055,84 +737,31 @@ $(function() {
 		}
 
 		/* 상품정보 재셋팅 */
-		if(data.MEM_GBN == '01'){
-			var setAddHdngGbn = data.ADD_HDNG_GBN
-			$("#ADD_HDNG_GBN").find("option").remove();
-			var url = "/reserve/packageResetList.do";
-			var data = {  "CHK_IN_DT"  : data.CHK_IN_DT
-						, "CHK_OUT_DT" : data.CHK_OUT_DT
-					   };
-			fn_ajax(url, false, data, function(data, xhr){
-				if(!fn_empty(data.result)){
-					var retVal = data.result;
-					$('#ADD_HDNG_GBN').empty().data('options');
-					$('#ADD_HDNG_GBN').append('<option value=' + "" + '>-선택-</option>');
-					for(i = 0; i < retVal.length; i++){
-						if(!fn_empty(retVal[i])){
-							$('#ADD_HDNG_GBN').append('<option value=' + retVal[i].CODE + '>' + retVal[i].CODE_NM + '</option>');
-						}
-					}
-				}else{
-					alert("상품이없습니다. 관리자페이지에서 등록후 이용해주세요.");
-					return false;
-				}
-			});
+		var setHdngGbn = data.HDNG_GBN
+		$("#HDNG_GBN").find("option").remove();
+		var url = "/reserve/packageResetList.do";
+		var data = {  "CHK_IN_DT"  : data.CHK_IN_DT
+					, "CHK_OUT_DT" : data.CHK_OUT_DT
+				   };
+		fn_ajax(url, false, data, function(data, xhr){
+			if(!fn_empty(data.result)){
+				var retVal = data.result;
+				$('#HDNG_GBN').empty().data('options');
+				$('#HDNG_GBN').append('<option value=' + "" + '>-선택-</option>');
 
-			$("#ADD_HDNG_GBN").val(setAddHdngGbn);
-			if(parseInt($('[name=G_PERSON]').val()) > 0){
-				$("#ADD_HDNG_GBN").attr("disabled",false);
+				for(i = 0; i < retVal.length; i++){
+					if(!fn_empty(retVal[i])){
+						$('#HDNG_GBN').append('<option value=' + retVal[i].CODE + '>' + retVal[i].CODE_NM + '</option>');
+					}
+				}
 			}else{
-				$("#ADD_HDNG_GBN").val("");
-				$("#ADD_HDNG_GBN").attr("disabled",true);
+				alert("상품이없습니다. 관리자페이지에서 등록 후 이용해주세요.");
+				return false;
 			}
-		}else if(data.MEM_GBN != '01'){
-			var setHdngGbn = data.HDNG_GBN
-			$("#HDNG_GBN").find("option").remove();
-			var url = "/reserve/packageResetList.do";
-			var data = {  "CHK_IN_DT"  : data.CHK_IN_DT
-						, "CHK_OUT_DT" : data.CHK_OUT_DT
-					   };
-			fn_ajax(url, false, data, function(data, xhr){
-				if(!fn_empty(data.result)){
-					var retVal = data.result;
-					$('#HDNG_GBN').empty().data('options');
-					$('#HDNG_GBN').append('<option value=' + "" + '>-선택-</option>');
+		});
 
-					for(i = 0; i < retVal.length; i++){
-						if(!fn_empty(retVal[i])){
-							$('#HDNG_GBN').append('<option value=' + retVal[i].CODE + '>' + retVal[i].CODE_NM + '</option>');
-						}
-					}
-				}else{
-					alert("상품이없습니다. 관리자페이지에서 등록 후 이용해주세요.");
-					return false;
-				}
-			});
-
-			$("#HDNG_GBN").val(setHdngGbn);
-			$("#ADD_HDNG_GBN").attr("disabled",true);
-		}
-
-		//예약요청(일반), 예약가능(일반) 에서는 인보이스 생성을 막는다
-		if($("#PRC_STS_NM").val().trim() == "예약요청(일반)" || $("#PRC_STS_NM").val().trim() == "예약가능(일반)"){
-			$("#btn_create").attr("disabled",true);
-		}
-		//예약취소이면서 동반자 정보가 없을때 (예약요청에서 예약취소로 넘어올때)
-		else if($("#PRC_STS_NM").val().trim() == "예약취소" && $("#reserveGrid").getGridParam("reccount") == 0){
-			$("#btn_create").attr("disabled",true);
-		}
-		else{
-			$("#btn_create").attr("disabled",false);
-		}
-		//동반자 그리드 행추가, 행삭제 버튼
-		if($("#PRC_STS_NM").val().trim() == "입금완료" || $("#PRC_STS_NM").val().trim() == "환불완료" || $("#PRC_STS_NM").val().trim() == "예약취소"){
-			$("#ADD_HDNG_GBN").attr("disabled",true);
-			$("#btn_List_addRow").attr("disabled",true);
-			$("#btn_List_delRow").attr("disabled",true);
-		}else{
-			$("#btn_List_addRow").attr("disabled",false);
-			$("#btn_List_delRow").attr("disabled",false);
-		}
+		$("#HDNG_GBN").val(setHdngGbn);
+		$("#ADD_HDNG_GBN").attr("disabled",true);
 	}
 
 	/*******************************************************
@@ -1146,41 +775,8 @@ $(function() {
 	$('#MEM_GBN').change(function() {
 		$("#CHK_IN_DT").val($.datepicker.formatDate('yy.mm.dd', new Date()));
 		$("#CHK_OUT_DT").val($.datepicker.formatDate('yy.mm.dd', new Date()));
-		if($(this).val() == '01'){ // 01 멤버, 02 일반, 04 에이젼시
-			$("#AGN_GB").val("");
-			$("#AGN_CD").val("");
-			$("#AGN_GB").attr("disabled",true);
-			$("#AGN_CD").attr("disabled",true);
-			$("#HDNG_GBN").val("28");
-			$("#HDNG_GBN"     ).attr("disabled",true);
-			$("#ADD_HDNG_GBN").val("");
-			$("#ADD_HDNG_GBN").attr("disabled",true);
-			$("#M_PERSON"  ).attr("disabled",false);
-			$("#M_PERSON").val("1");
-			$("#G_PERSON").val("0");
-			$("#N_PERSON").val("0");
-			$("#K_PERSON").val("0");
-			$("#I_PERSON").val("0");
-			$("#TOT_PERSON").val("1");
-			$("#DEP_IN_DT"  ).attr("disabled",false);
-		}else if($(this).val() == '02'){
-			$("#AGN_GB").val("");
-			$("#AGN_CD").val("");
-			$("#AGN_GB").attr("disabled",true);
-			$("#AGN_CD").attr("disabled",true);
-			$("#M_PERSON").attr("disabled",true);
-			$("#HDNG_GBN").val("");
-			$("#HDNG_GBN").attr("disabled",true);
-			$("#ADD_HDNG_GBN").val("");
-			$("#ADD_HDNG_GBN").attr("disabled",true);
-			$("#M_PERSON").val("0");
-			$("#G_PERSON").val("1");
-			$("#N_PERSON").val("0");
-			$("#K_PERSON").val("0");
-			$("#I_PERSON").val("0");
-			$("#TOT_PERSON").val("1");
-			$("#DEP_IN_DT"  ).attr("disabled",false);
-		}else if(($(this).val() == '03') || ($(this).val() == '04') || ($(this).val() == '05')){
+		/* 03 에이전시(총판) 04 에이전시(일반) 05 에이전시(자체) */
+		if(($(this).val() == '03') || ($(this).val() == '04') || ($(this).val() == '05')){
 			$("#AGN_GB").attr("disabled",false);
 			$("#AGN_CD").attr("disabled",false);
 			$("#HDNG_GBN").val("");
@@ -1197,7 +793,6 @@ $(function() {
 			$("#TWIN_KING_CNT").val("0");
 			$("#TWIN_CNT").val("0");
 			$("#KING_CNT").val("0");
-			$("#DEP_IN_DT"  ).attr("disabled",false);
 		}else{
 			$("#AGN_GB").val("");
 			$("#AGN_CD").val("");
@@ -1216,7 +811,6 @@ $(function() {
 			$("#TWIN_KING_CNT").val("0");
 			$("#TWIN_CNT").val("0");
 			$("#KING_CNT").val("0");
-			$("#DEP_IN_DT"  ).attr("disabled",true);
 		}
 		fn_chgAgnGb($(this).val());
 		fn_chgAgnCd($("#AGN_GB").val());
@@ -1467,20 +1061,6 @@ $(function() {
 		var chk_in_dt      = $("#CHK_IN_DT").val().replaceAll(".","");
 		var chk_out_dt     = $("#CHK_OUT_DT").val().replaceAll(".","");
 
-		if($("#MEM_GBN").val() == '01'){ //01 멤버 02 일반회원 04에이전시
-			var g_person = parseInt($("#G_PERSON").val().replaceAll("," , ""));
-			if(g_person == 0){
-				$("#ADD_HDNG_GBN").attr("disabled", true);
-				$("#ADD_HDNG_GBN").val("");
-			}else{
-				if(chk_out_dt != "" && chk_in_dt != chk_out_dt){
-					$("#ADD_HDNG_GBN").attr("disabled", false);
-				}else{
-					alert("체크아웃 날짜를 확인해주세요.");
-					$("#G_PERSON").val("0");
-				}
-			}
-		}
 		fn_roomTypeCnt();
 	});
 
@@ -1506,7 +1086,6 @@ $(function() {
 				$("#TWIN_CNT").val("0");
 				$("#KING_CNT").val(roomTypeCnt);
 			}else{
-				
 			}
 		}
 	}
@@ -1530,40 +1109,6 @@ $(function() {
 		// 천단위 콤마 처리 후 값 강제변경
 		$(this).val(numberWithCommas(tmpValue));
 	});
-
-	/*******************************************************
-	 *-----------------------------------------------------*
-	 * @Subject : [상태변경] 버튼 클릭 이벤트
-	 * @Goal    : [상태변경] 버튼 클릭 이벤트
-	 * @Brief   : 화면 내 [상태변경] 버튼 클릭 시 발생되는 이벤트
-	 * @See     : changeStatus();
-	 * -----------------------------------------------------*
-	 *******************************************************/
-	$("#changeStatus").on("click" , function(){
-		changeStatus();
-	});
-
-	/*******************************************************
-	 *-----------------------------------------------------*
-	 * @Subject : [상태변경] 팝업 호출
-	 * @Goal    : [상태변경] 버튼 클릭 시 팝업 호출
-	 * @Brief   : 화면 내 [상태변경] 버튼 클릭 시 표출되는 팝업 정의
-	 * @See     : /reserve/chgStatusPopup.do / initSelect()
-	 * -----------------------------------------------------*
-	 *******************************************************/
-	function changeStatus(){
-		var url = "/reserve/chgStatusPopup.do";
-		var pid = "p_changeStatusPopup";
-		var param = {"SEQ"        : seq
-				   , "REQ_DT"     : req_dt
-				   , "PRC_STS"    : parseInt($("#PRC_STS").val())
-				   , "PRC_STS_NM" : $("#PRC_STS_NM").val()
-				   , "MEM_GBN"    : $("#MEM_GBN").val()
-				   };
-		popupOpen(url, pid, param, function(data) {
-			initSelect(); // 예약상세내역 조회
-		});
-	}
 
 	/*******************************************************
 	 *-----------------------------------------------------*
@@ -1712,12 +1257,8 @@ $(function() {
 					, "LATE_CHECK_IN"   : $("#LATE_CHECK_IN").val()
 					, "LATE_CHECK_OUT"  : $("#LATE_CHECK_OUT").val()
 					, "REMARK"          : $("#REMARK").val()
-					, "INV_REG_DT"      : $("#INV_REG_DT").val().replaceAll(".", "")
 					, "RND_CHG_YN1"     : $("#RND_CHG_YN1").is(":checked") == true ? "Y" : "N"
 					, "RND_CHG_YN2"     : $("#RND_CHG_YN2").is(":checked") == true ? "Y" : "N"
-					, "DEP_IN_DT"       : $("#DEP_IN_DT").val().replaceAll(".", "")
-					, "DEP_AMT"         : $("#DEP_AMT"  ).val().replaceAll("," , "")
-					, "EXP_DT"          : $("#EXP_DT"   ).val().replaceAll(".", "")
 		}
 
 		btGrid.gridSaveRow('reserveGrid');
@@ -1735,7 +1276,6 @@ $(function() {
 		var param = {"reserveInfo"   : obj
 				   , "detail"        : gridDataChk
 				   , "V_FLAG"        : vflag};
-		
 		// 상품이 있는지 선조회
 		var prodYn = false;
 		var url2 = '/reserve/selectProdSeq.do';
@@ -1769,7 +1309,6 @@ $(function() {
 		}
 
 		if(!chgCheckIn) return false;
-		
 		if(confirm("<s:message code='confirm.save'/>")){
 			var url = '/reserve/ReserveManager.do';
 			fn_ajax(url, false, param, function(data, xhr){
@@ -1960,101 +1499,6 @@ $(function() {
 
 	/*******************************************************
 	 *-----------------------------------------------------*
-	 * @Subject : [인보이스] 생성
-	 * @Goal    : 화면 내 필수 값 체크 및 유효성 검사
-	 * @Brief   : 데이터 정확성 및 필수항목에대한 체크 진행
-	 * @See     : /reserve/selectReserveDetlYn.do
-	 * -----------------------------------------------------*
-	 *******************************************************/
-	$("#btn_create").click(function() {
-		/* ********* 인보이스 팝업 OPEN ********* */
-		var url = "/reserve/InvoicePopup.do";
-		var pid = "p_invoicePopup";
-		var param = {
-			"SEQ"        : seq,
-			"REQ_DT"     : req_dt,
-			"MEM_GBN"    : $("#MEM_GBN option:selected").val(),
-			"EMAIL"      : $("#EMAIL").val(),
-			"CHK_IN_DT"  : $("#CHK_IN_DT").val().replaceAll(".", ""),
-			"CHK_OUT_DT" : $("#CHK_OUT_DT").val().replaceAll(".", ""),
-			"TOT_PERSON" : $("#TOT_PERSON").val(),
-			"TOT_DAY"    : "",
-			"INV_REG_DT" : $("#INV_REG_DT").val().replaceAll(".", ""),
-			"PRC_STS"    : $("#PRC_STS").val(),
-			"DEP_AMT"    : parseInt($("#DEP_AMT").val().replaceAll(",", "")),
-			"EXP_DT"     : $("#EXP_DT").val().replaceAll(".", "")
-		};
-
-		/* *************** 예약상세 여부 확인 *************** */
-		var url3 = "/reserve/selectReserveDetlYn.do";
-		var param3 = {
-			"SEQ" : seq,
-			"REQ_DT" : req_dt
-		};
-
-		var isReserveDetlYn = "";
-		fn_ajax(url3, false, param3, function(data, xhr) {
-			isReserveDetlYn = data.result;
-		});
-
-		if(isReserveDetlYn != "Y"){  //예약상세여부가 'Y'가 아닐시
-			alert("동반자 정보가 없습니다.");
-			return false;
-		}
-
-		/* ********* 체크아웃-체크인 일자 수와 기준년도 등록된 일자 비교 ********* */
-		var url2 = "/reserve/selectDayDiffChk.do";
-		var param2 = {
-			"SEQ" : seq,
-			"REQ_DT" : req_dt,
-			"CHK_IN_DT" : $("#CHK_IN_DT").val().replaceAll(".", ""),
-			"CHK_OUT_DT" : $("#CHK_OUT_DT").val().replaceAll(".", "")
-		};
-
-		var errChk = 0;
-
-		fn_ajax(url2, false, param2, function(data, xhr) {
-			if (data.result.resultCd == "0000") {
-				param.TOT_DAY = data.result.TOT_DAY
-			} else if (data.result.resultCd == "1001") {
-				alert("기준년도관리 및 상품관리를 확인해주세요 \n체크인: " + $("#CHK_IN_DT").val()
-						+ "\n체크아웃: "+$("#CHK_OUT_DT").val());
-				errChk++;
-				return false;
-			} else  {
-				alert("체크인, 체크아웃 날짜확인후 저장버튼을 클릭해주세요.");
-				errChk++;
-				return false;
-			}
-		});
-
-		if (errChk > 0) return false;
-
-		/* ********* 미팅샌딩 데이터 저장 및 업데이트  ********* */
-		var day = new Date();
-		var today = String(day.getFullYear()) + String(("0" + (1 + day.getMonth())).slice(-2)) + String(("0" + day.getDate()).slice(-2));
-
-		if (fn_empty($("#INV_REG_DT").val())) {
-			var url4 = "/reserve/updateInvRegDt.do";
-			var param4 = {
-				"SEQ" : seq,
-				"REQ_DT" : req_dt,
-				"INV_REG_DT" : today,
-				"CHG_PRC_STS" : "05"
-			}
-
-			fn_ajax(url4, false, param4, function(data, xhr) {
-				param.INV_REG_DT = today;
-			});
-		}
-
-		popupOpen(url, pid, param, function(data) {
-			initSelect();
-		});
-	});
-
-	/*******************************************************
-	 *-----------------------------------------------------*
 	 * @Subject : [미팅샌딩- 등록] 버튼 이벤트
 	 * @Goal    : [미팅샌딩- 등록] 버튼 이벤트
 	 * @Brief   : 화면 내 미팅샌딩 [등록] 버튼 클릭 시 표출되는 팝업
@@ -2098,250 +1542,9 @@ $(function() {
 			}
 		});
 	});
-
-	/*******************************************************
-	 *-----------------------------------------------------*
-	 * @Subject : [입금관리] 버튼 이벤트
-	 * @Goal    : [입금관리] 버튼 이벤트
-	 * @Brief   : 화면 내 [입금관리] 버튼 클릭 시 표출되는 팝업
-	 * @See     : /reserve/pickUpGbnPopup.do
-	 * -----------------------------------------------------*
-	 *******************************************************/
-	$("#btn_pay").click(function() {
-		var invRegDt = $("#INV_REG_DT").val();
-
-		if(fn_empty(invRegDt)){
-			alert("인보이스 발행을 해주세요.");
-			return false;
-		}
-
-		var url = "/deposit/depositMngPopup.do";
-		var pid = "p_pickUpGbnPopup";
-		var param = { "SEQ"          : seq
-					, "REQ_DT"       : req_dt
-					, "PRC_STS"      : $("#PRC_STS").val()
-					};
-
-		popupOpen(url, pid, param, function(data) {
-			if(!fn_empty(data)){
-				$("input[name='PAY_DEP_AMT']").val(data.PAY_DEP_AMT); //입금예약금 세팅
-				$("input[name='DEP_IN_DT']").val(data.DEP_IN_DT);     //예약금입금일자 세팅
-				$("input[name='PRC_STS_NM']").val(data.PRC_STS_NM);   //상태명 세팅
-				$("#PRC_STS"     ).val(data.PRC_STS);                 //상태 세팅
-			} else {
-				initSelect();    //예약상세 다시조회
-			}
-		});
-	});
-
-	/*******************************************************
-	 *-----------------------------------------------------*
-	 * @Subject : [회원가입] 버튼 이벤트
-	 * @Goal    : [회원가입] 버튼 이벤트
-	 * @Brief   : 화면 내 [회원가입] 버튼 클릭 시 표출되는 팝업
-	 * @See     : /rrs/UserPopup.do
-	 * -----------------------------------------------------*
-	 *******************************************************/
-	$("#btn_adduser").on("click", function(){
-			var url = "/rrs/UserPopup.do";
-			var pid = "p_User";  //팝업 페이지의 취상위 div ID
-			var param = {"USER_ID" : ""};
-			popupOpen(url, pid, param, function(data) {
-				if(!fn_empty(data)){
-					delProgram();
-					$("#USER_ID").val(data.USER_ID);
-					$("#MEM_GBN").val(data.MEM_GBN);
-					$("#REQ_HAN_NM").val(data.REQ_HAN_NM);
-					$("#REQ_ENG_NM").val(data.REQ_ENG_NM);
-					$("#REQ_TEL_NO").val(data.REQ_TEL_NO);
-					if(data.MEM_GBN == "01"){ /* [멤버]일경우 */
-						$("#AGN_GB").val("");
-						$("#AGN_CD").val("");
-						$("#AGN_GB").attr("disabled",true);
-						$("#AGN_CD").attr("disabled",true);
-						$("#HDNG_GBN").val("28");
-						$("#HDNG_GBN"     ).attr("disabled",true);
-						$("#ADD_HDNG_GBN").val("");
-						$("#ADD_HDNG_GBN").attr("disabled",true);
-						$("#M_PERSON").val("1");
-						$("#G_PERSON").val("0");
-						$("#N_PERSON").val("0");
-						$("#K_PERSON").val("0");
-						$("#I_PERSON").val("0");
-						$("#TOT_PERSON").val("1");
-						$("#DEP_IN_DT"  ).attr("disabled",false);
-						$("#PRC_STS").val("02"); /* ***** 상태값 : 멤버예약신청 ***** */
-					}else if(data.MEM_GBN == "02"){ /* [일반]일경우 */
-						$("#AGN_GB").val("");
-						$("#AGN_CD").val("");
-						$("#AGN_GB").attr("disabled",true);
-						$("#AGN_CD").attr("disabled",true);
-						$("#M_PERSON").attr("disabled",true);
-						$("#HDNG_GBN").val("");
-						$("#HDNG_GBN").attr("disabled",true);
-						$("#ADD_HDNG_GBN").val("");
-						$("#ADD_HDNG_GBN").attr("disabled",true);
-						$("#M_PERSON").val("0");
-						$("#G_PERSON").val("1");
-						$("#N_PERSON").val("0");
-						$("#K_PERSON").val("0");
-						$("#I_PERSON").val("0");
-						$("#TOT_PERSON").val("1");
-						$("#DEP_IN_DT"  ).attr("disabled",false);
-						$("#PRC_STS").val("04"); /* ***** 상태값 : 예약신청(일반,AG) ***** */
-					}else if((data.MEM_GBN == "03") || (data.MEM_GBN == "04") || (data.MEM_GBN == "05")){ /* [에이전시]일경우 */
-						$("#AGN_GB").attr("disabled",false);
-						$("#AGN_CD").attr("disabled",false);
-						$("#HDNG_GBN").val("");
-						$("#HDNG_GBN").attr("disabled",true);
-						$("#ADD_HDNG_GBN").val("");
-						$("#ADD_HDNG_GBN").attr("disabled",true);
-						$("#M_PERSON").attr("disabled",false);
-						$("#M_PERSON").val("0");
-						$("#G_PERSON").val("0");
-						$("#N_PERSON").val("0");
-						$("#K_PERSON").val("0");
-						$("#I_PERSON").val("0");
-						$("#TOT_PERSON").val("0");
-						$("#TWIN_KING_CNT").val("0");
-						$("#TWIN_CNT").val("0");
-						$("#KING_CNT").val("0");
-						$("#DEP_IN_DT"  ).attr("disabled",false);
-						$("#PRC_STS").val("06"); /* ***** 상태값 : 예약확정 ***** */
-					}else{
-						$("#AGN_GB").val("");
-						$("#AGN_CD").val("");
-						$("#AGN_GB").attr("disabled",true);
-						$("#AGN_CD").attr("disabled",true);
-						$("#HDNG_GBN").val("");
-						$("#HDNG_GBN").attr("disabled",true);
-						$("#ADD_HDNG_GBN").val("");
-						$("#ADD_HDNG_GBN").attr("disabled",true);
-						$("#M_PERSON").val("0");
-						$("#G_PERSON").val("0");
-						$("#N_PERSON").val("0");
-						$("#K_PERSON").val("0");
-						$("#I_PERSON").val("0");
-						$("#TOT_PERSON").val("0");
-						$("#TWIN_KING_CNT").val("0");
-						$("#TWIN_CNT").val("0");
-						$("#KING_CNT").val("0");
-						$("#DEP_IN_DT"  ).attr("disabled",true);
-						$("#PRC_STS").val("04"); /* ***** 상태값 : 예약신청(일반,AG) ***** */
-					}
-					fn_roomTypeCnt();
-				}
-			});
-	});
-
-	/*******************************************************
-	 *-----------------------------------------------------*
-	 * @Subject : [아이디 찾기] 버튼 이벤트
-	 * @Goal    : [아이디 찾기] 버튼 이벤트
-	 * @Brief   : 화면 내 [아이디 찾기] 버튼 클릭 시 표출되는 팝업
-	 * @See     : /reserve/searchId.do
-	 * -----------------------------------------------------*
-	 *******************************************************/
-	$("#btn_search").on("click", function(){
-		var url = "/reserve/searchId.do";
-		var pid = "p_searchIdPopup";
-		var param = {};
-		popupOpen(url, pid, param, function(data) {
-			if(!fn_empty(data)){
-				delProgram();
-				$("#CHK_IN_DT").val($.datepicker.formatDate('yy.mm.dd', new Date()));
-				$("#CHK_OUT_DT").val($.datepicker.formatDate('yy.mm.dd', new Date()));
-				$("#MEM_GBN").attr("disabled",true);
-				$("#USER_ID").val(data.USER_ID);
-				$("#MEM_GBN").val(data.MEM_GBN);
-				$("#REQ_HAN_NM").val(data.REQ_HAN_NM);
-				$("#REQ_ENG_NM").val(data.REQ_ENG_NM);
-				$("#REQ_TEL_NO").val(data.REQ_TEL_NO);
-				if(data.MEM_GBN == "01"){ /* [멤버]일 경우 */
-					$("#AGN_GB").val("");
-					$("#AGN_CD").val("");
-					$("#AGN_GB").attr("disabled",true);
-					$("#AGN_CD").attr("disabled",true);
-					$("#HDNG_GBN").val("28");
-					$("#HDNG_GBN"     ).attr("disabled",true);
-					$("#ADD_HDNG_GBN").val("");
-					$("#ADD_HDNG_GBN").attr("disabled",true);
-					$("#M_PERSON").val("1");
-					$("#G_PERSON").val("0");
-					$("#N_PERSON").val("0");
-					$("#K_PERSON").val("0");
-					$("#I_PERSON").val("0");
-					$("#TOT_PERSON").val("1");
-					$("#DEP_IN_DT"  ).attr("disabled",false);
-					$("#PRC_STS").val("02"); /* ***** 상태값 : 멤버예약신청 ***** */
-				}else if(data.MEM_GBN == "02"){ /* [일반]일 경우 */
-					$("#AGN_GB").val("");
-					$("#AGN_CD").val("");
-					$("#AGN_GB").attr("disabled",true);
-					$("#AGN_CD").attr("disabled",true);
-					$("#M_PERSON").attr("disabled",true);
-					$("#HDNG_GBN").val("");
-					$("#HDNG_GBN").attr("disabled",true);
-					$("#ADD_HDNG_GBN").val("");
-					$("#ADD_HDNG_GBN").attr("disabled",true);
-					$("#M_PERSON").val("0");
-					$("#G_PERSON").val("1");
-					$("#N_PERSON").val("0");
-					$("#K_PERSON").val("0");
-					$("#I_PERSON").val("0");
-					$("#TOT_PERSON").val("1");
-					$("#DEP_IN_DT"  ).attr("disabled",false);
-					$("#PRC_STS").val("04"); /* ***** 상태값 : 예약신청(일반,AG) ***** */
-				}else if((data.MEM_GBN == "03") || (data.MEM_GBN == "04") || (data.MEM_GBN == "05")){ /* [에이전시]인 경우 */
-					$("#AGN_GB").attr("disabled",true);
-					$("#AGN_CD").attr("disabled",false);
-					$("#HDNG_GBN").val("");
-					$("#HDNG_GBN").attr("disabled",true);
-					$("#ADD_HDNG_GBN").val("");
-					$("#ADD_HDNG_GBN").attr("disabled",true);
-					$("#M_PERSON").attr("disabled",false);
-					$("#M_PERSON").val("0");
-					$("#G_PERSON").val("0");
-					$("#N_PERSON").val("0");
-					$("#K_PERSON").val("0");
-					$("#I_PERSON").val("0");
-					$("#TOT_PERSON").val("0");
-					$("#TWIN_KING_CNT").val("0");
-					$("#TWIN_CNT").val("0");
-					$("#KING_CNT").val("0");
-					$("#DEP_IN_DT"  ).attr("disabled",false);
-					$("#PRC_STS").val("06"); 	/* 에이전시 예약신청시(04) 예약확정(06)로 변경해달라는 현업측에 요청에 따라 상태값 변경 예약신청(04) -> 예약완료(06) */  
-				}else{
-					$("#AGN_GB").val("");
-					$("#AGN_CD").val("");
-					$("#AGN_GB").attr("disabled",true);
-					$("#AGN_CD").attr("disabled",true);
-					$("#HDNG_GBN").val("");
-					$("#HDNG_GBN").attr("disabled",true);
-					$("#ADD_HDNG_GBN").val("");
-					$("#ADD_HDNG_GBN").attr("disabled",true);
-					$("#M_PERSON").val("0");
-					$("#G_PERSON").val("0");
-					$("#N_PERSON").val("0");
-					$("#K_PERSON").val("0");
-					$("#I_PERSON").val("0");
-					$("#TOT_PERSON").val("0");
-					$("#TWIN_KING_CNT").val("0");
-					$("#TWIN_CNT").val("0");
-					$("#KING_CNT").val("0");
-					$("#DEP_IN_DT"  ).attr("disabled",true);
-					$("#PRC_STS").val("04"); /* ***** 상태값 : 예약신청(일반,AG) ***** */
-				}
-				fn_chgAgnGb(data.MEM_GBN);
-				fn_chgAgnCd($("#AGN_GB").val());
-				
-				fn_roomTypeCnt();
-			}
-		});
-	});
-
-
+	
 	/* *******************************************동반자 Grid 함수 시작 ***************************************** */
+
 	function gridColspan(){
 		var newWidth1 = $("#jqgh_reserveGrid_USE_DAY").width() + $("#jqgh_reserveGrid_UNIT_DAY").width();
 		$('#reserveGrid').jqGrid("setLabel", "USE_DAY", "사용 일/횟수", "", {
@@ -2475,7 +1678,6 @@ $(function() {
 			return object.replaceAll("-","");
 		}
 	}
-	
 	// 그리드 row 삭제
 	function delProgram(){
 		var ids = $("#reserveGrid").jqGrid("getDataIDs"); // 해당 그리드의 전체 로우의 아이디 조회
@@ -2503,7 +1705,7 @@ $(function() {
 		}
 
 		for(var i = 0 ; i < tot_person ; i ++ ){
-			if (i == 0 && (($("#MEM_GBN").val() != '03') && ($("#MEM_GBN").val() != '04') && ($("#MEM_GBN").val() != '05'))) { // 04 에이전시는 예약자가 동반자 아님
+			if (i == 0 && (($("#MEM_GBN").val() != '03') && ($("#MEM_GBN").val() != '04') && ($("#MEM_GBN").val() != '05'))) {        // 04 에이전시는 예약자가 동반자 아님
 				g_COM_GBN = "1";            //동반자구분 1:예약자
 			}else{
 				g_COM_GBN = "2";            //동반자구분 2:동반자
@@ -2591,7 +1793,6 @@ $(function() {
 					, "CONFIRM_NO"     : g_CONFIRM_NO
 					, "STATUS_V"       : g_STATUS_V
 					};
-
 			g_DSEQ           = "";
 			g_COM_GBN        = "";
 			g_NUM_GBN        = "";
@@ -2617,7 +1818,7 @@ $(function() {
 			btGrid.gridAddRow("reserveGrid", "last", data);
 			$("#reserveGrid").jqGrid("saveRow",rowId);
 			$("#reserveGrid").change();
-		}  /* end of for문 */
+		} /* end of for문 */
 	});
 
 	//동반자 정보 행추가
@@ -2817,16 +2018,7 @@ $(function() {
 			var getNumGbn = $('#reserveGrid').jqGrid('getRowData', changeRowId).NUM_GBN;
 			var getComGbn = $('#reserveGrid').jqGrid('getRowData', changeRowId).COM_GBN;
 			if(getNumGbn == "01"){
-				if($("#MEM_GBN").val() == '02'){
-					alert("일반회원 예약등록 시 멤버 동반자는 선택이 안됩니다.");
-					if(getComGbn == '1'){
-						$('#reserveGrid').jqGrid('setCell', changeRowId,'NUM_GBN','02');
-					}
-					else{
-						$('#reserveGrid').jqGrid('setCell', changeRowId,'NUM_GBN','00');
-					}
-					return false;
-				} else if(($("#MEM_GBN").val() == '03') || ($("#MEM_GBN").val() == '04') || ($("#MEM_GBN").val() == '05')){ 
+				if(($("#MEM_GBN").val() == '03') || ($("#MEM_GBN").val() == '04') || ($("#MEM_GBN").val() == '05')){ 
 					$("#reserveGrid").jqGrid('setCell',changeRowId , 'HDNG_GBN', '28');
 				} else {
 					m_person_g = m_person_g;
@@ -2935,12 +2127,6 @@ function cSearch(currentPage){
 		$("#reserveGrid_pager_left").hide();
 	});
 
-	$('#POP_EXP_DT').datepicker({
-		dateFormat : 'yy.mm.dd',
-		showOn : 'both'
-	 }).css('ime-mode', 'disabled').attr('maxlength', 10).blur(
-		 function(e) {
-	 });
 	loadingEnd(); /*$('#wrap-loading').remove();*/
 }
 </script>

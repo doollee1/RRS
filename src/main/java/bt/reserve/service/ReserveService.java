@@ -273,11 +273,7 @@ public class ReserveService {
 			String reqDt  = resultDeptDetail.getString("REQ_DT");
 			String seq    = resultDeptDetail.getString("SEQ");
 			String memGbn = resultDeptDetail.getString("MEM_GBN");			
-			String agnGb  = "";		
 			
-			if("04".equals(memGbn)) { //에이전시회원
-				agnGb  = resultDeptDetail.get("AGN_GB") ==  null? "" : resultDeptDetail.getString("AGN_GB");
-			}
 			
 			//예약상세조회
 			List<BMap> resultAddList = reserveDao.reserveSelectAddList(param);
@@ -319,10 +315,10 @@ public class ReserveService {
 					continue;
 				}
 				
-				paramData.put("CHK_IN_DT"  , chkInDt);  //체크인일자
-				paramData.put("CHK_OUT_DT" , chkOutDt); //체크아웃일자
+				paramData.put("CHK_IN_DT"  , chkInDt);    //체크인일자
+				paramData.put("CHK_OUT_DT" , chkOutDt);   //체크아웃일자
 				paramData.put("HDNG_GBN" , hdngGbn);      //항목구분
-				paramData.put("AGN_GB" , agnGb);   		  //에이전시 구분
+				paramData.put("MEM_GBN" , memGbn);   	  //회원구분(01:멤버, 02:일반, 03:에이전시(총판), 04:에이전시(일반), 05:에이전시(자체))
 				paramData.put("REQ_DT"  , reqDt);		  //예약일자
 				paramData.put("SEQ"  , seq);			  //일련번호
 				paramData.put("DSEQ"  , dSeq);            //상세일련번호
@@ -444,6 +440,7 @@ public class ReserveService {
 			invoiceHeaderMap.put("CHK_IN_DT" , resultDeptDetail.get("CHK_IN_DT"));   // 체크인 일자
 			invoiceHeaderMap.put("CHK_OUT_DT", resultDeptDetail.get("CHK_OUT_DT"));  // 체크아웃 일자
 			invoiceHeaderMap.put("LOGIN_USER", LoginInfo.getUserId());
+			invoiceHeaderMap.put("MEM_GBN" , memGbn);   	//회원구분(01:멤버, 02:일반, 03:에이전시(총판), 04:에이전시(일반), 05:에이전시(자체))
 			
 			System.out.println("RND_CHG_YN1 ::::::::" + String.valueOf(resultDeptDetail.get("RND_CHG_YN1")));
 			System.out.println("RND_CHG_YN2 ::::::::" + String.valueOf(resultDeptDetail.get("RND_CHG_YN2")));
@@ -932,10 +929,13 @@ public class ReserveService {
         try {
         	if(reserveInfo.getString("V_FLAG").equals("new")){ //insert
         		reserveDao.insertReserveInfo(reserveInfo);
+        	
         	}else if(reserveInfo.getString("V_FLAG").equals("detail")){ //update
         		reserveDao.updateReserveInfo(reserveInfo);
         	}
+        	
         	int feeCntList  = 0;
+        	
 			for(int i = 0; i < detail.size(); i++){
 				BMap detailMap = new BMap(detail.get(i));
 				detailMap.put("REQ_DT", (String) reserveInfo.get("REQ_DT"));
@@ -957,6 +957,7 @@ public class ReserveService {
 					reserveDao.updateReserveDetailInfo(detailMap);
 				}
 			}
+			
 		} catch (Exception e) {
 		    // TODO: handle exception
 			e.printStackTrace();

@@ -38,6 +38,24 @@ public class LoginInfo {
 		return compCd;
 	}
 	
+	public static String getName1st(){
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+		LoginVO loginUser = (LoginVO) request.getSession().getAttribute("loginVO");
+		String name1st = "";		
+	
+		if (loginUser != null)
+			name1st = loginUser.getName1st();
+		
+		try {
+			String lang = EgovSessionCookieUtil.getCookie(request, "Language");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return name1st;
+	}
+	
 	//셋팅되어있는 language를 가져오기 위함.
 	public static String getLang(){
 		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();

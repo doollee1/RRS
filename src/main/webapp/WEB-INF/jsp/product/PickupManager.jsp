@@ -32,7 +32,7 @@
 							</c:forEach>
 						</select>
 					</td>
-					<td class="small_td"><p style='width:100px;text-align:right'>미팅샌딩 지역</p></td>
+					<td class="small_td"><p style='width:80px;text-align:right'>미팅샌딩 지역</p></td>
 					<td class="medium_td">
 						<select id="MSENDING" name="MSENDING" class="" style=width:100px;>
 						    <option value="9">전체</option>                               
@@ -40,9 +40,9 @@
 								<option value="${i.REF_CHR1}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
-					</td>
-					<td style=width:55%;></td>
-					<td>		
+					</td>	
+					<td width="50%"></td>				
+					<td  align="right">		
 						<button type='button' class="cBtnclass cBtnSearch_style" id='btnSearch1'  style="align:right;" onclick="searchMSending()">조회</button>
 						<button type='button' class="cBtnclass cBtnSave_style" id='btnSave1' style="align:right;" onclick="updateMSending()"><s:message code='button.save'/></button>			
 					</td>		
@@ -84,16 +84,16 @@
 							</c:forEach>
 						</select>
 					</td>
-					<td class="small_td"><p style='width:100px;text-align:right'>시즌  구분 </p></td>
+					<td class="small_td"><p style='width:80px;text-align:right'>시즌  구분 </p></td>
 					<td class="medium_td">
 						<select id="SSN_GBN" name="SSN_GBN" class="" style=width:100px;>							    
 							<c:forEach var="i" items="${ssn_gbn}">
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
 						</select>
-					</td>
-					<td style=width:55%;></td>		
-					<td>
+					</td>		
+					<td width="50%"></td>			
+					<td  align="right">
 						<button type='button' class='cBtnclass cBtnSearch_style' id='btnSearch' style="align:right;" onclick="searchExtraCharge()">조회</button>
 						<button type='button' class='cBtnclass cBtnSave_style' id='btnSave' style="align:right;" onClick="updateExtraCharge()"><s:message code='button.save'/></button>
 					</td>			
@@ -162,6 +162,7 @@
 	    	    '수정',
 	            '순번',
 	            'HDNG_GBN',
+	            '미팅샌딩 지역',
 	            'PROD_COND',
 	            'PROD_SEQ',
 	            '미팅샌딩구분',
@@ -170,13 +171,14 @@
 	            ];
 	    var colModel = [
 	    	{name : 'CHK',index : 'CHK',width : 50 ,align : 'center',formatter : gridCboxFormat, hidden:true , sortable: false},
-	        {name : 'ROWNUM'   , width : 85 , align : 'center'},
-	        {name : 'HDNG_GBN' , width : 220, align : 'center' , hidden:true },
-	        {name : 'PROD_COND' , width : 220, align : 'center' , hidden:true },
-	        {name : 'PROD_SEQ' , width : 220, align : 'center' , hidden:true },	 
-	        {name : 'CODE_NM'  , align : 'center' },
-	        {name : 'COM_CNTN' , width : 220, align : 'center'},
-	        {name : 'COM_AMT'  , width : 220, editable:true, width : 95 , align : 'right', formatter: 'currency', formatoptions: { thousandsSeparator: ',', decimalPlaces: 0}},
+	        {name : 'ROWNUM'   , width : 100 , align : 'center'},
+	        {name : 'HDNG_GBN' , hidden:true },
+	        {name : 'PICKUP_ZONE' , width : 300, align : 'center' },
+	        {name : 'PROD_COND', hidden:true },
+	        {name : 'PROD_SEQ' , hidden:true },	 
+	        {name : 'CODE_NM'  , width : 400, align : 'center' },
+	        {name : 'COM_CNTN' , align : 'center'},
+	        {name : 'COM_AMT'  ,  width : 300, editable:true, width : 95 , align : 'right', formatter: 'currency', formatoptions: { thousandsSeparator: ',', decimalPlaces: 0}},
 	        ];
 	    var gSetting = {
 	            pgflg          : true,
@@ -185,13 +187,14 @@
 	            searchInit     : false, // 데이터 검색 버튼 노출여부
 	            resizeing      : true,
 	            rownumbers     : false,
-	            shrinkToFit    : false,
+	            shrinkToFit    : true,
 	            autowidth      : true,
-	            queryPagingGrid: false, // 쿼리 페이징 처리 여부
+	            queryPagingGrid: true, // 쿼리 페이징 처리 여부
 	            height : 'auto'
 	    };
 	    // 그리드 생성 및 초기화
 	    btGrid.createGrid('grid1', colName, colModel, gSetting);
+	    // btGrid.gridResizing('grid1');
 }
   function createExtraChargeGrid() {
 	        var colName = [
@@ -215,8 +218,8 @@
 	            {name : 'ST_DT2' , width : 100, align : 'center'  },
                 {name : 'ED_DT2' , width : 100, align : 'center'  },  
 	            {name : 'COM_CNTN' , width : 200, align : 'center'},
-	            {name : 'CODE_NM'  , width : 200, align : 'center' },
-	            {name : 'COM_AMT'  , editable:true, width : 95 , align : 'right', formatter: 'integer', formatoptions : {defaultValue: '', thousandsSeparator : ','}},
+	            {name : 'CODE_NM'  , width : 300, align : 'center' },
+	            {name : 'COM_AMT'  , editable:true, width : 100 , align : 'right', formatter: 'integer', formatoptions : {defaultValue: '', thousandsSeparator : ','}},
 	            ];
 	        var gSetting = {
 	                pgflg          : true,
@@ -225,9 +228,9 @@
 	                searchInit     : false, // 데이터 검색 버튼 노출여부
 	                resizeing      : true,
 	                rownumbers     : false,
-	                shrinkToFit    : false,
+	                shrinkToFit    : true,
 	                autowidth      : true,
-	                queryPagingGrid: false, // 쿼리 페이징 처리 여부
+	                queryPagingGrid: true, // 쿼리 페이징 처리 여부
 	                height : 'auto'
 	        };
 	        // 그리드 생성 및 초기화

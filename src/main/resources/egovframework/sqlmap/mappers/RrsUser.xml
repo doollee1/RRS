@@ -28,8 +28,7 @@
 				) AS MEM_NM
 		FROM tb_member as T1
 		left JOIN bc_user   as T2 ON T2.USER_ID = T1.USER_ID
-		WHERE 1 = 1
-		  AND T2.USER_ID is NULL
+		WHERE 1 = 1		 
 		<if test='S_USER_ID != null and S_USER_ID != ""'>
 		   AND T1.USER_ID LIKE CONCAT('%',#{S_USER_ID},'%')
 		</if>

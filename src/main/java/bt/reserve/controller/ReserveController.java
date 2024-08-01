@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import bt.btframework.utils.BMap;
 import bt.btframework.utils.BReqData;
 import bt.btframework.utils.BRespData;
+import bt.btframework.utils.LoginInfo;
 import bt.common.service.FileService;
 import bt.reserve.service.ReserveService;
 
@@ -167,8 +168,6 @@ public class ReserveController {
 	 */
 	@RequestMapping(value = "/reserve/reserveRegi2.do")
 	public String ReserveRegiPopup2(ModelMap model,HttpServletRequest request) throws Exception{
-		
-		logger.info("====== 예약등록 팝업2 호출 ======");
 		
 		BMap param = new BMap();
 		param.put("HEAD_CD", 500030);				//회원구분
@@ -541,6 +540,125 @@ public class ReserveController {
 		BRespData respData = new BRespData();
 		respData.put("result", reserveService.packageResetList(param));
 		return respData;
+	}
+	/**
+	 * 에이전시 예약리스트 화면 호출
+	 * @param model
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/reserve/agencyReserveList.do")
+	public String agencyReserveList(ModelMap model,HttpServletRequest request) throws Exception {
+		
+		BMap param = new BMap();
+		param.put("ORDER_GBN", 1);
+		param.put("HEAD_CD", 500020);
+
+		model.addAttribute("LOGIN_USER", LoginInfo.getUserId());
+		model.addAttribute("PRC_STS"  , reserveService.selectGetCommonCode(param));
+		return "/reserve/AgencyReserve"; 
+	}
+	/**
+	 * 예약등록 팝업 호출2
+	 * 
+	 * @param model
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/reserve/agencyReserveRegi.do")
+	public String agencyReserveRegi(ModelMap model,HttpServletRequest request) throws Exception{
+		
+		BMap param = new BMap();
+		param.put("HEAD_CD", 500030);				//회원구분
+
+		BMap param2 = new BMap();
+		param2.put("HEAD_CD" , 500210);				//미팅샌딩
+		
+		BMap param3 = new BMap();
+		param3.put("HEAD_CD" , 500070);				//객실타입
+		
+		BMap param4 = new BMap();
+		param4.put("HEAD_CD" , 500120);				//예약상태
+		
+		BMap param5 = new BMap();
+		param5.put("HEAD_CD" , 500000);				//항목구분
+		param5.put("REF_CHR1", 01);
+		
+		BMap param6 = new BMap();
+		param6.put("HEAD_CD" , 500110);				//픽업차량회사
+
+		BMap param7 = new BMap();
+		param7.put("HEAD_CD" , 500180);				//도착항공편
+
+		BMap param8 = new BMap();
+		param8.put("HEAD_CD" , 500190);				//도착항공편
+
+		BMap param9 = new BMap();
+		param9.put("HEAD_CD" , 500160);				//야간할증 항공편
+
+		BMap param10 = new BMap();
+		param10.put("HEAD_CD" , 500260);			//에이전시구분
+
+		BMap param11 = new BMap();
+		param11.put("HEAD_CD" , 500040);			//인원구분(멤버,일반,비라운딩,소아,영유아)
+
+		BMap param12 = new BMap();
+		param12.put("HEAD_CD" , 500150);			//LATE_CHECK_IN
+
+		BMap param13 = new BMap();
+		param13.put("HEAD_CD" , 500060);			//LATE_CHECK_OUT
+
+		BMap param14 = new BMap();
+		param14.put("HEAD_CD" , 500000);				//그리드 상품 멤버
+		param14.put("REF_CHR1", 01);
+		param14.put("REF_CHR2", "PROD01");
+
+		BMap param15 = new BMap();
+		param15.put("HEAD_CD" , 500000);				//그리드 상품 일반
+		param15.put("REF_CHR1", 01);
+
+		BMap param16 = new BMap();
+		param16.put("HEAD_CD" , 500000);				//그리드 상품 비라운딩
+		param16.put("REF_CHR1", 01);
+		param16.put("REF_CHR2", "PROD03");
+
+		BMap param17 = new BMap();
+		param17.put("HEAD_CD" , 500000);				//항목구분 - 상품일반
+		param17.put("REF_CHR1", 01);
+		param17.put("REF_CHR2", "PROD02");
+		
+		model.addAttribute("COM_GBN"           , reserveService.selectGetCommonCodeCom_Gbn(param));	//회원구분
+		model.addAttribute("NUM_GBN"           , reserveService.selectGetCommonCode2(param11));		//인원구분
+		
+		model.addAttribute("FLIGHT_IN"         , reserveService.selectGetCommonCode2(param7));		//출발항공편
+		model.addAttribute("FLIGHT_IN_HH"      , reserveService.selectGetCommonCodeHH(param7));	    //출발항공시간
+		model.addAttribute("FLIGHT_IN_MM"      , reserveService.selectGetCommonCodeMM(param7));	    //출발항공시간
+		
+		model.addAttribute("FLIGHT_OUT"        , reserveService.selectGetCommonCode2(param8));		//도착항공편
+		model.addAttribute("FLIGHT_OUT_HH"     , reserveService.selectGetCommonCodeHH(param8));	    //도착항공시간
+		model.addAttribute("FLIGHT_OUT_MM"     , reserveService.selectGetCommonCodeMM(param8));	    //도착항공시간
+		
+		model.addAttribute("ROOM_TYPE"         , reserveService.selectGetCommonCode2(param3));		//객실타입
+		model.addAttribute("LATE_CHECK_IN"     , reserveService.selectGetCommonCode2(param12));		//LATE_CHECK_IN
+		model.addAttribute("LATE_CHECK_OUT"    , reserveService.selectGetCommonCode2(param13));		//LATE_CHECK_OUT
+		model.addAttribute("list_hdng_gbn"   , reserveService.selectGetCommonCode2(param15));		//그리드 상품 일반
+		
+		model.addAttribute("mgn_gbn"           , reserveService.selectGetCommonCode(param));
+		model.addAttribute("region"            , reserveService.selectGetCommonCode(param2));
+		model.addAttribute("roomtype"          , reserveService.selectGetCommonCode(param3));
+		model.addAttribute("agency"            , reserveService.selectGetCommonCode(param4));
+		model.addAttribute("hdng_gbn"          , reserveService.selectGetCommonCode(param5));
+		model.addAttribute("cartype"           , reserveService.selectGetCommonCode(param6));
+		model.addAttribute("flight_in"         , reserveService.selectGetCommonCode(param7));
+		model.addAttribute("flight_out"        , reserveService.selectGetCommonCode(param8));
+		model.addAttribute("late_flight"       , reserveService.selectGetCommonCode(param9));
+		model.addAttribute("agency_gbn"        , reserveService.selectGetCommonCode(param10));
+		model.addAttribute("hdng_gbn_g"        , reserveService.selectGetCommonCode3(param17));
+		model.addAttribute("lete_check_in"     , reserveService.selectGetCommonCode(param12));		//LATE_CHECK_IN
+		model.addAttribute("lete_check_out"    , reserveService.selectGetCommonCode(param13));		//LATE_CHECK_OUT
+		return "/popup/AgencyRegiPopup";
 	}
 	
 }

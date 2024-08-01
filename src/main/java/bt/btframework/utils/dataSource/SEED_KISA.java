@@ -837,7 +837,7 @@ public class SEED_KISA
         //log.debug(new String(SEED_KISA.ENCRYPT("bitfriends".getBytes())));
         //log.debug(new String(SEED_KISA.ENCRYPT("123elql#@!".getBytes())));
         //log.debug(new String(SEED_KISA.DECRYPT("Q6MiE6BCixnT5cyrVoGCwQ==")));
-        byte[] encUrlByte = SEED_KISA.ENCRYPT("jdbc:log4jdbc:mariadb://106.240.164.71:44006/doollee_dev?serverTimezone=UTC".getBytes());
+        byte[] encUrlByte = SEED_KISA.ENCRYPT("jdbc:log4jdbc:mariadb://106.240.164.71:44006/doollee_prod?serverTimezone=UTC".getBytes());
         String encUrl = new String(encUrlByte, StandardCharsets.UTF_8);
         System.out.println("encUrl : "+encUrl);                
         //String test = "qhURKVhLXLSpaoUhT52JUvGkB29VjHEDh8HQ/O6tizqGyIOHnRhYnOxTWZnFT/n/XF8iwFqtVhIeJug1f+D+01dAKx/0tcVY25DFnXPQnx0=";                        
