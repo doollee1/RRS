@@ -396,6 +396,15 @@
 		   AND SEQ    = #{SEQ}
 	</select>
 
+	
+	<select id="selectReserveDetlYn" parameterType="BMap" resultType="String">
+		SELECT CASE WHEN COUNT(*) > 0 THEN 'Y' ELSE 'N' END AS isDetlYn
+		  FROM TB_REQ_BOOKING_D T1
+		 WHERE REQ_DT = #{REQ_DT}
+		   AND SEQ    = #{SEQ}
+		   AND DSEQ   = #{DSEQ}
+	</select>
+
 
 	<select id="reserveSelectAddList" parameterType="BMap" resultType="BMap">
 	SELECT T3.*

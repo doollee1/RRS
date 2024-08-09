@@ -40,8 +40,7 @@
 					</tr>
 					<tr>
 						<td class="small_td"><p>에이전시</p></td>
-						<td class="medium_td" >
-						<!-- <p id="AGENCY_ID">${LOGIN_USER}</p> --> 
+						<td class="medium_td" >				
 						<p id="AGENCY_ID">${loginVO.userId}</p>
 						</td>
 						<td class="blank_td"></td>
@@ -52,11 +51,11 @@
 								<option value="04">예약신청</option>
 								<option value="06">예약확정</option>
 								<option value="07">환불요청</option>
-								<option value="08">환불완료</option>
+                                <option value="08">환불완료</option>
 								<option value="09">예약취소</option>
 								<option value="10">입금완료</option>
 							</select>
-						</td>
+					   </td>
 					</tr>
 				</tbody>
 			</table>

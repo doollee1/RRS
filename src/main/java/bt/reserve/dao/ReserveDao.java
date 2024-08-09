@@ -99,6 +99,19 @@ public class ReserveDao extends DBAbstractMapper {
 		return(int)selectByPk("ReserveMapper.reserveSelectAddListCnt", param);
 	}
 
+	
+	/**
+	 * 예약상세항목유무 조회
+	 * 
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public String selectReserveDetlYn(BMap param) throws Exception{
+		return (String) selectByPk("ReserveMapper.selectReserveDetlYn", param);
+	}
+	
+	
 	/**
 	 * 예약현황 상세  리스트(그리드) 조회
 	 * @param param

@@ -26,10 +26,10 @@ import egovframework.com.utl.sim.service.EgovFileScrty;
 public class UserController {
 	@Resource(name = "UserService")
 	private UserService userService;
-	
+
 	@Resource(name = "CommonService")
 	private CommonService commonService;
-	
+
 	/**
 	 * 사용자관리 페이지 호출
 	 * @param model
@@ -41,7 +41,7 @@ public class UserController {
 		// return "/common/UserManager";
 		return "/rrs/Manager";
 	}
-	
+
 	/**
 	 * 사용자 정보 조회
 	 * @param reqData
@@ -54,12 +54,12 @@ public class UserController {
 	public BRespData selectUserInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
-		
+
 		respData.put("result", userService.selectUserInfo(param));
-		
+
 		return respData;
 	}
-	
+
 	/**
 	 * 사용자 정보 디테일 팝업 호출
 	 * @param model
@@ -73,7 +73,7 @@ public class UserController {
 		//return "/popup/UserInfoPopup";
 		return "/popup/rrs/ManagerInfoPopup";
 	}
-	
+
 	/**
 	 * 사용자 정보 저장
 	 * @param reqData
@@ -86,14 +86,14 @@ public class UserController {
 	public BRespData saveUserInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
-		
+
 		if(!userService.saveUserInfo(param)){
 			respData.put("dup", "Y");
 		}
-		
+
 		return respData;
 	}
-	
+
 	/**
 	 * 사용자 정보 삭제
 	 * @param reqData
@@ -106,12 +106,12 @@ public class UserController {
 	public BRespData deleteUserInfo(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
 		BMap param = reqData.getParamDataMap("param");
 		BRespData respData = new BRespData();
-		
+
 		userService.deleteUserInfo(param);
-		
+
 		return respData;
 	}
-	
+
 	/**
 	 * 패스워드 변경 팝업 호출
 	 * @param model
@@ -124,12 +124,12 @@ public class UserController {
 		loginController.initRsa(req);
 		return "/popup/PwChangePopup";
 	}
-	
+
 	@RequestMapping(value = "/common/PwInitChangePopup.do")
 	public String PwInitChangePopup(ModelMap model, HttpServletRequest req) throws Exception{
 		return "/popup/PwChangePopup";
 	}
-	
+
 	@RequestMapping(value = "/common/changePw.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData changePw(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
@@ -137,36 +137,36 @@ public class UserController {
 		param.put("COMP_CD", LoginInfo.getCompCd());
 		BRespData respData = new BRespData();
 		HttpSession session = req.getSession();
-		
+
 		try{
-			LoginController loginController = new LoginController();			
+			LoginController loginController = new LoginController();
 	        PrivateKey privateKey = (PrivateKey) session.getAttribute(LoginController.RSA_WEB_KEY);
-	 
+
 	        // 복호화
 	        param.put("CURR_PASSWORD", loginController.decryptRsa(privateKey, param.getString("CURR_PASSWORD")));
 	        param.put("NEW_PASSWORD", loginController.decryptRsa(privateKey, param.getString("NEW_PASSWORD")));
 	        param.put("CONF_PASSWORD", loginController.decryptRsa(privateKey, param.getString("CONF_PASSWORD")));
-	        
+
 	        // 다시 암호화
 	        param.put("CURR_PASSWORD", EgovFileScrty.encryptPassword(param.getString("CURR_PASSWORD"), param.getString("USER_ID")));
 	        param.put("NEW_PASSWORD", EgovFileScrty.encryptPassword(param.getString("NEW_PASSWORD"), param.getString("USER_ID")));
 	        param.put("CONF_PASSWORD", EgovFileScrty.encryptPassword(param.getString("CONF_PASSWORD"), param.getString("USER_ID")));
-	        
+
 	        userService.changePw(param);
-	        
+
 	        respData.put("success", true);
 		} catch(Exception e){
 			respData.put("success", false);
 			respData.put("message", e.getMessage());
 		} finally {
-			
+
 			//개인키 세션에서 제거
 			session.removeAttribute(LoginController.RSA_WEB_KEY);
 		}
-		
+
 		return respData;
 	}
-	
+
 	@RequestMapping(value = "/common/initPw.do", method = RequestMethod.POST)
 	@ResponseBody
 	public BRespData initPw(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception{
@@ -174,7 +174,7 @@ public class UserController {
 		BRespData respData = new BRespData();
 
         param.put("NEW_PASSWORD", EgovFileScrty.encryptPassword("oms1234", param.getString("USER_ID")));
-        
+
         userService.initPw(param);
         respData.put("success", true);
 

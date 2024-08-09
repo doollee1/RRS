@@ -26,7 +26,7 @@
 				<tr>
 					<td class="small_td"><p><s:message code="product.baseyear"/></p></td>
 					<td>
-						<select id="BAS_YY" name="BAS_YY" class="cBasYY cGr1_BasYY" style=width:80px;>
+						<select id="BAS_YY" name="BAS_YY" class="cBasYY cGr1_BasYY" onchange="searchMSending()" style="width:80px;" >
 							<c:forEach var="i" items="${basyy}">
 								<option value="${i.BAS_YY}">${i.BAS_YY}</option>
 							</c:forEach>
@@ -34,7 +34,7 @@
 					</td>
 					<td class="small_td"><p style='width:80px;text-align:right'>미팅샌딩 지역</p></td>
 					<td class="medium_td">
-						<select id="MSENDING" name="MSENDING" class="" style=width:100px;>
+						<select id="MSENDING" name="MSENDING" class="" onchange="searchMSending()" style=width:100px;>
 						    <option value="9">전체</option>                               
 							<c:forEach var="i" items="${mSending}">
 								<option value="${i.REF_CHR1}">${i.CODE_NM}</option>
@@ -66,9 +66,8 @@
 	</div>
 	<!-- 그리드 끝 -->	
 	
-	   
-	  <div class="ct_grid_top_left">
-	   <h4>야간할증비용 관리</h4>
+	<div class="ct_grid_top_left">
+		<h4>야간할증비용 관리</h4>
 	</div>	
 	
 	<!-- 야간할증 조회조건 시작 -->
@@ -78,7 +77,7 @@
 				<tr>
 					<td class="small_td"><p><s:message code="product.baseyear"/></p></td>
 					<td>
-						<select id="BAS_YY" name="BAS_YY" class="cBasYY cGr2_BasYY" style=width:80px;>								
+						<select id="BAS_YY" name="BAS_YY" class="cBasYY cGr2_BasYY" onchange="searchExtraCharge()" style=width:80px;>								
 							<c:forEach var="i" items="${basyy}">
 								<option value="${i.BAS_YY}">${i.BAS_YY}</option>
 							</c:forEach>
@@ -86,10 +85,11 @@
 					</td>
 					<td class="small_td"><p style='width:80px;text-align:right'>시즌  구분 </p></td>
 					<td class="medium_td">
-						<select id="SSN_GBN" name="SSN_GBN" class="" style=width:100px;>							    
+						<select id="SSN_GBN" name="SSN_GBN" class="" onchange="searchExtraCharge()" style=width:100px;>							    
 							<c:forEach var="i" items="${ssn_gbn}">
 								<option value="${i.CODE}">${i.CODE_NM}</option>
 							</c:forEach>
+							<option value="4">연휴시즌</option>
 						</select>
 					</td>		
 					<td width="50%"></td>			
@@ -136,230 +136,269 @@
   * ===============================
 --%>
     
-  $(function() {
-	 	
-	    var toYear =  new Date().getFullYear();	     
-	     $(".cBasYY").val(toYear);                // 기준연도 설정 
-	  
-	     createMsendingGrid();
-	     createExtraChargeGrid();
-	     searchMSending();
-	     searchExtraCharge();
-	     
-	   //미팅샌딩 그리드 onchange event
-        $("#grid1").bind("change", function() {
-            $('#grid1_' + $('#grid1').jqGrid('getGridParam', 'selrow') + '_CHK').prop('checked', true);
-        });
-      //야간할증 그리드 onchange event
-        $("#grid2").bind("change", function() {
-            $('#grid2_' + $('#grid2').jqGrid('getGridParam', 'selrow') + '_CHK').prop('checked', true);
-        });
-        
-  }); 
-  
-  function createMsendingGrid() {
-	    var colName = [
-	    	    '수정',
-	            '순번',
-	            'HDNG_GBN',
-	            '미팅샌딩 지역',
-	            'PROD_COND',
-	            'PROD_SEQ',
-	            '미팅샌딩구분',
-	            '이용기준',
-	            '이용금액',
-	            ];
-	    var colModel = [
-	    	{name : 'CHK',index : 'CHK',width : 50 ,align : 'center',formatter : gridCboxFormat, hidden:true , sortable: false},
-	        {name : 'ROWNUM'   , width : 100 , align : 'center'},
-	        {name : 'HDNG_GBN' , hidden:true },
-	        {name : 'PICKUP_ZONE' , width : 300, align : 'center' },
-	        {name : 'PROD_COND', hidden:true },
-	        {name : 'PROD_SEQ' , hidden:true },	 
-	        {name : 'CODE_NM'  , width : 400, align : 'center' },
-	        {name : 'COM_CNTN' , align : 'center'},
-	        {name : 'COM_AMT'  ,  width : 300, editable:true, width : 95 , align : 'right', formatter: 'currency', formatoptions: { thousandsSeparator: ',', decimalPlaces: 0}},
-	        ];
-	    var gSetting = {
-	            pgflg          : true,
-	            exportflg      : false, //엑셀, pdf 출력 버튼 노출여부
-	            colsetting     : false, // 컬럼 설정 버튼 노출여부
-	            searchInit     : false, // 데이터 검색 버튼 노출여부
-	            resizeing      : true,
-	            rownumbers     : false,
-	            shrinkToFit    : true,
-	            autowidth      : true,
-	            queryPagingGrid: true, // 쿼리 페이징 처리 여부
-	            height : 'auto'
-	    };
-	    // 그리드 생성 및 초기화
-	    btGrid.createGrid('grid1', colName, colModel, gSetting);
-	    // btGrid.gridResizing('grid1');
-}
-  function createExtraChargeGrid() {
-	        var colName = [
-	        	    '수정',
-	        	    'PROD_SEQ',
-	                '시즌',
-	                '시작일1',
-	                '종료일1',
-	                '시작일2',
-	                '종료일2',
-	                '이용기준',
-	                '추가기준(4인)',
-	                '할증금액'
-	                ];
-	        var colModel = [	          
-	        	{name : 'CHK',index : 'CHK',width : 50,align : 'center',formatter : gridCboxFormat, hidden: true , sortable: false},
-	        	{name : 'PROD_SEQ' , width : 100, align : 'center', hidden:true  },
-	        	{name : 'SSN_NM' , width : 100, align : 'center'  },
-	            {name : 'ST_DT1' , width : 100, align : 'center'  },
-	            {name : 'ED_DT1' , width : 100, align : 'center'  },  
-	            {name : 'ST_DT2' , width : 100, align : 'center'  },
-                {name : 'ED_DT2' , width : 100, align : 'center'  },  
-	            {name : 'COM_CNTN' , width : 200, align : 'center'},
-	            {name : 'CODE_NM'  , width : 300, align : 'center' },
-	            {name : 'COM_AMT'  , editable:true, width : 100 , align : 'right', formatter: 'integer', formatoptions : {defaultValue: '', thousandsSeparator : ','}},
-	            ];
-	        var gSetting = {
-	                pgflg          : true,
-	                exportflg      : false, //엑셀, pdf 출력 버튼 노출여부
-	                colsetting     : false, // 컬럼 설정 버튼 노출여부
-	                searchInit     : false, // 데이터 검색 버튼 노출여부
-	                resizeing      : true,
-	                rownumbers     : false,
-	                shrinkToFit    : true,
-	                autowidth      : true,
-	                queryPagingGrid: true, // 쿼리 페이징 처리 여부
-	                height : 'auto'
-	        };
-	        // 그리드 생성 및 초기화
-	        btGrid.createGrid('grid2', colName, colModel, gSetting);
+	$(function() {
+		var toYear =  new Date().getFullYear();	     
+		$(".cBasYY").val(toYear);                // 기준연도 설정 
+		
+		createMsendingGrid();
+		createExtraChargeGrid();
+		searchMSending();
+		searchExtraCharge();
+		
+		//미팅샌딩 그리드 onchange event
+		$("#grid1").bind("change", function() {
+			$('#grid1_' + $('#grid1').jqGrid('getGridParam', 'selrow') + '_CHK').prop('checked', true);
+		});
+		//야간할증 그리드 onchange event
+		$("#grid2").bind("change", function() {
+			$('#grid2_' + $('#grid2').jqGrid('getGridParam', 'selrow') + '_CHK').prop('checked', true);
+		});
+	}); 
+
+	/******************************************** 
+	 * @Subject : 지역별 미팅샌딩 그리드 생성 함수
+	 * @Content : 그리드 생성
+	 * @Since   : 2024.07.22
+	 * @Author  : A.J.S
+	********************************************/
+	function createMsendingGrid() {
+		var colName = [
+				'수정',
+				'순번',
+				'HDNG_GBN',
+				'미팅샌딩 지역',
+				'PROD_COND',
+				'PROD_SEQ',
+				'미팅샌딩구분',
+				'이용기준',
+				'이용금액',
+			];
+		var colModel = [
+				{name : 'CHK',index : 'CHK',width : 50 ,align : 'center',formatter : gridCboxFormat, hidden:true , sortable: false},
+				{name : 'ROWNUM'   , width : 100 , align : 'center'},
+				{name : 'HDNG_GBN' , hidden:true },
+				{name : 'PICKUP_ZONE' , width : 300, align : 'center' },
+				{name : 'PROD_COND', hidden:true },
+				{name : 'PROD_SEQ' , hidden:true },	 
+				{name : 'CODE_NM'  , width : 400, align : 'center' },
+				{name : 'COM_CNTN' , align : 'center'},
+				{name : 'COM_AMT'  ,  width : 300, editable:true, width : 95 , align : 'right', formatter: 'currency', formatoptions: { thousandsSeparator: ',', decimalPlaces: 0}},
+			];
+		var gSetting = {
+				pgflg          : true,
+				exportflg      : false, //엑셀, pdf 출력 버튼 노출여부
+				colsetting     : false, // 컬럼 설정 버튼 노출여부
+				searchInit     : false, // 데이터 검색 버튼 노출여부
+				resizeing      : true,
+				rownumbers     : false,
+				shrinkToFit    : true,
+				autowidth      : true,
+				queryPagingGrid: true, // 쿼리 페이징 처리 여부
+				height : 'auto'
+			};
+		// 그리드 생성 및 초기화
+		btGrid.createGrid('grid1', colName, colModel, gSetting);
 	}
-  /* 지역별 미팅샌딩 비용 목록 조회 */
-  function searchMSending() {
-      
-      $.ajax({
-          type:"post",
-          url:"/product/selectMSendingInfoList.do",
-          data:{"BAS_YY" : $(".cGr1_BasYY").val()
-              , "HDNG_GBN" : $("#MSENDING").val()
-           },
-          dataType:"json"
-      }).done(function(data){
-          if(data.dup == 'N'){
-              alert("조회에 실패했습니다. e.message:"+data.message);
-          }
-          else{
-              reloadGrid("grid1", data.result);
-          }
-          
-      });
- }
-  /*  야간할증비용 목록조회 */ 
-  function searchExtraCharge() {
-      
-      $.ajax({
-          type:"post",
-          url:"/product/selectExtraChargeInfoList.do",
-          data:{"BAS_YY" : $(".cGr2_BasYY").val()
-              , "SSN_GBN" : $("#SSN_GBN").val()
-           },
-          dataType:"json"
-      }).done(function(data){
-          if(data.dup == 'N'){
-              alert("조회에 실패했습니다. e.message:"+data.message);
-          }
-          else{
-              reloadGrid("grid2", data.result);
-          } 
-      });
- }
-  /*  지역별 미팅샌딩 이용금액 수정 요청 */
-  function updateMSending() {
-	  var ids = $("#grid1").jqGrid("getDataIDs");
-      var gridData = [];
-      var cnt = 0;
-      btGrid.gridSaveRow('grid1');
-      for(var i = 0; i < ids.length; i++){
-          if($('#grid1_' + ids[i] + '_CHK').prop('checked')){
-              cnt++;
-              gridData.push($("#grid1").getRowData(ids[i]));
-          }
-      }
-      
-      if(cnt < 1){
-          alert('수정된 행이 없습니다.');
-          return;
-      }
-      
-      for(var i = 0; i < gridData.length; i++){
-          if(fn_empty(gridData[i]["COM_AMT"]) || gridData[i]["COM_AMT"] <= 0 ){
-              alert('이용금액을 입력하십시오. ');
-              return;
-          }
-         
-      }
+	/******************************************** 
+	 * @Subject : 야간할증비용 그리드 생성 함수
+	 * @Content : 그리드 생성
+	 * @Since   : 2024.07.22
+	 * @Author  : A.J.S
+	********************************************/
+	function createExtraChargeGrid() {
+		var colName = [
+				'수정',
+				'PROD_SEQ',
+				'시즌',
+				'시작일1',
+				'종료일1',
+				'시작일2',
+				'종료일2',
+				'이용기준',
+				'추가기준(4인)',
+				'할증금액'
+			];
+		var colModel = [	          
+				{name : 'CHK',index : 'CHK',width : 50,align : 'center',formatter : gridCboxFormat, hidden: true , sortable: false},
+				{name : 'PROD_SEQ' , width : 100, align : 'center', hidden:true  },
+				{name : 'SSN_NM' , width : 100, align : 'center'  },
+				{name : 'ST_DT1' , width : 100, align : 'center'  },
+				{name : 'ED_DT1' , width : 100, align : 'center'  },  
+				{name : 'ST_DT2' , width : 100, align : 'center'  },
+				{name : 'ED_DT2' , width : 100, align : 'center'  },  
+				{name : 'COM_CNTN' , width : 200, align : 'center'},
+				{name : 'CODE_NM'  , width : 300, align : 'center' },
+				{name : 'COM_AMT'  , editable:true, width : 100 , align : 'right', formatter: 'integer', formatoptions : {defaultValue: '', thousandsSeparator : ','}},
+			];
+		var gSetting = {
+				pgflg          : true,
+				exportflg      : false, //엑셀, pdf 출력 버튼 노출여부
+				colsetting     : false, // 컬럼 설정 버튼 노출여부
+				searchInit     : false, // 데이터 검색 버튼 노출여부
+				resizeing      : true,
+				rownumbers     : false,
+				shrinkToFit    : true,
+				autowidth      : true,
+				queryPagingGrid: true, // 쿼리 페이징 처리 여부
+				height : 'auto'
+			};
+		// 그리드 생성 및 초기화
+		btGrid.createGrid('grid2', colName, colModel, gSetting);
+	}
 
-      if(confirm("<s:message code='confirm.save'/>")){
-    	  //var formData = formIdAllToMap('frmSearch1');    	  
-           var formData = {"BAS_YY" : $(".cGr1_BasYY").val() } 
-    	  var url = "/product/updateMSendingCost.do";
-    	  var param = {"param" : formData,"gridData" : gridData};
-    	  fn_ajax(url, false, param, function(data, xhr){
-              if(data.dup == 'Y'){
-                  alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
-              }else{
-                  alert('<s:message code="info.save"/>');
-                  searchMSending();  
-              }
-          });
-      }
-  }
-  /* 야간할증 금액 수정 요청 */
-  function updateExtraCharge() {
-	  var ids = $("#grid2").jqGrid("getDataIDs");
-      var gridData = [];
-      var cnt = 0;
-      btGrid.gridSaveRow('grid2');
-      for(var i = 0; i < ids.length; i++){
-          if($('#grid2_' + ids[i] + '_CHK').prop('checked')){
-              cnt++;
-              gridData.push($("#grid2").getRowData(ids[i]));
-          }
-      }
-      
-      if(cnt < 1){
-          alert('수정된 행이 없습니다.');
-          return;
-      }
-      
-      for(var i = 0; i < gridData.length; i++){
-          if(fn_empty(gridData[i]["COM_AMT"]) || gridData[i]["COM_AMT"] <= 0 ){
-              alert('이용금액을 입력하십시오. ');
-              return;
-          }
-         
-      }
-      
-      
-       if(confirm("<s:message code='confirm.save'/>")){
-         // var formData = formIdAllToMap('frmSearch2');
-           var formData = {"BAS_YY" : $(".cGr2_BasYY").val() } 
-         var url = "/product/updateMSendingCost.do";     
-          var param = {"param" : formData,"gridData" : gridData};
-          fn_ajax(url, false, param, function(data, xhr){
-              if(data.dup == 'Y'){
-                  alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
-              }else{
-                  alert('<s:message code="info.save"/>');
-                  searchMSending();  
-              }
-          });
-      }  
-      
-  }   
-  
-
+	/******************************************** 
+	 * @Subject : 지역별 미팅샌딩 비용 조회 함수
+	 * @Content : 목록조회
+	 * @Since   : 2024.07.22
+	 * @Author  : A.J.S
+	********************************************/
+	function searchMSending() {
+		$.ajax({
+			type:"post",
+			url:"/product/selectMSendingInfoList.do",
+			data:{"BAS_YY" : $(".cGr1_BasYY").val()
+				, "HDNG_GBN" : $("#MSENDING").val()
+			},
+			dataType:"json"
+		}).done(function(data){
+			if(data.dup == 'N'){
+				alert("조회에 실패했습니다. e.message:"+data.message);
+			}
+			else{
+				reloadGrid("grid1", data.result);
+			}
+		});
+	}
+	
+	/******************************************** 
+	 * @Subject : 야간할증비용 조회 함수
+	 * @Content : 목록조회
+	 * @Since   : 2024.07.22
+	 * @Author  : A.J.S
+	********************************************/
+	function searchExtraCharge() {
+		$.ajax({
+			type:"post",
+			url:"/product/selectExtraChargeInfoList.do",
+			data:{"BAS_YY" : $(".cGr2_BasYY").val()
+				, "SSN_GBN" : $("#SSN_GBN").val()
+			},
+			dataType:"json"
+		}).done(function(data){
+			if(data.dup == 'N'){
+				alert("조회에 실패했습니다. e.message:"+data.message);
+			}
+			else{
+				reloadGrid("grid2", data.result);
+			} 
+		});
+	}
+	
+	/******************************************** 
+	 * @Subject : 지역별 미팅샌딩 그리드에서 [저장] 요청시 호출되는 함수
+	 * @Content : 이용금액 수정 
+	 * @Since   : 2024.07.22
+	 * @Author  : A.J.S
+	********************************************/
+	function updateMSending() {
+		var ids = $("#grid1").jqGrid("getDataIDs");
+		var gridData = [];
+		var cnt = 0;
+		btGrid.gridSaveRow('grid1');
+		for(var i = 0; i < ids.length; i++){
+			if($('#grid1_' + ids[i] + '_CHK').prop('checked')){
+				
+				/* 미팅샌딩 이용금액 항목의 유효성 검사 */
+				if( !isValidCells($("#grid1").getCell( ids[i] , "COM_AMT")) ) {		
+					$('#grid1').jqGrid('setSelection',ids[i]);				
+					return;
+				} 
+				cnt++;
+				gridData.push($("#grid1").getRowData(ids[i]));
+			}
+		}
+		
+		if(cnt < 1){
+			alert('이용금액 수정후 [저장]버튼을 클릭하십시오.');
+			return;
+		}
+		
+		if(confirm("<s:message code='confirm.save'/>")){
+			var formData = {"BAS_YY" : $(".cGr1_BasYY").val() } 
+			var url = "/product/updateMSendingCost.do";
+			var param = {"param" : formData,"gridData" : gridData};
+			fn_ajax(url, false, param, function(data, xhr){
+				if(data.dup == 'Y'){
+					alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
+				}else{
+					alert('<s:message code="info.save"/>');
+					searchMSending();  
+				}
+			});
+		}
+	}
+	/******************************************** 
+	 * @Subject : 입력정보의 유효성검사 함수
+	 * @Content : 이용금액의 입력여부 및 양수 체크
+	 * @Since   : 2024.08.07
+	 * @Author  : A.J.S
+	********************************************/
+	function isValidCells(amt) {
+			var isValid = true
+			
+			if( amt == "" || amt == 0 ){
+				alert("이용금액를 입력하십시오.");
+				isValid = false;
+			}
+			else if( amt < 0 ){
+				alert("이용금액은 0원보다 커야 합니다.");
+				isValid = false;
+			}
+			
+			return isValid;
+	}
+			
+	/******************************************** 
+	 * @Subject : 야간할증비용 그리드에서 [저장]요청시 호출되는 함수
+	 * @Content : 할증금액 수정 
+	 * @Since   : 2024.07.22
+	 * @Author  : A.J.S
+	********************************************/
+	function updateExtraCharge() {
+		var ids = $("#grid2").jqGrid("getDataIDs");
+		var gridData = [];
+		var cnt = 0;
+		btGrid.gridSaveRow('grid2');
+		for(var i = 0; i < ids.length; i++){
+			if($('#grid2_' + ids[i] + '_CHK').prop('checked')){
+				/* 야간할증금액 항목의 유효성 검사 */
+				if( !isValidCells($("#grid2").getCell( ids[i] , "COM_AMT")) ) {		
+					$('#grid2').jqGrid('setSelection',ids[i]);				
+					return;
+				} 
+				cnt++;
+				gridData.push($("#grid2").getRowData(ids[i]));
+			}
+		}
+		if(cnt < 1){
+			alert('할증금액 수정후 [저장]버튼을 클릭하십시오.');
+			return;
+		}
+		
+		if(confirm("<s:message code='confirm.save'/>")){
+			var formData = {"BAS_YY" : $(".cGr2_BasYY").val() } 
+			var url = "/product/updateMSendingCost.do"; 
+			var param = {"param" : formData,"gridData" : gridData};
+			fn_ajax(url, false, param, function(data, xhr){
+				if(data.dup == 'Y'){
+					alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
+				}else{
+					alert('<s:message code="info.save"/>');
+					searchExtraCharge();  
+				}
+			});
+		}
+	}   
+	 
  </script>
 <c:import url="../import/frameBottom.jsp" />

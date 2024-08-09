@@ -255,10 +255,15 @@
 		}
 
 		if(confirm("삭제하시겠습니까?")){
-			var url = '/system/deleteAuthInfo.do';
+			var url   = '/system/deleteAuthInfo.do';
 			var param = {"gridData" : gridData};
 			fn_ajax(url, false, param, function(data, xhr){
-				alert("삭제하였습니다.");
+				if(data.success){
+					alert("삭제하였습니다.");
+				}else{
+					alert("삭제에 실패했습니다. "+data.message);
+				}
+
 				cSearch();
 			});
 		}

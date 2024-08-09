@@ -20,7 +20,7 @@
 					<tbody>
 						<tr>
 							<td style="width:100px;"><s:message code='title.codename'/></td>
-	      					<td><p><input type="text" id="S_CODE" name="S_CODE"></p></td>
+							<td><p><input type="text" id="S_CODE" name="S_CODE"></p></td>
 						</tr>
 					</tbody>
 				</table>
@@ -33,8 +33,15 @@
 	</div>
 	<!-- 그리드 끝 -->
 </div>
+
 <script type="text/javascript">
 var args;
+	/********************************************
+	 * @Subject : 화면 OPEN 시 최초 실행 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 $(function() {
 	$('#commPopup').dialog({
 		title:'<s:message code='title.commlist'/>',
@@ -43,9 +50,9 @@ $(function() {
 		width: 400,
 		modal: true,
 		buttons: {
-			'<s:message code='button.confirm'/>': { 
+			'<s:message code='button.confirm'/>': {
 				text: '<s:message code='button.confirm'/>',
-				click: function() {		
+				click: function() {
 					var selRows = $('#popGrid1').jqGrid('getGridParam', 'selrow');
 					if(fn_empty(selRows)){
 						args = '<s:message code='common.detailedcode'/>';
@@ -53,7 +60,6 @@ $(function() {
 
 					}else{
 						var gridData = [$('#popGrid1').getRowData(selRows)];
-
 						p_rtnData = gridData;
 						popupClose($('#commPopup').data('pid'));
 					}
@@ -68,12 +74,11 @@ $(function() {
 		},
 		open: function(e, ui) {
 			$('#commPopup.pop_grid_wrap').height($(this).height() - $('#commPopup.popup_search').outerHeight(true) - 70);
-
 			$('#S_HEAD_ID').val($(this).data('S_HEAD_ID'));
 			$('#S_CODE').val($(this).data('S_CODE'));
 			$('#S_NAME').val($(this).data('S_NAME'));
 			$('#RefCode').val($(this).data('RefCode'));
-			
+
 			popGrid1_Load();
 			//popupSearch();
 
@@ -83,28 +88,28 @@ $(function() {
 					var gridData = [$('#popGrid1').getRowData(rowid)];
 					p_rtnData = gridData;
 					popupClose($('#commPopup').data('pid'));
-		    	}
+				}
 			});
-			
+
 			$("#S_COMM_CD").keyup(function(event){
-			    if(event.keyCode == 13){
-			        popupSearch();
-			    }
+				if(event.keyCode == 13){
+					popupSearch();
+				}
 			});
-			
+
 			$("#S_COMM_NM").keyup(function(event){
-			    if(event.keyCode == 13){
-			        popupSearch();
-			    }
+				if(event.keyCode == 13){
+					popupSearch();
+				}
 			});
-			
+
 			gridData = $(this).data('gridData');
 			if (fn_empty(gridData) == false) {
 				$('#grid1').jqGrid('clearGridData');
-			    $('#grid1').jqGrid('setGridParam', {data:gridData});
-			    $('#grid1').trigger('reloadGrid');
+				$('#grid1').jqGrid('setGridParam', {data:gridData});
+				$('#grid1').trigger('reloadGrid');
 			}
-			
+
 			$('#S_CODE').focus();
 			$('#S_CODE').keyup(function(e) {
 				if (e.keyCode === 13) {
@@ -119,22 +124,27 @@ $(function() {
 	});
 });
 
+	/********************************************
+	 * @Subject : 그리드 설정 및 초기화 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 function popGrid1_Load() {
-
 	var colName = ['<s:message code='system.compcd'/>',
-	               '<s:message code='common.headerid'/>',
+				   '<s:message code='common.headerid'/>',
 				   '<s:message code='common.detailedcode'/>',
 				   '<s:message code='common.codename'/>'];
 	var colModel = [
-					{name:'COMP_CD',index:'COMP_CD',width:120,hidden:true},
-					{name:'HEAD_ID',index:'HEAD_ID',width:50, hidden:true},
-					{name:'CODE',index:'CODE',width:50},
-					{name:'NAME',index:'NAME',width:100},
+					{name:'COMP_CD', index:'COMP_CD', width:120, hidden:true},
+					{name:'HEAD_ID', index:'HEAD_ID', width:50,  hidden:true},
+					{name:'CODE',    index:'CODE',    width:50 },
+					{name:'NAME',    index:'NAME',    width:100}
 	];
 
 	var gSetting = {
-	        pgflg:true,
-	        colsetting : true,
+			pgflg:true,
+			colsetting : true,
 			searchInit : false,
 			resizeing : true,
 			rownumbers:false,
@@ -143,25 +153,29 @@ function popGrid1_Load() {
 			height:402
 		};
 	btGrid.createGrid('popGrid1', colName, colModel, gSetting);
-	
 }
 
-// popupSearch
+	/********************************************
+	 * @Subject : 조회 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 function popupSearch() {
 	var v_searchData = formIdToMap('frmSearch');
 	var sendData = {'param':v_searchData};
 	var url = '/common/selectCommPopup.do';
-	
+
 	var refCode = $('#RefCode').val();
 	if (!!refCode) {
 		sendData.param.RefCode = refCode;
 	}
-	
+
 	fn_ajax(url, false, sendData, function(data, xhr) {
 		var gridData = data.result;
 		$('#popGrid1').jqGrid('clearGridData');
-	    $('#popGrid1').jqGrid('setGridParam', {data:gridData});
-	    $('#popGrid1').trigger('reloadGrid');
+		$('#popGrid1').jqGrid('setGridParam', {data:gridData});
+		$('#popGrid1').trigger('reloadGrid');
 	});
 }
 </script>

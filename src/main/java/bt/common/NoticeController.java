@@ -235,10 +235,11 @@ public class NoticeController {
 
 		if(result < 1) {
 			respData.put("result", "fail");
-			return respData;
+		}
+		else {
+			respData.put("result", "success");
 		}
 
-		respData.put("result", "success");
 		return respData;
 	}
 }

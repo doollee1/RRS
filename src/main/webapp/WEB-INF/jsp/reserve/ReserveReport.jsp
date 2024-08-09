@@ -74,7 +74,7 @@
 				<button class="cBtnclass cBtnSave_style" id="cBtnSave" type="button" onclick="cSave();">저장</button></div>
 			<div class="ct_grid_top_right"></div>
 		</div>
-		<div class="ctu_g_wrap" id="dayTable" style= width:100%; float:left; padding-top:0px; overflow:auto;">
+		<div class="ctu_g_wrap" id="dayTable" style= "width:100%; float:left; padding-top:0px; overflow:auto;">
 			<table id="reserveDayReportGrid"></table>
 			<div id="reserveDayReportGrid_pager"></div>
 		</div>
@@ -534,10 +534,12 @@
 						}
 					   };
 
-		fn_ajax(url, false, param, function(data, xhr){
-			alert("저장하였습니다.");
-			cSearch();
-		});
+		if(confirm("<s:message code='confirm.save'/>")){
+			fn_ajax(url, false, param, function(data, xhr){
+				alert("저장하였습니다.");
+				cSearch();
+			});
+		}
 	}
 
 	/******************************************** 

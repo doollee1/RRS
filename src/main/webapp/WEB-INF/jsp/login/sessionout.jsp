@@ -8,8 +8,6 @@
  */
 %>
 <script type="text/javascript">
-<c:if test="${sessionOut eq '1'}">
-	alert('Session has expired. You have been taken to the login page.');
-	parent.location.href = '/login/login.do';
-</c:if>
+	alert('세션이 종료되어 로그인 화면으로 이동합니다.');
+	top.location.href = '/';
 </script>

@@ -48,7 +48,7 @@
 			<tr>
 				<th><span>*</span><s:message code='notice.notictype'/></th>
 				<td>
-					<select id="NOTICE_TP" name="NOTICE_TP" class="cmc_combo" ess="ess" style="width:calc(100% - 50px);">
+					<select id="NOTICE_TP" name="NOTICE_TP" class="cmc_combo" ess="ess" style="width:calc(100% - 50px);"/>
 				</td>
 				<th width="8%"><s:message code='notice.noticdate'/></th>
 				<td>
@@ -230,7 +230,9 @@ function imageUploadPopup(){
  * @Author  :
  ********************************************/
 function cSearch(){
-	fn_pageMove("/common/NoticeList.do");
+	 if(confirm("작성 중이던 내용을 취소하고 \n목록으로 돌아가시겠습니까?")){
+		 fn_pageMove("/common/NoticeList.do"); 
+	 }
 }
 
 /********************************************

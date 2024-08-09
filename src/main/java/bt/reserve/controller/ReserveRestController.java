@@ -129,12 +129,40 @@ public class ReserveRestController {
 		
 		logger.info("======= 예약상세유무 조회  ==========");
 		
-		BMap paramData = new BMap();
-		paramData.put("SEQ"  	   , (String) reqData.get("SEQ"));
+		BMap paramData = new BMap();		
 		paramData.put("REQ_DT"	   , (String) reqData.get("REQ_DT"));
+		paramData.put("SEQ"  	   , (String) reqData.get("SEQ"));		
 		
 		String result = reserveService.selectReserveDetlYn(paramData);
 		logger.info("===== 예약상세유무 : "+result);
+		
+		BRespData respData = new BRespData();
+		respData.put("result", result);
+		
+		return respData;
+	}
+	
+	
+	/**
+	 * 예약상세항목유무 조회
+	 * 
+	 * @param reqData
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/isReserveDetlYN.do", method = RequestMethod.POST)
+	public BRespData isReserveDetlYN(@RequestBody BReqData reqData, HttpServletRequest req) throws Exception {
+		
+		logger.info("======= 예약상세항목유무 조회  ==========");
+		
+		BMap paramData = new BMap();		
+		paramData.put("REQ_DT"	   , (String) reqData.get("REQ_DT"));
+		paramData.put("SEQ"  	   , (String) reqData.get("SEQ"));		
+		paramData.put("DSEQ"  	   , reqData.get("DSEQ").toString());
+		
+		String result = reserveService.isReserveDetlYN(paramData); 
+		logger.info("===== 예약상세항목유무 : "+result);
 		
 		BRespData respData = new BRespData();
 		respData.put("result", result);

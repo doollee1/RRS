@@ -200,7 +200,7 @@
 						'ROW_STATUS'
 						];
 		var colModel = [
-			{ name: 'CHK',        index : 'CHK', width : 20, align : 'center', formatter : gridCboxFormat, hidden: true, sortable: false},
+			{ name: 'CHK',        index : 'CHK', width : 20,   align : 'center', formatter : gridCboxFormat, hidden: true, sortable: false},
 			{ name: 'COMP_CD',    width: 100, align: 'center', hidden: true },
 			{ name: 'SYSTEM_CD',  width: 120, align: 'center', editable:true , editoptions:{maxlength:10}},
 			{ name: 'SYSTEM_NM',  width: 180, editable:true,   editoptions:{maxlength:50}},
@@ -421,6 +421,12 @@
 		fn_formSubmit('/system/excelSystemInfo.do', param);
 	}
 
+	/********************************************
+	 * @Subject : 엑셀 버튼 클릭
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function excelToMap() {
 		var colNms = $("#grid1").jqGrid('getGridParam','colNames');
 		var colid = $("#grid1")[0].p.colModel;
@@ -439,7 +445,8 @@
 	}
 
 	/********************************************
-	 * @Content : 
+	 * @Subject : 중메뉴 조회 함수
+	 * @Content : 대메뉴 행을 클릭 하면 그에 포함된 중메뉴를 조회한다
 	 * @Since   : 2024.07.11
 	 * @Author  :
 	 ********************************************/
@@ -488,7 +495,8 @@
 	}
 
 	/********************************************
-	 * @Content : 중메뉴 그리드 추가 버튼
+	 * @Subject : 중메뉴 그리드 추가 버튼
+	 * @Content :
 	 * @Since   : 2024.07.11
 	 * @Author  :
 	 ********************************************/
@@ -500,7 +508,8 @@
 	}
 
 	/********************************************
-	 * @Content : 중메뉴 그리드 저장 버튼
+	 * @Subject : 중메뉴 그리드 저장 버튼
+	 * @Content :
 	 * @Since   : 2024.07.11
 	 * @Author  :
 	 ********************************************/
@@ -554,7 +563,12 @@
 		}
 	}
 
-	/* 그리드 헤더 체크박스 선택 */
+	/********************************************
+	 * @Subject : 그리드 헤더 체크박스 선택
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function hdCheckboxAll(e, gid) {
 		e = e || event;
 		e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
@@ -569,7 +583,12 @@
 		}
 	}
 
-	//그리드 체크박스 이벤트
+	/********************************************
+	 * @Subject : 그리드 체크박스 이벤트
+	 * @Content :
+	 * @Since   : 2024.07.11
+	 * @Author  :
+	 ********************************************/
 	function grid_cbox_onclick(gid, rowid, colkey) {
 	}
 </script>

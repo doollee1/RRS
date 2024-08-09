@@ -69,7 +69,7 @@
 					</td>
 					<th><s:message code='meetSanding.carCnt'/></th>
 					<td>
-						<input type="text" class="cmc_txt" id="CAR_NUM1" value="0" style="width:51.5%;" name="CAR_NUM1"/ maxlength="3">회
+						<input type="text" class="cmc_txt" id="CAR_NUM1" value="0" style="width:51.5%;" name="CAR_NUM1" maxlength="3">회
 					</td>
 				</tr>
 				<tr>

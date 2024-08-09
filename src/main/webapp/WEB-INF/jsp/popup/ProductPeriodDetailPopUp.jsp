@@ -11,14 +11,14 @@
 			<button class='btn btn-default ' id='cCancel' type='button' onclick=''>닫기</button>
 		</div>
 	</div>
-	
+
 	<!---------->
 	<form id="frmProductPeriodDetail" action="#">
 		<div id="pop_ct_form_wrap">
 			<input type="hidden" name="BAS_YY_UP" id="BAS_YY_UP" value="" />
 			<input type="hidden" name="BAS_YY_SEQ_PD" id="BAS_YY_SEQ_PD" value="" />
 			<input type="hidden" name="modify" id="modify" value="" />
-			
+
 			<table class="pop_tblForm">
 			<colgroup>
 				<col width="20%">
@@ -35,8 +35,8 @@
 					<th style="text-align:center;"><s:message code="product.season"/></th>
 					<td>&nbsp;
 						<select id="SSN_GBN_I" name="SSN_GBN_I" class="cmc_combo" style="width:260px;">
-    						<option value="1" selected>시즌</option>
-    						<option value="2">비시즌</option>
+							<option value="1" selected>시즌</option>
+							<option value="2">비시즌</option>
 						</select>
 					</td>
 				</tr>
@@ -84,28 +84,33 @@
 </div>
 <script type="text/javascript">
 
-//초기 로드
+	/********************************************
+	 * @Subject : 화면 OPEN 시 최초 실행 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 $(function(){
-    // 초기화 버튼
+	// 초기화 버튼
 	$("#cReset").click(function(e){
 		$("#frmProductDetail").reset();
 	});
-	
+
 	// 삭제 버튼
 	$("#cDel").click(function(e){
 		deleteProductInfo();
 	});
-	
+
 	// 닫기 버튼
 	$("#cCancel").click(function(e){
 		$('#productPeriodDetailPopUp').dialog('close')
 	});
-	
+
 	// 저장 버튼
 	$("#cSave").click(function(e){
 		validation();
 	});
-	
+
 	// 등록, 수정 분기
 	$('#productPeriodDetailPopUp').dialog({
 		title: '<s:message code="product.reg_basyy"/>',
@@ -119,22 +124,22 @@ $(function(){
 				$("#modify").val("1");
 				$("#BAS_YY_I").attr("readonly", true);
 				$('#productPeriodDetailPopUp').dialog({title : '<s:message code="product.adj_basyy"/>'});
-				
-				$('#BAS_YY_I').val($(this).data("BAS_YY"));			//기준년도
+
+				$('#BAS_YY_I').val($(this).data("BAS_YY"));         //기준년도
 				$('#BAS_YY_SEQ_PD').val($(this).data("BAS_YY_SEQ"));
 				if($(this).data("SSN_GBN") == "시즌"){
 					$('#SSN_GBN_I').val(1);
 				} else {
 					$('#SSN_GBN_I').val(2);
 				}
-				$('#ST_DT1_I').val($(this).data("ST_DT1").replaceAll("-",""));			//시작일1
-				$('#ED_DT1_I').val($(this).data("ED_DT1").replaceAll("-",""));			//종료일1
-				$('#ST_DT2_IC').val($(this).data("ST_DT2").replaceAll("-",""));			//시작일2
-				$('#ED_DT2_IC').val($(this).data("ED_DT2").replaceAll("-",""));			//종료일2
-				$('#ST_DT3_IC').val($(this).data("ST_DT3").replaceAll("-",""));			//시작일3
-				$('#ED_DT3_IC').val($(this).data("ED_DT3").replaceAll("-",""));			//종료일3
-				
-				$('#BAS_YY_UP').val($(this).data("BAS_YY"));			//기준년도
+				$('#ST_DT1_I').val($(this).data("ST_DT1").replaceAll("-",""));          //시작일1
+				$('#ED_DT1_I').val($(this).data("ED_DT1").replaceAll("-",""));          //종료일1
+				$('#ST_DT2_IC').val($(this).data("ST_DT2").replaceAll("-",""));         //시작일2
+				$('#ED_DT2_IC').val($(this).data("ED_DT2").replaceAll("-",""));         //종료일2
+				$('#ST_DT3_IC').val($(this).data("ST_DT3").replaceAll("-",""));         //시작일3
+				$('#ED_DT3_IC').val($(this).data("ED_DT3").replaceAll("-",""));         //종료일3
+
+				$('#BAS_YY_UP').val($(this).data("BAS_YY"));            //기준년도
 			}
 		},
 		close: function() {
@@ -147,28 +152,28 @@ $(function(){
 // 저장
 function savePeriodInfo(){
 	var formData = formIdAllToMap('frmProductPeriodDetail');
-	var param = {"param" : 
-					{"BAS_YY" 		: (formData.BAS_YY_I != "") ? formData.BAS_YY_I : formData.BAS_YY_UP
-					,"BAS_YY_SEQ" 	: formData.BAS_YY_SEQ_PD
-					,"SSN_GBN"		: formData.SSN_GBN_I
-					,"ST_DT1" 		: formData.ST_DT1_I
-					,"ED_DT1" 		: formData.ED_DT1_I
-					,"ST_DT2" 		: formData.ST_DT2_IC
-					,"ED_DT2" 		: formData.ED_DT2_IC
-					,"ST_DT3" 		: formData.ST_DT3_IC
-					,"ED_DT3" 		: formData.ED_DT3_IC
-					,"modify" 		: formData.modify
+	var param = {"param" :
+					{"BAS_YY"       : (formData.BAS_YY_I != "") ? formData.BAS_YY_I : formData.BAS_YY_UP
+					,"BAS_YY_SEQ"   : formData.BAS_YY_SEQ_PD
+					,"SSN_GBN"      : formData.SSN_GBN_I
+					,"ST_DT1"       : formData.ST_DT1_I
+					,"ED_DT1"       : formData.ED_DT1_I
+					,"ST_DT2"       : formData.ST_DT2_IC
+					,"ED_DT2"       : formData.ED_DT2_IC
+					,"ST_DT3"       : formData.ST_DT3_IC
+					,"ED_DT3"       : formData.ED_DT3_IC
+					,"modify"       : formData.modify
 					}
 				}
 	var url = "/product/savePeriodInfo.do"
-	
+
 	if(confirm("<s:message code='confirm.save'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
 			if(data.SAVE == 'N'){
-				alert("<s:message code='errors.dup' javaScriptEscape='false'/>"); 
+				alert("<s:message code='errors.dup' javaScriptEscape='false'/>");
 			}else{
 				alert("<s:message code='info.save'/>");
-				popupClose($('#productPeriodDetailPopUp').data('pid'));	
+				popupClose($('#productPeriodDetailPopUp').data('pid'));
 			}
 		});
 	}
@@ -177,17 +182,17 @@ function savePeriodInfo(){
 //삭제
 function deleteProductInfo(){
 	var formData = formIdAllToMap('frmProductPeriodDetail');
-	var param = {"param" : 
-					{"BAS_YY" 		: formData.BAS_YY_UP
-					,"BAS_YY_SEQ" 	: formData.BAS_YY_SEQ_PD
+	var param = {"param" :
+					{"BAS_YY"       : formData.BAS_YY_UP
+					,"BAS_YY_SEQ"   : formData.BAS_YY_SEQ_PD
 					}
 				}
 	var url = "/product/deletePeriodInfo.do"
-	
+
 	if(confirm("<s:message code='confirm.delete'/>")){
 		fn_ajax(url, false, param, function(data, xhr){
 			alert("<s:message code='product.info.delete'/>");
-			popupClose($('#productPeriodDetailPopUp').data('pid'));			
+			popupClose($('#productPeriodDetailPopUp').data('pid'));
 		});
 	}
 }
@@ -197,19 +202,19 @@ function validation(){
 	var BAS_YY_I = document.getElementById("BAS_YY_I");
 	var ST_DT1_I = document.getElementById("ST_DT1_I");
 	var ED_DT1_I = document.getElementById("ED_DT1_I");
-	
+
 	if($("#BAS_YY_I").val().length != 4){
 		alert("4자리의 기준년도를 입력해주세요.");
 		$("#BAS_YY_I").focus();
 		return;
 	}
-	
+
 	if($("#ST_DT1_I").val().length == 0){
 		alert("시작일1을 입력해주세요.");
 		$("#ST_DT1_I").focus();
 		return;
 	}
-	
+
 	if($("#ED_DT1_I").val().length == 0){
 		alert("종료일1을 입력해주세요.");
 		$("#ED_DT1_I").focus();
@@ -217,7 +222,7 @@ function validation(){
 	}
 
 	if(
-		($("#ST_DT2_IC").val().length == 0 && $("#ED_DT2_IC").val().length != 0) || 
+		($("#ST_DT2_IC").val().length == 0 && $("#ED_DT2_IC").val().length != 0) ||
 		($("#ST_DT2_IC").val().length != 0 && $("#ED_DT2_IC").val().length == 0)
 	){
 		alert("시작일 및 종료일을 입력해주세요.");
@@ -232,9 +237,9 @@ function validation(){
 		}
 	}
 
-	
+
 	if(
-		($("#ST_DT3_IC").val().length == 0 && $("#ED_DT3_IC").val().length != 0) || 
+		($("#ST_DT3_IC").val().length == 0 && $("#ED_DT3_IC").val().length != 0) ||
 		($("#ST_DT3_IC").val().length != 0 && $("#ED_DT3_IC").val().length == 0)
 	){
 		alert("시작일 및 종료일을 입력해주세요.");

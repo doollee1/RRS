@@ -13,6 +13,8 @@
 			  ,T1.TEL_NO
 			  ,T1.EMAIL
 			  ,T1.PASSWD
+			  ,T1.AGENCY_NAME
+			  ,T1.AGENCY_GB
 			  ,T1.RET_YN
 			  ,T1.PERINFO_AGREE_YN
 			  ,T1.REG_ID
@@ -66,6 +68,22 @@
 	   </choose>
 	</select>
 	
+	<select id="selectGetCommonCode2" parameterType="Bmap" resultType="CodeVO">
+        SELECT CODE    AS CODE
+             , CODE_NM AS VALUE
+          FROM BC_COMM_L
+         WHERE 1 = 1
+         <if test="HEAD_CD != null and HEAD_CD != ''">
+           AND HEAD_CD  = #{HEAD_CD}
+         </if>
+         <if test="REF_CHR1 != null and REF_CHR1 != ''">
+           AND REF_CHR1 = #{REF_CHR1}
+         </if>
+         <if test="REF_CHR2 != null and REF_CHR2 != ''">
+           AND REF_CHR2 = #{REF_CHR2}
+         </if>
+    </select>
+    
 	<select id="selectUserInfoCnt" parameterType="BMap" resultType="int">
 		SELECT COUNT(1)
 		  FROM TB_MEMBER 
@@ -82,6 +100,8 @@
 					,MEMBER_ID
 					,EMAIL
 					,PASSWD
+					,AGENCY_NAME
+					,AGENCY_GB
 					,PERINFO_AGREE_YN
 					,RET_YN
 					,REG_ID
@@ -97,6 +117,8 @@
 					,#{MEMBER_ID}
 					,#{EMAIL}
 					,#{PASSWD}
+					,#{AGENCY_NAME}
+					,#{AGENCY_GB}
 					,#{PERINFO_AGREE_YN}
 					,'N'
 					,#{LOGIN_USER}
@@ -113,6 +135,8 @@
 			  ,TEL_NO    = #{TEL_NO}
 			  ,MEMBER_ID = #{MEMBER_ID}
 			  ,EMAIL     = #{EMAIL}
+			  ,AGENCY_NAME = #{AGENCY_NAME}
+			  ,AGENCY_GB   = #{AGENCY_GB}
 			  ,PERINFO_AGREE_YN = #{PERINFO_AGREE_YN}
 			  ,RET_YN    = #{RET_YN}
 			  ,UPD_ID    = #{LOGIN_USER}
@@ -254,7 +278,6 @@
 		 WHERE MEMBER_ID = #{MEMBER_ID}
 		   AND HAN_NAME  = #{HAN_NAME}
 		   AND ENG_NAME  = #{ENG_NAME}
-		   AND TEL_NO    = #{TEL_NO}
 	</delete>
 	
 	<select id="selectMemberUserInfoCntAfterMemberdelete" parameterType="BMap" resultType="int">
@@ -336,4 +359,183 @@
 			  ,UPD_DTM   = NOW()
 		WHERE USER_ID    = #{Ex_USER_ID_POP}
 	</update>
+	
+	<select id="selectAgencyComp" parameterType="Bmap" resultType="Bmap">
+		SELECT
+			  T1.CODE      AS AGENCY_COMP_CD       <!-- 에이전시 컴퍼니 코드 -->
+			, T1.CODE_NM   AS AGENCY_COMP          <!-- 에이전시 컴퍼니명 -->		     
+			, T1.REF_CHR1  AS AGENCY_GBN_CD        <!-- 에이전시 구분 코드 -->
+			, T3.CODE_NM   AS AGENCY_GBN           <!-- 에이전시 구분명 -->
+			, DATE_FORMAT(T1.REG_DT, '%Y-%m-%d') AS REG_DATE    <!-- 등록일 -->
+		FROM BC_COMM_L T1
+		JOIN BC_COMM_H T2 ON T2.HEAD_CD = /**/ T1.HEAD_CD     
+		JOIN BC_COMM_L T3 ON T1.REF_CHR1 = T3.CODE 
+						AND T3.HEAD_CD = 500260
+		WHERE 1 = 1
+		AND T1.HEAD_CD = 500120                  <!-- 에이전시  -->
+		<if test='AGENCY_GBN_CD != 9'>         
+			AND T1.REF_CHR1 = #{AGENCY_GBN_CD}       <!-- 에이전시 구분 코드 -->
+		</if>
+		ORDER BY T1.REF_CHR1 
+			, T1.CODE_NM 
+	</select>
+	<select id="selectAgencyUser" parameterType="Bmap" resultType="Bmap">
+		SELECT 
+			T1.AGENCY_GB     AS AGENCY_GB_CD
+			,T2.CODE_NM       AS AGENCY_GB
+			,T1.AGENCY_NAME
+			,T1.HAN_NAME
+			,T1.ENG_NAME
+			,T1.TEL_NO
+			,T1.USER_ID
+			,T1.EMAIL
+		FROM TB_MEMBER T1
+		JOIN BC_COMM_L T2 ON T1.AGENCY_GB = T2.CODE  
+						AND T2.HEAD_CD = 500260
+		WHERE 1=1
+		AND AGENCY_GB IS NOT NULL               <!-- 에이전시 -->
+		<if test='AGENCY_GBN_CD != 9'>     
+			AND AGENCY_GB = #{AGENCY_GBN_CD}        <!-- 에이전시 구분 코드 -->
+		</if>
+		<if test='HAN_NAME != null and HAN_NAME != ""'>
+			AND T1.HAN_NAME LIKE CONCAT('%',#{HAN_NAME},'%')        <!-- 담당자명 -->
+		</if>
+		<if test='AGENCY_ID != null and AGENCY_ID != ""'>
+			AND T1.USER_ID LIKE CONCAT('%',#{AGENCY_ID},'%')        <!-- 담당자 ID -->
+		</if>
+		ORDER BY T1.AGENCY_GB
+			,T1.AGENCY_NAME
+	
+	</select>
+	<delete id="deleteAgencyComp" parameterType="BMap">
+        DELETE FROM BC_COMM_L
+         WHERE HEAD_CD = 500120
+           AND CODE  = #{AGENCY_COMP_CD}
+    </delete>
+    
+   	<insert id="addAgencyComp" parameterType="BMap">
+	INSERT INTO bc_comm_l
+				(HEAD_CD
+				, CODE
+				, READ_CD
+				, CODE_NM
+				, CODE_EN
+				, CODE_FR
+				, CODE_4TH
+				, REF_CHR1
+				, REF_CHR2
+				, REF_CHR3
+				, REF_CHR4
+				, REF_CHR5
+				, REF_NUM1
+				, REF_NUM2
+				, REF_NUM3
+				, REF_NUM4
+				, REF_NUM5
+				, PRIORITY
+				, REF_CNT
+				, STATUS
+				, REG_ID
+				, REG_DT
+				, UPT_ID
+				, UPT_DT
+				)
+		 VALUES ( #{HEAD_CD}
+				, (SELECT MAX(CODE)+1
+					 FROM bc_comm_l T1
+					WHERE T1.HEAD_CD = '500120')
+				, ''
+				, #{CODE_NM}
+				, ''
+				, ''
+				, ''
+				, #{REF_CHR1}
+				, ''
+				, ''
+				, ''
+				, ''
+				, 0.0
+				, 0.0
+				, 0.0
+				, 0.0
+				, 0.0
+				, 0
+				, 0
+				, 'Y'
+				, #{LOGIN_USER}
+				, NOW()
+				, #{LOGIN_USER}
+				, NOW()
+				)
+	</insert>
+	
+	<insert id="insertAgencyUser" parameterType="BMap">
+		INSERT INTO TB_MEMBER
+					(USER_ID
+					,MEM_GBN
+					,HAN_NAME
+					,ENG_NAME
+					,TEL_NO
+					,MEMBER_ID
+					,EMAIL
+					,PASSWD
+					,PERINFO_AGREE_YN
+					,RET_YN
+					,AGENCY_GB
+					,AGENCY_NAME
+					,REG_ID
+					,REG_DTM
+					,UPD_ID
+					,UPD_DTM
+					)
+			 VALUES (#{USER_ID}
+					,#{MEM_GBN}
+					,#{HAN_NAME}
+					,#{ENG_NAME}
+					,#{TEL_NO}
+					,#{MEMBER_ID}
+					,#{EMAIL}
+					,#{PASSWD}
+					,#{PERINFO_AGREE_YN}
+					,'N'
+					,#{AGENCY_GB}
+					,#{AGENCY_NAME}
+					,#{LOGIN_USER}
+					,NOW()
+					,#{LOGIN_USER}
+					,NOW()
+					)
+	</insert>
+	
+	<update id="updateAgencyUser" parameterType="BMap">
+		UPDATE TB_MEMBER
+			SET  AGENCY_GB    = #{AGENCY_GB_CD}			
+				,MEM_GBN	  = #{MEM_GBN}	
+				,AGENCY_NAME  = #{AGENCY_NAME}
+				,HAN_NAME     = #{HAN_NAME}
+				,ENG_NAME     = #{ENG_NAME}
+				,TEL_NO       = #{TEL_NO}              
+				,EMAIL        = #{EMAIL}              
+				,UPD_ID       = #{LOGIN_USER}
+				,UPD_DTM      = NOW()
+		WHERE USER_ID    = #{USER_ID}
+	</update>
+	
+	<update id="updateAgencyUserInfo" parameterType="BMap">      
+		UPDATE BC_USER
+			SET  NAME_2ND     = #{ENG_NAME}
+				,NAME_FULL    = CONCAT('에이전시', #{ENG_NAME})
+				,TEL_NO       = #{TEL_NO}              
+				,E_MAIL       = #{EMAIL}              
+				,UPT_ID       = #{LOGIN_USER}
+				,UPT_DT       = NOW()
+		WHERE USER_ID    = #{USER_ID}
+	</update>
+
+	<select id="chkAgencyComp" parameterType="BMap" resultType="int">
+		SELECT COUNT(1)
+		  FROM bc_comm_l
+		 WHERE CODE_NM  = #{CODE_NM}
+		   AND REF_CHR1 = #{REF_CHR1}
+	</select>
 </mapper>

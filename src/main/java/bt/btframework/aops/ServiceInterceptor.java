@@ -1,7 +1,6 @@
 package bt.btframework.aops;
 
-import java.io.PrintWriter;
-
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -35,8 +34,7 @@ public class ServiceInterceptor extends HandlerInterceptorAdapter {
 		if ( requestURI.indexOf("/login/login.do") < 0 && 
 			 requestURI.indexOf("/index.do") < 0 &&
 			 requestURI.indexOf("/login/actionLogin.do") < 0 &&
-			 requestURI.indexOf("/login/sessionout.do") < 0 && 
-			 requestURI.indexOf("/login/initRsaAjax.do") < 0) {
+			 requestURI.indexOf("/login/sessionout.do") < 0 ) {
 			
 			// 정상적인 세션정보가 없으면 로그인페이지로 이동
 			logger.info("======= userInfo : "+userInfo);			
@@ -52,24 +50,12 @@ public class ServiceInterceptor extends HandlerInterceptorAdapter {
 															
 				} else {
 					
-					try {
-						
-						response.setContentType("text/html; charset=UTF-8");
-						PrintWriter out = response.getWriter();
-						out.println("<script>alert('Session has expired. You have been taken to the login page.'); top.location.href='/';</script>");
-						out.flush();
-						
-					} catch(Exception e) {
-						response.reset();						
-						throw e;
-					}
-					
+					//세션아웃 페이지로 이동
+					RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/login/sessionout.jsp");
+					dispatcher.forward(request, response);					
+											 					
 				}
-				
-				//ModelMap map = new ModelMap("sessionOut", "1");
-				//ModelAndView modelAndView = new ModelAndView("forward:/login/sessionout.do", map);
-				//throw new ModelAndViewDefiningException(modelAndView);
-								
+																
 			}
 			
 		}

@@ -142,8 +142,8 @@ $(function() {
 					$('#DEPT_CD').removeAttr("readonly");
 				}
 				if($('#AUTH' ).val().substring(1,2) =='N'){
-					$("#save").hide();
-					$("#btn_init").hide();
+					//$("#save").hide();
+					//$("#btn_init").hide();
 				}
 			}
 			/*
@@ -229,6 +229,16 @@ function selectUserInfo(compCd, userId, userTp){
 	
 	fn_ajax(url, false, param, function(data, xhr){
 		fn_dataBind('frmUserInfo', data.result[0]);
+		
+		var name1st = data.result[0].NAME_1ST;		
+		//console.log("===== name1st : "+name1st);		
+		
+		//에이전시일 경우 텔리그램 입력정보 비활성화
+		if(name1st == "에이전시") {
+			$("#CHAT_ID").attr("disabled", true);
+			$("#TELEGRAM_TOKEN").attr("disabled", true);
+		}
+		
 	});
 }
 

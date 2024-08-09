@@ -3,7 +3,7 @@
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
 <%
 /**
- * @JSP Name : ExcelUploadPopup.jsp 
+ * @JSP Name : ExcelUploadPopup.jsp
  * @Description : 엑셀업로드 공통 팝업
  */
 %>
@@ -14,7 +14,14 @@
 		<div id="ATTACHFILE"></div>
 	</div>
 </div>
+
 <script type="text/javascript">
+	/********************************************
+	 * @Subject : 화면 OPEN 시 최초 실행 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 $(function() {
 	$('#excelupload').dialog({
 		title: '엑셀 업로드',
@@ -23,7 +30,7 @@ $(function() {
 		width: 450,
 		modal: true,
 		buttons: {
-			'Upload': { 
+			'Upload': {
 				text: 'Upload',
 				click: function() {
 					uploadExcel();
@@ -47,35 +54,48 @@ $(function() {
 	});
 });
 
+	/********************************************
+	 * @Subject : ajax 파일 업로드 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 function ajaxUpload() {
 	var param = {
 		SOLD_CUST_CD : $("#SOLD_CUST_CD").val()
 	};
 	$('#multiform_EXCEL').ajaxForm({
-     	cache: false,
-     	dataType:"json",
-     	data: param,
-       	//보내기전 validation check가 필요할경우
-       	beforeSubmit: function (data, frm, opt) {
-       		var nodes = $("#fileupload_EXCEL_list").children();
-       		if(1 < nodes.length){
+		cache: false,
+		dataType:"json",
+		data: param,
+		/* 보내기전 validation check가 필요할경우 */
+		beforeSubmit: function (data, frm, opt) {
+			var nodes = $("#fileupload_EXCEL_list").children();
+			if(1 < nodes.length){
 				var msg = "1";
 				alert("<s:message code='error.excelUpload' arguments='" + msg + "' javaScriptEscape='false'/>");
-       			return false;
-       		}else{
-       			return true;
-       		}
+				return false;
+			}else{
+				return true;
+			}
 		},
-		//submit이후의 처리
+		/* submit이후의 처리 */
 		success: function(data, statusText){
 			popupClose($('#excelupload').data('pid'), data);
 		},
-        //ajax error
-       	error: function(e){
-       		alert('Error')
+		/* ajax 통신 에러 */
+		error: function(e){
+			alert('Error');
 		}
 	});
 }
+
+	 /********************************************
+	 * @Subject : 엑셀파일 업로드 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 function uploadExcel(){
 	$("#multiform_EXCEL").submit();
 }

@@ -556,12 +556,12 @@ $(function() {
 		}
 	});
 
-	//도착항공기편, 출발항공기편, early체크인, late체크아웃, 룸타입, 체크인, 체크아웃 날짜
+	/* 도착항공기편, 출발항공기편, early체크인, late체크아웃, 룸타입, 체크인, 체크아웃 날짜 */
 	$('#FLIGHT_IN, #FLIGHT_IN_HH, #FLIGHT_IN_MM, #FLIGHT_OUT, #FLIGHT_OUT_HH, #FLIGHT_OUT_MM, #LATE_CHECK_IN, #LATE_CHECK_OUT, #ROOM_TYPE, #CHK_IN_DT, #CHK_OUT_DT, #FLIGHT_IN_DT, #FLIGHT_OUT_DT').on("change",function(key){
 		var selec_id  = $(this).attr('id');
 		var selec_val = $(this).val();
 		var ids       = $("#reserveGrid").jqGrid("getDataIDs");
-		//동반자 그리드에 값이 하나라도 있을 때
+		/* 동반자 그리드에 값이 하나라도 있을 때 */
 		if(ids.length > 0){
 			for(var i = 0; i < ids.length; i++){
 				if(selec_id == 'FLIGHT_IN_DT' || selec_id == 'FLIGHT_OUT_DT'){
@@ -625,7 +625,7 @@ $(function() {
 					$("#REQ_HAN_NM").val(setData.HAN_NAME);
 					$("#REQ_ENG_NM").val(setData.ENG_NAME);
 					$("#REQ_TEL_NO").val(setData.TEL_NO);
-					// 01 멤버, 02 일반, 04 에이젼시
+					/* 01 멤버, 02 일반, 03/04/05 에이젼시 */
 					if(setData.MEM_GBN == '01'){ /* [멤버]일경우 */
 						$("#AGN_GB").val("");
 						$("#AGN_CD").val("");
@@ -1113,18 +1113,18 @@ $(function() {
 			$("#ADD_HDNG_GBN").attr("disabled",true);
 		}
 
-		//예약요청(일반), 예약가능(일반) 에서는 인보이스 생성을 막는다
+		/* 예약요청(일반), 예약가능(일반) 에서는 인보이스 생성을 막는다 */
 		if($("#PRC_STS_NM").val().trim() == "예약요청(일반)" || $("#PRC_STS_NM").val().trim() == "예약가능(일반)"){
 			$("#btn_create").attr("disabled",true);
 		}
-		//예약취소이면서 동반자 정보가 없을때 (예약요청에서 예약취소로 넘어올때)
+		/* 예약취소이면서 동반자 정보가 없을때 (예약요청에서 예약취소로 넘어올때) */
 		else if($("#PRC_STS_NM").val().trim() == "예약취소" && $("#reserveGrid").getGridParam("reccount") == 0){
 			$("#btn_create").attr("disabled",true);
 		}
 		else{
 			$("#btn_create").attr("disabled",false);
 		}
-		//동반자 그리드 행추가, 행삭제 버튼
+		/* 동반자 그리드 행추가, 행삭제 버튼 */
 		if($("#PRC_STS_NM").val().trim() == "입금완료" || $("#PRC_STS_NM").val().trim() == "환불완료" || $("#PRC_STS_NM").val().trim() == "예약취소"){
 			$("#ADD_HDNG_GBN").attr("disabled",true);
 			$("#btn_List_addRow").attr("disabled",true);
@@ -1341,7 +1341,7 @@ $(function() {
 		}
 	}
 	function fn_chgAgnCd(agnGb) {
-		/* 1 총판, 2 일반 3 자체 */
+		/* 1 총판, 2 일반, 3 자체 */
 		if(agnGb == '1'){
 			$("#AGN_CD"  ).attr("disabled", false);
 			$(".AGN_CD_1").addClass("AGN_HIDDEN");
@@ -2360,6 +2360,12 @@ $(function() {
 		btGrid.gridResizing('grid1');
 	}
 
+	/******************************************** 
+	 * @Subject : 동반자 그리드 설정 및 초기화
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function createGrid(){
 		var colName = [
 						  '<s:message code="reservation.seq"/>'
@@ -2402,14 +2408,35 @@ $(function() {
 								var dSeq = rowObject.DSEQ;
 								var fileSeq = rowObject.ADD_FILE_SEQ;
 
-								if (parseInt(fileSeq) > 0) {
+																
+								//예약상세 여부 확인
+								//console.log("====== 예약상세항목여부 확인 ======")
+								 
+								var url1 = "/reserve/isReserveDetlYN.do";
+								var param1 = {
+									"REQ_DT" : req_dt,
+									"SEQ" : seq, 										
+									"DSEQ" : dSeq
+								};
+								
+								var isReserveDetlYn = "";
+								fn_ajax(url1, false, param1, function(data, xhr) {
+									
+									isReserveDetlYn = data.result;
+									//console.log("=== 예약상세항목여부 : "+isReserveDetlYn);									
+								}); 
+								
+								
+								if (parseInt(dSeq) > 0 && parseInt(fileSeq) > 0 && isReserveDetlYn =='Y') {
 									retView = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveSelectAirlineImg('"+fileSeq+"');\">미리보기</button>";
-								} else {
+								} else if (parseInt(dSeq) > 0 && isReserveDetlYn =='Y') {
 									if(vflag == "new") {  //신규
-										retView = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveAirlineImgUpload('"+dSeq+"');\" disabled=\"disabled\">업로드</button>";
+										retView = "<button class=\"btn btn-default\" type=\"button\" disabled=\"disabled\">업로드</button>";
 									} else { //상세
 										retView = "<button class=\"btn btn-default\" type=\"button\" onClick=\"reserveAirlineImgUpload('"+dSeq+"');\">업로드</button>";
 									}
+								} else if (isReserveDetlYn =='N') {  //예약상세항목 미존재
+									retView = "<button class=\"btn btn-default\" type=\"button\" disabled=\"disabled\">업로드</button>";
 								}
 								return retView;
 							}
@@ -2451,6 +2478,12 @@ $(function() {
 		btGrid.createGrid('reserveGrid', colName, colModel, gSetting);
 	}
 
+	/******************************************** 
+	 * @Subject : 그리드에서 보여질때 쓰일 포멧 설정
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 이주형
+	 ********************************************/
 	function telFormat(object){
 		//var format1 = /^(\d{2,3})(\d{3,4})(\d{4})$/;
 		//var format2 = /^(\d{2,3})-(\d{3,4})-(\d{4})$/;
@@ -2467,6 +2500,12 @@ $(function() {
 		}
 	}
 
+	/******************************************** 
+	 * @Subject : 그리드에서 입력시 사용될 포멧 설정
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 이주형
+	 ********************************************/
 	function unTelFormat(object){
 		if(object == ''){
 			return '';
@@ -2476,7 +2515,12 @@ $(function() {
 		}
 	}
 	
-	// 그리드 row 삭제
+	/******************************************** 
+	 * @Subject : 동반자 그리드 초기화
+	 * @Content : 그리드 내용 모두 삭제
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	function delProgram(){
 		var ids = $("#reserveGrid").jqGrid("getDataIDs"); // 해당 그리드의 전체 로우의 아이디 조회
 		for(var i = 0; i < ids.length; i++){
@@ -2484,7 +2528,12 @@ $(function() {
 		}
 	}
 
-	// 동반자정보 자동생성
+	/******************************************** 
+	 * @Subject : 동반자 자동생성 버튼 클릭
+	 * @Content : 위에 입력된 내용을 바탕으로 동반자정보 그리드 입력
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$("#btn_com_add").on("click" , function(){
 		delProgram();
 		btGrid.gridSaveRow('reserveGrid');
@@ -2500,10 +2549,17 @@ $(function() {
 
 		if(tot_person == 0){
 			alert("인원내역을 입력해주세요.");
+			return;
 		}
-
+		
+		/* 등록 회원이 멤버인 상태로 추가 인원에 일반인원이 있으면 추가패키지상품이 먼저 선택되도록 알림창 띄우기 */
+		if($("#MEM_GBN").val() == '01' && j_g > 0 && $("#ADD_HDNG_GBN").val() == ''){
+			alert("추가패키지상품을 먼저 선택해주세요.");
+			return;
+		}
+		
 		for(var i = 0 ; i < tot_person ; i ++ ){
-			if (i == 0 && (($("#MEM_GBN").val() != '03') && ($("#MEM_GBN").val() != '04') && ($("#MEM_GBN").val() != '05'))) { // 04 에이전시는 예약자가 동반자 아님
+			if (i == 0 && (($("#MEM_GBN").val() != '03') && ($("#MEM_GBN").val() != '04') && ($("#MEM_GBN").val() != '05'))) { // 에이전시(03,04,05)는 예약자가 동반자 아님
 				g_COM_GBN = "1";            //동반자구분 1:예약자
 			}else{
 				g_COM_GBN = "2";            //동반자구분 2:동반자
@@ -2620,7 +2676,12 @@ $(function() {
 		}  /* end of for문 */
 	});
 
-	//동반자 정보 행추가
+	/******************************************** 
+	 * @Subject : 행추가 버튼 클릭
+	 * @Content : 그리드에 동반자정보를 입력할 수 있는 행 추가
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$("#btn_List_addRow").on("click" , function(){
 		btGrid.gridSaveRow('reserveGrid');
 		var rowId   = $('#reserveGrid').jqGrid('getGridParam', 'selrow');
@@ -2676,7 +2737,12 @@ $(function() {
 		btGrid.gridAddRow("reserveGrid", "last", data);
 	});
 
-	//동반자 정보 행삭제
+	/******************************************** 
+	 * @Subject : 행삭제 버튼 클릭
+	 * @Content : 동반자정보 그리드에서 선택한 행 삭제
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$("#btn_List_delRow").on("click" , function(){
 		var rowId = $("#reserveGrid").jqGrid('getGridParam','selrow');
 		var args = "";
@@ -2688,28 +2754,26 @@ $(function() {
 			return;
 		}else{
 			var grdData = $("#reserveGrid").jqGrid("getCell", rowId, "STATUS_V");
-			//예약자는 삭제 불가
+			/* 예약자는 삭제 불가 */
 			if($("#reserveGrid").jqGrid("getCell", rowId, "COM_GBN") == '1'){
 				alert("예약자는 삭제할 수 없습니다.");
 				return;
 			}
-			//이미 입력된 행 (STATUS_V == 'R') 인 경우 DB에서 삭제한다.
+			/* 이미 입력된 행 (STATUS_V == 'R') 인 경우 DB에서 삭제한다. */
 			if(grdData == 'R' || grdData == 'U'){
 				if(confirm("삭제하시겠습니까?")){
 					var del_num_gbn = $("#reserveGrid").jqGrid("getCell", rowId, "NUM_GBN");//삭제되는 행의 인원구분
 
-					//삭제되는 행을 제외한 나머지 행의 DSEQ를 재정의 한다
+					/* 삭제되는 행을 제외한 나머지 행의 DSEQ를 재정의 한다 */
 					$("#reserveGrid").jqGrid("delRowData",rowId);   //선택한 행 삭제
 					var ids = jQuery("#reserveGrid").jqGrid("getDataIDs");
-
 					for(var i = 0 ; i < ids.length ; i++){
 						$("#reserveGrid").jqGrid("setCell",ids[i] , "DSEQ", i+1);
 						$("#reserveGrid").jqGrid("setCell",ids[i] , "STATUS_V", 'U');
 					}
 
 					var updateData = $("#reserveGrid").getRowData();
-
-					//TB_REQ_BOOKING_M (예약기본_마스터)의 인원수를 업데이트해준다
+					/* TB_REQ_BOOKING_M (예약기본_마스터)의 인원수를 업데이트해준다 */
 					var tot_person = parseInt($("#TOT_PERSON").val().replaceAll("," , "")) - 1;
 					var m_person = parseInt($("#M_PERSON").val().replaceAll("," , ""));     //멤버
 					var g_person = parseInt($("#G_PERSON").val().replaceAll("," , ""));     //일반
@@ -2718,7 +2782,7 @@ $(function() {
 					var i_person = parseInt($("#I_PERSON").val().replaceAll("," , ""));     //영유아
 					var del_person = 0;
 
-					if(del_num_gbn == '01'){    // 01 멤버, 02 일반, 03 비라운딩, 04 소아, 05 영유아
+					if(del_num_gbn == '01'){
 						del_num_gbn = "M_PERSON";
 						del_person  = m_person - 1;
 					} else if(del_num_gbn == '02'){
@@ -2746,11 +2810,11 @@ $(function() {
 								};
 
 					fn_ajax(url, false, param, function(data, xhr){
-						//삭제에 실패한 경우
+						/* 삭제에 실패한 경우 */
 						if(data.dup == 'Y'){
 							alert("삭제에 실패했습니다.");
 						}
-						//삭제에 성공한 경우 그리드를 새로고침
+						/* 삭제에 성공한 경우 그리드를 새로고침 */
 						else if(data.dup == 'N'){
 							alert("삭제하였습니다.");
 							$.each(data.result , function(i , val){
@@ -2771,7 +2835,7 @@ $(function() {
 					});
 				}
 			}
-			//추가로 입력된 행(STATUS_V ==  'I') 인 경우 그리드에서만 삭제
+			/* 추가로 입력된 행(STATUS_V ==  'I') 인 경우 그리드에서만 삭제 */
 			else {
 					$("#reserveGrid").jqGrid("delRowData",rowId);
 					$("#reserveGrid").change();
@@ -2779,8 +2843,12 @@ $(function() {
 		}
 	});
 
-
-	//동반자 정보 그리드 변경 시
+	/******************************************** 
+	 * @Subject : 동반자 그리드가 변경 될 때 함수
+	 * @Content : 
+	 * @Since   : 2024.07.11
+	 * @Author  : 
+	 ********************************************/
 	$("#reserveGrid").bind("change" , function(){
 		var changeRowId  = $('#reserveGrid').jqGrid('getGridParam', 'selrow');
 		var rowCnt       = $('#reserveGrid').getGridParam('reccount');
@@ -2800,7 +2868,7 @@ $(function() {
 			var i_person_g = 0;
 
 			for(var i = 0 ; i < ids.length ; i ++ ){
-				//01(멤버),02(일반),03(비라운딩),04(소아),05(영유아))
+				/* 01(멤버),02(일반),03(비라운딩),04(소아),05(영유아)) */
 				if($(this).jqGrid('getCell', ids[i] ,'NUM_GBN') == "01"){
 					m_person_g = m_person_g + 1;
 				}else if($(this).jqGrid('getCell', ids[i] ,'NUM_GBN') == "02"){
@@ -2864,7 +2932,12 @@ $(function() {
 	});
 });
 
-//항공권 미리보기 팝업
+/******************************************** 
+ * @Subject : 항공권 미리보기 팝업 호출
+ * @Content : 
+ * @Since   : 2024.07.11
+ * @Author  : 
+ ********************************************/
 function reserveSelectAirlineImg(fileseq){
 	var url = "/reserve/arrImg.do";
 	var pid = "p_arrImgPopup";
@@ -2878,7 +2951,12 @@ function reserveSelectAirlineImg(fileseq){
 	});
 }
 
-//항공권업로드 팝업호출
+/******************************************** 
+ * @Subject : 항공권 업로드 팝업 호출
+ * @Content : 
+ * @Since   : 2024.07.11
+ * @Author  : 
+ ********************************************/
 function reserveAirlineImgUpload(dseq){
 	var url = "/reserve/arrImgUploadPopup.do";
 	var pid = "p_arrImgPopup";

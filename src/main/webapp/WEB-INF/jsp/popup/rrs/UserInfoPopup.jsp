@@ -15,18 +15,18 @@
 				<!---<caption></caption> --->
 				<colgroup>
 					<col width="100px" />
-			        <col width="200px" />
-			        <col width="100px" />
-			        <col width="200px" />
-			        <col width="100px" />
-			        <col width="200px" />
-			    </colgroup>
-		   		<tr>
-		   			<input type="hidden" name="isNew" id="isNew" value="Y" />
-		   			<input type="hidden" name="PASSWD" id="PASSWD" />
+					<col width="200px" />
+					<col width="100px" />
+					<col width="200px" />
+					<col width="100px" />
+					<col width="200px" />
+				</colgroup>
+				<tr>
+					<input type="hidden" name="isNew" id="isNew" value="Y" />
+					<input type="hidden" name="PASSWD" id="PASSWD" />
 					<th>회원타입</th>
 					<td>
-						<select id="MEM_GBN_POP" name="MEM_GBN_POP" class="cmc_combo" style="width:125px;">
+						<select id="MEM_GBN_POP" name="MEM_GBN_POP" class="cmc_combo text-center" style="width:110px; margin:0 5px">
 							<c:forEach var="i" items="${mem_gbn}">
 							    <option value="${i.CODE}"<c:if test="${i.CODE eq '02'}">selected</c:if>>${i.CODE_NM}</option>
 						    </c:forEach>
@@ -34,45 +34,42 @@
 						<button type="button" class="btn btn-success" id="btn_userSearchPopup">멤버찾기</button>	
 						<button type="button" class="btn btn-success" id="btn_userChgMemPopup">멤버변경</button>	
 					</td>
-					<th>이름</th>
+					<th>회원 ID</th>
 					<td>
-						<input type="text"  id="HAN_NAME_POP" name="HAN_NAME_POP" class="onlyKor" style="width:125px;" maxlength="20" />
+						<input type="text" id="USER_ID_POP" name="USER_ID_POP" class="cmc_txt" style="width:110px; margin:0 5px" maxlength="10" noSpecial />
+						<button class='btn btn-default' id='btn_idCheck' type='button' style="width:60px;" onclick=''>중복확인</button>
 					</td>
-					<th>영문이름</th>
+					<th>멤버 ID</th>
 					<td>
-						<input type="text"  id="ENG_NAME_POP" name="ENG_NAME_POP" class="onlyEng cmc_txt" style="width:125px;" maxlength="30" />
+						<input type="text" id="MEMBER_ID_POP" name="MEMBER_ID_POP" class="cmc_txt" style="width:110px; margin:0 5px" maxlength="20" readonly/>
 					</td>
 				</tr>
 				<tr>
 					<th>전화번호</th>
 					<td>
-						<input type="text" id="TEL_NO_POP" name="TEL_NO_POP" class="onlyNum cmc_txt" style="width:125px;" maxlength="13"/>
+						<input type="text" id="TEL_NO_POP" name="TEL_NO_POP" class="onlyNum cmc_txt" style="width:150px; margin:0 5px" maxlength="13"/>
 					</td>
-					<th>회원 ID</th>
+					<th>이름</th>
 					<td>
-						<input type="text" id="USER_ID_POP" name="USER_ID_POP" class="cmc_txt" style="width:125px;" maxlength="10" noSpecial />
-						<button class='btn btn-default' id='btn_idCheck' type='button' onclick=''>중복확인</button>
+						<input type="text"  id="HAN_NAME_POP" name="HAN_NAME_POP" class="onlyKor" style="width:150px; margin:0 5px" maxlength="20" />
 					</td>
-					<th>멤버 ID</th>
+					<th>영문이름</th>
 					<td>
-						<input type="text" id="MEMBER_ID_POP" name="MEMBER_ID_POP" class="cmc_txt" style="width:125px;" maxlength="20" readonly/>
+						<input type="text"  id="ENG_NAME_POP" name="ENG_NAME_POP" class="onlyEng cmc_txt" style="width:150px; margin:0 5px" maxlength="30" />
 					</td>
 				</tr>
 				<tr>
 					<th>Email</th>
 					<td>
-						<input type="text" id="EMAIL_POP" name="EMAIL_POP" class="cmc_txt" style="width:150px;" maxlength="50" EMAIL/>
+						<input type="text" id="EMAIL_POP" name="EMAIL_POP" class="cmc_txt" style="width:150px; margin:0 5px" maxlength="50" EMAIL/>
 					</td>
-					<th>개인정보 동의</th>
+					<th>에이전시명</th>
 					<td>
-						<select id="PERINFO_AGREE_YN" name="PERINFO_AGREE_YN" class="cmc_combo" style="width:130px;">
-							<option value="N" selected>N</option>
-							<option value="Y">Y</option>
-						</select>
+						<input type="text" id="AGENCY_NAME" name="AGENCY_NAME" class="cmc_txt" style="width:150px; margin:0 5px" maxlength="50" disabled/>
 					</td>
 					<th>탈퇴여부</th>
 					<td>
-						<select id="RET_YN" name="RET_YN" class="cmc_combo" style="width:130px;">
+						<select id="RET_YN" name="RET_YN" class="cmc_combo text-center" style="width:160px; margin:0 5px">
 							<c:forEach var="i" items="${ret_yn}">
 							    <option value="${i.CODE}">${i.CODE_NM}</option>
 						    </c:forEach>
@@ -82,22 +79,28 @@
 				<tr>
 					<th>등록자 ID</th>
 					<td>
-						<input type="text" id="REG_ID" name="REG_ID" class="cmc_txt" style="width:125px;" readonly />
+						<input type="text" id="REG_ID" name="REG_ID" class="cmc_txt" style="width:150px; margin:0 5px" readonly />
 					</td>
 					<th>등록일시</th>
 					<td>
-						<input type="text" id="REG_DTM" name="REG_DTM" class="cmc_txt" style="width:125px;" readonly />
+						<input type="text" id="REG_DTM" name="REG_DTM" class="cmc_txt" style="width:150px; margin:0 5px" readonly />
 					</td>
-					<th></th>
+					<th>개인정보 동의</th>
+					<td>
+						<select id="PERINFO_AGREE_YN" name="PERINFO_AGREE_YN" class="cmc_combo text-center" style="width:160px; margin:0 5px">
+							<option value="N" selected>N</option>
+							<option value="Y">Y</option>
+						</select>
+					</td>
 				</tr>
 				<tr>
 					<th>수정자 ID</th>
 					<td>
-						<input type="text" id="UPD_ID" name="UPD_ID" class="cmc_txt" style="width:125px;" readonly />
+						<input type="text" id="UPD_ID" name="UPD_ID" class="cmc_txt" style="width:150px; margin:0 5px" readonly />
 					</td>
 					<th>수정일시</th>
 					<td>
-						<input type="text" id="UPD_DTM" name="UPD_DTM" class="cmc_txt" style="width:125px;" readonly />
+						<input type="text" id="UPD_DTM" name="UPD_DTM" class="cmc_txt" style="width:150px; margin:0 5px" readonly />
 					</td>
 					<th></th>
 				</tr>
@@ -126,7 +129,8 @@
 
 	/* 영문이름 정규식 체크 */
 	$(document).on("focusout", '[class^=onlyEng]', function() {
-		const regExp =  /^[a-zA-Z]*$/; 
+		//const regExp =  /^[a-zA-Z]*$/;
+		const regExp =  /^[a-z,A-Z, ]*$/;
 		if($(this).val() != "" && !regExp.test($(this).val())){
 			alert("영문으로 작성해주세요.");
 			$(this).val("");
@@ -162,11 +166,14 @@
 		if($("#MEM_GBN_POP").val() == '01') {
 			$("#btn_userSearchPopup").show();
 			$("#HAN_NAME_POP"       ).addClass("onlyKor");
+			$("#AGENCY_NAME"        ).attr("disabled",true);
 			return;
 		} else if($("#MEM_GBN_POP").val() == '02') {
 			$("#btn_userSearchPopup").hide();
 			$("#HAN_NAME_POP"       ).addClass("onlyKor");
+			$("#AGENCY_NAME"        ).attr("disabled",true);
 		} else if($("#MEM_GBN_POP"  ).val() == '03' || $("#MEM_GBN_POP"  ).val() == '04' || $("#MEM_GBN_POP"  ).val() == '05') {
+			$("#AGENCY_NAME"  ).attr("disabled",false);
 			$("#btn_userSearchPopup").hide();
 			$("#HAN_NAME_POP"       ).removeClass("onlyKor");
 		}
@@ -262,7 +269,7 @@
 	function selectUserInfo(userId){
 		var param = {
 			"param": {
-				"USER_ID" : userId
+				"USER_ID"   : userId
 			}
 		};
 		var url = "/rrs/selectUserInfo.do";
@@ -276,7 +283,13 @@
 			$('#ENG_NAME_POP'    ).val(data.result[0].ENG_NAME);
 			$('#TEL_NO_POP'      ).val(data.result[0].TEL_NO);
 			$('#MEM_GBN_POP'     ).val(data.result[0].MEM_GBN);
+			$('#AGENCY_NAME'     ).val(data.result[0].AGENCY_NAME);
+			$('#AGENCY_GB'       ).val(data.result[0].AGENCY_GB);
 			$('#Ex_MEMBER_ID_POP').val(data.result[0].MEMBER_ID);
+			
+			if(data.result[0].MEM_GBN == '03' || data.result[0].MEM_GBN == '04' || data.result[0].MEM_GBN == '05') {
+				$("#AGENCY_NAME"  ).attr("disabled",false);
+			}
 		});
 	}
 
@@ -288,6 +301,7 @@
 	 ********************************************/
 	function saveUserInfo(){
 		var formData        = formIdAllToMap('frmUserInfo');
+		var agencyGb        = "";
 		formData.TEL_NO_POP = formData.TEL_NO_POP.replace(/-/g, '');
 		/* validtaion check */
 		if(formData.HAN_NAME_POP === "") {
@@ -311,6 +325,18 @@
 			return;
 		}
 		
+		if(formData.MEM_GBN_POP == '03' || formData.MEM_GBN_POP == '04' || formData.MEM_GBN_POP == '05') {
+			if(formData.MEM_GBN_POP == '03'){
+				agencyGb = "1";
+			}else if(formData.MEM_GBN_POP == '04'){
+				agencyGb = "2";
+			}else if(formData.MEM_GBN_POP == '05'){
+				agencyGb = "3";
+			}else{
+				agencyGb = "";
+			}
+		}
+		
 		var setData = {	  "USER_ID"          : formData.USER_ID_POP
 						, "HAN_NAME"         : formData.HAN_NAME_POP
 						, "ENG_NAME"         : formData.ENG_NAME_POP
@@ -318,6 +344,8 @@
 						, "EMAIL"            : formData.EMAIL_POP
 						, "MEM_GBN"          : formData.MEM_GBN_POP
 						, "MEMBER_ID"        : formData.MEMBER_ID_POP
+						, "AGENCY_NAME"      : formData.AGENCY_NAME
+						, "AGENCY_GB"        : agencyGb
 						, "PERINFO_AGREE_YN" : formData.PERINFO_AGREE_YN
 						, "RET_YN"           : formData.RET_YN
 						, "REG_ID"           : formData.REG_ID
@@ -452,9 +480,10 @@
 		var idCnt = $('#USER_ID_POP').val().length;    // 입력 ID 글자수
 		if (idCnt == 0) {
 			alert("회원 ID를 입력해주세요.");
-		} else if (($('#MEM_GBN_POP').val() != "01") && (idCnt<6)) {
-			alert("회원 ID 글자수를 확인해주세요.");
-		} else {
+		} //else if (($('#MEM_GBN_POP').val() != "01") && (idCnt<6)) {  //
+			//alert("회원 ID 글자수를 확인해주세요.");
+		//} 
+		else {
 			idCheck(idCnt);
 		}
 	});

@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -246,8 +247,15 @@ public class TableReportController {
 	                
 	                if(DList.get(i).getCode().equals("D04") || DList.get(i).getCode().equals("D32"))
 	                {
-	                	String expDt   = (String) resultDeptDetail.get("EXP_DT");
-	                    codeNm = codeNm.replace("[0]", numFormatter.format(resultDeptDetail.get("DEP_AMT")));  //예약금
+	                	//예약상세조회의 예약일자가 없을 경우 파라미터(reqData)로 받은 예약일자로 세팅
+	                	String expDt   = StringUtils.isEmpty((String) resultDeptDetail.get("EXP_DT")) ? (String) reqData.get("EXP_DT") : resultDeptDetail.get("EXP_DT").toString();  //예약일자
+	                    logger.info("===== expDt : "+expDt);
+	                	
+	                    //예약상세조회의 예약금이 없을 경우 파라미터(reqData)로 받은 예약금으로 세팅
+	                    Object depAmt = "0".equals(String.valueOf(resultDeptDetail.get("DEP_AMT"))) ? (reqData.get("DEP_AMT") == null? 0 : Long.parseLong(String.valueOf(reqData.get("DEP_AMT")))): resultDeptDetail.get("DEP_AMT");
+	                    logger.info("===== depAmt : "+depAmt);
+	                    
+	                    codeNm = codeNm.replace("[0]", numFormatter.format(depAmt));  //예약금
 	                    codeNm = codeNm.replace("[1]", expDt.substring(4, 6) + "월 "+expDt.substring(6, 8) + "일");  //예약기한
 	                }
 	                else if(DList.get(i).getCode().equals("D05") || DList.get(i).getCode().equals("D33"))
@@ -257,7 +265,11 @@ public class TableReportController {
 	                	long reportDepAmt        = 0;
 	                	
 	                	reportTotAmt = (long)Double.parseDouble(String.valueOf(resultDeptDetail.get("TOT_AMT")));
-	                	reportDepAmt = (long)Double.parseDouble(String.valueOf(resultDeptDetail.get("DEP_AMT")));
+	                	//reportDepAmt = (long)Double.parseDouble(String.valueOf(resultDeptDetail.get("DEP_AMT")));
+	                	
+	                	//예약상세조회의 예약금이 없을 경우 파라미터(reqData)로 받은 예약금으로 세팅
+	                	reportDepAmt = "0".equals(String.valueOf(resultDeptDetail.get("DEP_AMT"))) ? (reqData.get("DEP_AMT") == null? 0 : Long.parseLong(String.valueOf(reqData.get("DEP_AMT")))): Long.parseLong(String.valueOf(resultDeptDetail.get("DEP_AMT")));
+	                	logger.info("===== reportDepAmt : "+reportDepAmt);
 	                	
 	                	reportBalAmt = reportTotAmt - reportDepAmt;
 	                    codeNm = codeNm.replace("[0]", numFormatter.format(reportBalAmt)); //인보이스 잔금 = 총금액 - 팝업 예약금
@@ -734,7 +746,7 @@ public class TableReportController {
         
         boolean res = mailSendService.sendMail(sendEmailparam);
         
-        System.out.println("================"+res);
+        logger.info("=========== 메일발송결과 : "+res);
         if(res)
         {
             //인보이스 발행일자 수정
@@ -815,7 +827,7 @@ public class TableReportController {
         
         boolean res = mailSendService.sendMail(sendEmailparam);
         
-        System.out.println("================"+res);
+        logger.info("=========== 메일발송결과 : "+res);
         if(res)
         {
             //인보이스 발행일자 수정

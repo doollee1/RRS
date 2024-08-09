@@ -44,10 +44,6 @@
 			<mvc:mapping path="/**/*.do"/>
 			<bean class="bt.btframework.aops.ServiceInterceptor" />
 		</mvc:interceptor>
-<!-- 	 	<mvc:interceptor> -->
-<!-- 			<mvc:mapping path="/api/**"/> -->
-<!-- 			<bean class="bt.api.aop.APIAuthenticationInterceptor" /> -->
-<!-- 		</mvc:interceptor>  -->
 	</mvc:interceptors>
 
 	<mvc:resources mapping="/upload/**" location="file:/web/rrs_webapps/upload/"/>

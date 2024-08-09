@@ -333,7 +333,6 @@ function deleteProductInfo(){
 				,"BAS_YY_SEQ" : formData.BAS_YY_SEQ_UP
 				,"PROD_SEQ"   : formData.PROD_SEQ_UP
 				}
-	alert(JSON.stringify(param));
 	var url = "/product/deleteProductInfo.do"
 
 	if(confirm("<s:message code='confirm.delete'/>")){

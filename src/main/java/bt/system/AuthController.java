@@ -65,7 +65,14 @@ public class AuthController {
 		List<BMap> paramList = reqData.getParamDataList("gridData");
 		BRespData respData = new BRespData();
 
-		authService.deleteAuthInfo(paramList);
+		try {
+			authService.deleteAuthInfo(paramList);
+			respData.put("success", true);
+
+		}catch(Exception e) {
+			respData.put("success", false);
+			respData.put("message", e.getMessage());
+		}
 
 		return respData;
 	}

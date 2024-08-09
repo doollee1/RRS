@@ -25,7 +25,7 @@
 					<tr>
 						<td class="small_td"><p>회원구분</p></td>
 						<td class="medium_td">
-							<select id="S_MEM_GBN" name="S_MEM_GBN" class="cmc_combo" style="width:80px;">
+							<select id="S_MEM_GBN" name="S_MEM_GBN" class="cmc_combo" style="width:130px;">
 								<option value="">전체</option>
 								<c:forEach var="i" items="${mem_gbn}">
 									<option value="${i.CODE}">${i.CODE_NM}</option>
@@ -136,15 +136,15 @@
 		]
 		
 		var colModel = [
-			{ name: 'ROWNUM'  , width: 50, align: 'center' },
-			{ name: 'MEM_NM'  , width: 100, align: 'center' },
-			{ name: 'HAN_NAME', width: 100, align: 'center' },
-			{ name: 'ENG_NAME', width: 100, align: 'center' },
-			{ name: 'TEL_NO'  , width: 100, align: 'center' },
-			{ name: 'USER_ID' , width: 100, align: 'center' },
-			{ name: 'EMAIL'   , width: 120, align: 'center' },
+			{ name: 'ROWNUM'    , width: 50, align: 'center' },
+			{ name: 'MEM_NM'    , width: 100, align: 'center' },
+			{ name: 'HAN_NAME'  , width: 100, align: 'center' },
+			{ name: 'ENG_NAME'  , width: 100, align: 'center' },
+			{ name: 'TEL_NO'    , width: 100, align: 'center' },
+			{ name: 'USER_ID'   , width: 100, align: 'center' },
+			{ name: 'EMAIL'     , width: 120, align: 'center' },
 			{ name: 'PERINFO_AGREE_YN' , width: 100, align: 'center' },
-			{ name: 'CHK', index: 'CHK', width: 50, align: 'center', formatter: gridCboxFormat, sortable: false }
+			{ name: 'CHK'       , index: 'CHK', width: 50, align: 'center', formatter: gridCboxFormat, sortable: false }
 		]
 		
 		var gSetting = {

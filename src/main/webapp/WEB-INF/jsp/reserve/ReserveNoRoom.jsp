@@ -14,6 +14,54 @@
 
 <!-- dummy -->
 <div class="top_button_h_margin"></div>
+
+<div id="ctm_wrap" style="float:left; width:640px; margin-left:50px;">
+	<div id="ctm_mg_wrap">
+			<div class="ct_grid_top_wrap">
+				<div class="ct_grid_top_left"><h4><s:message code="reservation.title1"/></h4></div>
+			</div>
+		</div>
+		<!-- 검색조건 영역 시작 -->
+		<div id="frmSearch" >
+			<input type="hidden" name="CURRENT_PAGE"  id="CURRENT_PAGE" />
+			<input type="hidden" name="ROWS_PER_PAGE" id="ROWS_PER_PAGE" />
+			<!------------->
+			<div class="tab_top_search">
+				<table id="table_reserve_noroom">
+					<tbody>
+						<tr>
+							<td class="small_td" style="width:15%"><p>조회기간</p></td>
+							<td class="medium_td">
+								<input type="text" name="fromDate" id="fromDate" data-type="date" style="width:90px; float:left; text-align: center;"/>
+								<p style="float:left;">-</p>
+								<input type="text" name="toDate" id="toDate" data-type="date" style="width:90px;float:left; text-align: center;"/>
+							</td>
+							<td style="width:30%; text-align:right;">
+								<button id="showRoom" class="cBtnclass cBtnSearch_style" onclick="cSearch()">조회</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<!-------------->
+		</div>
+		<!-- 검색조건 영역 끝 -->
+
+	<div id="ctm_wrap">
+		<!-- 그리드 시작 -->
+		<div id="ctm_mg_wrap">
+			<div class="ct_grid_top_wrap">
+				<div class="ct_grid_top_left"><h4><s:message code="reservation.title2"/></h4></div>
+				<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
+					<table id="roomGrid"></table>
+					<div id="quotationGrid_pager"></div>
+				</div>
+			</div>
+		</div>
+		<!-- 그리드 끝 -->
+	</div>
+</div>
+
 <div id="right_wrap">
 	<div class="tab_top_search" id="calendar_noroom" style="border: double 4px; border-color: darkgray">
 		<table class="scriptCalendar" id="reserve_noroom_Calendar">
@@ -61,63 +109,14 @@
 	</div>
 </div>
 
-<div id="ctm_wrap" style="width:50%; margin-left:30px;">
-	<div id="ctm_mg_wrap">
-			<div class="ct_grid_top_wrap">
-				<div class="ct_grid_top_left"><h4><s:message code="reservation.title1"/></h4></div>
-				<div class="ct_grid_top_right"></div>
-			</div>
-		</div>
-		<!-- 검색조건 영역 시작 -->
-		<div id="frmSearch">
-			<input type="hidden" name="CURRENT_PAGE"  id="CURRENT_PAGE" />
-			<input type="hidden" name="ROWS_PER_PAGE" id="ROWS_PER_PAGE" />
-			<!------------->
-			<div class="tab_top_search">
-				<table id="table_reserve_noroom">
-					<tbody>
-						<tr>
-							<td class="small_td" style="width:15%"><p>조회기간</p></td>
-							<td class="medium_td">
-								<input type="text" name="fromDate" id="fromDate" data-type="date" style="width:90px; float:left; text-align: center;"/>
-								<p style="float:left;">-</p>
-								<input type="text" name="toDate" id="toDate" data-type="date" style="width:90px;float:left; text-align: center;"/>
-							</td>
-							<td style=" width:30%; text-align:right;">
-								<button id="showRoom" class="cBtnclass cBtnSearch_style" onclick="cSearch()">조회</button>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<!-------------->
-		</div>
-		<!-- 검색조건 영역 끝 -->
-
-	<div id="ctm_wrap">
-		<!-- 그리드 시작 -->
-		<div id="ctm_mg_wrap">
-			<div class="ct_grid_top_wrap">
-				<div class="ct_grid_top_left"><h4><s:message code="reservation.title2"/></h4></div>
-				<div class="ctu_g_wrap" style="width:100%; float:left; padding-top:0px;">
-					<table id="roomGrid"></table>
-					<div id="quotationGrid_pager"></div>
-				</div>
-			</div>
-		</div>
-		<!-- 그리드 끝 -->
-	</div>
-</div>
-
 <style type="text/css">
 	a { color:#000000; text-decoration:none; }
 	.calendarBtn { cursor:pointer; }
 	.ct_grid_top_left {display:block;}
-	#right_wrap { width:45%; float:right; display: grid; justify-content: center; align-items: center; margin-top:28px; }
-	#inputRow {float: right; height:25px; margin:10px 62px 0 0;}
-	#updateRow {height: 30px; width: 50px; float: right; margin:10px 62px 0 0;}
+	#right_wrap { width:45%; display: grid; justify-content: center; margin-top:28px; }
+	#inputRow {float: right; height:30px; margin:10px 62px 0 0;}
 	#showRoom {margin-left:10px; height:25px;}
-	#roomGrid {width:640px;}
+	
 </style>
 
 <script type="text/javascript">
@@ -186,11 +185,11 @@ function createRoomGrid() {
 			'상태'
 			];
 	var colModel = [
-		{name : 'ROWNUM'      , width : 85 , align : 'center'},
-		{name : 'REQ_NO_DT'   , width : 220, align : 'center'},
+		{name : 'ROWNUM'      , width : 100, align : 'center'},
+		{name : 'REQ_NO_DT'   , width : 230, align : 'center'},
 		{name : 'ROOM_TYPE'   , align : 'center', hidden:true},
-		{name : 'ROOM_TYPE_NM', width : 220, align : 'center'},
-		{name : 'DELETE'      , width : 95 , align : 'center', formatter:delRow},
+		{name : 'ROOM_TYPE_NM', width : 230, align : 'center'},
+		{name : 'DELETE'      , width : 100, align : 'center', formatter:delRow},
 		{name : 'STATE'       , align : 'center', hidden:true}
 		];
 	var gSetting = {
@@ -200,7 +199,7 @@ function createRoomGrid() {
 			searchInit     : false,    // 데이터 검색 버튼 노출여부
 			resizeing      : true,
 			rownumbers     : false,
-			shrinkToFit    : false,
+			shrinkToFit    : true,
 			autowidth      : true,
 			queryPagingGrid: false,    // 쿼리 페이징 처리 여부
 			height : 500
